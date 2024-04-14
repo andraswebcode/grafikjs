@@ -1,0 +1,33 @@
+{
+  "name": "grafikjs",
+  "version": "0.0.1",
+  "main": "./src/index.js",
+  "scripts": {
+    "start": "webpack",
+    "start:core": "npm start --prefix packages/core",
+    "start:react": "npm start --prefix packages/react"
+  },
+  "keywords": [],
+  "author": "Andras Tovishati",
+  "license": "MIT",
+  "description": "",
+  "workspaces": [
+    "packages/core",
+    "packages/react"
+  ],
+  "dependencies":{
+    "@grafikjs/core":"*",
+    "@grafikjs/react":"*",
+    "react": "*",
+    "react-dom": "*"
+  },
+  "devDependencies":{
+    "webpack":"*",
+    "webpack-cli":"*",
+    "typescript":"*",
+    "ts-loader":"*",
+    "@types/node":"*",
+    "@types/react":"*",
+    "@types/react-dom":"*"
+  }
+}
