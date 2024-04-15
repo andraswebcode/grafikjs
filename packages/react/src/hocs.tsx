@@ -1,21 +1,20 @@
 import {
-	useMemo,
-	useContext
+	useMemo
 } from 'react';
 import {
-	Importer,
-	ShapeObject
+	ShapeObject,
+	getClassFromTagName
 } from '@grafikjs/core';
 
 import {
-	CanvasContext
-} from './contexts';
+	useCanvas
+} from './hooks';
 
 const withCanvasContext = (Component, tagName) => (props:Partial<ShapeObject>) => {
 
-	const canvas = useContext(CanvasContext);
+	const canvas = useCanvas();
 	const shape = useMemo(() => {
-		const Shape = Importer.getClassFromTagName(tagName);
+		const Shape = getClassFromTagName(tagName);
 		// @ts-ignore
 		const shape = new Shape(props);
 		return shape;

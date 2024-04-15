@@ -20,11 +20,33 @@ class Color implements ColorObject {
 	}
 
 	fromHEX(color: string) : Color {
+
+		const match = color.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+
+		if (match){
+			this.r = parseInt(match[1], 16);
+			this.g = parseInt(match[2], 16);
+			this.b = parseInt(match[3], 16);
+			this.a = (typeof match[4] !== 'undefined') ? parseFloat(match[4]) : 1;
+		}
+
 		return this;
+
 	}
 
 	fromRGB(color: string) : Color {
+
+		const match = color.match(/^rgba?\(\s*(\d{1,3}(?:\.\d+)?)\s*,\s*(\d{1,3}(?:\.\d+)?)\s*,\s*(\d{1,3}(?:\.\d+)?)\s*(?:\s*,\s*((?:\d*\.?\d+)?)\s*)?\)$/i);
+
+		if (match){
+			this.r = parseInt(match[1], 10);
+			this.g = parseInt(match[2], 10);
+			this.b = parseInt(match[3], 10);
+			this.a = (typeof match[4] !== 'undefined') ? parseFloat(match[4]) : 1;
+		}
+
 		return this;
+
 	}
 
 	fromHSL(color: string) : Color {
@@ -32,11 +54,25 @@ class Color implements ColorObject {
 	}
 
 	fromArray(color: ColorArray) : Color {
+
+		this.r = color[0];
+		this.g = color[1];
+		this.b = color[2];
+		this.a = color[3];
+
 		return this;
+
 	}
 
 	fromObject(color: ColorObject) : Color {
+
+		this.r = color.r;
+		this.g = color.g;
+		this.b = color.b;
+		this.a = color.a;
+
 		return this;
+
 	}
 
 	toHEX() : string {
@@ -101,8 +137,7 @@ class Color implements ColorObject {
 	}
 
 	public copy(color: Color) : Color {
-		this.fromArray(color.toArray());
-		return this;
+		return this.fromArray(color.toArray());
 	}
 
 	public clone() : Color {

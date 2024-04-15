@@ -9,7 +9,8 @@ function Collection<TBase extends Constructor>(Base: TBase){
 		public isCollection = true;
 		public shapes:object[] = [];
 
-		public add(...shapes) : Collection {
+		public add(...shapes: object[]) : Collection {
+			this.shapes.push(...shapes);
 			return this;
 		}
 

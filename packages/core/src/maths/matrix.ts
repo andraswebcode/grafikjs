@@ -57,7 +57,7 @@ class Matrix implements MatrixObject {
 		this.translate(left, top);
 		this.rotate(angle);
 		this.scaleX(scaleX);
-		this.scaleX(scaleY);
+		this.scaleY(scaleY);
 		this.skewX(skewX);
 		this.skewY(skewY);
 
@@ -115,8 +115,8 @@ class Matrix implements MatrixObject {
 
 	public translate(tx: number, ty: number) : Matrix {
 
-		if (tx) this.tx = tx;
-		if (ty) this.ty = ty;
+		this.tx = tx;
+		this.ty = ty;
 
 		return this;
 
@@ -133,9 +133,7 @@ class Matrix implements MatrixObject {
 		const sin = Math.sin(theta);
 		const m = new Matrix().fromArray([cos, sin, -sin, cos, 0, 0]);
 
-		this.multiply(m);
-
-		return this;
+		return this.multiply(m);
 
 	}
 
@@ -149,9 +147,7 @@ class Matrix implements MatrixObject {
 
 		const m = new Matrix().fromArray([sx, 0, 0, sy, 0, 0]);
 
-		this.multiply(m);
-
-		return this;
+		return this.multiply(m);
 
 	}
 
@@ -163,9 +159,7 @@ class Matrix implements MatrixObject {
 
 		const m = new Matrix().fromArray([scale, 0, 0, 1, 0, 0]);
 
-		this.multiply(m);
-
-		return this;
+		return this.multiply(m);
 
 	}
 
@@ -177,10 +171,7 @@ class Matrix implements MatrixObject {
 
 		const m = new Matrix().fromArray([1, 0, 0, scale, 0, 0]);
 
-		this.multiply(m);
-
-
-		return this;
+		return this.multiply(m);
 
 	}
 
@@ -194,9 +185,7 @@ class Matrix implements MatrixObject {
 
 		const m = new Matrix().fromArray([1, 0, Math.tan(theta), 1, 0, 0]);
 
-		this.multiply(m);
-
-		return this;
+		return this.multiply(m);
 
 	}
 
@@ -210,9 +199,7 @@ class Matrix implements MatrixObject {
 
 		const m = new Matrix().fromArray([1, Math.tan(theta), 0, 1, 0, 0]);
 
-		this.multiply(m);
-
-		return this;
+		return this.multiply(m);
 
 	}
 
@@ -225,15 +212,12 @@ class Matrix implements MatrixObject {
 		const tx = this.a * m.tx + this.c * m.ty + this.tx;
 		const ty = this.b * m.tx + this.d * m.ty + this.ty;
 
-		this.fromObject({a, b, c, d, tx, ty});
-
-		return this;
+		return this.fromObject({a, b, c, d, tx, ty});
 
 	}
 
 	public copy(matrix: Matrix) : Matrix {
-		this.fromArray(matrix.toArray());
-		return this;
+		return this.fromArray(matrix.toArray());
 	}
 
 	public clone() : Matrix {

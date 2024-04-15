@@ -3,14 +3,19 @@ import {
 } from './../element';
 import {
 	Matrix,
-	BBox
+	BBox,
+	Point
 } from './../maths';
+import {
+	FillStroke
+} from './../types';
 
 class Shape extends Element {
 
-	public parent:object;
-	public matrix:Matrix;
-	public bBox:BBox;
+	public parent: object;
+	public matrix: Matrix;
+	public bBox: BBox;
+	public origin: Point;
 
 	public left = 0;
 	public top = 0;
@@ -19,17 +24,16 @@ class Shape extends Element {
 	public scaleY = 0;
 	public skewX = 0;
 	public skewY = 0;
-	public originX = 0.5;
-	public originY = 0.5;
 
-	public fill = '';
-	public stroke = '';
+	public fill: FillStroke = 'none';
+	public stroke: FillStroke = 'black';
 	public strokeWidth = 0;
 
 	public init(params){
 		this.set(params);
 		this.matrix = new Matrix().fromOptions(this);
 		this.bBox = new BBox();
+		this.origin = new Point(0.5, 0.5);
 	}
 
 	public getAttributes() : object {

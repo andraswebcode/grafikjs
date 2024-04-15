@@ -1,6 +1,5 @@
 import {
-	useMemo,
-	useContext
+	useMemo
 } from 'react';
 import {
 	Canvas
@@ -9,12 +8,15 @@ import {
 import {
 	CanvasContext
 } from './../contexts';
+import {
+	useCanvas
+} from './../hooks';
 
 const ReactCanvas = ({
 	children
 }) => {
 
-	const canvas = useContext(CanvasContext);
+	const canvas = useCanvas();
 
 	return (
 		// @ts-ignore

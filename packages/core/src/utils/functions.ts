@@ -1,5 +1,7 @@
+import * as shapes from './../shapes';
 import {
-	PIBY180
+	PIBY180,
+	CLASSNAMES
 } from './constants';
 
 const clamp = (value: number, min: number, max: number) : number => {
@@ -10,7 +12,12 @@ const clamp = (value: number, min: number, max: number) : number => {
 
 const deg2Rad = (degree: number) : number => (degree * PIBY180);
 
+const getClassFromTagName = (tagName: string) => {
+	return shapes[CLASSNAMES[tagName]];
+}
+
 export {
 	clamp,
-	deg2Rad
+	deg2Rad,
+	getClassFromTagName
 };
