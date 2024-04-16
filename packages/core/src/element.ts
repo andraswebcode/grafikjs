@@ -1,7 +1,10 @@
 class Element {
 
 	protected tagName: string;
-	protected attrMap: string[] = [];
+
+	protected getAttrMap() : string[] {
+		return [];
+	}
 
 	public set(key, value?){
 		if (typeof key === 'string' && value){
@@ -11,6 +14,7 @@ class Element {
 				this._set(prop, key[prop]);
 			}
 		}
+		return this;
 	}
 
 	protected _set(key: string, value: string|number){
@@ -19,9 +23,21 @@ class Element {
 		}
 	}
 
+	public get(key: string|string[]) : any {
+		if (Array.isArray(key)){
+			return key.reduce((memo: object, k: string) : object => {
+				memo[k] = this[k];
+				return memo;
+			}, {});
+		} else {
+			return this[key];
+		}
+	}
+
 	public getAttributes() : object {
+		const attrMap = this.getAttrMap();
 		let value;
-		return this.attrMap.reduce((memo:object, key:string) : object => {
+		return attrMap.reduce((memo:object, key:string) : object => {
 			if (this.hasOwnProperty(key)){
 				value = this[key];
 				value = Array.isArray(value) ? value.join(' ') : value

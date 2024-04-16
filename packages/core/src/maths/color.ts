@@ -4,22 +4,22 @@ import {
 	AnyColor
 } from './../types';
 
-class Color implements ColorObject {
+class Color {
 
-	public r = 0;
-	public g = 0;
-	public b = 0;
-	public a = 1;
+	private r = 0;
+	private g = 0;
+	private b = 0;
+	private a = 1;
 
-	constructor(r?: AnyColor|number, g?: number, b?: number, a?: number){
+	public constructor(r?: AnyColor|number, g?: number, b?: number, a?: number){
 		this.set(r, g, b, a);
 	}
 
-	set(r?: AnyColor|number, g?: number, b?: number, a?: number) : Color {
+	public set(r?: AnyColor|number, g?: number, b?: number, a?: number) : Color {
 		return this;
 	}
 
-	fromHEX(color: string) : Color {
+	public fromHEX(color: string) : Color {
 
 		const match = color.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
 
@@ -34,7 +34,7 @@ class Color implements ColorObject {
 
 	}
 
-	fromRGB(color: string) : Color {
+	public fromRGB(color: string) : Color {
 
 		const match = color.match(/^rgba?\(\s*(\d{1,3}(?:\.\d+)?)\s*,\s*(\d{1,3}(?:\.\d+)?)\s*,\s*(\d{1,3}(?:\.\d+)?)\s*(?:\s*,\s*((?:\d*\.?\d+)?)\s*)?\)$/i);
 
@@ -49,11 +49,11 @@ class Color implements ColorObject {
 
 	}
 
-	fromHSL(color: string) : Color {
+	public fromHSL(color: string) : Color {
 		return this;
 	}
 
-	fromArray(color: ColorArray) : Color {
+	public fromArray(color: ColorArray) : Color {
 
 		this.r = color[0];
 		this.g = color[1];
@@ -64,7 +64,7 @@ class Color implements ColorObject {
 
 	}
 
-	fromObject(color: ColorObject) : Color {
+	public fromObject(color: ColorObject) : Color {
 
 		this.r = color.r;
 		this.g = color.g;
@@ -75,7 +75,7 @@ class Color implements ColorObject {
 
 	}
 
-	toHEX() : string {
+	public toHEX() : string {
 
 		let r = this.r.toString(16);
 		let g = this.g.toString(16);
@@ -89,7 +89,7 @@ class Color implements ColorObject {
 
 	}
 
-	toHEXA() : string {
+	public toHEXA() : string {
 
 		// @ts-ignore
 		let a = parseInt(this.a * 255).toString(16);
@@ -100,7 +100,7 @@ class Color implements ColorObject {
 
 	}
 
-	toRGB() : string {
+	public toRGB() : string {
 
 		const {r, g, b} = this;
 
@@ -108,7 +108,7 @@ class Color implements ColorObject {
 
 	}
 
-	toRGBA() : string {
+	public toRGBA() : string {
 
 		const {r, g, b, a} = this;
 
@@ -116,11 +116,11 @@ class Color implements ColorObject {
 
 	}
 
-	toHSL() : string {
+	public toHSL() : string {
 		return '';
 	}
 
-	toArray() : ColorArray {
+	public toArray() : ColorArray {
 
 		const {r, g, b, a} = this;
 
@@ -128,7 +128,7 @@ class Color implements ColorObject {
 
 	}
 
-	toObject() : ColorObject {
+	public toObject() : ColorObject {
 
 		const {r, g, b, a} = this;
 

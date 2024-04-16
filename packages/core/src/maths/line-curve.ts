@@ -7,10 +7,10 @@ import {
 
 class LineCurve extends Curve {
 
-	p0: Point;
-	p1: Point;
+	private p0: Point;
+	private p1: Point;
 
-	constructor(p0: Point, p1: Point){
+	public constructor(p0: Point, p1: Point){
 		super();
 		this.p0 = p0;
 		this.p1 = p1;

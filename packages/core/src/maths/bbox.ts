@@ -1,21 +1,35 @@
 import {
-	BBoxObject
-} from './../types/math';
-import {
 	Point
 } from './point';
 
-class BBox implements BBoxObject {
+class BBox {
 
-	public min: Point;
-	public max: Point;
+	private min: Point;
+	private max: Point;
 
-	constructor(min: Point = new Point(), max: Point = new Point()){
+	public constructor(min: Point = new Point(), max: Point = new Point()){
 		this.min = min;
 		this.max = max;
 	}
 
-	public copy(color: BBox) : BBox {
+	public fromSizeAndOrigin(size: Point, origin: Point = new Point(0.5, 0.5)) : BBox {
+
+		const mByOrigin = size.clone().multiply(origin).multiplyScalar(-1);
+
+		this.min.copy(mByOrigin);
+		this.max.copy(size.clone().add(mByOrigin));
+
+		return this;
+
+	}
+
+	public getSize() : Point {
+		return new Point().subtractPoints(this.max, this.min);
+	}
+
+	public copy(bBox: BBox) : BBox {
+		this.min.copy(bBox.min);
+		this.max.copy(bBox.max);
 		return this;
 	}
 

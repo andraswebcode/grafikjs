@@ -4,13 +4,10 @@ import {
 import {
 	Collection
 } from './../mixins';
-import {
-	ShapeObject
-} from './../types';
 
-class Group extends Collection(Shape) implements ShapeObject {
+class Group extends Collection(Shape) {
 
-	public readonly tagName = 'g';
+	protected readonly tagName = 'g';
 
 	constructor(params){
 		super();

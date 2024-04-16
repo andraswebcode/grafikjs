@@ -2,25 +2,38 @@ import {
 	Shape
 } from './shape';
 import {
-	ShapeObject
-} from './../types/object';
+	Point
+} from './../maths';
 
-class Rect extends Shape implements ShapeObject {
+class Rect extends Shape {
 
-	public readonly tagName = 'rect';
-	public readonly attrMap = [
-		'width',
-		'height',
-		'fill',
-		'stroke',
-		'strokeWidth',
-	];
-	public width = 0;
-	public height = 0;
+	protected readonly tagName = 'rect';
+	private width = 0;
+	private height = 0;
 
 	constructor(params){
 		super();
 		this.init(params);
+	}
+
+	protected getAttrMap() : string[] {
+		return super.getAttrMap().concat([
+			'width',
+			'height'
+		]);
+	}
+
+	public set(key, value?){
+		super.set(key, value);
+		if (key === 'width' || key === 'height'){
+			this.updateBBox();
+		}
+		return this;
+	}
+
+	public updateBBox(){
+		this.bBox.fromSizeAndOrigin(new Point(this.width, this.height), this.origin);
+		return this;
 	}
 
 }

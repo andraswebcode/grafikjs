@@ -38,11 +38,6 @@ var Canvas = /** @class */ (function (_super) {
     function Canvas(params) {
         var _this = _super.call(this) || this;
         _this.tagName = 'svg';
-        _this.attrMap = [
-            'width',
-            'height',
-            'viewBox'
-        ];
         _this.xmlns = 'http://www.w3.org/2000/svg';
         _this.width = 0;
         _this.height = 0;
@@ -50,9 +45,18 @@ var Canvas = /** @class */ (function (_super) {
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_2__.Matrix();
         return _this;
     }
+    Canvas.prototype.getAttrMap = function () {
+        return [
+            'xmlns',
+            'width',
+            'height',
+            'viewBox'
+        ];
+    };
     Canvas.prototype.set = function (key, value) {
         _super.prototype.set.call(this, key, value);
         this.setViewBox();
+        return this;
     };
     Canvas.prototype.setViewBox = function () {
         this.viewBox = [0, 0, this.width, this.height];
@@ -196,8 +200,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var Element = /** @class */ (function () {
     function Element() {
-        this.attrMap = [];
     }
+    Element.prototype.getAttrMap = function () {
+        return [];
+    };
     Element.prototype.set = function (key, value) {
         if (typeof key === 'string' && value) {
             this._set(key, value);
@@ -207,16 +213,30 @@ var Element = /** @class */ (function () {
                 this._set(prop, key[prop]);
             }
         }
+        return this;
     };
     Element.prototype._set = function (key, value) {
         if (this.hasOwnProperty(key)) {
             this[key] = value;
         }
     };
+    Element.prototype.get = function (key) {
+        var _this = this;
+        if (Array.isArray(key)) {
+            return key.reduce(function (memo, k) {
+                memo[k] = _this[k];
+                return memo;
+            }, {});
+        }
+        else {
+            return this[key];
+        }
+    };
     Element.prototype.getAttributes = function () {
         var _this = this;
+        var attrMap = this.getAttrMap();
         var value;
-        return this.attrMap.reduce(function (memo, key) {
+        return attrMap.reduce(function (memo, key) {
             if (_this.hasOwnProperty(key)) {
                 value = _this[key];
                 value = Array.isArray(value) ? value.join(' ') : value;
@@ -543,9 +563,33 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   BBox: () => (/* binding */ BBox)
 /* harmony export */ });
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./point */ "./packages/core/src/maths/point.ts");
+
 var BBox = /** @class */ (function () {
-    function BBox() {
+    function BBox(min, max) {
+        if (min === void 0) { min = new _point__WEBPACK_IMPORTED_MODULE_0__.Point(); }
+        if (max === void 0) { max = new _point__WEBPACK_IMPORTED_MODULE_0__.Point(); }
+        this.min = min;
+        this.max = max;
     }
+    BBox.prototype.fromSizeAndOrigin = function (size, origin) {
+        if (origin === void 0) { origin = new _point__WEBPACK_IMPORTED_MODULE_0__.Point(0.5, 0.5); }
+        var mByOrigin = size.clone().multiply(origin).multiplyScalar(-1);
+        this.min.copy(mByOrigin);
+        this.max.copy(size.clone().add(mByOrigin));
+        return this;
+    };
+    BBox.prototype.getSize = function () {
+        return new _point__WEBPACK_IMPORTED_MODULE_0__.Point().subtractPoints(this.max, this.min);
+    };
+    BBox.prototype.copy = function (bBox) {
+        this.min.copy(bBox.min);
+        this.max.copy(bBox.max);
+        return this;
+    };
+    BBox.prototype.clone = function () {
+        return new BBox().copy(this);
+    };
     return BBox;
 }());
 
@@ -712,9 +756,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Curve: () => (/* binding */ Curve)
 /* harmony export */ });
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ */ "./packages/core/src/maths/index.ts");
+
 var Curve = /** @class */ (function () {
     function Curve() {
     }
+    Curve.prototype.getPoint = function (t) {
+        return new ___WEBPACK_IMPORTED_MODULE_0__.Point();
+    };
+    Curve.prototype.getPoints = function (divisions) {
+        if (divisions === void 0) { divisions = 10; }
+        return [];
+    };
     return Curve;
 }());
 
@@ -845,6 +898,7 @@ var Matrix = /** @class */ (function () {
     };
     Matrix.prototype.fromOptions = function (object) {
         var left = object.left, top = object.top, angle = object.angle, scaleX = object.scaleX, scaleY = object.scaleY, skewX = object.skewX, skewY = object.skewY;
+        this.reset();
         this.translate(left, top);
         this.rotate(angle);
         this.scaleX(scaleX);
@@ -903,23 +957,23 @@ var Matrix = /** @class */ (function () {
         return this.multiply(m);
     };
     Matrix.prototype.scale = function (sx, sy) {
-        if (!sx) {
+        if (typeof sx === 'undefined') {
             return this;
         }
-        if (!sy)
+        if (typeof sy === 'undefined')
             sy = sx;
         var m = new Matrix().fromArray([sx, 0, 0, sy, 0, 0]);
         return this.multiply(m);
     };
     Matrix.prototype.scaleX = function (scale) {
-        if (!scale) {
+        if (typeof scale === 'undefined') {
             return this;
         }
         var m = new Matrix().fromArray([scale, 0, 0, 1, 0, 0]);
         return this.multiply(m);
     };
     Matrix.prototype.scaleY = function (scale) {
-        if (!scale) {
+        if (typeof scale === 'undefined') {
             return this;
         }
         var m = new Matrix().fromArray([1, 0, 0, scale, 0, 0]);
@@ -949,6 +1003,15 @@ var Matrix = /** @class */ (function () {
         var tx = this.a * m.tx + this.c * m.ty + this.tx;
         var ty = this.b * m.tx + this.d * m.ty + this.ty;
         return this.fromObject({ a: a, b: b, c: c, d: d, tx: tx, ty: ty });
+    };
+    Matrix.prototype.reset = function () {
+        this.a = 1;
+        this.b = 0;
+        this.c = 0;
+        this.d = 1;
+        this.tx = 0;
+        this.ty = 0;
+        return this;
     };
     Matrix.prototype.copy = function (matrix) {
         return this.fromArray(matrix.toArray());
@@ -1054,9 +1117,29 @@ var Point = /** @class */ (function () {
         this.y += point.y;
         return this;
     };
+    Point.prototype.addScalar = function (scale) {
+        this.x += scale;
+        this.y += scale;
+        return this;
+    };
+    Point.prototype.addPoints = function (p1, p2) {
+        this.x = p1.x + p2.x;
+        this.y = p1.y + p2.y;
+        return this;
+    };
     Point.prototype.subtract = function (point) {
         this.x -= point.x;
         this.y -= point.y;
+        return this;
+    };
+    Point.prototype.subtractScalar = function (scale) {
+        this.x -= scale;
+        this.y -= scale;
+        return this;
+    };
+    Point.prototype.subtractPoints = function (p1, p2) {
+        this.x = p1.x - p2.x;
+        this.y = p1.y - p2.y;
         return this;
     };
     Point.prototype.multiply = function (point) {
@@ -1064,9 +1147,19 @@ var Point = /** @class */ (function () {
         this.y *= point.y;
         return this;
     };
+    Point.prototype.multiplyScalar = function (scale) {
+        this.x *= scale;
+        this.y *= scale;
+        return this;
+    };
     Point.prototype.divide = function (point) {
         this.x /= point.x;
         this.y /= point.y;
+        return this;
+    };
+    Point.prototype.divideScalar = function (scale) {
+        this.x /= scale;
+        this.y /= scale;
         return this;
     };
     Point.prototype.lerp = function (point, t) {
@@ -1295,6 +1388,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Rect: () => (/* binding */ Rect)
 /* harmony export */ });
 /* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./packages/core/src/shapes/shape.ts");
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1311,23 +1405,34 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var Rect = /** @class */ (function (_super) {
     __extends(Rect, _super);
     function Rect(params) {
         var _this = _super.call(this) || this;
         _this.tagName = 'rect';
-        _this.attrMap = [
-            'width',
-            'height',
-            'fill',
-            'stroke',
-            'strokeWidth',
-        ];
         _this.width = 0;
         _this.height = 0;
         _this.init(params);
         return _this;
     }
+    Rect.prototype.getAttrMap = function () {
+        return _super.prototype.getAttrMap.call(this).concat([
+            'width',
+            'height'
+        ]);
+    };
+    Rect.prototype.set = function (key, value) {
+        _super.prototype.set.call(this, key, value);
+        if (key === 'width' || key === 'height') {
+            this.updateBBox();
+        }
+        return this;
+    };
+    Rect.prototype.updateBBox = function () {
+        this.bBox.fromSizeAndOrigin(new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(this.width, this.height), this.origin);
+        return this;
+    };
     return Rect;
 }(_shape__WEBPACK_IMPORTED_MODULE_0__.Shape));
 
@@ -1379,34 +1484,83 @@ var Shape = /** @class */ (function (_super) {
     __extends(Shape, _super);
     function Shape() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.matrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix();
+        _this.bBox = new _maths__WEBPACK_IMPORTED_MODULE_1__.BBox();
+        _this.origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(0.5, 0.5);
+        _this.transformProps = [
+            'left',
+            'top',
+            'angle',
+            'scaleX',
+            'scaleY',
+            'skewX',
+            'skewY'
+        ];
         _this.left = 0;
         _this.top = 0;
         _this.angle = 0;
-        _this.scaleX = 0;
-        _this.scaleY = 0;
+        _this.scaleX = 1;
+        _this.scaleY = 1;
         _this.skewX = 0;
         _this.skewY = 0;
         _this.fill = 'none';
         _this.stroke = 'black';
-        _this.strokeWidth = 0;
+        _this.strokeWidth = 1;
         return _this;
     }
     Shape.prototype.init = function (params) {
         this.set(params);
-        this.matrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().fromOptions(this);
-        this.bBox = new _maths__WEBPACK_IMPORTED_MODULE_1__.BBox();
-        this.origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(0.5, 0.5);
+        this.updateMatrix();
+        this.updateBBox();
+    };
+    Shape.prototype.set = function (key, value) {
+        _super.prototype.set.call(this, key, value);
+        if (!key) {
+            return this;
+        }
+        var props = this.transformProps;
+        // Check props if key is a string.
+        if (typeof key === 'string') {
+            if (props.includes(key)) {
+                this.updateMatrix();
+            }
+            return this;
+        }
+        var i, prop;
+        // Also check props if key is an object.
+        for (i = 0; i < props.length; i++) {
+            prop = props[i];
+            if (prop in key) {
+                this.updateMatrix();
+                break;
+            }
+        }
+        return this;
+    };
+    Shape.prototype.getAttrMap = function () {
+        return [
+            'fill',
+            'stroke',
+            'strokeWidth'
+        ];
     };
     Shape.prototype.getAttributes = function () {
         var defaultAttributes = _super.prototype.getAttributes.call(this);
-        var x = 0;
-        var y = 0;
+        var _a = this.bBox.getSize().multiply(this.origin).multiplyScalar(-1), x = _a.x, y = _a.y;
         return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(x, ", ").concat(y, ")") });
     };
     Shape.prototype.getWrapperAttributes = function () {
         return {
             transform: this.matrix.toCSS()
         };
+    };
+    Shape.prototype.updateMatrix = function () {
+        this.matrix.fromOptions(this.get(this.transformProps));
+        return this;
+    };
+    Shape.prototype.updateBBox = function () {
+        console.warn('updateBBox() must be implemented by subclass.');
+        return this;
     };
     return Shape;
 }(_element__WEBPACK_IMPORTED_MODULE_0__.Element));

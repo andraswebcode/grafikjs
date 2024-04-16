@@ -4,13 +4,10 @@ import {
 import {
 	Collection
 } from './../mixins';
-import {
-	ClipPathObject
-} from './../types';
 
-class ClipPath extends Collection(Element) implements ClipPathObject {
+class ClipPath extends Collection(Element) {
 
-	public readonly tagName = 'clipPath';
+	protected readonly tagName = 'clipPath';
 
 }
 

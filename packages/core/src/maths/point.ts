@@ -6,10 +6,10 @@ import {
 	deg2Rad
 } from './../utils';
 
-class Point implements PointObject {
+class Point {
 
-	public x = 0;
-	public y = 0;
+	private x = 0;
+	private y = 0;
 
 	public constructor(x = 0, y = 0){
 		this.set(x, y);
@@ -21,9 +21,42 @@ class Point implements PointObject {
 		return this;
 	}
 
+	public fromObject(object: PointObject) : Point {
+		this.x = object.x;
+		this.y = object.y;
+		return this;
+	}
+
+	public toObject() : PointObject {
+		return {
+			x:this.x,
+			y:this.y
+		};
+	}
+
+	public fromString(point: string) : Point {
+		return this;
+	}
+
+	public toString() : string {
+		return `${this.x}, ${this.y}`;
+	}
+
 	public add(point: Point) : Point {
 		this.x += point.x;
 		this.y += point.y;
+		return this;
+	}
+
+	public addScalar(scale: number) : Point {
+		this.x += scale;
+		this.y += scale;
+		return this;
+	}
+
+	public addPoints(p1: Point, p2: Point) : Point {
+		this.x = p1.x + p2.x;
+		this.y = p1.y + p2.y;
 		return this;
 	}
 
@@ -33,15 +66,39 @@ class Point implements PointObject {
 		return this;
 	}
 
+	public subtractScalar(scale: number) : Point {
+		this.x -= scale;
+		this.y -= scale;
+		return this;
+	}
+
+	public subtractPoints(p1: Point, p2: Point) : Point {
+		this.x = p1.x - p2.x;
+		this.y = p1.y - p2.y;
+		return this;
+	}
+
 	public multiply(point: Point) : Point {
 		this.x *= point.x;
 		this.y *= point.y;
 		return this;
 	}
 
+	public multiplyScalar(scale: number) : Point {
+		this.x *= scale;
+		this.y *= scale;
+		return this;
+	}
+
 	public divide(point: Point) : Point {
 		this.x /= point.x;
 		this.y /= point.y;
+		return this;
+	}
+
+	public divideScalar(scale: number) : Point {
+		this.x /= scale;
+		this.y /= scale;
 		return this;
 	}
 

@@ -7,14 +7,14 @@ import {
 	deg2Rad
 } from './../utils';
 
-class Matrix implements MatrixObject {
+class Matrix {
 
-	public a = 1;
-	public b = 0;
-	public c = 0;
-	public d = 1;
-	public tx = 0;
-	public ty = 0;
+	private a = 1;
+	private b = 0;
+	private c = 0;
+	private d = 1;
+	private tx = 0;
+	private ty = 0;
 
 	public fromArray(matrix: MatrixArray) : Matrix {
 
@@ -54,6 +54,7 @@ class Matrix implements MatrixObject {
 			skewY
 		} = object;
 
+		this.reset();
 		this.translate(left, top);
 		this.rotate(angle);
 		this.scaleX(scaleX);
@@ -139,11 +140,11 @@ class Matrix implements MatrixObject {
 
 	public scale(sx: number, sy?: number) : Matrix {
 
-		if (!sx){
+		if (typeof sx === 'undefined'){
 			return this;
 		}
 
-		if (!sy) sy = sx;
+		if (typeof sy === 'undefined') sy = sx;
 
 		const m = new Matrix().fromArray([sx, 0, 0, sy, 0, 0]);
 
@@ -153,7 +154,7 @@ class Matrix implements MatrixObject {
 
 	public scaleX(scale: number) : Matrix {
 
-		if (!scale){
+		if (typeof scale === 'undefined'){
 			return this;
 		}
 
@@ -165,7 +166,7 @@ class Matrix implements MatrixObject {
 
 	public scaleY(scale: number) : Matrix {
 
-		if (!scale){
+		if (typeof scale === 'undefined'){
 			return this;
 		}
 
@@ -213,6 +214,19 @@ class Matrix implements MatrixObject {
 		const ty = this.b * m.tx + this.d * m.ty + this.ty;
 
 		return this.fromObject({a, b, c, d, tx, ty});
+
+	}
+
+	public reset() : Matrix {
+
+		this.a = 1;
+		this.b = 0;
+		this.c = 0;
+		this.d = 1;
+		this.tx = 0;
+		this.ty = 0;
+
+		return this;
 
 	}
 

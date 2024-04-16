@@ -4,7 +4,7 @@ import {
 
 class Gradient extends Element {
 
-	public colorStops = [];
+	protected colorStops = [];
 
 }
 

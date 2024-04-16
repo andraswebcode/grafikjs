@@ -1,13 +1,10 @@
 import {
 	Gradient
 } from './gradient';
-import {
-	GradientObject
-} from './../types';
 
-class RadialGradient extends Gradient implements GradientObject {
+class RadialGradient extends Gradient {
 
-	public readonly tagName = 'radialGradient';
+	protected readonly tagName = 'radialGradient';
 
 }
 

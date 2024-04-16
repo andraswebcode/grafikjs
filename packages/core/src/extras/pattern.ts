@@ -1,13 +1,10 @@
 import {
 	Element
 } from './../element';
-import {
-	PatternObject
-} from './../types';
 
-class Pattern extends Element implements PatternObject {
+class Pattern extends Element {
 
-	public readonly tagName = 'pattern';
+	protected readonly tagName = 'pattern';
 
 }
 

@@ -7,10 +7,10 @@ import {
 
 class Path {
 
-	public curves: object[] = [];
-	public currentPoint = new Point();
+	private curves: object[] = [];
+	private currentPoint = new Point();
 
-	add(...curves: object[]) : Path {
+	public add(...curves: object[]) : Path {
 
 		this.curves.push(...curves);
 
@@ -18,7 +18,7 @@ class Path {
 
 	}
 
-	moveTo(x: number, y: number) : Path {
+	public moveTo(x: number, y: number) : Path {
 
 		this.currentPoint.set(x, y);
 
@@ -26,7 +26,7 @@ class Path {
 
 	}
 
-	lineTo(x: number, y: number) : Path {
+	public lineTo(x: number, y: number) : Path {
 
 		const curve = new LineCurve(this.currentPoint.clone(), new Point(x, y));
 
@@ -36,7 +36,7 @@ class Path {
 
 	}
 
-	quadraticCurveTo(cx: number, cy: number, x: number, y: number) : Path {
+	public quadraticCurveTo(cx: number, cy: number, x: number, y: number) : Path {
 
 		const curve = new QuadraticBezierCurve(
 			this.currentPoint.clone(),
@@ -50,7 +50,7 @@ class Path {
 
 	}
 
-	cubicCurveTo(c1x: number, c1y: number, c2x: number, c2y: number, x: number, y: number) : Path {
+	public cubicCurveTo(c1x: number, c1y: number, c2x: number, c2y: number, x: number, y: number) : Path {
 
 		const curve = new CubicBezierCurve(
 			this.currentPoint.clone(),
@@ -65,15 +65,15 @@ class Path {
 
 	}
 
-	closePath() : Path {
+	public closePath() : Path {
 		return this;
 	}
 
-	fromString(string: string) : Path {
+	public fromString(string: string) : Path {
 		return this;
 	}
 
-	toString() : string {
+	public toString() : string {
 		return '';
 	}
 

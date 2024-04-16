@@ -8,18 +8,12 @@ import {
 	Matrix
 } from './maths';
 import {
-	CanvasObject,
 	ViewBoxArray
 } from './types';
 
-class Canvas extends Collection(Element) implements CanvasObject {
+class Canvas extends Collection(Element) {
 
 	public readonly tagName = 'svg';
-	public readonly attrMap = [
-		'width',
-		'height',
-		'viewBox'
-	];
 	public readonly xmlns = 'http://www.w3.org/2000/svg';
 	public width = 0;
 	public height = 0;
@@ -32,9 +26,19 @@ class Canvas extends Collection(Element) implements CanvasObject {
 		this.viewportMatrix = new Matrix();
 	}
 
+	protected getAttrMap() : string[] {
+		return [
+			'xmlns',
+			'width',
+			'height',
+			'viewBox'
+		];
+	}
+
 	public set(key, value?){
 		super.set(key, value);
 		this.setViewBox();
+		return this;
 	}
 
 	public setViewBox(){
