@@ -5,6 +5,7 @@
   "scripts": {
     "start": "webpack",
     "start:core": "npm start --prefix packages/core",
+    "start:vanilla": "npm start --prefix packages/vanilla",
     "start:react": "npm start --prefix packages/react"
   },
   "keywords": [],
@@ -13,21 +14,23 @@
   "description": "",
   "workspaces": [
     "packages/core",
-    "packages/react"
+    "packages/react",
+    "packages/vanilla"
   ],
-  "dependencies":{
-    "@grafikjs/core":"*",
-    "@grafikjs/react":"*",
+  "dependencies": {
+    "@grafikjs/core": "*",
+    "@grafikjs/vanilla": "*",
+    "@grafikjs/react": "*",
     "react": "*",
     "react-dom": "*"
   },
-  "devDependencies":{
-    "webpack":"*",
-    "webpack-cli":"*",
-    "typescript":"*",
-    "ts-loader":"*",
-    "@types/node":"*",
-    "@types/react":"*",
-    "@types/react-dom":"*"
+  "devDependencies": {
+    "webpack": "*",
+    "webpack-cli": "*",
+    "typescript": "*",
+    "ts-loader": "*",
+    "@types/node": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*"
   }
 }

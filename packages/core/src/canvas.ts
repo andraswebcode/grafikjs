@@ -18,12 +18,11 @@ class Canvas extends Collection(Element) {
 	public width = 0;
 	public height = 0;
 	public viewBox:ViewBoxArray;
-	public viewportMatrix:Matrix;
+	public viewportMatrix = new Matrix();
 
-	public constructor(params){
+	public constructor(params = {}){
 		super();
 		this.set(params);
-		this.viewportMatrix = new Matrix();
 	}
 
 	protected getAttrMap() : string[] {

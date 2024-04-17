@@ -36,13 +36,14 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var Canvas = /** @class */ (function (_super) {
     __extends(Canvas, _super);
     function Canvas(params) {
+        if (params === void 0) { params = {}; }
         var _this = _super.call(this) || this;
         _this.tagName = 'svg';
         _this.xmlns = 'http://www.w3.org/2000/svg';
         _this.width = 0;
         _this.height = 0;
-        _this.set(params);
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_2__.Matrix();
+        _this.set(params);
         return _this;
     }
     Canvas.prototype.getAttrMap = function () {
@@ -1112,6 +1113,23 @@ var Point = /** @class */ (function () {
         this.y = y;
         return this;
     };
+    Point.prototype.fromObject = function (object) {
+        this.x = object.x;
+        this.y = object.y;
+        return this;
+    };
+    Point.prototype.toObject = function () {
+        return {
+            x: this.x,
+            y: this.y
+        };
+    };
+    Point.prototype.fromString = function (point) {
+        return this;
+    };
+    Point.prototype.toString = function () {
+        return "".concat(this.x, ", ").concat(this.y);
+    };
     Point.prototype.add = function (point) {
         this.x += point.x;
         this.y += point.y;
@@ -1537,6 +1555,10 @@ var Shape = /** @class */ (function (_super) {
         }
         return this;
     };
+    Shape.prototype.setOrigin = function (x, y) {
+        this.origin.set(x, y);
+        return this;
+    };
     Shape.prototype.getAttrMap = function () {
         return [
             'fill',
@@ -1546,8 +1568,8 @@ var Shape = /** @class */ (function (_super) {
     };
     Shape.prototype.getAttributes = function () {
         var defaultAttributes = _super.prototype.getAttributes.call(this);
-        var _a = this.bBox.getSize().multiply(this.origin).multiplyScalar(-1), x = _a.x, y = _a.y;
-        return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(x, ", ").concat(y, ")") });
+        var translate = this.bBox.getSize().multiply(this.origin).multiplyScalar(-1).toString();
+        return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
     };
     Shape.prototype.getWrapperAttributes = function () {
         return {
@@ -1805,6 +1827,80 @@ var SVGImporter = /** @class */ (function (_super) {
 
 
 
+/***/ }),
+
+/***/ "./packages/vanilla/src/index.ts":
+/*!***************************************!*\
+  !*** ./packages/vanilla/src/index.ts ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BBox: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.BBox),
+/* harmony export */   CLASSNAMES: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.CLASSNAMES),
+/* harmony export */   Canvas: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Canvas),
+/* harmony export */   ClipPath: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.ClipPath),
+/* harmony export */   Color: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Color),
+/* harmony export */   Control: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Control),
+/* harmony export */   CubicBezierCurve: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.CubicBezierCurve),
+/* harmony export */   Curve: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Curve),
+/* harmony export */   Element: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Element),
+/* harmony export */   Gradient: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Gradient),
+/* harmony export */   Group: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Group),
+/* harmony export */   Importer: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Importer),
+/* harmony export */   LineCurve: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.LineCurve),
+/* harmony export */   LinearGradient: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.LinearGradient),
+/* harmony export */   LottieImporter: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.LottieImporter),
+/* harmony export */   Matrix: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Matrix),
+/* harmony export */   PIBY180: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.PIBY180),
+/* harmony export */   Path: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Path),
+/* harmony export */   PathControl: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.PathControl),
+/* harmony export */   Pattern: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Pattern),
+/* harmony export */   Point: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Point),
+/* harmony export */   QuadraticBezierCurve: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.QuadraticBezierCurve),
+/* harmony export */   RadialGradient: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.RadialGradient),
+/* harmony export */   Rect: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Rect),
+/* harmony export */   Renderer: () => (/* reexport safe */ _renderer__WEBPACK_IMPORTED_MODULE_1__.Renderer),
+/* harmony export */   SVGImporter: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.SVGImporter),
+/* harmony export */   Shape: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Shape),
+/* harmony export */   TransformControl: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.TransformControl),
+/* harmony export */   clamp: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.clamp),
+/* harmony export */   deg2Rad: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.deg2Rad),
+/* harmony export */   getClassFromTagName: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.getClassFromTagName)
+/* harmony export */ });
+/* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @grafikjs/core */ "./packages/core/src/index.ts");
+/* harmony import */ var _renderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./renderer */ "./packages/vanilla/src/renderer.ts");
+
+
+
+
+/***/ }),
+
+/***/ "./packages/vanilla/src/renderer.ts":
+/*!******************************************!*\
+  !*** ./packages/vanilla/src/renderer.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Renderer: () => (/* binding */ Renderer)
+/* harmony export */ });
+var Renderer = /** @class */ (function () {
+    function Renderer(canvas) {
+        this.canvas = canvas;
+        this.canvas.element = document.createElementNS(canvas.xmlns, canvas.tagName);
+    }
+    Renderer.prototype.appendTo = function (element) {
+        element.appendChild(this.canvas.element);
+        return this;
+    };
+    return Renderer;
+}());
+
+
+
 /***/ })
 
 /******/ 	});
@@ -1870,13 +1966,14 @@ var __webpack_exports__ = {};
   !*** ./src/index.ts ***!
   \**********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @grafikjs/core */ "./packages/core/src/index.ts");
+/* harmony import */ var _grafikjs_vanilla__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @grafikjs/vanilla */ "./packages/vanilla/src/index.ts");
 
-var canvas = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Canvas({
+var wrap = document.getElementById('wrap');
+var canvas = new _grafikjs_vanilla__WEBPACK_IMPORTED_MODULE_0__.Canvas({
     width: 1200,
     height: 800
 });
-var rect = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Rect({
+var rect = new _grafikjs_vanilla__WEBPACK_IMPORTED_MODULE_0__.Rect({
     width: 200,
     height: 200,
     stroke: 'black',
@@ -1884,6 +1981,9 @@ var rect = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Rect({
     fill: 'none'
 });
 canvas.add(rect);
+var renderer = new _grafikjs_vanilla__WEBPACK_IMPORTED_MODULE_0__.Renderer(canvas).appendTo(wrap);
+// @ts-ignore
+window.renderer = renderer;
 
 })();
 

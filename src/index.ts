@@ -1,7 +1,10 @@
 import {
+	Renderer,
 	Canvas,
 	Rect
-} from '@grafikjs/core';
+} from '@grafikjs/vanilla';
+
+const wrap = document.getElementById('wrap');
 
 const canvas = new Canvas({
 	width:1200,
@@ -17,3 +20,8 @@ const rect = new Rect({
 });
 
 canvas.add(rect);
+
+const renderer = new Renderer(canvas).appendTo(wrap);
+
+// @ts-ignore
+window.renderer = renderer;

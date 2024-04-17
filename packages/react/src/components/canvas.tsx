@@ -1,5 +1,6 @@
 import {
-	useMemo
+	useMemo,
+	useEffect
 } from 'react';
 import {
 	Canvas
@@ -13,10 +14,16 @@ import {
 } from './../hooks';
 
 const ReactCanvas = ({
-	children
+	children,
+	...props
 }) => {
 
 	const canvas = useCanvas();
+
+	useEffect(() => {
+		// @ts-ignore
+		canvas.set(props);
+	}, [props]);
 
 	return (
 		// @ts-ignore
@@ -28,22 +35,20 @@ const ReactCanvas = ({
 };
 
 const CanvasProvider = ({
-	children,
-	...props
+	children
 }) => {
 
-	const canvas = useMemo(() => new Canvas(props), []);
+	const canvas = useMemo(() => new Canvas(), []);
 
 	return (
 		<CanvasContext.Provider value={canvas}>
-			<ReactCanvas>
-				{children}
-			</ReactCanvas>
+			{children}
 		</CanvasContext.Provider>
 	);
 
 };
 
 export {
+	ReactCanvas as Canvas,
 	CanvasProvider
 };

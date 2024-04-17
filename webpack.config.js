@@ -4,7 +4,7 @@ module.exports = [{
 	mode:'development',
 	watch:true,
 	entry:{
-		'core':'./src/index.ts',
+		'vanilla':'./src/index.ts',
 		'react':'./src/react.ts'
 	},
 	output:{
@@ -14,9 +14,7 @@ module.exports = [{
 	devtool:false,
 	externals:{
 		'react':'React',
-		'react-dom':'ReactDOM',
-		'@grafik/core':'grafik',
-		'@grafik/react':'grafikReact'
+		'react-dom':'ReactDOM'
 	},
 	module:{
 		rules:[{

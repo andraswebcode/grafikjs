@@ -1407,13 +1407,14 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var Canvas = /** @class */ (function (_super) {
     __extends(Canvas, _super);
     function Canvas(params) {
+        if (params === void 0) { params = {}; }
         var _this = _super.call(this) || this;
         _this.tagName = 'svg';
         _this.xmlns = 'http://www.w3.org/2000/svg';
         _this.width = 0;
         _this.height = 0;
-        _this.set(params);
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_2__.Matrix();
+        _this.set(params);
         return _this;
     }
     Canvas.prototype.getAttrMap = function () {
@@ -2483,6 +2484,23 @@ var Point = /** @class */ (function () {
         this.y = y;
         return this;
     };
+    Point.prototype.fromObject = function (object) {
+        this.x = object.x;
+        this.y = object.y;
+        return this;
+    };
+    Point.prototype.toObject = function () {
+        return {
+            x: this.x,
+            y: this.y
+        };
+    };
+    Point.prototype.fromString = function (point) {
+        return this;
+    };
+    Point.prototype.toString = function () {
+        return "".concat(this.x, ", ").concat(this.y);
+    };
     Point.prototype.add = function (point) {
         this.x += point.x;
         this.y += point.y;
@@ -2908,6 +2926,10 @@ var Shape = /** @class */ (function (_super) {
         }
         return this;
     };
+    Shape.prototype.setOrigin = function (x, y) {
+        this.origin.set(x, y);
+        return this;
+    };
     Shape.prototype.getAttrMap = function () {
         return [
             'fill',
@@ -2917,8 +2939,8 @@ var Shape = /** @class */ (function (_super) {
     };
     Shape.prototype.getAttributes = function () {
         var defaultAttributes = _super.prototype.getAttributes.call(this);
-        var _a = this.bBox.getSize().multiply(this.origin).multiplyScalar(-1), x = _a.x, y = _a.y;
-        return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(x, ", ").concat(y, ")") });
+        var translate = this.bBox.getSize().multiply(this.origin).multiplyScalar(-1).toString();
+        return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
     };
     Shape.prototype.getWrapperAttributes = function () {
         return {
@@ -3186,6 +3208,7 @@ var SVGImporter = /** @class */ (function (_super) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Canvas: () => (/* binding */ ReactCanvas),
 /* harmony export */   CanvasProvider: () => (/* binding */ CanvasProvider)
 /* harmony export */ });
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
@@ -3222,16 +3245,20 @@ var __rest = (undefined && undefined.__rest) || function (s, e) {
 
 
 var ReactCanvas = function (_a) {
-    var children = _a.children;
+    var children = _a.children, props = __rest(_a, ["children"]);
     var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_4__.useCanvas)();
+    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
+        // @ts-ignore
+        canvas.set(props);
+    }, [props]);
     return (
     // @ts-ignore
     (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("svg", __assign({}, canvas.getAttributes(), { children: children })));
 };
 var CanvasProvider = function (_a) {
-    var children = _a.children, props = __rest(_a, ["children"]);
-    var canvas = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(function () { return new _grafikjs_core__WEBPACK_IMPORTED_MODULE_2__.Canvas(props); }, []);
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_contexts__WEBPACK_IMPORTED_MODULE_3__.CanvasContext.Provider, { value: canvas, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(ReactCanvas, { children: children }) }));
+    var children = _a.children;
+    var canvas = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(function () { return new _grafikjs_core__WEBPACK_IMPORTED_MODULE_2__.Canvas(); }, []);
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_contexts__WEBPACK_IMPORTED_MODULE_3__.CanvasContext.Provider, { value: canvas, children: children }));
 };
 
 
@@ -3355,6 +3382,7 @@ var useCanvas = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.useCo
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Canvas: () => (/* reexport safe */ _components_canvas__WEBPACK_IMPORTED_MODULE_0__.Canvas),
 /* harmony export */   CanvasProvider: () => (/* reexport safe */ _components_canvas__WEBPACK_IMPORTED_MODULE_0__.CanvasProvider),
 /* harmony export */   Rect: () => (/* reexport safe */ _components_shapes__WEBPACK_IMPORTED_MODULE_1__.Rect)
 /* harmony export */ });
@@ -3380,7 +3408,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _grafikjs_react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafikjs/react */ "./packages/react/src/index.ts");
 
 
-var TestApp = function () { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Rect, { left: 600, top: 400, angle: 45, width: 200, height: 200, stroke: 'black', strokeWidth: 2, fill: 'none' }) })); };
+var TestApp = function () { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.CanvasProvider, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Canvas, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Rect, { left: 600, top: 400, angle: 45, width: 200, height: 200, stroke: 'black', strokeWidth: 2, fill: 'none' }) }) })); };
 
 
 
