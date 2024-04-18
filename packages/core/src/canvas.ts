@@ -13,12 +13,13 @@ import {
 
 class Canvas extends Collection(Element) {
 
-	public readonly tagName = 'svg';
-	public readonly xmlns = 'http://www.w3.org/2000/svg';
-	public width = 0;
-	public height = 0;
-	public viewBox:ViewBoxArray;
-	public viewportMatrix = new Matrix();
+	public readonly isCanvas = true;
+	protected readonly tagName = 'svg';
+	protected readonly xmlns = 'http://www.w3.org/2000/svg';
+	protected width = 0;
+	protected height = 0;
+	protected viewBox:ViewBoxArray;
+	protected viewportMatrix = new Matrix();
 
 	public constructor(params = {}){
 		super();

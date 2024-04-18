@@ -1,8 +1,16 @@
 import {
-	Control
-} from './control';
+	Control,
+	ControlNode
+} from './';
 
-class TransformControl extends Control {}
+class TransformControl extends Control {
+
+	public setNodes(){
+		this.addNode();
+		return this;
+	}
+
+}
 
 export {
 	TransformControl

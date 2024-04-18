@@ -7,16 +7,25 @@ import {
 	Point
 } from './../maths';
 import {
+	TransformControl
+} from './../controls';
+import {
 	FillStroke,
 	TransformObject
 } from './../types';
+import {
+	uniqueId
+} from './../utils';
 
 class Shape extends Element {
 
-	protected parent: object;
+	protected canvas = null;
+	protected parent = null;
+	protected id = '';
 	protected matrix = new Matrix();
 	protected bBox = new BBox();
 	protected origin = new Point(0.5, 0.5);
+	protected transformControl = new TransformControl();
 	protected transformProps: string[] = [
 		'left',
 		'top',
@@ -41,13 +50,14 @@ class Shape extends Element {
 
 	public init(params){
 		this.set(params);
+		this.id = uniqueId();
 		this.updateMatrix();
 		this.updateBBox();
 	}
 
-	public set(key, value?){
+	public set(key, value?, silent = false){
 
-		super.set(key, value);
+		super.set(key, value, true);
 
 		if (!key){
 			return this;
@@ -60,6 +70,9 @@ class Shape extends Element {
 			if (props.includes(key)){
 				this.updateMatrix();
 			}
+			if (!silent){
+				this.trigger('set', {[key]:value});
+			}
 			return this;
 		}
 
@@ -70,6 +83,9 @@ class Shape extends Element {
 			prop = props[i];
 			if (prop in key){
 				this.updateMatrix();
+				if (!silent){
+					this.trigger('set', key);
+				}
 				break;
 			}
 		}
@@ -93,6 +109,10 @@ class Shape extends Element {
 
 	public getAttributes() : object {
 		const defaultAttributes = super.getAttributes();
+		// @ts-ignore
+		if (this.isCollection){
+			return defaultAttributes;
+		}
 		const translate = this.bBox.getSize().multiply(this.origin).multiplyScalar(-1).toString();
 		return {
 			...defaultAttributes,
@@ -102,6 +122,7 @@ class Shape extends Element {
 
 	public getWrapperAttributes() : object {
 		return {
+			id:this.id,
 			transform:this.matrix.toCSS()
 		};
 	}
@@ -114,6 +135,10 @@ class Shape extends Element {
 	protected updateBBox(){
 		console.warn('updateBBox() must be implemented by subclass.')
 		return this;
+	}
+
+	public getWorldMatrix() : Matrix {
+		return new Matrix();
 	}
 
 }
