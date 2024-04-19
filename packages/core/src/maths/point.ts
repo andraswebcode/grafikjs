@@ -3,13 +3,14 @@ import {
 } from './../types';
 import {
 	clamp,
-	deg2Rad
+	deg2Rad,
+	rad2Deg
 } from './../utils';
 
 class Point {
 
-	private x = 0;
-	private y = 0;
+	public x = 0;
+	public y = 0;
 
 	public constructor(x = 0, y = 0){
 		this.set(x, y);
@@ -126,6 +127,10 @@ class Point {
 
 		return this;
 
+	}
+
+	public angleTo(point: Point) : number {
+		return rad2Deg(Math.atan2(point.y - this.y, point.x - this.x));
 	}
 
 	public copy(point: Point) : Point {

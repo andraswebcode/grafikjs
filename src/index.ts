@@ -2,7 +2,10 @@ import {
 	Renderer,
 	Canvas,
 	Group,
-	Rect
+	Rect,
+	Point,
+	Matrix,
+	rad2Deg
 } from '@grafikjs/vanilla';
 
 const wrap = document.getElementById('wrap');
@@ -28,20 +31,43 @@ canvas.add(rect);
 const group = new Group({
 	left:400,
 	top:400,
-	strokeWidth:20
+	angle:45,
+	stroke:'black',
+	strokeWidth:20,
+	fill:'none'
 }).add(
-	new Rect({
-		left:-100,
-		top:-100,
-		width:200,
-		height:200
-	}),
-	new Rect({
-		left:100,
-		top:100,
-		width:200,
-		height:200
-	})
+	new Group({
+		left:200
+	}).add(
+		new Rect({
+			left:-100,
+			top:-100,
+			width:200,
+			height:200
+		}),
+		new Rect({
+			left:100,
+			top:100,
+			width:200,
+			height:200
+		})
+	),
+	new Group({
+		top:200
+	}).add(
+		new Rect({
+			left:100,
+			top:-100,
+			width:200,
+			height:200
+		}),
+		new Rect({
+			left:-100,
+			top:100,
+			width:200,
+			height:200
+		})
+	)
 );
 
 canvas.add(group);

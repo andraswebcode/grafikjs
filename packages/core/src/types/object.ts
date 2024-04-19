@@ -2,12 +2,12 @@ import type {
 	AnyColor
 } from './math';
 
-type ColorStop = {
+type ColorStopObject = {
 	color:AnyColor
 };
 
 interface GradientObject {
-	colorStops:ColorStop[]
+	colorStops:ColorStopObject[]
 };
 
 interface PatternObject {};
@@ -41,7 +41,7 @@ interface ShapeObject extends TransformObject {
 }
 
 export {
-	ColorStop,
+	ColorStopObject,
 	GradientObject,
 	PatternObject,
 	ClipPathObject,

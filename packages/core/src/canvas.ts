@@ -16,8 +16,10 @@ class Canvas extends Collection(Element) {
 	public readonly isCanvas = true;
 	protected readonly tagName = 'svg';
 	protected readonly xmlns = 'http://www.w3.org/2000/svg';
+
 	protected width = 0;
 	protected height = 0;
+
 	protected viewBox:ViewBoxArray;
 	protected viewportMatrix = new Matrix();
 

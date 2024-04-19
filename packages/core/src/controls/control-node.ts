@@ -1,16 +1,41 @@
 import {
-	Point
+	Element
+} from './../element';
+import {
+	Point,
+	Matrix
 } from './../maths';
 
-class ControlNode {
+class ControlNode extends Element {
 
-	private position = new Point();
+	public position = new Point();
+	protected readonly tagName = 'div';
+	private connectedWith: ControlNode;
 
-	public onPointerDown(){}
+	constructor(params?){
+		super();
+		this.set(params);
+	}
 
-	public onPointerMove(){}
+	connectTo(node: ControlNode){
+		this.connectedWith = node;
+		return node;
+	}
 
-	public onPointerUp(){}
+	getLineMatrix() : Matrix {
+
+		if (!this.connectedWith){
+			return new Matrix();
+		}
+
+		const p1 = this.position;
+		const p2 = this.connectedWith.position;
+		const m = new Matrix();
+		const a = - p1.angleTo(p2);
+
+		return m.rotate(a);
+
+	}
 
 }
 

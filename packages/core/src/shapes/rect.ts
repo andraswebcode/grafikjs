@@ -23,8 +23,8 @@ class Rect extends Shape {
 		]);
 	}
 
-	public set(key, value?){
-		super.set(key, value);
+	protected _set(key, value?){
+		super._set(key, value);
 		if (key === 'width' || key === 'height'){
 			this.updateBBox();
 		}

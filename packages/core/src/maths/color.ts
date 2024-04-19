@@ -6,10 +6,10 @@ import {
 
 class Color {
 
-	private r = 0;
-	private g = 0;
-	private b = 0;
-	private a = 1;
+	public r = 0;
+	public g = 0;
+	public b = 0;
+	public a = 1;
 
 	public constructor(r?: AnyColor|number, g?: number, b?: number, a?: number){
 		this.set(r, g, b, a);

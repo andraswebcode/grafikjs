@@ -5,8 +5,8 @@ export * from './canvas';
 // Shapes
 export * from './shapes';
 
-// Extras
-export * from './extras';
+// Definitions
+export * from './defs';
 
 // Controls
 export * from './controls';

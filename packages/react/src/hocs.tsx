@@ -16,9 +16,12 @@ const withCanvasContext = (Component, tagName) => (props:Partial<ShapeObject>) =
 	const shape = useMemo(() => {
 		const Shape = getClassFromTagName(tagName);
 		// @ts-ignore
-		const shape = new Shape(props);
+		const shape = new Shape();
 		return shape;
 	}, []);
+
+	// @ts-ignore
+	shape.set(props);
 
 	return (
 		<Component

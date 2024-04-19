@@ -12,7 +12,7 @@ class Renderer {
 	private xmlns: string;
 	private canvasElement: SVGElement;
 	private elements = {};
-	private renderControls = false;
+	private isInteractive = false;
 
 	public constructor(canvas: Canvas, options = {}){
 
@@ -27,7 +27,7 @@ class Renderer {
 		// @ts-ignore
 		this.canvasElement = document.createElementNS(this.xmlns, this.canvas.get('tagName'));
 		this.setAttributes(this.canvasElement, this.canvas.getAttributes());
-		this.canvas.eachShape(this.createShapeElement.bind(this));
+		this.canvas.eachChild(this.createShapeElement.bind(this));
 		return this;
 	}
 
@@ -52,7 +52,7 @@ class Renderer {
 		// @ts-ignore
 		if (object.isCollection){
 			// @ts-ignore
-			object.eachShape(this.createShapeElement.bind(this));
+			object.eachChild(this.createShapeElement.bind(this));
 		}
 
 		return this;

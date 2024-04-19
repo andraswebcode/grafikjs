@@ -1,12 +1,16 @@
 import {
-	ControlNode
-} from './';
+	Element
+} from './../element';
+import {
+	Collection
+} from './../mixins';
 
-class Control {
+class Control extends Collection(Element) {
 
-	protected nodes: ControlNode[] = [];
+	protected readonly tagName = 'div';
 
 	public constructor(){
+		super();
 		this.setNodes();
 	}
 
@@ -15,13 +19,12 @@ class Control {
 		return this;
 	}
 
-	public getNodes() : ControlNode[] {
-		return this.nodes;
+	public getNodes() : any[] {
+		return [];
 	}
 
-	public addNode(...nodes: ControlNode[]){
-		this.nodes.push(...nodes);
-		return this;
+	public getLines() : any[] {
+		return [];
 	}
 
 }

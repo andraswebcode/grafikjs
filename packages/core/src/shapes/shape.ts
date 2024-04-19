@@ -19,13 +19,14 @@ import {
 
 class Shape extends Element {
 
-	protected canvas = null;
-	protected parent = null;
-	protected id = '';
+	public readonly isShape = true;
+	protected canvas;
+	protected parent;
+	protected id;
 	protected matrix = new Matrix();
 	protected bBox = new BBox();
 	protected origin = new Point(0.5, 0.5);
-	protected transformControl = new TransformControl();
+	protected controls = {};
 	protected transformProps: string[] = [
 		'left',
 		'top',
@@ -44,13 +45,15 @@ class Shape extends Element {
 	protected skewX = 0;
 	protected skewY = 0;
 
-	protected fill: FillStroke = 'none';
-	protected stroke: FillStroke = 'black';
-	protected strokeWidth = 1;
+	protected fill: FillStroke;
+	protected stroke: FillStroke;
+	protected strokeWidth: number;
+	protected opacity: number;
 
 	public init(params){
 		this.set(params);
 		this.id = uniqueId();
+		this.addControl('transform', new TransformControl());
 		this.updateMatrix();
 		this.updateBBox();
 	}
@@ -121,10 +124,21 @@ class Shape extends Element {
 	}
 
 	public getWrapperAttributes() : object {
-		return {
+		const attrs: any = {
 			id:this.id,
 			transform:this.matrix.toCSS()
 		};
+		if (this.className){
+			attrs.class = this.className;
+		}
+		return attrs;
+	}
+
+	public addControl(name: string, control: any){
+		if (name){
+			this.controls[name] = control;
+		}
+		return this;
 	}
 
 	public updateMatrix(){
@@ -138,7 +152,11 @@ class Shape extends Element {
 	}
 
 	public getWorldMatrix() : Matrix {
-		return new Matrix();
+		const {
+			viewportMatrix,
+			isCanvas
+		} = this.parent;
+		return new Matrix().copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix()).multiply(this.matrix);
 	}
 
 }

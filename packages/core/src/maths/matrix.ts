@@ -9,12 +9,12 @@ import {
 
 class Matrix {
 
-	private a = 1;
-	private b = 0;
-	private c = 0;
-	private d = 1;
-	private tx = 0;
-	private ty = 0;
+	public a = 1;
+	public b = 0;
+	public c = 0;
+	public d = 1;
+	public tx = 0;
+	public ty = 0;
 
 	public fromArray(matrix: MatrixArray) : Matrix {
 
@@ -108,7 +108,7 @@ class Matrix {
 
 	public toCSS() : string {
 
-		const array = this.toArray().join(' ');
+		const array = this.toArray().join(', ');
 
 		return `matrix(${array})`;
 

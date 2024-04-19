@@ -20,10 +20,8 @@ const ReactCanvas = ({
 
 	const canvas = useCanvas();
 
-	useEffect(() => {
-		// @ts-ignore
-		canvas.set(props);
-	}, [props]);
+	// @ts-ignore
+	canvas.set(props);
 
 	return (
 		// @ts-ignore

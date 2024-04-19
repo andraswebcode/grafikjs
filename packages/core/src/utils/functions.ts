@@ -12,6 +12,8 @@ const clamp = (value: number, min: number, max: number) : number => {
 
 const deg2Rad = (degree: number) : number => (degree * PIBY180);
 
+const rad2Deg = (degree: number) : number => (degree / PIBY180);
+
 const uniqueId = () : string => {
 	// @ts-ignore
 	if (!uniqueId._index){
@@ -19,7 +21,7 @@ const uniqueId = () : string => {
 		uniqueId._index = 0;
 	}
 	// @ts-ignore
-	return 'shape' + uniqueId._index++;
+	return 'elem' + uniqueId._index++;
 };
 
 const getClassFromTagName = (tagName: string) => {
@@ -29,6 +31,7 @@ const getClassFromTagName = (tagName: string) => {
 export {
 	clamp,
 	deg2Rad,
+	rad2Deg,
 	uniqueId,
 	getClassFromTagName
 };

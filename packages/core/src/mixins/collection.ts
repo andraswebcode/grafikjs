@@ -7,37 +7,37 @@ function Collection<TBase extends Constructor>(Base: TBase){
 	return class Collection extends Base {
 
 		public readonly isCollection = true;
-		private shapes:any[] = [];
+		private children:any[] = [];
 
-		public add(...shapes: any[]) : Collection {
-			shapes.forEach(shape => {
-				this.shapes.push(shape);
-				shape.set({
+		public add(...children: any[]) : Collection {
+			children.forEach(child => {
+				this.children.push(child);
+				child.set({
 					parent:this,
 					// @ts-ignore
 					canvas:this.isCanvas ? this : this.canvas
 				});
 			});
 			// @ts-ignore
-			this.trigger('added', shapes);
+			this.trigger('added', children);
 			return this;
 		}
 
-		public remove(...shapes) : Collection {
+		public remove(...children) : Collection {
 			return this;
 		}
 
-		public eachShape(callback: (v: any, i: number, a: any[]) => void) : Collection {
-			this.shapes.forEach(callback);
+		public eachChild(callback: (v: any, i: number, a: any[]) => void) : Collection {
+			this.children.forEach(callback);
 			return this;
 		}
 
-		public shapeAt(index: number){
-			return this.shapes[index];
+		public childAt(index: number){
+			return this.children[index];
 		}
 
-		public shapeById(id: string){
-			return this.shapes.find(el => (el.id === id));
+		public childById(id: string){
+			return this.children.find(el => (el.id === id));
 		}
 
 	}

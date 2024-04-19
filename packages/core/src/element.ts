@@ -1,6 +1,7 @@
 class Element {
 
-	protected tagName: string;
+	protected readonly tagName: string;
+	protected className = '';
 	private _listeners = {};
 
 	protected getAttrMap() : string[] {
@@ -25,7 +26,7 @@ class Element {
 	}
 
 	protected _set(key: string, value: string|number){
-		if (this.hasOwnProperty(key)){
+		if (typeof this[key] !== 'function'){
 			this[key] = value;
 		}
 	}
@@ -47,11 +48,24 @@ class Element {
 		return attrMap.reduce((memo:object, key:string) : object => {
 			if (this.hasOwnProperty(key)){
 				value = this[key];
-				value = Array.isArray(value) ? value.join(' ') : value
+				value = Array.isArray(value) ? value.join(' ') : value;
 				memo[key] = value;
 			}
 			return memo;
 		}, {});
+	}
+
+	public addClass(...classNames: string[]){
+		const currentClasses = this.className.split(' ').filter(cn => cn);
+		const newClasses = classNames.filter(cn => (cn && !currentClasses.includes(cn)));
+		this.set('className', currentClasses.concat(newClasses).join(' '));
+		return this;
+	}
+
+	public removeClass(...classNames: string[]){
+		const currentClasses = this.className.split(' ');
+		this.set('className', currentClasses.filter(cn => !classNames.includes(cn)).join(' '));
+		return this;
 	}
 
 	public on(eventName, listener){
