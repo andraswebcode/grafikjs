@@ -1,3 +1,4 @@
+/*
 import {
 	Renderer,
 	Canvas,
@@ -5,6 +6,10 @@ import {
 	Rect,
 	Point,
 	Matrix,
+	// CurveChain,
+	// MoveCurve,
+	// CloseCurve,
+	// CubicBezierCurve,
 	rad2Deg
 } from '@grafikjs/vanilla';
 
@@ -76,3 +81,13 @@ const renderer = new Renderer(canvas).appendTo(wrap);
 
 // @ts-ignore
 window.renderer = renderer;
+/*
+const path = new CurveChain().add(
+	new MoveCurve(new Point(0, 0)),
+	new CubicBezierCurve(new Point(0, 0), new Point(100, 0), new Point(100, 100), new Point(0, 100)),
+	new CloseCurve()
+);
+
+// @ts-ignore
+window.path = path;
+*/

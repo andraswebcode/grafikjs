@@ -5,11 +5,10 @@ import {
 	Point
 } from './../maths';
 
-class Rect extends Shape {
+class Circle extends Shape {
 
-	protected readonly tagName = 'rect';
-	private width = 0;
-	private height = 0;
+	protected readonly tagName = 'circle';
+	private r = 0;
 
 	constructor(params?){
 		super();
@@ -18,14 +17,13 @@ class Rect extends Shape {
 
 	protected getAttrMap() : string[] {
 		return super.getAttrMap().concat([
-			'width',
-			'height'
+			'r'
 		]);
 	}
 
-	protected updateOthersWithKeys(keys){
+	protected updateOthersWithKeys(keys: string[]){
 
-		if (keys.includes('width') || keys.includes('height')){
+		if (keys.includes('r')){
 			this.updateBBox();
 		}
 
@@ -34,12 +32,12 @@ class Rect extends Shape {
 	}
 
 	public updateBBox(){
-		this.bBox.fromSizeAndOrigin(new Point(this.width, this.height), this.origin);
+		this.bBox.fromSizeAndOrigin(new Point().addScalar(this.r * 2), this.origin);
 		return this;
 	}
 
 }
 
 export {
-	Rect
+	Circle
 };

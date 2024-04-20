@@ -2,27 +2,36 @@ import {
 	Element
 } from './../element';
 import {
+	Collection
+} from './../mixins';
+import {
 	Point,
 	Matrix
 } from './../maths';
 
-class ControlNode extends Element {
+class ControlNode extends Collection(Element) {
+
+	protected readonly tagName = 'div';
+	protected className = 'grafik-control-node';
+	protected name = '';
 
 	public position = new Point();
-	protected readonly tagName = 'div';
 	private connectedWith: ControlNode;
 
-	constructor(params?){
+	public constructor(params?){
 		super();
 		this.set(params);
+		if (this.name){
+			this.addClass('grafik-control-node__' + this.name);
+		}
 	}
 
-	connectTo(node: ControlNode){
+	public connectTo(node: ControlNode){
 		this.connectedWith = node;
 		return node;
 	}
 
-	getLineMatrix() : Matrix {
+	public getLineMatrix() : Matrix {
 
 		if (!this.connectedWith){
 			return new Matrix();

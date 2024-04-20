@@ -9,7 +9,9 @@
   "author": "Andras Tovishati",
   "license": "MIT",
   "description": "",
-  "dependencies":{},
+  "dependencies":{
+    "@grafikjs/core":"*"
+  },
   "devDependencies":{
     "webpack":"*",
     "webpack-cli":"*",

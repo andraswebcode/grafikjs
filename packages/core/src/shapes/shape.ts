@@ -26,7 +26,10 @@ class Shape extends Element {
 	protected matrix = new Matrix();
 	protected bBox = new BBox();
 	protected origin = new Point(0.5, 0.5);
+
 	protected controls = {};
+	protected _activeControl: string;
+
 	protected transformProps: string[] = [
 		'left',
 		'top',
@@ -53,7 +56,7 @@ class Shape extends Element {
 	public init(params){
 		this.set(params);
 		this.id = uniqueId();
-		this.addControl('transform', new TransformControl());
+		this.addControl('transform', new TransformControl()).setControl('transform');
 		this.updateMatrix();
 		this.updateBBox();
 	}
@@ -73,6 +76,7 @@ class Shape extends Element {
 			if (props.includes(key)){
 				this.updateMatrix();
 			}
+			this.updateOthersWithKeys([key]);
 			if (!silent){
 				this.trigger('set', {[key]:value});
 			}
@@ -86,6 +90,7 @@ class Shape extends Element {
 			prop = props[i];
 			if (prop in key){
 				this.updateMatrix();
+				this.updateOthersWithKeys(Object.keys(key));
 				if (!silent){
 					this.trigger('set', key);
 				}
@@ -110,6 +115,11 @@ class Shape extends Element {
 		];
 	}
 
+	protected updateOthersWithKeys(keys: string[]){
+		console.warn('updateOthersWithKeys() must be implemented by subclass.')
+		return this;
+	}
+
 	public getAttributes() : object {
 		const defaultAttributes = super.getAttributes();
 		// @ts-ignore
@@ -129,15 +139,27 @@ class Shape extends Element {
 			transform:this.matrix.toCSS()
 		};
 		if (this.className){
-			attrs.class = this.className;
+			attrs.className = this.className;
 		}
 		return attrs;
 	}
 
 	public addControl(name: string, control: any){
 		if (name){
+			control.set({
+				shape:this
+			});
 			this.controls[name] = control;
 		}
+		return this;
+	}
+
+	public getControl(){
+		return this.controls[this._activeControl];
+	}
+
+	public setControl(name: string){
+		this._activeControl = name;
 		return this;
 	}
 

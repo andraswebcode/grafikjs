@@ -5,42 +5,40 @@ import {
 
 class TransformControl extends Control {
 
+	public constructor(params?){
+		super(params);
+		this.addClass('grafik-transform-control');
+	}
+
 	public setNodes(){
 
 		// Create control nodes.
 		const tl = new ControlNode({
-			className:'transform-control__tl'
+			name:'tl'
 		});
 		const tc = new ControlNode({
-			className:'transform-control__tc'
+			name:'tc'
 		});
 		const tr = new ControlNode({
-			className:'transform-control__tr'
+			name:'tr'
 		});
 
 		const ml = new ControlNode({
-			className:'transform-control__ml'
+			name:'ml'
 		});
 		const mr = new ControlNode({
-			className:'transform-control__mr'
+			name:'mr'
 		});
 
 		const bl = new ControlNode({
-			className:'transform-control__bl'
+			name:'bl'
 		});
 		const bc = new ControlNode({
-			className:'transform-control__bc'
+			name:'bc'
 		});
 		const br = new ControlNode({
-			className:'transform-control__br'
+			name:'br'
 		});
-
-		// Make bounding box rectangle.
-		tl
-		.connectTo(tr)
-		.connectTo(br)
-		.connectTo(bl)
-		.connectTo(tl);
 
 		this.add(tl, tc, tr, ml, mr, bl, bc, br);
 

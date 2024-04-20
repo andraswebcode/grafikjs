@@ -13,6 +13,7 @@ export * from './controls';
 
 // Maths
 export * from './maths';
+export * from './maths/curves';
 
 // Utils
 export * from './utils';

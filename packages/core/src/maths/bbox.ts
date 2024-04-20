@@ -1,11 +1,12 @@
 import {
-	Point
-} from './point';
+	Point,
+	Matrix
+} from './';
 
 class BBox {
 
-	private min: Point;
-	private max: Point;
+	public min: Point;
+	public max: Point;
 
 	public constructor(min: Point = new Point(), max: Point = new Point()){
 		this.min = min;
@@ -25,6 +26,21 @@ class BBox {
 
 	public getSize() : Point {
 		return new Point().subtractPoints(this.max, this.min);
+	}
+
+	public contains(point: Point) : boolean {
+		return (
+			point.x >= this.min.x && point.x <= this.max.x &&
+			point.y >= this.min.y && point.y <= this.max.y
+		);
+	}
+
+	public intersects(bBox: BBox) : boolean {
+		return false;
+	}
+
+	public transform(matrix: Matrix) : BBox {
+		return this;
 	}
 
 	public copy(bBox: BBox) : BBox {

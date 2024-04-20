@@ -4,8 +4,12 @@ import {
 	TransformObject
 } from './../types';
 import {
-	deg2Rad
+	deg2Rad,
+	rad2Deg
 } from './../utils';
+import {
+	Point
+} from './';
 
 class Matrix {
 
@@ -94,13 +98,20 @@ class Matrix {
 
 	public toOptions() : TransformObject {
 
+		const {a, b, c, d, tx, ty} = this;
+		const angle = rad2Deg(Math.atan2(b, a));
+		const denom = a ** 2 + b ** 2;
+		const scaleX = Math.sqrt(denom);
+		const scaleY = (a * d - c * b) / scaleX;
+		const skewX = rad2Deg(Math.atan2(a * c + b * d, denom));
+
 		return {
-			left:0,
-			top:0,
-			angle:0,
-			scaleX:0,
-			scaleY:0,
-			skewX:0,
+			left:tx,
+			top:ty,
+			angle,
+			scaleX,
+			scaleY,
+			skewX,
 			skewY:0
 		};
 
@@ -214,6 +225,26 @@ class Matrix {
 		const ty = this.b * m.tx + this.d * m.ty + this.ty;
 
 		return this.fromObject({a, b, c, d, tx, ty});
+
+	}
+
+	public invert() : Matrix {
+
+		const {a, b, c, d, tx, ty} = this;
+		const determinant = a * d - b * c;
+
+		if (determinant === 0){
+			return this.fromArray([0, 0, 0, 0, 0, 0]);
+		}
+
+		return this.fromArray([
+			d / determinant,
+			-b / determinant,
+			-c / determinant,
+			a / determinant,
+			(c * ty - d * tx) / determinant,
+			(b * tx - a * ty) / determinant
+		]);
 
 	}
 

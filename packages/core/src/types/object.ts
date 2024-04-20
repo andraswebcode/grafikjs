@@ -37,7 +37,8 @@ interface ShapeObject extends TransformObject {
 	strokeWidth:number;
 	width?:number;
 	height?:number;
-	radius?:number;
+	r?:number;
+	d?:string;
 }
 
 export {

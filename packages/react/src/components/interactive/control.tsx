@@ -1,12 +1,23 @@
+import {
+	ControlNode
+} from './';
+
 const Control = ({
-	className,
-	children
-}) => {
+	control
+}: any) => {
+
+	const TagName = control.get('tagName');
 
 	return (
-		<div className={className}>
-			{children}
-		</div>
+		<TagName
+			{...control.getAttributes()}
+			style={control.getStyle()} >
+			{control.mapChildren(node => (
+				<ControlNode
+					key={node.id}
+					node={node} />
+			))}
+		</TagName>
 	);
 
 };

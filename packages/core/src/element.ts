@@ -5,7 +5,7 @@ class Element {
 	private _listeners = {};
 
 	protected getAttrMap() : string[] {
-		return [];
+		return ['className'];
 	}
 
 	public set(key, value?, silent = false){
@@ -53,6 +53,10 @@ class Element {
 			}
 			return memo;
 		}, {});
+	}
+
+	public getStyle() : object {
+		return {};
 	}
 
 	public addClass(...classNames: string[]){

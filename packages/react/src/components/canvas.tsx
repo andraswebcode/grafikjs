@@ -18,13 +18,11 @@ const ReactCanvas = ({
 	...props
 }) => {
 
-	const canvas = useCanvas();
+	const canvas: any = useCanvas();
 
-	// @ts-ignore
 	canvas.set(props);
 
 	return (
-		// @ts-ignore
 		<svg {...canvas.getAttributes()}>
 			{children}
 		</svg>
@@ -33,10 +31,11 @@ const ReactCanvas = ({
 };
 
 const CanvasProvider = ({
-	children
+	children,
+	...props
 }) => {
 
-	const canvas = useMemo(() => new Canvas(), []);
+	const canvas = useMemo(() => new Canvas(props), []);
 
 	return (
 		<CanvasContext.Provider value={canvas}>

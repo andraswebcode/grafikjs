@@ -6,11 +6,14 @@ import {
 	deg2Rad,
 	rad2Deg
 } from './../utils';
+import {
+	Matrix
+} from './';
 
 class Point {
 
-	public x = 0;
-	public y = 0;
+	public x: number;
+	public y: number;
 
 	public constructor(x = 0, y = 0){
 		this.set(x, y);
@@ -35,12 +38,16 @@ class Point {
 		};
 	}
 
-	public fromString(point: string) : Point {
+	public fromString(point: string, separator = ', ') : Point {
+		const array = point.split(separator).map(n => parseFloat(n));
+		this.x = array[0];
+		this.y = array[1];
 		return this;
 	}
 
-	public toString() : string {
-		return `${this.x}, ${this.y}`;
+	public toString(separator = ' ') : string {
+		const array = [this.x, this.y];
+		return array.join(separator);
 	}
 
 	public add(point: Point) : Point {
@@ -131,6 +138,18 @@ class Point {
 
 	public angleTo(point: Point) : number {
 		return rad2Deg(Math.atan2(point.y - this.y, point.x - this.x));
+	}
+
+	public transform(matrix: Matrix) : Point {
+
+		const {x, y} = this;
+		const {a, b, c, d, tx, ty} = matrix;
+
+		this.x = a * x + c * y + tx;
+		this.y = b * x + d * y + tx;
+
+		return this;
+
 	}
 
 	public copy(point: Point) : Point {

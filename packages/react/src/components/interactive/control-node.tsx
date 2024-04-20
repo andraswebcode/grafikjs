@@ -1,12 +1,12 @@
 const ControlNode = ({
-	className,
-	children
-}) => {
+	node
+}: any) => {
+
+	const TagName = node.get('tagName');
 
 	return (
-		<div className={className}>
-			{children}
-		</div>
+		<TagName {...node.getAttributes()}>
+		</TagName>
 	);
 
 };

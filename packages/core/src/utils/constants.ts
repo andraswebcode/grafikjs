@@ -4,7 +4,8 @@ const CLASSNAMES = {
 	'svg':'Canvas',
 	'g':'Group',
 	'rect':'Rect',
-	'circle':'Circle'
+	'circle':'Circle',
+	'path':'Path'
 };
 
 export {

@@ -4,16 +4,22 @@ import {
 
 const ShapeBase = ({
 	shape,
-	TagName
+	TagName,
+	...props
 }) => (
 	<g {...shape.getWrapperAttributes()} >
 		<TagName
-			{...shape.getAttributes()} />
+			{...shape.getAttributes()}
+			{...props} />
 	</g>
 );
 
 const Rect = withCanvasContext(ShapeBase, 'rect');
+const Circle = withCanvasContext(ShapeBase, 'circle');
+const Path = withCanvasContext(ShapeBase, 'path');
 
 export {
-	Rect
+	Rect,
+	Circle,
+	Path
 };

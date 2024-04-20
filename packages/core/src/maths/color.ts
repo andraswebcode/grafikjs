@@ -11,14 +11,6 @@ class Color {
 	public b = 0;
 	public a = 1;
 
-	public constructor(r?: AnyColor|number, g?: number, b?: number, a?: number){
-		this.set(r, g, b, a);
-	}
-
-	public set(r?: AnyColor|number, g?: number, b?: number, a?: number) : Color {
-		return this;
-	}
-
 	public fromHEX(color: string) : Color {
 
 		const match = color.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);

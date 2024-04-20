@@ -32,6 +32,10 @@ function Collection<TBase extends Constructor>(Base: TBase){
 			return this;
 		}
 
+		public mapChildren(callback) : any[] {
+			return this.children.map(callback);
+		}
+
 		public childAt(index: number){
 			return this.children[index];
 		}

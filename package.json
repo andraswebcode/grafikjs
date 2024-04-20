@@ -15,7 +15,8 @@
   "workspaces": [
     "packages/core",
     "packages/react",
-    "packages/vanilla"
+    "packages/vanilla",
+    "packages/styles"
   ],
   "dependencies": {
     "@grafikjs/core": "*",

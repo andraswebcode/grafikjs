@@ -1,0 +1,10 @@
+{
+  "name": "@grafikjs/styles",
+  "version": "0.0.1",
+  "main": "./src/index.js",
+  "scripts": {},
+  "author": "Andras Tovishati",
+  "license": "MIT",
+  "description": "",
+  "devDependencies":{}
+}

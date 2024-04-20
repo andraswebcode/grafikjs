@@ -1,5 +1,6 @@
 import {
-	useMemo
+	useMemo,
+	useEffect
 } from 'react';
 import {
 	ShapeObject,
@@ -12,21 +13,27 @@ import {
 
 const withCanvasContext = (Component, tagName) => (props:Partial<ShapeObject>) => {
 
-	const canvas = useCanvas();
+	const canvas: any = useCanvas();
 	const shape = useMemo(() => {
 		const Shape = getClassFromTagName(tagName);
-		// @ts-ignore
 		const shape = new Shape();
 		return shape;
 	}, []);
 
-	// @ts-ignore
+	useEffect(() => {
+		canvas.add(shape);
+		return () => {
+			canvas.remove(shape);
+		};
+	}, []);
+
 	shape.set(props);
 
 	return (
 		<Component
 			TagName={tagName}
-			shape={shape} />
+			shape={shape}
+			onMouseMove={e => console.log(e)} />
 	);
 
 };
