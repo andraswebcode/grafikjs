@@ -13,7 +13,7 @@ class Ellipse extends Shape {
 	private cx = 0;
 	private cy = 0;
 
-	constructor(params?){
+	public constructor(params?){
 		super();
 		this.init(params);
 	}

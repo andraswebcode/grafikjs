@@ -56,7 +56,9 @@ class Shape extends Element {
 	public init(params){
 		this.set(params);
 		this.id = uniqueId();
-		this.addControl('transform', new TransformControl()).setControl('transform');
+		this.addControl('transform', new TransformControl({
+			shape:this
+		})).setControl('transform');
 		this.updateMatrix();
 		this.updateBBox();
 	}
@@ -146,16 +148,13 @@ class Shape extends Element {
 
 	public addControl(name: string, control: any){
 		if (name){
-			control.set({
-				shape:this
-			});
 			this.controls[name] = control;
 		}
 		return this;
 	}
 
-	public getControl(){
-		return this.controls[this._activeControl];
+	public getControl(name?: string){
+		return this.controls[name || this._activeControl];
 	}
 
 	public setControl(name: string){

@@ -8,12 +8,16 @@ import {
 	Point,
 	Matrix
 } from './../maths';
+import {
+	uniqueId
+} from './../utils';
 
 class ControlNode extends Collection(Element) {
 
 	protected readonly tagName = 'div';
 	protected className = 'grafik-control-node';
 	protected name = '';
+	protected id = '';
 
 	public position = new Point();
 	private connectedWith: ControlNode;
@@ -21,6 +25,7 @@ class ControlNode extends Collection(Element) {
 	public constructor(params?){
 		super();
 		this.set(params);
+		this.id = uniqueId();
 		if (this.name){
 			this.addClass('grafik-control-node__' + this.name);
 		}
@@ -44,6 +49,10 @@ class ControlNode extends Collection(Element) {
 
 		return m.rotate(a);
 
+	}
+
+	public getStyle(){
+		return {};
 	}
 
 }

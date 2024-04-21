@@ -1489,6 +1489,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1507,6 +1508,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var ControlNode = /** @class */ (function (_super) {
     __extends(ControlNode, _super);
     function ControlNode(params) {
@@ -1514,8 +1516,10 @@ var ControlNode = /** @class */ (function (_super) {
         _this.tagName = 'div';
         _this.className = 'grafik-control-node';
         _this.name = '';
+        _this.id = '';
         _this.position = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point();
         _this.set(params);
+        _this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.uniqueId)();
         if (_this.name) {
             _this.addClass('grafik-control-node__' + _this.name);
         }
@@ -1534,6 +1538,9 @@ var ControlNode = /** @class */ (function (_super) {
         var m = new _maths__WEBPACK_IMPORTED_MODULE_2__.Matrix();
         var a = -p1.angleTo(p2);
         return m.rotate(a);
+    };
+    ControlNode.prototype.getStyle = function () {
+        return {};
     };
     return ControlNode;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
@@ -1683,7 +1690,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   PathControl: () => (/* binding */ PathControl)
 /* harmony export */ });
-/* harmony import */ var _control__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./control */ "./packages/core/src/controls/control.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ */ "./packages/core/src/controls/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1702,11 +1709,22 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var PathControl = /** @class */ (function (_super) {
     __extends(PathControl, _super);
-    function PathControl() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function PathControl(params) {
+        var _this = _super.call(this, params) || this;
+        _this.addClass('grafik-path-control');
+        console.log(_this);
+        return _this;
     }
+    PathControl.prototype.setNodes = function () {
+        var nodes = this.path.mapCurves(function (curve) {
+            return new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode();
+        });
+        console.log(nodes, this.path);
+        this.setChildren.apply(this, nodes);
+        return this;
+    };
     return PathControl;
-}(_control__WEBPACK_IMPORTED_MODULE_0__.Control));
+}(___WEBPACK_IMPORTED_MODULE_0__.Control));
 
 
 
@@ -2231,7 +2249,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   GradientControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_4__.GradientControl),
 /* harmony export */   Group: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Group),
 /* harmony export */   Importer: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.Importer),
-/* harmony export */   Interpolations: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.Interpolations),
 /* harmony export */   LineCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_6__.LineCurve),
 /* harmony export */   LinearGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.LinearGradient),
 /* harmony export */   LottieImporter: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.LottieImporter),
@@ -2756,7 +2773,11 @@ var CubicBezierCurve = /** @class */ (function (_super) {
         return _this;
     }
     CubicBezierCurve.prototype.getPoint = function (t) {
-        return new ___WEBPACK_IMPORTED_MODULE_0__.Point(___WEBPACK_IMPORTED_MODULE_0__.Interpolations.cubicBezier(t, this.p0.x, this.p1.x, this.p2.x, this.p3.x), ___WEBPACK_IMPORTED_MODULE_0__.Interpolations.cubicBezier(t, this.p0.y, this.p1.y, this.p2.y, this.p3.y));
+        return new ___WEBPACK_IMPORTED_MODULE_0__.Point(CubicBezierCurve.interpolation(t, this.p0.x, this.p1.x, this.p2.x, this.p3.x), CubicBezierCurve.interpolation(t, this.p0.y, this.p1.y, this.p2.y, this.p3.y));
+    };
+    CubicBezierCurve.interpolation = function (t, p0, p1, p2, p3) {
+        var tn = 1 - t;
+        return tn * tn * tn * p0 + 3 * tn * tn * t * p1 + 3.0 * tn * t * t * p2 + t * t * t * p3;
     };
     return CubicBezierCurve;
 }(___WEBPACK_IMPORTED_MODULE_0__.Curve));
@@ -2935,7 +2956,11 @@ var QuadraticBezierCurve = /** @class */ (function (_super) {
         return _this;
     }
     QuadraticBezierCurve.prototype.getPoint = function (t) {
-        return new ___WEBPACK_IMPORTED_MODULE_0__.Point(___WEBPACK_IMPORTED_MODULE_0__.Interpolations.quadraticBezier(t, this.p0.x, this.p1.x, this.p2.x), ___WEBPACK_IMPORTED_MODULE_0__.Interpolations.quadraticBezier(t, this.p0.y, this.p1.y, this.p2.y));
+        return new ___WEBPACK_IMPORTED_MODULE_0__.Point(QuadraticBezierCurve.interpolation(t, this.p0.x, this.p1.x, this.p2.x), QuadraticBezierCurve.interpolation(t, this.p0.y, this.p1.y, this.p2.y));
+    };
+    QuadraticBezierCurve.interpolation = function (t, p0, p1, p2) {
+        var tn = 1 - t;
+        return tn * tn * p0 + 2 * tn * t * p1 + t * t * p2;
     };
     return QuadraticBezierCurve;
 }(___WEBPACK_IMPORTED_MODULE_0__.Curve));
@@ -2956,7 +2981,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Color: () => (/* reexport safe */ _color__WEBPACK_IMPORTED_MODULE_1__.Color),
 /* harmony export */   Curve: () => (/* reexport safe */ _curve__WEBPACK_IMPORTED_MODULE_2__.Curve),
 /* harmony export */   CurvePath: () => (/* reexport safe */ _curve_path__WEBPACK_IMPORTED_MODULE_3__.CurvePath),
-/* harmony export */   Interpolations: () => (/* reexport safe */ _interpolations__WEBPACK_IMPORTED_MODULE_6__.Interpolations),
 /* harmony export */   Matrix: () => (/* reexport safe */ _matrix__WEBPACK_IMPORTED_MODULE_4__.Matrix),
 /* harmony export */   Point: () => (/* reexport safe */ _point__WEBPACK_IMPORTED_MODULE_5__.Point)
 /* harmony export */ });
@@ -2966,41 +2990,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _curve_path__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./curve-path */ "./packages/core/src/maths/curve-path.ts");
 /* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./matrix */ "./packages/core/src/maths/matrix.ts");
 /* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./point */ "./packages/core/src/maths/point.ts");
-/* harmony import */ var _interpolations__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./interpolations */ "./packages/core/src/maths/interpolations.ts");
 
 
 
 
 
-
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/maths/interpolations.ts":
-/*!***************************************************!*\
-  !*** ./packages/core/src/maths/interpolations.ts ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Interpolations: () => (/* binding */ Interpolations)
-/* harmony export */ });
-var Interpolations = /** @class */ (function () {
-    function Interpolations() {
-    }
-    Interpolations.quadraticBezier = function (t, p0, p1, p2) {
-        var tn = 1 - t;
-        return tn * tn * p0 + 2 * tn * t * p1 + t * t * p2;
-    };
-    Interpolations.cubicBezier = function (t, p0, p1, p2, p3) {
-        var tn = 1 - t;
-        return tn * tn * tn * p0 + 3 * tn * tn * t * p1 + 3.0 * tn * t * t * p2 + t * t * t * p3;
-    };
-    return Interpolations;
-}());
 
 
 
@@ -3387,6 +3381,14 @@ function Collection(Base) {
             _this.children = [];
             return _this;
         }
+        Collection.prototype.setChildren = function () {
+            var children = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                children[_i] = arguments[_i];
+            }
+            this.children = children;
+            return this;
+        };
         Collection.prototype.add = function () {
             var _this = this;
             var children = [];
@@ -3691,6 +3693,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./packages/core/src/shapes/shape.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _controls__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../controls */ "./packages/core/src/controls/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -3708,6 +3711,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
+
 var Path = /** @class */ (function (_super) {
     __extends(Path, _super);
     function Path(params) {
@@ -3715,6 +3719,10 @@ var Path = /** @class */ (function (_super) {
         _this.tagName = 'path';
         _this.path = new _maths__WEBPACK_IMPORTED_MODULE_1__.CurvePath();
         _this.init(params);
+        _this.addControl('path', new _controls__WEBPACK_IMPORTED_MODULE_2__.PathControl({
+            shape: _this,
+            path: _this.path
+        })).setControl('path');
         return _this;
     }
     Path.prototype.getAttrMap = function () {
@@ -3725,7 +3733,12 @@ var Path = /** @class */ (function (_super) {
     Path.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('d')) {
             this.path.fromString(this.d);
+            this.getControl('path').setNodes();
         }
+        return this;
+    };
+    Path.prototype.updateBBox = function () {
+        this.bBox.fromPoints([]);
         return this;
     };
     return Path;
@@ -3968,7 +3981,9 @@ var Shape = /** @class */ (function (_super) {
     Shape.prototype.init = function (params) {
         this.set(params);
         this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.uniqueId)();
-        this.addControl('transform', new _controls__WEBPACK_IMPORTED_MODULE_2__.TransformControl()).setControl('transform');
+        this.addControl('transform', new _controls__WEBPACK_IMPORTED_MODULE_2__.TransformControl({
+            shape: this
+        })).setControl('transform');
         this.updateMatrix();
         this.updateBBox();
     };
@@ -4042,15 +4057,12 @@ var Shape = /** @class */ (function (_super) {
     };
     Shape.prototype.addControl = function (name, control) {
         if (name) {
-            control.set({
-                shape: this
-            });
             this.controls[name] = control;
         }
         return this;
     };
-    Shape.prototype.getControl = function () {
-        return this.controls[this._activeControl];
+    Shape.prototype.getControl = function (name) {
+        return this.controls[name || this._activeControl];
     };
     Shape.prototype.setControl = function (name) {
         this._activeControl = name;

@@ -11,7 +11,7 @@ class Rect extends Shape {
 	private width = 0;
 	private height = 0;
 
-	constructor(params?){
+	public constructor(params?){
 		super();
 		this.init(params);
 	}

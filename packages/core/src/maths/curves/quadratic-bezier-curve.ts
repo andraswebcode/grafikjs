@@ -1,7 +1,6 @@
 import {
 	Curve,
-	Point,
-	Interpolations
+	Point
 } from './../';
 
 class QuadraticBezierCurve extends Curve {
@@ -21,9 +20,14 @@ class QuadraticBezierCurve extends Curve {
 
 	public getPoint(t: number) : Point {
 		return new Point(
-			Interpolations.quadraticBezier(t, this.p0.x, this.p1.x, this.p2.x),
-			Interpolations.quadraticBezier(t, this.p0.y, this.p1.y, this.p2.y)
+			QuadraticBezierCurve.interpolation(t, this.p0.x, this.p1.x, this.p2.x),
+			QuadraticBezierCurve.interpolation(t, this.p0.y, this.p1.y, this.p2.y)
 		);
+	}
+
+	static interpolation(t: number, p0: number, p1: number, p2: number) : number {
+		const tn = 1 - t;
+		return tn * tn * p0 + 2 * tn * t * p1 + t * t * p2;
 	}
 
 }

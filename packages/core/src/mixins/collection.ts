@@ -16,6 +16,11 @@ function Collection<TBase extends Constructor>(Base: TBase){
 		public readonly isCollection = true;
 		private children:any[] = [];
 
+		public setChildren(...children: any[]) : Collection {
+			this.children = children;
+			return this;
+		}
+
 		public add(...children: any[]) : Collection {
 			children.forEach(child => {
 				this.children.push(child);

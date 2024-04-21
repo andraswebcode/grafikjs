@@ -9,7 +9,7 @@ class Group extends Collection(Shape) {
 
 	protected readonly tagName = 'g';
 
-	constructor(params?){
+	public constructor(params?){
 		super();
 		this.init(params);
 	}
