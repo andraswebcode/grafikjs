@@ -17,12 +17,24 @@ const CURVES = {
 	'Z':CloseCurve
 };
 
-class CurveChain {
+class CurvePath {
 
 	private curves: object[] = [];
 	private currentPoint = new Point();
 
-	public add(...curves: object[]) : CurveChain {
+	public constructor(...curves: object[]){
+		this.set(curves);
+	}
+
+	public get length(){
+		return this.curves.length;
+	}
+
+	public at(index: number){
+		return this.curves[index];
+	}
+
+	public add(...curves: object[]){
 
 		this.curves.push(...curves);
 
@@ -30,7 +42,7 @@ class CurveChain {
 
 	}
 
-	public set(curves: object[]) : CurveChain {
+	public set(curves: object[]){
 
 		this.curves = curves;
 
@@ -38,7 +50,7 @@ class CurveChain {
 
 	}
 
-	public moveTo(x: number, y: number) : CurveChain {
+	public moveTo(x: number, y: number) : CurvePath {
 
 		const curve = new MoveCurve(new Point(x, y));
 
@@ -48,7 +60,7 @@ class CurveChain {
 
 	}
 
-	public lineTo(x: number, y: number) : CurveChain {
+	public lineTo(x: number, y: number) : CurvePath {
 
 		const curve = new LineCurve(this.currentPoint.clone(), new Point(x, y));
 
@@ -58,7 +70,7 @@ class CurveChain {
 
 	}
 
-	public quadraticCurveTo(cx: number, cy: number, x: number, y: number) : CurveChain {
+	public quadraticCurveTo(cx: number, cy: number, x: number, y: number) : CurvePath {
 
 		const curve = new QuadraticBezierCurve(
 			this.currentPoint.clone(),
@@ -72,7 +84,7 @@ class CurveChain {
 
 	}
 
-	public cubicCurveTo(c1x: number, c1y: number, c2x: number, c2y: number, x: number, y: number) : CurveChain {
+	public cubicCurveTo(c1x: number, c1y: number, c2x: number, c2y: number, x: number, y: number) : CurvePath {
 
 		const curve = new CubicBezierCurve(
 			this.currentPoint.clone(),
@@ -87,7 +99,7 @@ class CurveChain {
 
 	}
 
-	public closePath() : CurveChain {
+	public closePath() : CurvePath {
 
 		const curve = new CloseCurve();
 
@@ -95,7 +107,7 @@ class CurveChain {
 
 	}
 
-	public fromString(string: string) : CurveChain {
+	public fromString(string: string) : CurvePath {
 
 		const regex = /([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g;
 		const curves = (string.match(regex) || []).map((curve, i, array) => {
@@ -114,8 +126,38 @@ class CurveChain {
 		return this.curves.map(curve => curve.toString(' ')).join(' ');
 	}
 
+	public containsPoint(point: Point) : boolean {
+
+		const {x, y} = point;
+		const polygon = this.mapCurves(curve => curve.getPoints(1)).flat();
+		let contains = false, intersects, i, j, xi, yi, xj, yj;
+
+		for (i = 0, j = polygon.length - 1; i < polygon.length; j = i++){
+			xi = polygon[i].x;
+			yi = polygon[i].y;
+			xj = polygon[j].x;
+			yj = polygon[j].y;
+			intersects = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+			if (intersects){
+				contains = !contains;
+			}
+		}
+
+		return contains;
+
+	}
+
+	public eachCurve(callback: (v: any, i: number, a: any[]) => void) : CurvePath {
+		this.curves.forEach(callback);
+		return this;
+	}
+
+	public mapCurves(callback) : any[] {
+		return this.curves.map(callback);
+	}
+
 }
 
 export {
-	CurveChain
+	CurvePath
 };

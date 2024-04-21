@@ -2,20 +2,17 @@ import {
 	useMemo,
 	useEffect
 } from 'react';
-import {
-	ShapeObject,
-	getClassFromTagName
-} from '@grafikjs/core';
+import * as core from '@grafikjs/core';
 
 import {
 	useCanvas
 } from './hooks';
 
-const withCanvasContext = (Component, tagName) => (props:Partial<ShapeObject>) => {
+const withCanvasContext = (Component, tagName) => (props:Partial<core.ShapeObject>) => {
 
 	const canvas: any = useCanvas();
 	const shape = useMemo(() => {
-		const Shape = getClassFromTagName(tagName);
+		const Shape = core[core.CLASSNAMES[tagName]];
 		const shape = new Shape();
 		return shape;
 	}, []);

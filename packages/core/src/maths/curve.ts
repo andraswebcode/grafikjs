@@ -10,11 +10,21 @@ class Curve {
 	protected command = '';
 
 	public getPoint(t: number) : Point {
+		console.warn('getPoint() must be implemented by subclass.');
 		return new Point();
 	}
 
 	public getPoints(divisions = 10) : Point[] {
-		return [];
+
+		const points = [];
+
+		for (let d = 0; d <= divisions; d++){
+			// @ts-ignore
+			points.push(this.getPoint(d / divisions));
+		}
+
+		return points;
+
 	}
 
 	public fromString(string: string, prevString = '') : Curve {

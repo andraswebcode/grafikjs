@@ -2,7 +2,7 @@ import {
 	Shape
 } from './shape';
 import {
-	CurveChain
+	CurvePath
 } from './../maths';
 
 class Path extends Shape {
@@ -10,9 +10,9 @@ class Path extends Shape {
 	protected readonly tagName = 'path';
 	private d: string;
 
-	private path = new CurveChain();
+	private path = new CurvePath();
 
-	constructor(params?){
+	public constructor(params?){
 		super();
 		this.init(params);
 	}

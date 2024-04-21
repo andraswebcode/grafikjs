@@ -1,15 +1,15 @@
-/*
 import {
 	Renderer,
 	Canvas,
 	Group,
 	Rect,
+	Path,
 	Point,
 	Matrix,
-	// CurveChain,
-	// MoveCurve,
-	// CloseCurve,
-	// CubicBezierCurve,
+	CurvePath,
+	MoveCurve,
+	CloseCurve,
+	CubicBezierCurve,
 	rad2Deg
 } from '@grafikjs/vanilla';
 
@@ -25,13 +25,27 @@ const rect = new Rect({
 	top:400,
 	width:200,
 	height:200,
-	angle:45,
+	//angle:45,
 	stroke:'black',
 	strokeWidth:8,
 	fill:'none'
 });
 
 canvas.add(rect);
+
+const path = new Path({
+	d:'M0 100 C 40 0 160 0 200 100 C 160 200 40 200 0 100',
+	left:800,
+	top:200,
+	width:200,
+	height:200,
+	angle:45,
+	stroke:'black',
+	strokeWidth:8,
+	fill:'none'
+});
+
+canvas.add(path);
 
 const group = new Group({
 	left:400,
@@ -81,13 +95,12 @@ const renderer = new Renderer(canvas).appendTo(wrap);
 
 // @ts-ignore
 window.renderer = renderer;
-/*
-const path = new CurveChain().add(
+
+const cc = new CurvePath().add(
 	new MoveCurve(new Point(0, 0)),
 	new CubicBezierCurve(new Point(0, 0), new Point(100, 0), new Point(100, 100), new Point(0, 100)),
 	new CloseCurve()
 );
 
 // @ts-ignore
-window.path = path;
-*/
+window.path = cc;

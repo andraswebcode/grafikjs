@@ -38,7 +38,10 @@ interface ShapeObject extends TransformObject {
 	width?:number;
 	height?:number;
 	r?:number;
+	rx?:number;
+	ry?:number;
 	d?:string;
+	points?:string;
 }
 
 export {

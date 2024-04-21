@@ -16,10 +16,16 @@ const ShapeBase = ({
 
 const Rect = withCanvasContext(ShapeBase, 'rect');
 const Circle = withCanvasContext(ShapeBase, 'circle');
+const Ellipse = withCanvasContext(ShapeBase, 'ellipse');
 const Path = withCanvasContext(ShapeBase, 'path');
+const Polygon = withCanvasContext(ShapeBase, 'polygon');
+const Polyline = withCanvasContext(ShapeBase, 'polyline');
 
 export {
 	Rect,
 	Circle,
-	Path
+	Ellipse,
+	Path,
+	Polygon,
+	Polyline
 };

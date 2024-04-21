@@ -1,7 +1,5 @@
-import * as shapes from './../shapes';
 import {
-	PIBY180,
-	CLASSNAMES
+	PIBY180
 } from './constants';
 
 const clamp = (value: number, min: number, max: number) : number => Math.min(Math.max(value, min), max);
@@ -22,15 +20,10 @@ const uniqueId = () : string => {
 	return 'elem' + uniqueId._index++;
 };
 
-const getClassFromTagName = (tagName: string) => {
-	return shapes[CLASSNAMES[tagName]];
-};
-
 export {
 	clamp,
 	toFixed,
 	deg2Rad,
 	rad2Deg,
-	uniqueId,
-	getClassFromTagName
+	uniqueId
 };

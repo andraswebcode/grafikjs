@@ -2,6 +2,9 @@ import {
 	Curve,
 	Point
 } from './../';
+import {
+	clamp
+} from './../../utils';
 
 class LineCurve extends Curve {
 
@@ -14,6 +17,22 @@ class LineCurve extends Curve {
 		super();
 		this.p0 = p0;
 		this.p1 = p1;
+	}
+
+	public getPoint(t: number) : Point {
+
+		t = clamp(t, 0, 1);
+
+		const point = this.p1.clone();
+
+		if (t === 1){
+			return point;
+		} else {
+			point.subtract(this.p0).multiplyScalar(t).add(this.p0);
+		}
+
+		return point;
+
 	}
 
 }

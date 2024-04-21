@@ -5,7 +5,6 @@ import {
 	Collection
 } from './mixins';
 import {
-	Point,
 	Matrix
 } from './maths';
 import {
@@ -64,16 +63,17 @@ class Canvas extends Collection(Element) {
 	}
 
 	public releaseShapes(...shapes: any[]){
+		if (shapes?.[0]){
+			this._selectedShapes = this._selectedShapes.filter(shape => !shapes.includes(shape));
+		} else { // If args are empty, we remove all shapes from selection.
+			this._selectedShapes = [];
+		}
 		this.trigger('released', shapes);
 		return this;
 	}
 
 	public getSelectedShapes() : any[] {
 		return this._selectedShapes;
-	}
-
-	public findShapesByPointer(pointer: Point) : any[] {
-		return [];
 	}
 
 }

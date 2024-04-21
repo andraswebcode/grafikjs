@@ -7,6 +7,8 @@ import {
 	Canvas,
 	Rect,
 	Circle,
+	Ellipse,
+	Path,
 	Wrapper,
 	Interactive
 } from '@grafikjs/react';
@@ -42,12 +44,41 @@ const TestApp = () => {
 							stroke='black'
 							strokeWidth={sw}
 							fill='none' />
+						<Rect
+							left={800}
+							top={350}
+							angle={45}
+							width={400}
+							height={400}
+							stroke='black'
+							strokeWidth={2}
+							fill='none' />
 						<Circle
-							left={200}
-							top={200}
+							left={left}
+							top={top}
+							angle={angle}
 							r={40}
 							stroke='black'
 							strokeWidth={2}
+							fill='none' />
+						<Ellipse
+							left={left}
+							top={top}
+							angle={angle}
+							rx={40}
+							ry={80}
+							stroke='black'
+							strokeWidth={2}
+							fill='none' />
+						<Path
+							d='M0 100 C 40 0 160 0 200 100 C 160 200 40 200 0 100'
+							left={800}
+							top={200}
+							width={200}
+							height={200}
+							angle={angle}
+							stroke='black'
+							strokeWidth={8}
 							fill='none' />
 					</Canvas>
 					<Interactive />

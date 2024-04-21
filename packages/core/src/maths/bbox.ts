@@ -24,8 +24,52 @@ class BBox {
 
 	}
 
+	public fromPoints(points: Point[]) : BBox {
+
+		this.reset();
+
+		for (let i = 0; i < points.length; i++){
+			this.expandByPoint(points[i]);
+		}
+
+		return this;
+
+	}
+
+	public expandByPoint(point: Point) : BBox {
+		this.min.min(point);
+		this.max.max(point);
+		return this;
+	}
+
 	public getSize() : Point {
 		return new Point().subtractPoints(this.max, this.min);
+	}
+
+	public getOrigin() : Point {
+		return new Point();
+	}
+
+	public getLineEdges(matrix?: Matrix) : Point[] {
+
+		const minX = this.min.x;
+		const minY = this.min.y;
+		const maxX = this.max.x;
+		const maxY = this.max.y;
+		let tl = new Point(minX, maxY);
+		let tr = new Point(maxX, maxY);
+		let bl = new Point(minX, minY);
+		let br = new Point(maxX, minY);
+
+		if (matrix){
+			tl = tl.transform(matrix);
+			tr = tr.transform(matrix);
+			bl = bl.transform(matrix);
+			br = br.transform(matrix);
+		}
+
+		return [tl, tr, br, bl];
+
 	}
 
 	public contains(point: Point) : boolean {
@@ -40,6 +84,12 @@ class BBox {
 	}
 
 	public transform(matrix: Matrix) : BBox {
+		return this;
+	}
+
+	public reset() : BBox {
+		this.min = new Point();
+		this.max = new Point();
 		return this;
 	}
 

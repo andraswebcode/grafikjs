@@ -1,6 +1,13 @@
 import {
 	Constructor
 } from './../types/mixin';
+import {
+	Point,
+	CurvePath
+} from './../maths';
+import {
+	LineCurve
+} from './../maths/curves';
 
 function Collection<TBase extends Constructor>(Base: TBase){
 
@@ -42,6 +49,30 @@ function Collection<TBase extends Constructor>(Base: TBase){
 
 		public childById(id: string){
 			return this.children.find(el => (el.id === id));
+		}
+
+		public findChildrenByPointer(pointer: Point) : any[] {
+
+			return this.mapChildren(child => {
+				const bBox = child.get('bBox');
+				if (!bBox){
+					return false;
+				}
+				const [tl, tr, br, bl] = bBox.getLineEdges(child.getWorldMatrix());
+				const polygon = new CurvePath(
+					new LineCurve(tl, tr),
+					new LineCurve(tr, br),
+					new LineCurve(br, bl),
+					new LineCurve(bl, tl)
+				);
+				return (polygon.containsPoint(pointer) && child);
+			}).filter(child => !!child);
+
+		}
+
+		public findLastChildByPointer(pointer: Point){
+			const children = this.findChildrenByPointer(pointer);
+			return children[children.length - 1];
 		}
 
 	}

@@ -5,10 +5,11 @@ import {
 	Point
 } from './../maths';
 
-class Circle extends Shape {
+class Ellipse extends Shape {
 
-	protected readonly tagName = 'circle';
-	private r = 0;
+	protected readonly tagName = 'ellipse';
+	private rx = 0;
+	private ry = 0;
 	private cx = 0;
 	private cy = 0;
 
@@ -19,7 +20,8 @@ class Circle extends Shape {
 
 	protected getAttrMap() : string[] {
 		return super.getAttrMap().concat([
-			'r',
+			'rx',
+			'ry',
 			'cx',
 			'cy'
 		]);
@@ -27,10 +29,10 @@ class Circle extends Shape {
 
 	protected updateOthersWithKeys(keys: string[]){
 
-		if (keys.includes('r')){
+		if (keys.includes('rx') || keys.includes('ry')){
 			this.updateBBox();
-			this.cx = this.r;
-			this.cy = this.r;
+			this.cx = this.rx;
+			this.cy = this.ry;
 		}
 
 		return this;
@@ -38,12 +40,12 @@ class Circle extends Shape {
 	}
 
 	public updateBBox(){
-		this.bBox.fromSizeAndOrigin(new Point().addScalar(this.r * 2), this.origin);
+		this.bBox.fromSizeAndOrigin(new Point(this.rx, this.ry).multiplyScalar(2), this.origin);
 		return this;
 	}
 
 }
 
 export {
-	Circle
+	Ellipse
 };

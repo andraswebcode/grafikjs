@@ -5,7 +5,10 @@ const CLASSNAMES = {
 	'g':'Group',
 	'rect':'Rect',
 	'circle':'Circle',
-	'path':'Path'
+	'ellipse':'Ellipse',
+	'path':'Path',
+	'polygon':'Polygon',
+	'polyline':'Polyline'
 };
 
 export {

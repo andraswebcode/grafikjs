@@ -146,10 +146,28 @@ class Point {
 		const {a, b, c, d, tx, ty} = matrix;
 
 		this.x = a * x + c * y + tx;
-		this.y = b * x + d * y + tx;
+		this.y = b * x + d * y + ty;
 
 		return this;
 
+	}
+
+	public min(point: Point) : Point {
+		this.x = Math.min(this.x, point.x);
+		this.y = Math.min(this.y, point.y);
+		return this;
+	}
+
+	public max(point: Point) : Point {
+		this.x = Math.max(this.x, point.x);
+		this.y = Math.max(this.y, point.y);
+		return this;
+	}
+
+	public clamp(min: Point, max: Point) : Point {
+		this.x = clamp(this.x, min.x, max.x);
+		this.y = clamp(this.y, min.y, max.y);
+		return this;
 	}
 
 	public copy(point: Point) : Point {
