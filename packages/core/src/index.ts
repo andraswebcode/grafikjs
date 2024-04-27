@@ -8,8 +8,8 @@ export * from './shapes';
 // Definitions
 export * from './defs';
 
-// Controls
-export * from './controls';
+// Interactive
+export * from './interactive';
 
 // Maths
 export * from './maths';

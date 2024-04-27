@@ -8,7 +8,7 @@ import {
 } from './../maths';
 import {
 	TransformControl
-} from './../controls';
+} from './../interactive';
 import {
 	FillStroke,
 	TransformObject

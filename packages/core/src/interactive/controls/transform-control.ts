@@ -1,10 +1,12 @@
 import {
 	Control,
-	ControlNode
-} from './';
+	ControlNode,
+	AngleControlNode,
+	OriginControlNode
+} from './../';
 import {
 	Point
-} from './../maths';
+} from './../../maths';
 
 class TransformControl extends Control {
 
@@ -64,7 +66,7 @@ class TransformControl extends Control {
 			y:1
 		});
 
-		const a = new ControlNode({
+		const a = new AngleControlNode({
 			name:'a',
 			getPosition(){
 				const {x} = control.getSize();
@@ -73,7 +75,7 @@ class TransformControl extends Control {
 			}
 		});
 
-		const o = new ControlNode({
+		const o = new OriginControlNode({
 			name:'o',
 			getPosition(){
 				const size = control.getSize();

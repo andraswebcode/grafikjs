@@ -1,7 +1,7 @@
 import {
 	Control,
 	ControlNode
-} from './';
+} from './../';
 
 class GradientControl extends Control {}
 

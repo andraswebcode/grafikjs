@@ -19,6 +19,7 @@ const ShapeBase = ({
 	const onShapeSet = useCallback(() => {
 		setWrapperAttributes(shape.getWrapperAttributes());
 		setAttributes(shape.getAttributes());
+		props.onChange?.(shape);
 	}, []);
 
 	useEffect(() => {

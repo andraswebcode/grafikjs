@@ -15,10 +15,16 @@ class Control extends Collection(Element) {
 
 	protected shape: any;
 
+	protected _isDragging = false;
+	protected _startVector = new Point();
+
 	public constructor(params?){
 		super();
 		this.set(params);
 		this.setNodes();
+		this.onPointerStart = this.onPointerStart.bind(this);
+		this.onPointerMove = this.onPointerMove.bind(this);
+		this.onPointerEnd = this.onPointerEnd.bind(this);
 	}
 
 	public setNodes(){
@@ -50,6 +56,46 @@ class Control extends Collection(Element) {
 			transform:`translate(${-x}%, ${-y}%) rotate(${angle}deg)`,
 			transformOrigin:`${x}% ${y}%`
 		};
+	}
+
+	public getAttributes() : object {
+		const defaultAttributes = super.getAttributes();
+		return {
+			...defaultAttributes,
+			'data-control':true,
+			'data-shape':this.shape.get('id')
+		};
+	}
+
+	public onPointerStart(e){
+
+		const {
+			left,
+			top
+		} = this.shape.get(['left', 'top']);
+
+		this._isDragging = true;
+		this._startVector.subtractPoints(new Point(e.clientX, e.clientY), new Point(left, top));
+
+	}
+
+	public onPointerMove(e){
+
+		if (!this._isDragging){
+			return;
+		}
+
+		const move = new Point(e.clientX, e.clientY).subtract(this._startVector);
+
+		this.shape.set({
+			left:move.x,
+			top:move.y
+		});
+
+	}
+
+	public onPointerEnd(e){
+		this._isDragging = false;
 	}
 
 }

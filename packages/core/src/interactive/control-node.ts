@@ -33,6 +33,9 @@ class ControlNode extends Collection(Element) {
 		if (params.getPosition){
 			this.getPosition = params.getPosition.bind(this);
 		}
+		this.onPointerStart = this.onPointerStart.bind(this);
+		this.onPointerMove = this.onPointerMove.bind(this);
+		this.onPointerEnd = this.onPointerEnd.bind(this);
 	}
 
 	set x(value: number){
@@ -72,6 +75,10 @@ class ControlNode extends Collection(Element) {
 
 	}
 
+	public getShape(){
+		return this.parent.shape;
+	}
+
 	public getStyle(){
 		const {x, y} = this.getPosition();
 		return {
@@ -79,6 +86,23 @@ class ControlNode extends Collection(Element) {
 			top:y
 		};
 	}
+
+	public getAttributes() : object {
+		const defaultAttributes = super.getAttributes();
+		return {
+			...defaultAttributes,
+			'data-control-node':true,
+			'data-id':this.id,
+			'data-name':this.name,
+			'data-shape':this.getShape().get('id')
+		};
+	}
+
+	public onPointerStart(e){}
+
+	public onPointerMove(e){}
+
+	public onPointerEnd(e){}
 
 }
 

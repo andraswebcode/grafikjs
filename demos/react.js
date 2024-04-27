@@ -23,6 +23,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `.grafik-wrapper {
   position: relative;
+  overflow: hidden;
 }
 
 .grafik-canvas,
@@ -1909,12 +1910,9 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype.setViewBox = function () {
         this.viewBox = [0, 0, this.width, this.height];
     };
-    Canvas.prototype.selectShapes = function () {
+    Canvas.prototype.selectShapes = function (shapes) {
         var _this = this;
-        var shapes = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            shapes[_i] = arguments[_i];
-        }
+        shapes = Array.isArray(shapes) ? shapes : [shapes];
         shapes.forEach(function (shape) {
             // @ts-ignore
             if (!_this._selectedShapes.includes(shape)) {
@@ -1925,15 +1923,12 @@ var Canvas = /** @class */ (function (_super) {
         this.trigger('selected', shapes);
         return this;
     };
-    Canvas.prototype.releaseShapes = function () {
-        var shapes = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            shapes[_i] = arguments[_i];
-        }
+    Canvas.prototype.releaseShapes = function (shapes) {
+        shapes = Array.isArray(shapes) ? shapes : [shapes];
         if (shapes === null || shapes === void 0 ? void 0 : shapes[0]) {
             this._selectedShapes = this._selectedShapes.filter(function (shape) { return !shapes.includes(shape); });
         }
-        else { // If args are empty, we remove all shapes from selection.
+        else { // If shapes are empty, we remove all shapes from selection.
             this._selectedShapes = [];
         }
         this.trigger('released', shapes);
@@ -1942,397 +1937,12 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype.getSelectedShapes = function () {
         return this._selectedShapes;
     };
+    Canvas.prototype.eachSelectedShape = function (callback) {
+        this._selectedShapes.forEach(callback);
+        return this;
+    };
     return Canvas;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/controls/control-node.ts":
-/*!****************************************************!*\
-  !*** ./packages/core/src/controls/control-node.ts ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ControlNode: () => (/* binding */ ControlNode)
-/* harmony export */ });
-/* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
-/* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
-/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-var ControlNode = /** @class */ (function (_super) {
-    __extends(ControlNode, _super);
-    function ControlNode(params) {
-        var _this = _super.call(this) || this;
-        _this.tagName = 'div';
-        _this.className = 'grafik-control-node';
-        _this.name = '';
-        _this.id = '';
-        _this.offset = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point();
-        _this.set(params);
-        _this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.uniqueId)();
-        if (_this.name) {
-            _this.addClass('grafik-control-node__' + _this.name);
-        }
-        if (params.getPosition) {
-            _this.getPosition = params.getPosition.bind(_this);
-        }
-        return _this;
-    }
-    Object.defineProperty(ControlNode.prototype, "x", {
-        set: function (value) {
-            this.offset.x = value;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(ControlNode.prototype, "y", {
-        set: function (value) {
-            this.offset.y = value;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    ControlNode.prototype.getPosition = function () {
-        var size = this.parent.getSize();
-        var _a = this.offset, x = _a.x, y = _a.y;
-        return new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(size.x * x, size.y * y);
-    };
-    ControlNode.prototype.connectTo = function (node) {
-        this.connectedWith = node;
-        return node;
-    };
-    ControlNode.prototype.getLineMatrix = function () {
-        if (!this.connectedWith) {
-            return new _maths__WEBPACK_IMPORTED_MODULE_2__.Matrix();
-        }
-        var p1 = this.getPosition();
-        var p2 = this.connectedWith.getPosition();
-        var m = new _maths__WEBPACK_IMPORTED_MODULE_2__.Matrix();
-        var a = -p1.angleTo(p2);
-        return m.rotate(a);
-    };
-    ControlNode.prototype.getStyle = function () {
-        var _a = this.getPosition(), x = _a.x, y = _a.y;
-        return {
-            left: x,
-            top: y
-        };
-    };
-    return ControlNode;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/controls/control.ts":
-/*!***********************************************!*\
-  !*** ./packages/core/src/controls/control.ts ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Control: () => (/* binding */ Control)
-/* harmony export */ });
-/* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
-/* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
-/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-var Control = /** @class */ (function (_super) {
-    __extends(Control, _super);
-    function Control(params) {
-        var _this = _super.call(this) || this;
-        _this.tagName = 'div';
-        _this.className = 'grafik-control';
-        _this.set(params);
-        _this.setNodes();
-        return _this;
-    }
-    Control.prototype.setNodes = function () {
-        console.warn('setNodes() must be implemented by subclass.');
-        return this;
-    };
-    Control.prototype.getSize = function () {
-        var _a = this.shape.getWorldMatrix().toOptions(), scaleX = _a.scaleX, scaleY = _a.scaleY;
-        return this.shape.bBox.getSize().multiply(new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(scaleX, scaleY));
-    };
-    Control.prototype.getStyle = function () {
-        var _a = this.shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top, angle = _a.angle;
-        var size = this.getSize();
-        var _b = this.shape.origin.clone().multiplyScalar(100), x = _b.x, y = _b.y;
-        return {
-            width: Math.abs(size.x),
-            height: Math.abs(size.y),
-            left: left,
-            top: top,
-            transform: "translate(".concat(-x, "%, ").concat(-y, "%) rotate(").concat(angle, "deg)"),
-            transformOrigin: "".concat(x, "% ").concat(y, "%")
-        };
-    };
-    return Control;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/controls/gradient-control.ts":
-/*!********************************************************!*\
-  !*** ./packages/core/src/controls/gradient-control.ts ***!
-  \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   GradientControl: () => (/* binding */ GradientControl)
-/* harmony export */ });
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ */ "./packages/core/src/controls/index.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var GradientControl = /** @class */ (function (_super) {
-    __extends(GradientControl, _super);
-    function GradientControl() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return GradientControl;
-}(___WEBPACK_IMPORTED_MODULE_0__.Control));
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/controls/index.ts":
-/*!*********************************************!*\
-  !*** ./packages/core/src/controls/index.ts ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Control: () => (/* reexport safe */ _control__WEBPACK_IMPORTED_MODULE_0__.Control),
-/* harmony export */   ControlNode: () => (/* reexport safe */ _control_node__WEBPACK_IMPORTED_MODULE_4__.ControlNode),
-/* harmony export */   GradientControl: () => (/* reexport safe */ _gradient_control__WEBPACK_IMPORTED_MODULE_3__.GradientControl),
-/* harmony export */   PathControl: () => (/* reexport safe */ _path_control__WEBPACK_IMPORTED_MODULE_2__.PathControl),
-/* harmony export */   TransformControl: () => (/* reexport safe */ _transform_control__WEBPACK_IMPORTED_MODULE_1__.TransformControl)
-/* harmony export */ });
-/* harmony import */ var _control__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./control */ "./packages/core/src/controls/control.ts");
-/* harmony import */ var _transform_control__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./transform-control */ "./packages/core/src/controls/transform-control.ts");
-/* harmony import */ var _path_control__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./path-control */ "./packages/core/src/controls/path-control.ts");
-/* harmony import */ var _gradient_control__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./gradient-control */ "./packages/core/src/controls/gradient-control.ts");
-/* harmony import */ var _control_node__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./control-node */ "./packages/core/src/controls/control-node.ts");
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/controls/path-control.ts":
-/*!****************************************************!*\
-  !*** ./packages/core/src/controls/path-control.ts ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   PathControl: () => (/* binding */ PathControl)
-/* harmony export */ });
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ */ "./packages/core/src/controls/index.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var PathControl = /** @class */ (function (_super) {
-    __extends(PathControl, _super);
-    function PathControl(params) {
-        var _this = _super.call(this, params) || this;
-        _this.addClass('grafik-path-control');
-        return _this;
-    }
-    PathControl.prototype.setNodes = function () {
-        var nodes = this.path.toPoints().map(function (position) { return new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            position: position
-        }); });
-        this.setChildren(nodes);
-        return this;
-    };
-    return PathControl;
-}(___WEBPACK_IMPORTED_MODULE_0__.Control));
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/controls/transform-control.ts":
-/*!*********************************************************!*\
-  !*** ./packages/core/src/controls/transform-control.ts ***!
-  \*********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   TransformControl: () => (/* binding */ TransformControl)
-/* harmony export */ });
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ */ "./packages/core/src/controls/index.ts");
-/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-var TransformControl = /** @class */ (function (_super) {
-    __extends(TransformControl, _super);
-    function TransformControl(params) {
-        var _this = _super.call(this, params) || this;
-        _this.addClass('grafik-transform-control');
-        return _this;
-    }
-    TransformControl.prototype.setNodes = function () {
-        var control = this;
-        var shape = control.shape;
-        // Create control nodes.
-        var tl = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            name: 'tl',
-            x: 0,
-            y: 0
-        });
-        var tc = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            name: 'tc',
-            x: 0.5,
-            y: 0
-        });
-        var tr = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            name: 'tr',
-            x: 1,
-            y: 0
-        });
-        var ml = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            name: 'ml',
-            x: 0,
-            y: 0.5
-        });
-        var mr = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            name: 'mr',
-            x: 1,
-            y: 0.5
-        });
-        var bl = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            name: 'bl',
-            x: 0,
-            y: 1
-        });
-        var bc = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            name: 'bc',
-            x: 0.5,
-            y: 1
-        });
-        var br = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            name: 'br',
-            x: 1,
-            y: 1
-        });
-        var a = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            name: 'a',
-            getPosition: function () {
-                var x = control.getSize().x;
-                var dist = 20;
-                return new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(x + dist, -dist);
-            }
-        });
-        var o = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            name: 'o',
-            getPosition: function () {
-                var size = control.getSize();
-                var _a = shape.get('origin'), x = _a.x, y = _a.y;
-                return new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(size.x * x, size.y * y);
-            }
-        });
-        this.add([tl, tc, tr, ml, mr, bl, bc, br, a, o]);
-        return this;
-    };
-    return TransformControl;
-}(___WEBPACK_IMPORTED_MODULE_0__.Control));
 
 
 
@@ -2769,6 +2379,7 @@ var Element = /** @class */ (function () {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   AngleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.AngleControlNode),
 /* harmony export */   BBox: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.BBox),
 /* harmony export */   Canvas: () => (/* reexport safe */ _canvas__WEBPACK_IMPORTED_MODULE_1__.Canvas),
 /* harmony export */   Circle: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Circle),
@@ -2776,15 +2387,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   CloseCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_6__.CloseCurve),
 /* harmony export */   Color: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.Color),
 /* harmony export */   ColorStop: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.ColorStop),
-/* harmony export */   Control: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_4__.Control),
-/* harmony export */   ControlNode: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_4__.ControlNode),
+/* harmony export */   Control: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.Control),
+/* harmony export */   ControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.ControlNode),
 /* harmony export */   CubicBezierCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_6__.CubicBezierCurve),
 /* harmony export */   Curve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.Curve),
 /* harmony export */   CurvePath: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.CurvePath),
 /* harmony export */   Element: () => (/* reexport safe */ _element__WEBPACK_IMPORTED_MODULE_0__.Element),
 /* harmony export */   Ellipse: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Ellipse),
 /* harmony export */   Gradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.Gradient),
-/* harmony export */   GradientControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_4__.GradientControl),
+/* harmony export */   GradientControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.GradientControl),
 /* harmony export */   Group: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Group),
 /* harmony export */   Image: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Image),
 /* harmony export */   Importer: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.Importer),
@@ -2793,9 +2404,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   LottieImporter: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.LottieImporter),
 /* harmony export */   Matrix: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.Matrix),
 /* harmony export */   MoveCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_6__.MoveCurve),
+/* harmony export */   OriginControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.OriginControlNode),
 /* harmony export */   PIBY180: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.PIBY180),
 /* harmony export */   Path: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Path),
-/* harmony export */   PathControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_4__.PathControl),
+/* harmony export */   PathControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.PathControl),
 /* harmony export */   Pattern: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.Pattern),
 /* harmony export */   Point: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.Point),
 /* harmony export */   Polygon: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Polygon),
@@ -2807,7 +2419,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Shape: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Shape),
 /* harmony export */   Text: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Text),
 /* harmony export */   TextPath: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.TextPath),
-/* harmony export */   TransformControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_4__.TransformControl),
+/* harmony export */   TransformControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.TransformControl),
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.deg2Rad),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.rad2Deg),
@@ -2818,7 +2430,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas */ "./packages/core/src/canvas.ts");
 /* harmony import */ var _shapes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./shapes */ "./packages/core/src/shapes/index.ts");
 /* harmony import */ var _defs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./defs */ "./packages/core/src/defs/index.ts");
-/* harmony import */ var _controls__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./controls */ "./packages/core/src/controls/index.ts");
+/* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./interactive */ "./packages/core/src/interactive/index.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./maths */ "./packages/core/src/maths/index.ts");
 /* harmony import */ var _maths_curves__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./maths/curves */ "./packages/core/src/maths/curves/index.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
@@ -2830,7 +2442,7 @@ __webpack_require__.r(__webpack_exports__);
 
 // Definitions
 
-// Controls
+// Interactive
 
 // Maths
 
@@ -2838,6 +2450,576 @@ __webpack_require__.r(__webpack_exports__);
 // Utils
 
 // Types
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/control-node.ts":
+/*!*******************************************************!*\
+  !*** ./packages/core/src/interactive/control-node.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ControlNode: () => (/* binding */ ControlNode)
+/* harmony export */ });
+/* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
+/* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+
+
+
+
+var ControlNode = /** @class */ (function (_super) {
+    __extends(ControlNode, _super);
+    function ControlNode(params) {
+        var _this = _super.call(this) || this;
+        _this.tagName = 'div';
+        _this.className = 'grafik-control-node';
+        _this.name = '';
+        _this.id = '';
+        _this.offset = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point();
+        _this.set(params);
+        _this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.uniqueId)();
+        if (_this.name) {
+            _this.addClass('grafik-control-node__' + _this.name);
+        }
+        if (params.getPosition) {
+            _this.getPosition = params.getPosition.bind(_this);
+        }
+        _this.onPointerStart = _this.onPointerStart.bind(_this);
+        _this.onPointerMove = _this.onPointerMove.bind(_this);
+        _this.onPointerEnd = _this.onPointerEnd.bind(_this);
+        return _this;
+    }
+    Object.defineProperty(ControlNode.prototype, "x", {
+        set: function (value) {
+            this.offset.x = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ControlNode.prototype, "y", {
+        set: function (value) {
+            this.offset.y = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    ControlNode.prototype.getPosition = function () {
+        var size = this.parent.getSize();
+        var _a = this.offset, x = _a.x, y = _a.y;
+        return new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(size.x * x, size.y * y);
+    };
+    ControlNode.prototype.connectTo = function (node) {
+        this.connectedWith = node;
+        return node;
+    };
+    ControlNode.prototype.getLineMatrix = function () {
+        if (!this.connectedWith) {
+            return new _maths__WEBPACK_IMPORTED_MODULE_2__.Matrix();
+        }
+        var p1 = this.getPosition();
+        var p2 = this.connectedWith.getPosition();
+        var m = new _maths__WEBPACK_IMPORTED_MODULE_2__.Matrix();
+        var a = -p1.angleTo(p2);
+        return m.rotate(a);
+    };
+    ControlNode.prototype.getShape = function () {
+        return this.parent.shape;
+    };
+    ControlNode.prototype.getStyle = function () {
+        var _a = this.getPosition(), x = _a.x, y = _a.y;
+        return {
+            left: x,
+            top: y
+        };
+    };
+    ControlNode.prototype.getAttributes = function () {
+        var defaultAttributes = _super.prototype.getAttributes.call(this);
+        return __assign(__assign({}, defaultAttributes), { 'data-control-node': true, 'data-id': this.id, 'data-name': this.name, 'data-shape': this.getShape().get('id') });
+    };
+    ControlNode.prototype.onPointerStart = function (e) { };
+    ControlNode.prototype.onPointerMove = function (e) { };
+    ControlNode.prototype.onPointerEnd = function (e) { };
+    return ControlNode;
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/control-nodes/angle-control-node.ts":
+/*!***************************************************************************!*\
+  !*** ./packages/core/src/interactive/control-nodes/angle-control-node.ts ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   AngleControlNode: () => (/* binding */ AngleControlNode)
+/* harmony export */ });
+/* harmony import */ var _control_node__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../control-node */ "./packages/core/src/interactive/control-node.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var AngleControlNode = /** @class */ (function (_super) {
+    __extends(AngleControlNode, _super);
+    function AngleControlNode() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return AngleControlNode;
+}(_control_node__WEBPACK_IMPORTED_MODULE_0__.ControlNode));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/control-nodes/index.ts":
+/*!**************************************************************!*\
+  !*** ./packages/core/src/interactive/control-nodes/index.ts ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   AngleControlNode: () => (/* reexport safe */ _angle_control_node__WEBPACK_IMPORTED_MODULE_0__.AngleControlNode),
+/* harmony export */   OriginControlNode: () => (/* reexport safe */ _origin_control_node__WEBPACK_IMPORTED_MODULE_1__.OriginControlNode)
+/* harmony export */ });
+/* harmony import */ var _angle_control_node__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./angle-control-node */ "./packages/core/src/interactive/control-nodes/angle-control-node.ts");
+/* harmony import */ var _origin_control_node__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./origin-control-node */ "./packages/core/src/interactive/control-nodes/origin-control-node.ts");
+
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/control-nodes/origin-control-node.ts":
+/*!****************************************************************************!*\
+  !*** ./packages/core/src/interactive/control-nodes/origin-control-node.ts ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   OriginControlNode: () => (/* binding */ OriginControlNode)
+/* harmony export */ });
+/* harmony import */ var _control_node__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../control-node */ "./packages/core/src/interactive/control-node.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var OriginControlNode = /** @class */ (function (_super) {
+    __extends(OriginControlNode, _super);
+    function OriginControlNode() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return OriginControlNode;
+}(_control_node__WEBPACK_IMPORTED_MODULE_0__.ControlNode));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/control.ts":
+/*!**************************************************!*\
+  !*** ./packages/core/src/interactive/control.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Control: () => (/* binding */ Control)
+/* harmony export */ });
+/* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
+/* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+
+
+
+var Control = /** @class */ (function (_super) {
+    __extends(Control, _super);
+    function Control(params) {
+        var _this = _super.call(this) || this;
+        _this.tagName = 'div';
+        _this.className = 'grafik-control';
+        _this._isDragging = false;
+        _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point();
+        _this.set(params);
+        _this.setNodes();
+        _this.onPointerStart = _this.onPointerStart.bind(_this);
+        _this.onPointerMove = _this.onPointerMove.bind(_this);
+        _this.onPointerEnd = _this.onPointerEnd.bind(_this);
+        return _this;
+    }
+    Control.prototype.setNodes = function () {
+        console.warn('setNodes() must be implemented by subclass.');
+        return this;
+    };
+    Control.prototype.getSize = function () {
+        var _a = this.shape.getWorldMatrix().toOptions(), scaleX = _a.scaleX, scaleY = _a.scaleY;
+        return this.shape.bBox.getSize().multiply(new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(scaleX, scaleY));
+    };
+    Control.prototype.getStyle = function () {
+        var _a = this.shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top, angle = _a.angle;
+        var size = this.getSize();
+        var _b = this.shape.origin.clone().multiplyScalar(100), x = _b.x, y = _b.y;
+        return {
+            width: Math.abs(size.x),
+            height: Math.abs(size.y),
+            left: left,
+            top: top,
+            transform: "translate(".concat(-x, "%, ").concat(-y, "%) rotate(").concat(angle, "deg)"),
+            transformOrigin: "".concat(x, "% ").concat(y, "%")
+        };
+    };
+    Control.prototype.getAttributes = function () {
+        var defaultAttributes = _super.prototype.getAttributes.call(this);
+        return __assign(__assign({}, defaultAttributes), { 'data-control': true, 'data-shape': this.shape.get('id') });
+    };
+    Control.prototype.onPointerStart = function (e) {
+        var _a = this.shape.get(['left', 'top']), left = _a.left, top = _a.top;
+        this._isDragging = true;
+        this._startVector.subtractPoints(new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(e.clientX, e.clientY), new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(left, top));
+    };
+    Control.prototype.onPointerMove = function (e) {
+        if (!this._isDragging) {
+            return;
+        }
+        var move = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(e.clientX, e.clientY).subtract(this._startVector);
+        this.shape.set({
+            left: move.x,
+            top: move.y
+        });
+    };
+    Control.prototype.onPointerEnd = function (e) {
+        this._isDragging = false;
+    };
+    return Control;
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/controls/gradient-control.ts":
+/*!********************************************************************!*\
+  !*** ./packages/core/src/interactive/controls/gradient-control.ts ***!
+  \********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   GradientControl: () => (/* binding */ GradientControl)
+/* harmony export */ });
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../ */ "./packages/core/src/interactive/index.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var GradientControl = /** @class */ (function (_super) {
+    __extends(GradientControl, _super);
+    function GradientControl() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return GradientControl;
+}(___WEBPACK_IMPORTED_MODULE_0__.Control));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/controls/index.ts":
+/*!*********************************************************!*\
+  !*** ./packages/core/src/interactive/controls/index.ts ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   GradientControl: () => (/* reexport safe */ _gradient_control__WEBPACK_IMPORTED_MODULE_2__.GradientControl),
+/* harmony export */   PathControl: () => (/* reexport safe */ _path_control__WEBPACK_IMPORTED_MODULE_1__.PathControl),
+/* harmony export */   TransformControl: () => (/* reexport safe */ _transform_control__WEBPACK_IMPORTED_MODULE_0__.TransformControl)
+/* harmony export */ });
+/* harmony import */ var _transform_control__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./transform-control */ "./packages/core/src/interactive/controls/transform-control.ts");
+/* harmony import */ var _path_control__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./path-control */ "./packages/core/src/interactive/controls/path-control.ts");
+/* harmony import */ var _gradient_control__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./gradient-control */ "./packages/core/src/interactive/controls/gradient-control.ts");
+
+
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/controls/path-control.ts":
+/*!****************************************************************!*\
+  !*** ./packages/core/src/interactive/controls/path-control.ts ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PathControl: () => (/* binding */ PathControl)
+/* harmony export */ });
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../ */ "./packages/core/src/interactive/index.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var PathControl = /** @class */ (function (_super) {
+    __extends(PathControl, _super);
+    function PathControl(params) {
+        var _this = _super.call(this, params) || this;
+        _this.addClass('grafik-path-control');
+        return _this;
+    }
+    PathControl.prototype.setNodes = function () {
+        var nodes = this.path.toPoints().map(function (position) { return new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+            position: position
+        }); });
+        this.setChildren(nodes);
+        return this;
+    };
+    return PathControl;
+}(___WEBPACK_IMPORTED_MODULE_0__.Control));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/controls/transform-control.ts":
+/*!*********************************************************************!*\
+  !*** ./packages/core/src/interactive/controls/transform-control.ts ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   TransformControl: () => (/* binding */ TransformControl)
+/* harmony export */ });
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../ */ "./packages/core/src/interactive/index.ts");
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../maths */ "./packages/core/src/maths/index.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var TransformControl = /** @class */ (function (_super) {
+    __extends(TransformControl, _super);
+    function TransformControl(params) {
+        var _this = _super.call(this, params) || this;
+        _this.addClass('grafik-transform-control');
+        return _this;
+    }
+    TransformControl.prototype.setNodes = function () {
+        var control = this;
+        var shape = control.shape;
+        // Create control nodes.
+        var tl = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+            name: 'tl',
+            x: 0,
+            y: 0
+        });
+        var tc = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+            name: 'tc',
+            x: 0.5,
+            y: 0
+        });
+        var tr = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+            name: 'tr',
+            x: 1,
+            y: 0
+        });
+        var ml = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+            name: 'ml',
+            x: 0,
+            y: 0.5
+        });
+        var mr = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+            name: 'mr',
+            x: 1,
+            y: 0.5
+        });
+        var bl = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+            name: 'bl',
+            x: 0,
+            y: 1
+        });
+        var bc = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+            name: 'bc',
+            x: 0.5,
+            y: 1
+        });
+        var br = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+            name: 'br',
+            x: 1,
+            y: 1
+        });
+        var a = new ___WEBPACK_IMPORTED_MODULE_0__.AngleControlNode({
+            name: 'a',
+            getPosition: function () {
+                var x = control.getSize().x;
+                var dist = 20;
+                return new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(x + dist, -dist);
+            }
+        });
+        var o = new ___WEBPACK_IMPORTED_MODULE_0__.OriginControlNode({
+            name: 'o',
+            getPosition: function () {
+                var size = control.getSize();
+                var _a = shape.get('origin'), x = _a.x, y = _a.y;
+                return new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(size.x * x, size.y * y);
+            }
+        });
+        this.add([tl, tc, tr, ml, mr, bl, bc, br, a, o]);
+        return this;
+    };
+    return TransformControl;
+}(___WEBPACK_IMPORTED_MODULE_0__.Control));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/index.ts":
+/*!************************************************!*\
+  !*** ./packages/core/src/interactive/index.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   AngleControlNode: () => (/* reexport safe */ _control_nodes__WEBPACK_IMPORTED_MODULE_3__.AngleControlNode),
+/* harmony export */   Control: () => (/* reexport safe */ _control__WEBPACK_IMPORTED_MODULE_0__.Control),
+/* harmony export */   ControlNode: () => (/* reexport safe */ _control_node__WEBPACK_IMPORTED_MODULE_1__.ControlNode),
+/* harmony export */   GradientControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_2__.GradientControl),
+/* harmony export */   OriginControlNode: () => (/* reexport safe */ _control_nodes__WEBPACK_IMPORTED_MODULE_3__.OriginControlNode),
+/* harmony export */   PathControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_2__.PathControl),
+/* harmony export */   TransformControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_2__.TransformControl)
+/* harmony export */ });
+/* harmony import */ var _control__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./control */ "./packages/core/src/interactive/control.ts");
+/* harmony import */ var _control_node__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./control-node */ "./packages/core/src/interactive/control-node.ts");
+/* harmony import */ var _controls__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./controls */ "./packages/core/src/interactive/controls/index.ts");
+/* harmony import */ var _control_nodes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./control-nodes */ "./packages/core/src/interactive/control-nodes/index.ts");
+
+
+
 
 
 
@@ -4310,7 +4492,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./packages/core/src/shapes/shape.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
-/* harmony import */ var _controls__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../controls */ "./packages/core/src/controls/index.ts");
+/* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../interactive */ "./packages/core/src/interactive/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -4336,7 +4518,7 @@ var Path = /** @class */ (function (_super) {
         _this.tagName = 'path';
         _this.path = new _maths__WEBPACK_IMPORTED_MODULE_1__.CurvePath();
         _this.init(params);
-        _this.addControl('path', new _controls__WEBPACK_IMPORTED_MODULE_2__.PathControl({
+        _this.addControl('path', new _interactive__WEBPACK_IMPORTED_MODULE_2__.PathControl({
             shape: _this,
             path: _this.path
         }));
@@ -4537,7 +4719,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
-/* harmony import */ var _controls__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../controls */ "./packages/core/src/controls/index.ts");
+/* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../interactive */ "./packages/core/src/interactive/index.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -4613,7 +4795,7 @@ var Shape = /** @class */ (function (_super) {
     Shape.prototype.init = function (params) {
         this.set(params, true);
         this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.uniqueId)();
-        this.addControl('transform', new _controls__WEBPACK_IMPORTED_MODULE_2__.TransformControl({
+        this.addControl('transform', new _interactive__WEBPACK_IMPORTED_MODULE_2__.TransformControl({
             shape: this
         })).setControl('transform');
         this.updateMatrix();
@@ -5235,8 +5417,10 @@ var ShapeBase = function (_a) {
     var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)({}), wrapperAttributes = _b[0], setWrapperAttributes = _b[1];
     var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)({}), attributes = _c[0], setAttributes = _c[1];
     var onShapeSet = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
+        var _a;
         setWrapperAttributes(shape.getWrapperAttributes());
         setAttributes(shape.getAttributes());
+        (_a = props.onChange) === null || _a === void 0 ? void 0 : _a.call(props, shape);
     }, []);
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
         shape.on('set', onShapeSet);
@@ -5395,7 +5579,7 @@ var Control = function (_a) {
             control.shape.off('set', onShapeSet);
         };
     }, []);
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TagName, __assign({}, attributes, { style: style, onMouseDown: control.onPointerStart, onMouseMove: control.onPointerMove, onMouseUp: control.onPointerEnd, children: control.mapChildren(function (node) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(___WEBPACK_IMPORTED_MODULE_2__.ControlNode, { node: node }, node.id)); }) })));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TagName, __assign({}, attributes, { style: style, children: control.mapChildren(function (node) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(___WEBPACK_IMPORTED_MODULE_2__.ControlNode, { node: node }, node.id)); }) })));
 };
 
 
@@ -5454,17 +5638,58 @@ var Interactive = function (_a) {
     var shapes = canvas.getSelectedShapes();
     var onMouseDown = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
         var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
+        var dataset = e.target.dataset;
+        var isNode = ('controlNode' in dataset);
         var pointer = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_2__.Point(e.clientX - left, e.clientY - top);
         var founded = canvas.findLastChildByPointer(pointer);
-        var method = founded ? 'selectShapes' : 'releaseShapes';
-        if (method === 'selectShapes' && !e.ctrlKey) {
-            // Here we do not use dispatch to avoid multiple renders of this component.
-            canvas.releaseShapes();
+        if (isNode) {
+            canvas.eachSelectedShape(function (shape) {
+                shape.getControl().childById(dataset.id).onPointerStart(e);
+            });
         }
-        dispatch(method, founded);
+        else {
+            if (founded) {
+                if (!e.ctrlKey) {
+                    canvas.releaseShapes();
+                }
+                canvas.selectShapes(founded);
+            }
+            else {
+                canvas.releaseShapes();
+            }
+            canvas.eachSelectedShape(function (shape) {
+                shape.getControl().onPointerStart(e);
+            });
+        }
+        // Force rerender component here.
+        dispatch();
     }, []);
-    var onMouseMove = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) { }, []);
-    var onMouseUp = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) { }, []);
+    var onMouseMove = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
+        var dataset = e.target.dataset;
+        if ('controlNode' in dataset) {
+            canvas.eachSelectedShape(function (shape) {
+                shape.getControl().childById(dataset.id).onPointerMove(e);
+            });
+        }
+        else {
+            canvas.eachSelectedShape(function (shape) {
+                shape.getControl().onPointerMove(e);
+            });
+        }
+    }, []);
+    var onMouseUp = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
+        var dataset = e.target.dataset;
+        if ('controlNode' in dataset) {
+            canvas.eachSelectedShape(function (shape) {
+                shape.getControl().childById(dataset.id).onPointerEnd(e);
+            });
+        }
+        else {
+            canvas.eachSelectedShape(function (shape) {
+                shape.getControl().onPointerEnd(e);
+            });
+        }
+    }, []);
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: className, onMouseDown: onMouseDown, onMouseMove: onMouseMove, onMouseUp: onMouseUp, children: [shapes.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(___WEBPACK_IMPORTED_MODULE_3__.Control, { control: shape.getControl() }, shape.id)); }), children] }));
 };
 
@@ -5590,6 +5815,9 @@ var useCollection = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.u
 var _canvasReducer = function (state, _a) {
     var _b;
     var method = _a.method, args = _a.args;
+    if (!method) {
+        return __assign({}, state);
+    }
     if (!state.canvas[method]) {
         console.warn("Method: ".concat(method, "() does not exists on canvas."));
         return __assign({}, state);
@@ -5726,10 +5954,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var logged = false;
 var TestComponent = function (props) {
     var cv = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.useCanvas)();
     var cl = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.useCollection)();
-    console.log(cv, cl);
+    if (!logged) {
+        logged = true;
+        console.log(cv, cl);
+    }
     setTimeout(function () {
         // @ts-ignore
         window.path = cv.childAt(4);
@@ -5745,7 +5977,11 @@ var TestApp = function () {
     var _f = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewX = _f[0], setSkewX = _f[1];
     var _g = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewY = _g[0], setSkewY = _g[1];
     var _h = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(12), sw = _h[0], setSw = _h[1];
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Group, { left: 250, top: 250, angle: angle, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Group, { skewX: 20, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: -50, top: -50, width: 100, height: 100, stroke: 'forestgreen', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 50, top: -50, width: 100, height: 100, stroke: 'forestgreen', strokeWidth: 2, fill: 'none' })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Group, { skewX: -20, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: -50, top: 50, width: 100, height: 100, stroke: 'forestgreen', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 50, top: 50, width: 100, height: 100, stroke: 'forestgreen', strokeWidth: 2, fill: 'none' })] })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: left, top: top, angle: angle, scaleX: scaleX, scaleY: scaleY, skewX: skewX, skewY: skewY, originX: 0.2, originY: 0.8, width: 200, height: 200, stroke: 'black', strokeWidth: sw, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Ellipse, { left: left, top: top, angle: angle, rx: 80, ry: 40, stroke: 'black', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Circle, { left: left, top: top, angle: angle, r: 40, stroke: 'black', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Path, { d: 'M0 100 C 40 0 160 0 200 100 C 160 200 40 200 0 100Z', left: 800, top: 200, width: 200, height: 200, angle: angle, stroke: 'black', strokeWidth: 8, fill: 'none' })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, {})] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Left:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: left, onChange: function (e) { return setLeft(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Top:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: top, onChange: function (e) { return setTop(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Angle:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: angle, onChange: function (e) { return setAngle(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleX, onChange: function (e) { return setScaleX(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleY, onChange: function (e) { return setScaleY(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewX, onChange: function (e) { return setSkewX(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewY, onChange: function (e) { return setSkewY(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Stroke Width:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: sw, onChange: function (e) { return setSw(parseInt(e.target.value) || 0); } })] })] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Group, { left: 250, top: 250, angle: angle, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Group, { skewX: 20, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: -50, top: -50, width: 100, height: 100, stroke: 'forestgreen', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 50, top: -50, width: 100, height: 100, stroke: 'forestgreen', strokeWidth: 2, fill: 'none' })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Group, { skewX: -20, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: -50, top: 50, width: 100, height: 100, stroke: 'forestgreen', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 50, top: 50, width: 100, height: 100, stroke: 'forestgreen', strokeWidth: 2, fill: 'none' })] })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: left, top: top, angle: angle, scaleX: scaleX, scaleY: scaleY, skewX: skewX, skewY: skewY, originX: 0.2, originY: 0.8, width: 200, height: 200, stroke: 'black', strokeWidth: sw, fill: 'none', onChange: function (rect) {
+                                        var left = rect.left, top = rect.top;
+                                        setLeft(left);
+                                        setTop(top);
+                                    } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Ellipse, { left: 400, top: 400, rx: 80, ry: 40, stroke: 'black', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Circle, { left: 400, top: 400, r: 40, stroke: 'black', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Path, { d: 'M0 100 C 40 0 160 0 200 100 C 160 200 40 200 0 100Z', left: 800, top: 200, width: 200, height: 200, angle: angle, stroke: 'black', strokeWidth: 8, fill: 'none' })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, {})] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Left:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: left, onChange: function (e) { return setLeft(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Top:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: top, onChange: function (e) { return setTop(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Angle:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: angle, onChange: function (e) { return setAngle(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleX, onChange: function (e) { return setScaleX(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleY, onChange: function (e) { return setScaleY(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewX, onChange: function (e) { return setSkewX(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewY, onChange: function (e) { return setSkewY(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Stroke Width:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: sw, onChange: function (e) { return setSw(parseInt(e.target.value) || 0); } })] })] }));
 };
 
 

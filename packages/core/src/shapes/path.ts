@@ -7,7 +7,7 @@ import {
 } from './../maths';
 import {
 	PathControl
-} from './../controls';
+} from './../interactive';
 
 class Path extends Shape {
 

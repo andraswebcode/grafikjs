@@ -1,6 +1,6 @@
 {
   "name": "@grafikjs/vanilla",
-  "version": "0.0.1",
+  "version": "0.0.10",
   "main": "./src/index.ts",
   "scripts": {
     "start": "webpack",
@@ -9,13 +9,13 @@
   "author": "Andras Tovishati",
   "license": "MIT",
   "description": "",
-  "dependencies":{
-    "@grafikjs/core":"*"
+  "dependencies": {
+    "@grafikjs/core": "*"
   },
-  "devDependencies":{
-    "webpack":"*",
-    "webpack-cli":"*",
-    "typescript":"*",
-    "ts-loader":"*"
+  "devDependencies": {
+    "webpack": "*",
+    "webpack-cli": "*",
+    "typescript": "*",
+    "ts-loader": "*"
   }
 }

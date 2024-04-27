@@ -27,17 +27,60 @@ const Interactive = ({
 			left,
 			top
 		} = e.currentTarget.getBoundingClientRect();
+		const {
+			dataset
+		} = e.target;
+		const isNode = ('controlNode' in dataset);
 		const pointer = new Point(e.clientX - left, e.clientY - top);
 		const founded = canvas.findLastChildByPointer(pointer);
-		const method = founded ? 'selectShapes' : 'releaseShapes';
-		if (method === 'selectShapes' && !e.ctrlKey){
-			// Here we do not use dispatch to avoid multiple renders of this component.
-			canvas.releaseShapes();
+		if (isNode){
+			canvas.eachSelectedShape(shape => {
+				shape.getControl().childById(dataset.id).onPointerStart(e);
+			});
+		} else {
+			if (founded){
+				if (!e.ctrlKey){
+					canvas.releaseShapes();
+				}
+				canvas.selectShapes(founded);
+			} else {
+				canvas.releaseShapes();
+			}
+			canvas.eachSelectedShape(shape => {
+				shape.getControl().onPointerStart(e);
+			});
 		}
-		dispatch(method, founded);
+		// Force rerender component here.
+		dispatch();
 	}, []);
-	const onMouseMove = useCallback(e => {}, []);
-	const onMouseUp = useCallback(e => {}, []);
+	const onMouseMove = useCallback(e => {
+		const {
+			dataset
+		} = e.target;
+		if ('controlNode' in dataset){
+			canvas.eachSelectedShape(shape => {
+				shape.getControl().childById(dataset.id).onPointerMove(e);
+			});
+		} else {
+			canvas.eachSelectedShape(shape => {
+				shape.getControl().onPointerMove(e);
+			});
+		}
+	}, []);
+	const onMouseUp = useCallback(e => {
+		const {
+			dataset
+		} = e.target;
+		if ('controlNode' in dataset){
+			canvas.eachSelectedShape(shape => {
+				shape.getControl().childById(dataset.id).onPointerEnd(e);
+			});
+		} else {
+			canvas.eachSelectedShape(shape => {
+				shape.getControl().onPointerEnd(e);
+			});
+		}
+	}, []);
 
 	return (
 		<div

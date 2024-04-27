@@ -12,6 +12,9 @@ const useCanvas = () : object => useContext(CanvasContext);
 const useCollection = () : object => useContext(CollectionContext);
 
 const _canvasReducer = (state, {method, args}) => {
+	if (!method){
+		return {...state};
+	}
 	if (!state.canvas[method]){
 		console.warn(`Method: ${method}() does not exists on canvas.`);
 		return {...state};

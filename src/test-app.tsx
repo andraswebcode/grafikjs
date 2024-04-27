@@ -18,11 +18,16 @@ import {
 
 import '@grafikjs/styles';
 
+let logged = false;
+
 const TestComponent = props => {
 
 	const cv = useCanvas();
 	const cl = useCollection();
-	console.log(cv, cl);
+	if (!logged){
+		logged = true;
+		console.log(cv, cl);
+	}
 
 	setTimeout(() => {
 		// @ts-ignore
@@ -109,20 +114,23 @@ const TestApp = () => {
 							height={200}
 							stroke='black'
 							strokeWidth={sw}
-							fill='none' />
+							fill='none'
+							onChange={rect => {
+								const {left, top} = rect;
+								setLeft(left);
+								setTop(top);
+							}} />
 						<Ellipse
-							left={left}
-							top={top}
-							angle={angle}
+							left={400}
+							top={400}
 							rx={80}
 							ry={40}
 							stroke='black'
 							strokeWidth={2}
 							fill='none' />
 						<Circle
-							left={left}
-							top={top}
-							angle={angle}
+							left={400}
+							top={400}
 							r={40}
 							stroke='black'
 							strokeWidth={2}

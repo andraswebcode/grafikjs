@@ -33,10 +33,7 @@ const Control = ({
 	return (
 		<TagName
 			{...attributes}
-			style={style}
-			onMouseDown={control.onPointerStart}
-			onMouseMove={control.onPointerMove}
-			onMouseUp={control.onPointerEnd} >
+			style={style} >
 			{control.mapChildren(node => (
 				<ControlNode
 					key={node.id}

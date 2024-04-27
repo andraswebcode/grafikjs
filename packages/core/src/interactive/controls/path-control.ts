@@ -1,10 +1,10 @@
 import {
 	Control,
 	ControlNode
-} from './';
+} from './../';
 import {
 	CurvePath
-} from './../maths';
+} from './../../maths';
 
 class PathControl extends Control {
 

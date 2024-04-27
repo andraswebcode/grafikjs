@@ -50,7 +50,8 @@ class Canvas extends Collection(Element) {
 		this.viewBox = [0, 0, this.width, this.height];
 	}
 
-	public selectShapes(...shapes: any[]){
+	public selectShapes(shapes: any|any[]){
+		shapes = Array.isArray(shapes) ? shapes : [shapes];
 		shapes.forEach(shape => {
 			// @ts-ignore
 			if (!this._selectedShapes.includes(shape)){
@@ -62,10 +63,11 @@ class Canvas extends Collection(Element) {
 		return this;
 	}
 
-	public releaseShapes(...shapes: any[]){
+	public releaseShapes(shapes: any|any[]){
+		shapes = Array.isArray(shapes) ? shapes : [shapes];
 		if (shapes?.[0]){
 			this._selectedShapes = this._selectedShapes.filter(shape => !shapes.includes(shape));
-		} else { // If args are empty, we remove all shapes from selection.
+		} else { // If shapes are empty, we remove all shapes from selection.
 			this._selectedShapes = [];
 		}
 		this.trigger('released', shapes);
@@ -74,6 +76,11 @@ class Canvas extends Collection(Element) {
 
 	public getSelectedShapes() : any[] {
 		return this._selectedShapes;
+	}
+
+	public eachSelectedShape(callback: (v: any, i: number, a: any[]) => void){
+		this._selectedShapes.forEach(callback);
+		return this;
 	}
 
 }
