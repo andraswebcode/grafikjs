@@ -1,0 +1,17 @@
+{
+  "name": "@grafikjs/vue",
+  "version": "0.0.1",
+  "main": "./src/index.ts",
+  "types":"./src/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Andras Tovishati",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@grafikjs/core":"*"
+  },
+  "devDependencies": {}
+}

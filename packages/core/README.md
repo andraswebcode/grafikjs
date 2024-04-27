@@ -1,2 +1,1 @@
-# Grafik.js Core
-
+# GrafikJS Core

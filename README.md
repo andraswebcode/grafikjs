@@ -1,4 +1,4 @@
-# Grafik.JS
+# GrafikJS
 
 **A simple and powerful JavaScript SVG library**
 

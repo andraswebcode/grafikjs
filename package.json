@@ -17,7 +17,9 @@
     "packages/core",
     "packages/react",
     "packages/vanilla",
-    "packages/styles"
+    "packages/styles",
+    "packages/angular",
+    "packages/vue"
   ],
   "dependencies": {
     "@grafikjs/core": "*",
@@ -35,9 +37,9 @@
     "@types/node": "*",
     "@types/react": "*",
     "@types/react-dom": "*",
-    "sass":"*",
-    "sass-loader":"*",
-    "style-loader":"*",
-    "css-loader":"*"
+    "sass": "*",
+    "sass-loader": "*",
+    "style-loader": "*",
+    "css-loader": "*"
   }
 }

@@ -1,2 +1,1 @@
-# Grafik.js React
-
+# GrafikJS React
