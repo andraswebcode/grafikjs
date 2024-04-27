@@ -2608,8 +2608,22 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var AngleControlNode = /** @class */ (function (_super) {
     __extends(AngleControlNode, _super);
     function AngleControlNode() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._isDragging = false;
+        return _this;
     }
+    AngleControlNode.prototype.onPointerStart = function (e) {
+        this._isDragging = true;
+        this._startAngle = this.getShape().get('angle');
+    };
+    AngleControlNode.prototype.onPointerMove = function (e) {
+        if (!this._isDragging) {
+            return;
+        }
+    };
+    AngleControlNode.prototype.onPointerEnd = function (e) {
+        this._isDragging = false;
+    };
     return AngleControlNode;
 }(_control_node__WEBPACK_IMPORTED_MODULE_0__.ControlNode));
 
@@ -5636,6 +5650,7 @@ var Interactive = function (_a) {
     var _b = _a.className, className = _b === void 0 ? 'grafik-interactive' : _b, children = _a.children;
     var _c = (0,_hooks__WEBPACK_IMPORTED_MODULE_4__.useCanvasReducer)(), canvas = _c.canvas, dispatch = _c.dispatch;
     var shapes = canvas.getSelectedShapes();
+    var _d = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(''), nodeId = _d[0], setNodeId = _d[1];
     var onMouseDown = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
         var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
         var dataset = e.target.dataset;
@@ -5662,34 +5677,23 @@ var Interactive = function (_a) {
             });
         }
         // Force rerender component here.
-        dispatch();
-    }, []);
+        // dispatch();
+        setNodeId(dataset.id || '');
+    }, [nodeId]);
     var onMouseMove = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
-        var dataset = e.target.dataset;
-        if ('controlNode' in dataset) {
-            canvas.eachSelectedShape(function (shape) {
-                shape.getControl().childById(dataset.id).onPointerMove(e);
-            });
-        }
-        else {
-            canvas.eachSelectedShape(function (shape) {
-                shape.getControl().onPointerMove(e);
-            });
-        }
-    }, []);
+        canvas.eachSelectedShape(function (shape) {
+            var _a;
+            (_a = shape.getControl().childById(nodeId)) === null || _a === void 0 ? void 0 : _a.onPointerMove(e);
+            shape.getControl().onPointerMove(e);
+        });
+    }, [nodeId]);
     var onMouseUp = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
-        var dataset = e.target.dataset;
-        if ('controlNode' in dataset) {
-            canvas.eachSelectedShape(function (shape) {
-                shape.getControl().childById(dataset.id).onPointerEnd(e);
-            });
-        }
-        else {
-            canvas.eachSelectedShape(function (shape) {
-                shape.getControl().onPointerEnd(e);
-            });
-        }
-    }, []);
+        canvas.eachSelectedShape(function (shape) {
+            var _a;
+            (_a = shape.getControl().childById(nodeId)) === null || _a === void 0 ? void 0 : _a.onPointerEnd(e);
+            shape.getControl().onPointerEnd(e);
+        });
+    }, [nodeId]);
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: className, onMouseDown: onMouseDown, onMouseMove: onMouseMove, onMouseUp: onMouseUp, children: [shapes.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(___WEBPACK_IMPORTED_MODULE_3__.Control, { control: shape.getControl() }, shape.id)); }), children] }));
 };
 

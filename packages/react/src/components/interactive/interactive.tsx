@@ -21,6 +21,7 @@ const Interactive = ({
 
 	const {canvas, dispatch}: any = useCanvasReducer();
 	const shapes = canvas.getSelectedShapes();
+	const [nodeId, setNodeId] = useState('');
 
 	const onMouseDown = useCallback(e => {
 		const {
@@ -51,36 +52,21 @@ const Interactive = ({
 			});
 		}
 		// Force rerender component here.
-		dispatch();
-	}, []);
+		// dispatch();
+		setNodeId(dataset.id || '');
+	}, [nodeId]);
 	const onMouseMove = useCallback(e => {
-		const {
-			dataset
-		} = e.target;
-		if ('controlNode' in dataset){
-			canvas.eachSelectedShape(shape => {
-				shape.getControl().childById(dataset.id).onPointerMove(e);
-			});
-		} else {
-			canvas.eachSelectedShape(shape => {
-				shape.getControl().onPointerMove(e);
-			});
-		}
-	}, []);
+		canvas.eachSelectedShape(shape => {
+			shape.getControl().childById(nodeId)?.onPointerMove(e);
+			shape.getControl().onPointerMove(e);
+		});
+	}, [nodeId]);
 	const onMouseUp = useCallback(e => {
-		const {
-			dataset
-		} = e.target;
-		if ('controlNode' in dataset){
-			canvas.eachSelectedShape(shape => {
-				shape.getControl().childById(dataset.id).onPointerEnd(e);
-			});
-		} else {
-			canvas.eachSelectedShape(shape => {
-				shape.getControl().onPointerEnd(e);
-			});
-		}
-	}, []);
+		canvas.eachSelectedShape(shape => {
+			shape.getControl().childById(nodeId)?.onPointerEnd(e);
+			shape.getControl().onPointerEnd(e);
+		});
+	}, [nodeId]);
 
 	return (
 		<div

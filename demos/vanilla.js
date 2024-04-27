@@ -1237,8 +1237,22 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var AngleControlNode = /** @class */ (function (_super) {
     __extends(AngleControlNode, _super);
     function AngleControlNode() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._isDragging = false;
+        return _this;
     }
+    AngleControlNode.prototype.onPointerStart = function (e) {
+        this._isDragging = true;
+        this._startAngle = this.getShape().get('angle');
+    };
+    AngleControlNode.prototype.onPointerMove = function (e) {
+        if (!this._isDragging) {
+            return;
+        }
+    };
+    AngleControlNode.prototype.onPointerEnd = function (e) {
+        this._isDragging = false;
+    };
     return AngleControlNode;
 }(_control_node__WEBPACK_IMPORTED_MODULE_0__.ControlNode));
 
