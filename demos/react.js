@@ -5661,6 +5661,7 @@ var Interactive = function (_a) {
             canvas.eachSelectedShape(function (shape) {
                 shape.getControl().childById(dataset.id).onPointerStart(e);
             });
+            setNodeId(dataset.id || '');
         }
         else {
             if (founded) {
@@ -5677,8 +5678,7 @@ var Interactive = function (_a) {
             });
         }
         // Force rerender component here.
-        // dispatch();
-        setNodeId(dataset.id || '');
+        dispatch();
     }, [nodeId]);
     var onMouseMove = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
         canvas.eachSelectedShape(function (shape) {

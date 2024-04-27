@@ -38,6 +38,7 @@ const Interactive = ({
 			canvas.eachSelectedShape(shape => {
 				shape.getControl().childById(dataset.id).onPointerStart(e);
 			});
+			setNodeId(dataset.id || '');
 		} else {
 			if (founded){
 				if (!e.ctrlKey){
@@ -52,8 +53,7 @@ const Interactive = ({
 			});
 		}
 		// Force rerender component here.
-		// dispatch();
-		setNodeId(dataset.id || '');
+		dispatch();
 	}, [nodeId]);
 	const onMouseMove = useCallback(e => {
 		canvas.eachSelectedShape(shape => {
