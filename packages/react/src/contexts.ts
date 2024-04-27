@@ -4,6 +4,9 @@ import {
 
 const CanvasContext = createContext({});
 
+const CollectionContext = createContext({});
+
 export {
-	CanvasContext
+	CanvasContext,
+	CollectionContext
 };

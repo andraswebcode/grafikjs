@@ -53,8 +53,16 @@ class Shape extends Element {
 	protected strokeWidth: number;
 	protected opacity: number;
 
+	set originX(value: number){
+		this.origin.x = value;
+	}
+
+	set originY(value: number){
+		this.origin.y = value;
+	}
+
 	public init(params){
-		this.set(params);
+		this.set(params, true);
 		this.id = uniqueId();
 		this.addControl('transform', new TransformControl({
 			shape:this
@@ -93,7 +101,7 @@ class Shape extends Element {
 			if (prop in key){
 				this.updateMatrix();
 				this.updateOthersWithKeys(Object.keys(key));
-				if (!silent){
+				if (!value){
 					this.trigger('set', key);
 				}
 				break;
@@ -102,11 +110,6 @@ class Shape extends Element {
 
 		return this;
 
-	}
-
-	public setOrigin(x: number, y: number){
-		this.origin.set(x, y);
-		return this;
 	}
 
 	protected getAttrMap() : string[] {
@@ -118,7 +121,6 @@ class Shape extends Element {
 	}
 
 	protected updateOthersWithKeys(keys: string[]){
-		console.warn('updateOthersWithKeys() must be implemented by subclass.')
 		return this;
 	}
 
@@ -168,7 +170,7 @@ class Shape extends Element {
 	}
 
 	protected updateBBox(){
-		console.warn('updateBBox() must be implemented by subclass.')
+		console.warn('updateBBox() must be implemented by subclass.');
 		return this;
 	}
 

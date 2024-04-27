@@ -22,7 +22,7 @@ class Path extends Shape {
 		this.addControl('path', new PathControl({
 			shape:this,
 			path:this.path
-		})).setControl('path');
+		}));
 	}
 
 	protected getAttrMap() : string[] {
@@ -35,7 +35,7 @@ class Path extends Shape {
 
 		if (keys.includes('d')){
 			this.path.fromString(this.d);
-			this.getControl('path').setNodes();
+			this.updateBBox();
 		}
 
 		return this;
@@ -43,7 +43,8 @@ class Path extends Shape {
 	}
 
 	public updateBBox(){
-		this.bBox.fromPoints([]);
+		this.bBox.fromPoints(this.path.toPoints());
+		this.origin.copy(this.bBox.getOrigin());
 		return this;
 	}
 

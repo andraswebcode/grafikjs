@@ -170,6 +170,10 @@ class Point {
 		return this;
 	}
 
+	public isEqual(point: Point) : boolean {
+		return (this.x === point.x && this.y === point.y);
+	}
+
 	public copy(point: Point) : Point {
 		this.set(point.x, point.y);
 		return this;

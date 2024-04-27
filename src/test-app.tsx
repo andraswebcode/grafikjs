@@ -5,13 +5,33 @@ import {
 import {
 	CanvasProvider,
 	Canvas,
+	Group,
 	Rect,
 	Circle,
 	Ellipse,
 	Path,
 	Wrapper,
-	Interactive
+	Interactive,
+	useCanvas,
+	useCollection
 } from '@grafikjs/react';
+
+import '@grafikjs/styles';
+
+const TestComponent = props => {
+
+	const cv = useCanvas();
+	const cl = useCollection();
+	console.log(cv, cl);
+
+	setTimeout(() => {
+		// @ts-ignore
+		window.path = cv.childAt(4);
+	}, 40);
+
+	return null;
+
+};
 
 const TestApp = () => {
 
@@ -31,6 +51,50 @@ const TestApp = () => {
 				height={800} >
 				<Wrapper>
 					<Canvas>
+						<TestComponent />
+						<Group
+							left={250}
+							top={250}
+							angle={angle} >
+							<Group
+								skewX={20} >
+								<Rect
+									left={-50}
+									top={-50}
+									width={100}
+									height={100}
+									stroke='forestgreen'
+									strokeWidth={2}
+									fill='none' />
+								<Rect
+									left={50}
+									top={-50}
+									width={100}
+									height={100}
+									stroke='forestgreen'
+									strokeWidth={2}
+									fill='none' />
+							</Group>
+							<Group
+								skewX={-20} >
+								<Rect
+									left={-50}
+									top={50}
+									width={100}
+									height={100}
+									stroke='forestgreen'
+									strokeWidth={2}
+									fill='none' />
+								<Rect
+									left={50}
+									top={50}
+									width={100}
+									height={100}
+									stroke='forestgreen'
+									strokeWidth={2}
+									fill='none' />
+							</Group>
+						</Group>
 						<Rect
 							left={left}
 							top={top}
@@ -39,17 +103,19 @@ const TestApp = () => {
 							scaleY={scaleY}
 							skewX={skewX}
 							skewY={skewY}
+							originX={0.2}
+							originY={0.8}
 							width={200}
 							height={200}
 							stroke='black'
 							strokeWidth={sw}
 							fill='none' />
-						<Rect
-							left={800}
-							top={350}
-							angle={45}
-							width={400}
-							height={400}
+						<Ellipse
+							left={left}
+							top={top}
+							angle={angle}
+							rx={80}
+							ry={40}
 							stroke='black'
 							strokeWidth={2}
 							fill='none' />
@@ -61,17 +127,8 @@ const TestApp = () => {
 							stroke='black'
 							strokeWidth={2}
 							fill='none' />
-						<Ellipse
-							left={left}
-							top={top}
-							angle={angle}
-							rx={40}
-							ry={80}
-							stroke='black'
-							strokeWidth={2}
-							fill='none' />
 						<Path
-							d='M0 100 C 40 0 160 0 200 100 C 160 200 40 200 0 100'
+							d='M0 100 C 40 0 160 0 200 100 C 160 200 40 200 0 100Z'
 							left={800}
 							top={200}
 							width={200}

@@ -14,6 +14,14 @@ class MoveCurve extends Curve {
 		this.p0 = p0;
 	}
 
+	public getPoint(t: number) : Point {
+		return this.p0.clone();
+	}
+
+	public getPoints(divisions = 10) : Point[] {
+		return [this.getPoint(0)];
+	}
+
 }
 
 export {

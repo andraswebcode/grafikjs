@@ -12,16 +12,16 @@ class PathControl extends Control {
 
 	public constructor(params?){
 		super(params);
-		this.addClass('grafik-path-control');console.log(this)
+		this.addClass('grafik-path-control');
 	}
 
 	public setNodes(){
 
-		const nodes = this.path.mapCurves(curve => {
-			return new ControlNode();
-		});console.log(nodes, this.path)
+		const nodes = this.path.toPoints().map(position => new ControlNode({
+			position
+		}));
 
-		this.setChildren(...nodes);
+		this.setChildren(nodes);
 
 		return this;
 

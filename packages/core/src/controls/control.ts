@@ -26,22 +26,29 @@ class Control extends Collection(Element) {
 		return this;
 	}
 
-	public getStyle(){
+	public getSize() : Point {
 		const {
-			left,
-			top,
-			angle,
 			scaleX,
 			scaleY
 		} = this.shape.getWorldMatrix().toOptions();
-		const size = this.shape.bBox.getSize().multiply(new Point(scaleX, scaleY));
-		const {x, y} = this.shape.origin.clone().multiplyScalar(-100);
-		return {
-			width:size.x,
-			height:size.y,
+		return this.shape.bBox.getSize().multiply(new Point(scaleX, scaleY));
+	}
+
+	public getStyle() : object {
+		const {
 			left,
 			top,
-			transform:`translate(${x}%, ${y}%) rotate(${angle}deg)`
+			angle
+		} = this.shape.getWorldMatrix().toOptions();
+		const size = this.getSize();
+		const {x, y} = this.shape.origin.clone().multiplyScalar(100);
+		return {
+			width:Math.abs(size.x),
+			height:Math.abs(size.y),
+			left,
+			top,
+			transform:`translate(${-x}%, ${-y}%) rotate(${angle}deg)`,
+			transformOrigin:`${x}% ${y}%`
 		};
 	}
 

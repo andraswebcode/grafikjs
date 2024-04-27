@@ -3,10 +3,13 @@ import {
 	useReducer
 } from 'react';
 import {
-	CanvasContext
+	CanvasContext,
+	CollectionContext
 } from './contexts';
 
 const useCanvas = () : object => useContext(CanvasContext);
+
+const useCollection = () : object => useContext(CollectionContext);
 
 const _canvasReducer = (state, {method, args}) => {
 	if (!state.canvas[method]){
@@ -33,5 +36,6 @@ const useCanvasReducer = () => {
 
 export {
 	useCanvas,
+	useCollection,
 	useCanvasReducer
 };

@@ -9,6 +9,7 @@ class Element {
 	}
 
 	public set(key, value?, silent = false){
+
 		if (typeof key === 'string' && typeof value !== 'undefined'){
 			this._set(key, value);
 			if (!silent){
@@ -18,11 +19,14 @@ class Element {
 			for (let prop in key){
 				this._set(prop, key[prop]);
 			}
-			if (!silent){
+			// Attention please: here - if 'key' is an object, 'silent' becomes 'value'!
+			if (!value){
 				this.trigger('set', key);
 			}
 		}
+
 		return this;
+
 	}
 
 	protected _set(key: string, value: string|number){

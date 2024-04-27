@@ -9,8 +9,9 @@
 	<script type="text/javascript" src="./../packages/vanilla/dist/grafik.js"></script>
 	<script type="text/javascript" src="./../packages/react/dist/grafik-react.js"></script>
 	<style type="text/css">
-		body {
-			margin: 0;
+		#wrap {
+			width: 1200px;
+			margin: auto;
 		}
 		.grafik-wrapper {
 			position: relative;
@@ -29,11 +30,36 @@
 		}
 		.grafik-control-node {
 			position: absolute;
-			width: 20px;
-			height: 20px;
+			width: 16px;
+			height: 16px;
 			background: forestgreen;
 			border-radius: 100%;
 			transform: translate(-50%, -50%);
+			cursor: pointer;
+		}
+		.grafik-control-node__o {
+			width: 8px;
+			height: 8px;
+			background: transparent;
+			border: solid 2px forestgreen;
+		}
+		.grafik-control-node__o:before,
+		.grafik-control-node__o:after {
+			content: "";
+			position: absolute;
+			display: inline-block;
+			left: 50%;
+			top: 50%;
+			background: forestgreen;
+			transform: translate(-50%, -50%);
+		}
+		.grafik-control-node__o:before {
+			width: 20px;
+			height: 1px;
+		}
+		.grafik-control-node__o:after {
+			width: 1px;
+			height: 20px;
 		}
 	</style>
 </head>

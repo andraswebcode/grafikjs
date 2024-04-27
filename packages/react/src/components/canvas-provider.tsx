@@ -1,6 +1,5 @@
 import {
-	useMemo,
-	useEffect
+	useMemo
 } from 'react';
 import {
 	Canvas
@@ -9,26 +8,6 @@ import {
 import {
 	CanvasContext
 } from './../contexts';
-import {
-	useCanvas
-} from './../hooks';
-
-const ReactCanvas = ({
-	children,
-	...props
-}) => {
-
-	const canvas: any = useCanvas();
-
-	canvas.set(props);
-
-	return (
-		<svg {...canvas.getAttributes()}>
-			{children}
-		</svg>
-	);
-
-};
 
 const CanvasProvider = ({
 	children,
@@ -46,6 +25,5 @@ const CanvasProvider = ({
 };
 
 export {
-	ReactCanvas as Canvas,
 	CanvasProvider
 };

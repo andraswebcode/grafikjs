@@ -5,4 +5,7 @@ export * from './ellipse';
 export * from './path';
 export * from './polygon';
 export * from './polyline';
+export * from './text';
+export * from './text-path';
+export * from './image';
 export * from './group';

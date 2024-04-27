@@ -5,7 +5,9 @@ const ControlNode = ({
 	const TagName = node.get('tagName');
 
 	return (
-		<TagName {...node.getAttributes()}>
+		<TagName
+			{...node.getAttributes()}
+			style={node.getStyle()} >
 		</TagName>
 	);
 

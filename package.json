@@ -6,7 +6,8 @@
     "start": "webpack",
     "start:core": "npm start --prefix packages/core",
     "start:vanilla": "npm start --prefix packages/vanilla",
-    "start:react": "npm start --prefix packages/react"
+    "start:react": "npm start --prefix packages/react",
+    "start:styles": "npm start --prefix packages/styles"
   },
   "keywords": [],
   "author": "Andras Tovishati",
@@ -22,6 +23,7 @@
     "@grafikjs/core": "*",
     "@grafikjs/vanilla": "*",
     "@grafikjs/react": "*",
+    "@grafikjs/styles": "*",
     "react": "*",
     "react-dom": "*"
   },
@@ -32,6 +34,10 @@
     "ts-loader": "*",
     "@types/node": "*",
     "@types/react": "*",
-    "@types/react-dom": "*"
+    "@types/react-dom": "*",
+    "sass":"*",
+    "sass-loader":"*",
+    "style-loader":"*",
+    "css-loader":"*"
   }
 }

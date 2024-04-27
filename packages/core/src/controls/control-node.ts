@@ -19,7 +19,8 @@ class ControlNode extends Collection(Element) {
 	protected name = '';
 	protected id = '';
 
-	public position = new Point();
+	public offset = new Point();
+	private parent;
 	private connectedWith: ControlNode;
 
 	public constructor(params?){
@@ -29,6 +30,26 @@ class ControlNode extends Collection(Element) {
 		if (this.name){
 			this.addClass('grafik-control-node__' + this.name);
 		}
+		if (params.getPosition){
+			this.getPosition = params.getPosition.bind(this);
+		}
+	}
+
+	set x(value: number){
+		this.offset.x = value;
+	}
+
+	set y(value: number){
+		this.offset.y = value;
+	}
+
+	public getPosition() : Point {
+
+		const size = this.parent.getSize();
+		const {x, y} = this.offset;
+
+		return new Point(size.x * x, size.y * y);
+
 	}
 
 	public connectTo(node: ControlNode){
@@ -42,8 +63,8 @@ class ControlNode extends Collection(Element) {
 			return new Matrix();
 		}
 
-		const p1 = this.position;
-		const p2 = this.connectedWith.position;
+		const p1 = this.getPosition();
+		const p2 = this.connectedWith.getPosition();
 		const m = new Matrix();
 		const a = - p1.angleTo(p2);
 
@@ -52,7 +73,11 @@ class ControlNode extends Collection(Element) {
 	}
 
 	public getStyle(){
-		return {};
+		const {x, y} = this.getPosition();
+		return {
+			left:x,
+			top:y
+		};
 	}
 
 }

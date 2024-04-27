@@ -2,9 +2,18 @@
   "name": "@grafikjs/styles",
   "version": "0.0.1",
   "main": "./src/index.js",
-  "scripts": {},
+  "scripts": {
+    "start": "webpack",
+    "build": "webpack --env production"
+  },
   "author": "Andras Tovishati",
   "license": "MIT",
   "description": "",
-  "devDependencies":{}
+  "devDependencies":{
+    "sass":"*",
+    "sass-loader":"*",
+    "style-loader":"*",
+    "css-loader":"*",
+    "webpack":"*"
+  }
 }

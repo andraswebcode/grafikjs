@@ -2,39 +2,42 @@ import {
 	useMemo,
 	useEffect
 } from 'react';
-import * as core from '@grafikjs/core';
 
 import {
-	useCanvas
+	useCollection
 } from './hooks';
+import {
+	CLASSNAMES
+} from './utils';
 
-const withCanvasContext = (Component, tagName) => (props:Partial<core.ShapeObject>) => {
+const withCollectionContext = (Component, tagName: string) => (props: any) => {
 
-	const canvas: any = useCanvas();
+	const collection: any = useCollection();
+	
 	const shape = useMemo(() => {
-		const Shape = core[core.CLASSNAMES[tagName]];
-		const shape = new Shape();
-		return shape;
+		const Shape = CLASSNAMES[tagName];
+		return new Shape(props);
 	}, []);
 
 	useEffect(() => {
-		canvas.add(shape);
-		return () => {
-			canvas.remove(shape);
-		};
-	}, []);
 
-	shape.set(props);
+		collection.add(shape);
+
+		return () => {
+			collection.remove(shape);
+		};
+
+	}, []);
 
 	return (
 		<Component
 			TagName={tagName}
 			shape={shape}
-			onMouseMove={e => console.log(e)} />
+			props={props} />
 	);
 
 };
 
 export {
-	withCanvasContext
+	withCollectionContext
 };

@@ -13,6 +13,8 @@ import {
 	rad2Deg
 } from '@grafikjs/vanilla';
 
+import '@grafikjs/styles';
+
 const wrap = document.getElementById('wrap');
 
 const canvas = new Canvas({
@@ -34,7 +36,7 @@ const rect = new Rect({
 canvas.add(rect);
 
 const path = new Path({
-	d:'M0 100 C 40 0 160 0 200 100 C 160 200 40 200 0 100',
+	d:'M0 100 C 40 0 160 0 200 100 C 160 200 40 200 0 100 Z',
 	left:800,
 	top:200,
 	width:200,
@@ -54,10 +56,10 @@ const group = new Group({
 	stroke:'black',
 	strokeWidth:20,
 	fill:'none'
-}).add(
+}).add([
 	new Group({
 		left:200
-	}).add(
+	}).add([
 		new Rect({
 			left:-100,
 			top:-100,
@@ -70,10 +72,10 @@ const group = new Group({
 			width:200,
 			height:200
 		})
-	),
+	]),
 	new Group({
 		top:200
-	}).add(
+	}).add([
 		new Rect({
 			left:100,
 			top:-100,
@@ -86,8 +88,8 @@ const group = new Group({
 			width:200,
 			height:200
 		})
-	)
-);
+	])
+]);
 
 canvas.add(group);
 
@@ -96,11 +98,11 @@ const renderer = new Renderer(canvas).appendTo(wrap);
 // @ts-ignore
 window.renderer = renderer;
 
-const cc = new CurvePath().add(
+const cp = new CurvePath().add(
 	new MoveCurve(new Point(0, 0)),
 	new CubicBezierCurve(new Point(0, 0), new Point(100, 0), new Point(100, 100), new Point(0, 100)),
 	new CloseCurve()
 );
 
 // @ts-ignore
-window.path = cc;
+window.path = cp;

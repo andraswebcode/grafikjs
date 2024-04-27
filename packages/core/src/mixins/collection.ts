@@ -6,6 +6,7 @@ import {
 	CurvePath
 } from './../maths';
 import {
+	MoveCurve,
 	LineCurve
 } from './../maths/curves';
 
@@ -16,27 +17,47 @@ function Collection<TBase extends Constructor>(Base: TBase){
 		public readonly isCollection = true;
 		private children:any[] = [];
 
-		public setChildren(...children: any[]) : Collection {
-			this.children = children;
+		public setChildren(children: any|any[], silent = false) : Collection {
+
+			this.children = [];
+
+			this.add(children, silent);
+
 			return this;
+
 		}
 
-		public add(...children: any[]) : Collection {
+		public add(children: any|any[], silent = false) : Collection {
+
+			children = Array.isArray(children) ? children : [children];
+
 			children.forEach(child => {
 				this.children.push(child);
 				child.set({
 					parent:this,
 					// @ts-ignore
 					canvas:this.isCanvas ? this : this.canvas
-				});
+				}, true);
 			});
-			// @ts-ignore
-			this.trigger('added', children);
+
+			if (!silent){
+				// @ts-ignore
+				this.trigger('added', children);
+			}
+
 			return this;
+
 		}
 
-		public remove(...children) : Collection {
+		public remove(children: any|any[], silent = false) : Collection {
+
+			if (!silent){
+				// @ts-ignore
+				this.trigger('removed', children);
+			}
+
 			return this;
+
 		}
 
 		public eachChild(callback: (v: any, i: number, a: any[]) => void) : Collection {
@@ -65,12 +86,13 @@ function Collection<TBase extends Constructor>(Base: TBase){
 				}
 				const [tl, tr, br, bl] = bBox.getLineEdges(child.getWorldMatrix());
 				const polygon = new CurvePath(
+					new MoveCurve(tl),
 					new LineCurve(tl, tr),
 					new LineCurve(tr, br),
 					new LineCurve(br, bl),
 					new LineCurve(bl, tl)
 				);
-				return (polygon.containsPoint(pointer) && child);
+				return (polygon.containsPoint(pointer, 1) && child);
 			}).filter(child => !!child);
 
 		}

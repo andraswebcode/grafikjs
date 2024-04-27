@@ -2,6 +2,9 @@ import {
 	Control,
 	ControlNode
 } from './';
+import {
+	Point
+} from './../maths';
 
 class TransformControl extends Control {
 
@@ -12,35 +15,74 @@ class TransformControl extends Control {
 
 	public setNodes(){
 
+		const control = this;
+		const {
+			shape
+		} = control;
+
 		// Create control nodes.
 		const tl = new ControlNode({
-			name:'tl'
+			name:'tl',
+			x:0,
+			y:0
 		});
 		const tc = new ControlNode({
-			name:'tc'
+			name:'tc',
+			x:0.5,
+			y:0
 		});
 		const tr = new ControlNode({
-			name:'tr'
+			name:'tr',
+			x:1,
+			y:0
 		});
 
 		const ml = new ControlNode({
-			name:'ml'
+			name:'ml',
+			x:0,
+			y:0.5
 		});
 		const mr = new ControlNode({
-			name:'mr'
+			name:'mr',
+			x:1,
+			y:0.5
 		});
 
 		const bl = new ControlNode({
-			name:'bl'
+			name:'bl',
+			x:0,
+			y:1
 		});
 		const bc = new ControlNode({
-			name:'bc'
+			name:'bc',
+			x:0.5,
+			y:1
 		});
 		const br = new ControlNode({
-			name:'br'
+			name:'br',
+			x:1,
+			y:1
 		});
 
-		this.add(tl, tc, tr, ml, mr, bl, bc, br);
+		const a = new ControlNode({
+			name:'a',
+			getPosition(){
+				const {x} = control.getSize();
+				const dist = 20;
+				return new Point(x + dist, -dist);
+			}
+		});
+
+		const o = new ControlNode({
+			name:'o',
+			getPosition(){
+				const size = control.getSize();
+				const {x, y} = shape.get('origin');
+				return new Point(size.x * x, size.y * y);
+			}
+		});
+
+		this.add([tl, tc, tr, ml, mr, bl, bc, br, a, o]);
 
 		return this;
 

@@ -126,10 +126,21 @@ class CurvePath {
 		return this.curves.map(curve => curve.toString(' ')).join(' ');
 	}
 
-	public containsPoint(point: Point) : boolean {
+	public toPoints(divisions?: number) : Point[] {
+		let pp; // Previous point.
+		return this.mapCurves(curve => curve.getPoints(divisions)).flat().filter((p, i, array) => {
+			pp = array[i - 1];
+			if (!pp){
+				return true;
+			}
+			return !p.isEqual(pp);
+		});
+	}
+
+	public containsPoint(point: Point, divisions?: number) : boolean {
 
 		const {x, y} = point;
-		const polygon = this.mapCurves(curve => curve.getPoints(1)).flat();
+		const polygon = this.mapCurves(curve => curve.getPoints(divisions)).flat();
 		let contains = false, intersects, i, j, xi, yi, xj, yj;
 
 		for (i = 0, j = polygon.length - 1; i < polygon.length; j = i++){

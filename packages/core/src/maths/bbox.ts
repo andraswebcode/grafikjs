@@ -47,7 +47,7 @@ class BBox {
 	}
 
 	public getOrigin() : Point {
-		return new Point();
+		return new Point().subtract(this.min).divide(this.getSize());
 	}
 
 	public getLineEdges(matrix?: Matrix) : Point[] {
@@ -88,9 +88,13 @@ class BBox {
 	}
 
 	public reset() : BBox {
-		this.min = new Point();
-		this.max = new Point();
+		this.min.set(0, 0);
+		this.max.set(0, 0);
 		return this;
+	}
+
+	public isEqual(bBox: BBox) : boolean {
+		return (this.min.isEqual(bBox.min) && this.max.isEqual(bBox.max));
 	}
 
 	public copy(bBox: BBox) : BBox {

@@ -1,0 +1,9 @@
+.#{$prefix}-control {
+	position: absolute;
+}
+
+.#{$prefix}-control-node {
+	position: absolute;
+	width: $control-node-size;
+	height: $control-node-size;
+}

@@ -1,4 +1,8 @@
 import {
+	useState,
+	useCallback
+} from 'react';
+import {
 	Point
 } from '@grafikjs/core';
 
@@ -18,21 +22,29 @@ const Interactive = ({
 	const {canvas, dispatch}: any = useCanvasReducer();
 	const shapes = canvas.getSelectedShapes();
 
+	const onMouseDown = useCallback(e => {
+		const {
+			left,
+			top
+		} = e.currentTarget.getBoundingClientRect();
+		const pointer = new Point(e.clientX - left, e.clientY - top);
+		const founded = canvas.findLastChildByPointer(pointer);
+		const method = founded ? 'selectShapes' : 'releaseShapes';
+		if (method === 'selectShapes' && !e.ctrlKey){
+			// Here we do not use dispatch to avoid multiple renders of this component.
+			canvas.releaseShapes();
+		}
+		dispatch(method, founded);
+	}, []);
+	const onMouseMove = useCallback(e => {}, []);
+	const onMouseUp = useCallback(e => {}, []);
+
 	return (
 		<div
 			className={className}
-			onMouseDown={e => {}}
-			onMouseMove={e => {}}
-			onMouseUp={e => {}}
-			onClick={e => {
-				const founded = canvas.findLastChildByPointer(new Point(e.clientX, e.clientY));
-				const method = founded ? 'selectShapes' : 'releaseShapes';
-				if (method === 'selectShapes' && !e.ctrlKey){
-					// Here we do not use dispatch to avoid multiple renders of this component.
-					canvas.releaseShapes();
-				}
-				dispatch(method, founded);
-			}} >
+			onMouseDown={onMouseDown}
+			onMouseMove={onMouseMove}
+			onMouseUp={onMouseUp} >
 			{shapes.map(shape => (
 				<Control
 					key={shape.id}
