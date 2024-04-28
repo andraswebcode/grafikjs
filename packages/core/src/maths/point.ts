@@ -152,6 +152,12 @@ class Point {
 		return rad2Deg(Math.atan2(point.y - this.y, point.x - this.x));
 	}
 
+	public distanceTo(point: Point) : number {
+		const dx = this.x - point.x;
+		const dy = this.y - point.y;
+		return Math.sqrt(dx ** 2 + dy ** 2);
+	}
+
 	public transform(matrix: Matrix) : Point {
 
 		const {x, y} = this;
@@ -173,6 +179,12 @@ class Point {
 	public max(point: Point) : Point {
 		this.x = Math.max(this.x, point.x);
 		this.y = Math.max(this.y, point.y);
+		return this;
+	}
+
+	public abs() : Point {
+		this.x = Math.abs(this.x);
+		this.y = Math.abs(this.y);
 		return this;
 	}
 

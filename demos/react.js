@@ -4257,6 +4257,11 @@ var Point = /** @class */ (function () {
     Point.prototype.angleTo = function (point) {
         return (0,_utils__WEBPACK_IMPORTED_MODULE_0__.rad2Deg)(Math.atan2(point.y - this.y, point.x - this.x));
     };
+    Point.prototype.distanceTo = function (point) {
+        var dx = this.x - point.x;
+        var dy = this.y - point.y;
+        return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+    };
     Point.prototype.transform = function (matrix) {
         var _a = this, x = _a.x, y = _a.y;
         var a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
@@ -4272,6 +4277,11 @@ var Point = /** @class */ (function () {
     Point.prototype.max = function (point) {
         this.x = Math.max(this.x, point.x);
         this.y = Math.max(this.y, point.y);
+        return this;
+    };
+    Point.prototype.abs = function () {
+        this.x = Math.abs(this.x);
+        this.y = Math.abs(this.y);
         return this;
     };
     Point.prototype.clamp = function (min, max) {
