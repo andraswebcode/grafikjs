@@ -7,8 +7,14 @@ import {
 import {
 	Point
 } from './../../maths';
+import {
+	toFixed
+} from './../../utils';
 
 class TransformControl extends Control {
+
+	protected _isDragging = false;
+	protected _startVector = new Point();
 
 	public constructor(params?){
 		super();
@@ -97,6 +103,37 @@ class TransformControl extends Control {
 
 		return this;
 
+	}
+
+	public onPointerStart(e){
+
+		const canvas = this.shape.get('canvas');
+		const {left, top} = this.shape.getWorldMatrix().toOptions();
+
+		this._isDragging = true;
+		this._startVector.subtractPoints(canvas.getPointer(e), new Point(left, top));
+
+	}
+
+	public onPointerMove(e){
+
+		if (!this._isDragging){
+			return;
+		}
+
+		const canvas = this.shape.get('canvas');
+		const vpt = canvas.get('viewportMatrix').clone();
+		const move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
+
+		this.shape.set({
+			left:toFixed(move.x),
+			top:toFixed(move.y)
+		});
+
+	}
+
+	public onPointerEnd(e){
+		this._isDragging = false;
 	}
 
 }

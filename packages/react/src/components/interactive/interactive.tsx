@@ -33,13 +33,18 @@ const Interactive = ({
 	const onMouseUp = useCallback(e => {
 		canvas.onPointerEnd(e);
 	}, []);
+	const onWheel = useCallback(e => {
+		canvas.onWheel(e);
+	}, []);
 
 	return (
 		<div
 			className={className}
 			onMouseDown={onMouseDown}
 			onMouseMove={onMouseMove}
-			onMouseUp={onMouseUp} >
+			onMouseUp={onMouseUp}
+			onMouseLeave={onMouseUp}
+			onWheel={onWheel} >
 			{shapes.map(shape => (
 				<Control
 					key={shape.id}

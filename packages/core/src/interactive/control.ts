@@ -15,9 +15,6 @@ class Control extends Collection(Element) {
 
 	protected shape: any;
 
-	protected _isDragging = false;
-	protected _startVector = new Point();
-
 	public init(params?){
 		this.set(params);
 		this.setNodes();
@@ -66,36 +63,11 @@ class Control extends Collection(Element) {
 		};
 	}
 
-	public onPointerStart(e){
+	public onPointerStart(e){}
 
-		const canvas = this.shape.get('canvas');
-		const {left, top} = this.shape.getWorldMatrix().toOptions();
+	public onPointerMove(e){}
 
-		this._isDragging = true;
-		this._startVector.subtractPoints(canvas.getPointer(e), new Point(left, top));
-
-	}
-
-	public onPointerMove(e){
-
-		if (!this._isDragging){
-			return;
-		}
-
-		const canvas = this.shape.get('canvas');
-		const vpt = canvas.get('viewportMatrix').clone();
-		const move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
-
-		this.shape.set({
-			left:move.x,
-			top:move.y
-		});
-
-	}
-
-	public onPointerEnd(e){
-		this._isDragging = false;
-	}
+	public onPointerEnd(e){}
 
 }
 

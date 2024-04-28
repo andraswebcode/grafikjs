@@ -79,10 +79,10 @@ class Canvas extends Collection(Element) {
 		return this;
 	}
 
-	public zoomTo(zoom: number, point?: Point){
+	public zoomTo(zoom: number, pointer?: Point){
 
 		// First we have to set viewport to update shapes world matrix.
-		this.viewportMatrix.reset().scale(zoom);
+		this.viewportMatrix.reset().scale(zoom || 1);
 
 		// And we also need to calculate viewBox from viewport to update svg attribute.
 		const {a, d, tx, ty} = this.viewportMatrix;
@@ -92,6 +92,10 @@ class Canvas extends Collection(Element) {
 
 		return this;
 
+	}
+
+	public getZoom() : number {
+		return this.viewportMatrix.a;
 	}
 
 	public getPointer(e) : Point {
@@ -143,6 +147,10 @@ class Canvas extends Collection(Element) {
 			shape.getControl()?.childById(this._currentNodeId)?.onPointerEnd(e);
 		});
 		this._currentNodeId = '';
+	}
+
+	public onWheel(e){
+		this.zoomTo(this.getZoom() * 0.999 ** e.deltaY);
 	}
 
 }

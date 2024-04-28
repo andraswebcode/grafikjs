@@ -1969,14 +1969,17 @@ var Canvas = /** @class */ (function (_super) {
         this._selectedShapes.forEach(callback);
         return this;
     };
-    Canvas.prototype.zoomTo = function (zoom, point) {
+    Canvas.prototype.zoomTo = function (zoom, pointer) {
         // First we have to set viewport to update shapes world matrix.
-        this.viewportMatrix.reset().scale(zoom);
+        this.viewportMatrix.reset().scale(zoom || 1);
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;
         this.viewBox = [tx, ty, width / a, height / d];
         return this;
+    };
+    Canvas.prototype.getZoom = function () {
+        return this.viewportMatrix.a;
     };
     Canvas.prototype.getPointer = function (e) {
         var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
@@ -2023,6 +2026,9 @@ var Canvas = /** @class */ (function (_super) {
             (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(_this._currentNodeId)) === null || _b === void 0 ? void 0 : _b.onPointerEnd(e);
         });
         this._currentNodeId = '';
+    };
+    Canvas.prototype.onWheel = function (e) {
+        this.zoomTo(this.getZoom() * Math.pow(0.999, e.deltaY));
     };
     return Canvas;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
@@ -2945,8 +2951,6 @@ var Control = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.tagName = 'div';
         _this.className = 'grafik-control';
-        _this._isDragging = false;
-        _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point();
         return _this;
     }
     Control.prototype.init = function (params) {
@@ -2981,27 +2985,9 @@ var Control = /** @class */ (function (_super) {
         var defaultAttributes = _super.prototype.getAttributes.call(this);
         return __assign(__assign({}, defaultAttributes), { 'data-control': true, 'data-shape': this.shape.get('id') });
     };
-    Control.prototype.onPointerStart = function (e) {
-        var canvas = this.shape.get('canvas');
-        var _a = this.shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
-        this._isDragging = true;
-        this._startVector.subtractPoints(canvas.getPointer(e), new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(left, top));
-    };
-    Control.prototype.onPointerMove = function (e) {
-        if (!this._isDragging) {
-            return;
-        }
-        var canvas = this.shape.get('canvas');
-        var vpt = canvas.get('viewportMatrix').clone();
-        var move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
-        this.shape.set({
-            left: move.x,
-            top: move.y
-        });
-    };
-    Control.prototype.onPointerEnd = function (e) {
-        this._isDragging = false;
-    };
+    Control.prototype.onPointerStart = function (e) { };
+    Control.prototype.onPointerMove = function (e) { };
+    Control.prototype.onPointerEnd = function (e) { };
     return Control;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
 
@@ -3130,6 +3116,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../ */ "./packages/core/src/interactive/index.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -3147,10 +3134,13 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
+
 var TransformControl = /** @class */ (function (_super) {
     __extends(TransformControl, _super);
     function TransformControl(params) {
         var _this = _super.call(this) || this;
+        _this._isDragging = false;
+        _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
         _this.init(params);
         _this.addClass('grafik-transform-control');
         return _this;
@@ -3225,6 +3215,27 @@ var TransformControl = /** @class */ (function (_super) {
         });
         this.add([tl, tc, tr, ml, mr, bl, bc, br, a, o]);
         return this;
+    };
+    TransformControl.prototype.onPointerStart = function (e) {
+        var canvas = this.shape.get('canvas');
+        var _a = this.shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        this._isDragging = true;
+        this._startVector.subtractPoints(canvas.getPointer(e), new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(left, top));
+    };
+    TransformControl.prototype.onPointerMove = function (e) {
+        if (!this._isDragging) {
+            return;
+        }
+        var canvas = this.shape.get('canvas');
+        var vpt = canvas.get('viewportMatrix').clone();
+        var move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
+        this.shape.set({
+            left: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.x),
+            top: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.y)
+        });
+    };
+    TransformControl.prototype.onPointerEnd = function (e) {
+        this._isDragging = false;
     };
     return TransformControl;
 }(___WEBPACK_IMPORTED_MODULE_0__.Control));
@@ -5906,7 +5917,10 @@ var Interactive = function (_a) {
     var onMouseUp = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
         canvas.onPointerEnd(e);
     }, []);
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: className, onMouseDown: onMouseDown, onMouseMove: onMouseMove, onMouseUp: onMouseUp, children: [shapes.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(___WEBPACK_IMPORTED_MODULE_2__.Control, { control: shape.getControl() }, shape.id)); }), children] }));
+    var onWheel = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
+        canvas.onWheel(e);
+    }, []);
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: className, onMouseDown: onMouseDown, onMouseMove: onMouseMove, onMouseUp: onMouseUp, onMouseLeave: onMouseUp, onWheel: onWheel, children: [shapes.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(___WEBPACK_IMPORTED_MODULE_2__.Control, { control: shape.getControl() }, shape.id)); }), children] }));
 };
 
 
