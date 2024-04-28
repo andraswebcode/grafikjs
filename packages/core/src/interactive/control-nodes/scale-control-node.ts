@@ -2,7 +2,7 @@ import {
 	ControlNode
 } from './../control-node';
 
-class OriginControlNode extends ControlNode {
+class ScaleControlNode extends ControlNode {
 
 	protected _isDragging = false;
 
@@ -25,5 +25,5 @@ class OriginControlNode extends ControlNode {
 }
 
 export {
-	OriginControlNode
+	ScaleControlNode
 };

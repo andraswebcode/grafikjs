@@ -1,8 +1,8 @@
 import {
 	Control,
-	ControlNode,
 	AngleControlNode,
-	OriginControlNode
+	OriginControlNode,
+	ScaleControlNode
 } from './../';
 import {
 	Point
@@ -23,44 +23,44 @@ class TransformControl extends Control {
 		} = control;
 
 		// Create control nodes.
-		const tl = new ControlNode({
+		const tl = new ScaleControlNode({
 			name:'tl',
 			x:0,
 			y:0
 		});
-		const tc = new ControlNode({
+		const tc = new ScaleControlNode({
 			name:'tc',
 			x:0.5,
 			y:0
 		});
-		const tr = new ControlNode({
+		const tr = new ScaleControlNode({
 			name:'tr',
 			x:1,
 			y:0
 		});
 
-		const ml = new ControlNode({
+		const ml = new ScaleControlNode({
 			name:'ml',
 			x:0,
 			y:0.5
 		});
-		const mr = new ControlNode({
+		const mr = new ScaleControlNode({
 			name:'mr',
 			x:1,
 			y:0.5
 		});
 
-		const bl = new ControlNode({
+		const bl = new ScaleControlNode({
 			name:'bl',
 			x:0,
 			y:1
 		});
-		const bc = new ControlNode({
+		const bc = new ScaleControlNode({
 			name:'bc',
 			x:0.5,
 			y:1
 		});
-		const br = new ControlNode({
+		const br = new ScaleControlNode({
 			name:'br',
 			x:1,
 			y:1

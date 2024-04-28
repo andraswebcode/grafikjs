@@ -31,7 +31,7 @@ class AngleControlNode extends ControlNode {
 		const p = shape.getLocalPointer(e, this._startMatrix);
 		const v = new Point().angleTo(p);
 		const cv = v - this._startVector;
-		let angle = this._startAngle + cv;
+		let angle = Math.ceil(this._startAngle + cv);
 
 		// Normalize angle to be between 0, and 360.
 		if (angle < 0) angle += 360;

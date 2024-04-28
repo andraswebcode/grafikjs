@@ -1119,6 +1119,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   RadialGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.RadialGradient),
 /* harmony export */   Rect: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Rect),
 /* harmony export */   SVGImporter: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.SVGImporter),
+/* harmony export */   ScaleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.ScaleControlNode),
 /* harmony export */   Shape: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Shape),
 /* harmony export */   Text: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Text),
 /* harmony export */   TextPath: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.TextPath),
@@ -1334,7 +1335,7 @@ var AngleControlNode = /** @class */ (function (_super) {
         var p = shape.getLocalPointer(e, this._startMatrix);
         var v = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().angleTo(p);
         var cv = v - this._startVector;
-        var angle = this._startAngle + cv;
+        var angle = Math.ceil(this._startAngle + cv);
         // Normalize angle to be between 0, and 360.
         if (angle < 0)
             angle += 360;
@@ -1360,10 +1361,13 @@ var AngleControlNode = /** @class */ (function (_super) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   AngleControlNode: () => (/* reexport safe */ _angle_control_node__WEBPACK_IMPORTED_MODULE_0__.AngleControlNode),
-/* harmony export */   OriginControlNode: () => (/* reexport safe */ _origin_control_node__WEBPACK_IMPORTED_MODULE_1__.OriginControlNode)
+/* harmony export */   OriginControlNode: () => (/* reexport safe */ _origin_control_node__WEBPACK_IMPORTED_MODULE_1__.OriginControlNode),
+/* harmony export */   ScaleControlNode: () => (/* reexport safe */ _scale_control_node__WEBPACK_IMPORTED_MODULE_2__.ScaleControlNode)
 /* harmony export */ });
 /* harmony import */ var _angle_control_node__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./angle-control-node */ "./packages/core/src/interactive/control-nodes/angle-control-node.ts");
 /* harmony import */ var _origin_control_node__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./origin-control-node */ "./packages/core/src/interactive/control-nodes/origin-control-node.ts");
+/* harmony import */ var _scale_control_node__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scale-control-node */ "./packages/core/src/interactive/control-nodes/scale-control-node.ts");
+
 
 
 
@@ -1400,9 +1404,74 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var OriginControlNode = /** @class */ (function (_super) {
     __extends(OriginControlNode, _super);
     function OriginControlNode() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._isDragging = false;
+        return _this;
     }
+    OriginControlNode.prototype.onPointerStart = function (e) {
+        this._isDragging = true;
+    };
+    OriginControlNode.prototype.onPointerMove = function (e) {
+        if (!this._isDragging) {
+            return;
+        }
+    };
+    OriginControlNode.prototype.onPointerEnd = function (e) {
+        this._isDragging = false;
+    };
     return OriginControlNode;
+}(_control_node__WEBPACK_IMPORTED_MODULE_0__.ControlNode));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/control-nodes/scale-control-node.ts":
+/*!***************************************************************************!*\
+  !*** ./packages/core/src/interactive/control-nodes/scale-control-node.ts ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ScaleControlNode: () => (/* binding */ ScaleControlNode)
+/* harmony export */ });
+/* harmony import */ var _control_node__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../control-node */ "./packages/core/src/interactive/control-node.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ScaleControlNode = /** @class */ (function (_super) {
+    __extends(ScaleControlNode, _super);
+    function ScaleControlNode() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._isDragging = false;
+        return _this;
+    }
+    ScaleControlNode.prototype.onPointerStart = function (e) {
+        this._isDragging = true;
+    };
+    ScaleControlNode.prototype.onPointerMove = function (e) {
+        if (!this._isDragging) {
+            return;
+        }
+    };
+    ScaleControlNode.prototype.onPointerEnd = function (e) {
+        this._isDragging = false;
+    };
+    return ScaleControlNode;
 }(_control_node__WEBPACK_IMPORTED_MODULE_0__.ControlNode));
 
 
@@ -1665,42 +1734,42 @@ var TransformControl = /** @class */ (function (_super) {
         var control = this;
         var shape = control.shape;
         // Create control nodes.
-        var tl = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+        var tl = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'tl',
             x: 0,
             y: 0
         });
-        var tc = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+        var tc = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'tc',
             x: 0.5,
             y: 0
         });
-        var tr = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+        var tr = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'tr',
             x: 1,
             y: 0
         });
-        var ml = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+        var ml = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'ml',
             x: 0,
             y: 0.5
         });
-        var mr = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+        var mr = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'mr',
             x: 1,
             y: 0.5
         });
-        var bl = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+        var bl = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'bl',
             x: 0,
             y: 1
         });
-        var bc = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+        var bc = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'bc',
             x: 0.5,
             y: 1
         });
-        var br = new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
+        var br = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'br',
             x: 1,
             y: 1
@@ -1745,6 +1814,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   GradientControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_2__.GradientControl),
 /* harmony export */   OriginControlNode: () => (/* reexport safe */ _control_nodes__WEBPACK_IMPORTED_MODULE_3__.OriginControlNode),
 /* harmony export */   PathControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_2__.PathControl),
+/* harmony export */   ScaleControlNode: () => (/* reexport safe */ _control_nodes__WEBPACK_IMPORTED_MODULE_3__.ScaleControlNode),
 /* harmony export */   TransformControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_2__.TransformControl)
 /* harmony export */ });
 /* harmony import */ var _control__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./control */ "./packages/core/src/interactive/control.ts");
@@ -4001,6 +4071,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Rect: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Rect),
 /* harmony export */   Renderer: () => (/* reexport safe */ _renderer__WEBPACK_IMPORTED_MODULE_1__.Renderer),
 /* harmony export */   SVGImporter: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.SVGImporter),
+/* harmony export */   ScaleControlNode: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode),
 /* harmony export */   Shape: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Shape),
 /* harmony export */   Text: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Text),
 /* harmony export */   TextPath: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.TextPath),
