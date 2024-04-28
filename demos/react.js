@@ -2982,7 +2982,8 @@ var Control = /** @class */ (function (_super) {
         return __assign(__assign({}, defaultAttributes), { 'data-control': true, 'data-shape': this.shape.get('id') });
     };
     Control.prototype.onPointerStart = function (e) {
-        var _a = this.shape.get(['left', 'top', 'canvas']), left = _a.left, top = _a.top, canvas = _a.canvas;
+        var canvas = this.shape.get('canvas');
+        var _a = this.shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.subtractPoints(canvas.getPointer(e), new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(left, top));
     };

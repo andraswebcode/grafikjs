@@ -68,11 +68,8 @@ class Control extends Collection(Element) {
 
 	public onPointerStart(e){
 
-		const {
-			left,
-			top,
-			canvas
-		} = this.shape.get(['left', 'top', 'canvas']);
+		const canvas = this.shape.get('canvas');
+		const {left, top} = this.shape.getWorldMatrix().toOptions();
 
 		this._isDragging = true;
 		this._startVector.subtractPoints(canvas.getPointer(e), new Point(left, top));
