@@ -70,11 +70,12 @@ class Control extends Collection(Element) {
 
 		const {
 			left,
-			top
-		} = this.shape.get(['left', 'top']);
+			top,
+			canvas
+		} = this.shape.get(['left', 'top', 'canvas']);
 
 		this._isDragging = true;
-		this._startVector.subtractPoints(new Point(e.clientX, e.clientY), new Point(left, top));
+		this._startVector.subtractPoints(canvas.getPointer(e), new Point(left, top));
 
 	}
 
@@ -84,7 +85,9 @@ class Control extends Collection(Element) {
 			return;
 		}
 
-		const move = new Point(e.clientX, e.clientY).subtract(this._startVector);
+		const canvas = this.shape.get('canvas');
+		const vpt = canvas.get('viewportMatrix').clone();
+		const move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
 
 		this.shape.set({
 			left:move.x,

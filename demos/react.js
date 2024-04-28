@@ -1923,6 +1923,13 @@ var Canvas = /** @class */ (function (_super) {
         _this.set(params);
         return _this;
     }
+    Object.defineProperty(Canvas.prototype, "zoom", {
+        set: function (value) {
+            this.zoomTo(value);
+        },
+        enumerable: false,
+        configurable: true
+    });
     Canvas.prototype.getAttrMap = function () {
         return _super.prototype.getAttrMap.call(this).concat([
             'xmlns',
@@ -1930,14 +1937,6 @@ var Canvas = /** @class */ (function (_super) {
             'height',
             'viewBox'
         ]);
-    };
-    Canvas.prototype.set = function (key, value) {
-        _super.prototype.set.call(this, key, value);
-        this.setViewBox();
-        return this;
-    };
-    Canvas.prototype.setViewBox = function () {
-        this.viewBox = [0, 0, this.width, this.height];
     };
     Canvas.prototype.selectShapes = function (shapes) {
         var _this = this;
@@ -1968,6 +1967,15 @@ var Canvas = /** @class */ (function (_super) {
     };
     Canvas.prototype.eachSelectedShape = function (callback) {
         this._selectedShapes.forEach(callback);
+        return this;
+    };
+    Canvas.prototype.zoomTo = function (zoom, point) {
+        // First we have to set viewport to update shapes world matrix.
+        this.viewportMatrix.reset().scale(zoom);
+        // And we also need to calculate viewBox from viewport to update svg attribute.
+        var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
+        var _b = this, width = _b.width, height = _b.height;
+        this.viewBox = [tx, ty, width / a, height / d];
         return this;
     };
     Canvas.prototype.getPointer = function (e) {
@@ -2333,7 +2341,7 @@ var Element = /** @class */ (function () {
             for (var prop in key) {
                 this._set(prop, key[prop]);
             }
-            // Attention please: here - if 'key' is an object, 'silent' becomes 'value'!
+            // Attention please: here - if 'key' is an object - 'value' becomes the 'silent'!
             if (!value) {
                 this.trigger('set', key);
             }
@@ -2671,6 +2679,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _control_node__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../control-node */ "./packages/core/src/interactive/control-node.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -2688,6 +2697,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
+
 var AngleControlNode = /** @class */ (function (_super) {
     __extends(AngleControlNode, _super);
     function AngleControlNode(params) {
@@ -2700,9 +2710,11 @@ var AngleControlNode = /** @class */ (function (_super) {
     }
     AngleControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startAngle = shape.get('angle');
-        this._startMatrix = shape.getWorldMatrix().invert();
+        // We do not want to get the whole world matrix, just want to get the translate matrix here.
+        this._startMatrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().translate(left, top).invert();
         this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().angleTo(shape.getLocalPointer(e, this._startMatrix));
     };
     AngleControlNode.prototype.onPointerMove = function (e) {
@@ -2713,7 +2725,7 @@ var AngleControlNode = /** @class */ (function (_super) {
         var p = shape.getLocalPointer(e, this._startMatrix);
         var v = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().angleTo(p);
         var cv = v - this._startVector;
-        var angle = Math.ceil(this._startAngle + cv);
+        var angle = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(this._startAngle + cv);
         // Normalize angle to be between 0, and 360.
         if (angle < 0)
             angle += 360;
@@ -2870,8 +2882,8 @@ var ScaleControlNode = /** @class */ (function (_super) {
             set.scaleY = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(scale.y);
         }
         else {
-            set.scaleX = Math.max(scale.x, scale.y);
-            set.scaleY = Math.max(scale.x, scale.y);
+            set.scaleX = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(scale.x);
+            set.scaleY = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(scale.y);
         }
         shape.set(set);
     };
@@ -2970,15 +2982,17 @@ var Control = /** @class */ (function (_super) {
         return __assign(__assign({}, defaultAttributes), { 'data-control': true, 'data-shape': this.shape.get('id') });
     };
     Control.prototype.onPointerStart = function (e) {
-        var _a = this.shape.get(['left', 'top']), left = _a.left, top = _a.top;
+        var _a = this.shape.get(['left', 'top', 'canvas']), left = _a.left, top = _a.top, canvas = _a.canvas;
         this._isDragging = true;
-        this._startVector.subtractPoints(new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(e.clientX, e.clientY), new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(left, top));
+        this._startVector.subtractPoints(canvas.getPointer(e), new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(left, top));
     };
     Control.prototype.onPointerMove = function (e) {
         if (!this._isDragging) {
             return;
         }
-        var move = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(e.clientX, e.clientY).subtract(this._startVector);
+        var canvas = this.shape.get('canvas');
+        var vpt = canvas.get('viewportMatrix').clone();
+        var move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
         this.shape.set({
             left: move.x,
             top: move.y
@@ -6170,25 +6184,23 @@ var TestComponent = function (props) {
     return null;
 };
 var TestApp = function () {
-    var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(400), left = _a[0], setLeft = _a[1];
-    var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(400), top = _b[0], setTop = _b[1];
-    var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), angle = _c[0], setAngle = _c[1];
-    var _d = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0.5), scaleX = _d[0], setScaleX = _d[1];
-    var _e = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0.5), scaleY = _e[0], setScaleY = _e[1];
-    var _f = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewX = _f[0], setSkewX = _f[1];
-    var _g = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewY = _g[0], setSkewY = _g[1];
-    var _h = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(12), sw = _h[0], setSw = _h[1];
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: left, top: top, angle: angle, scaleX: scaleX, scaleY: scaleY, skewX: skewX, skewY: skewY, 
-                                // originX={0.2}
-                                // originY={0.8}
-                                width: 200, height: 200, stroke: 'black', strokeWidth: sw, fill: 'none', onChange: function (rect) {
-                                    var left = rect.left, top = rect.top, angle = rect.angle, scaleX = rect.scaleX, scaleY = rect.scaleY;
-                                    setLeft(left);
-                                    setTop(top);
-                                    setAngle(angle);
-                                    setScaleX(scaleX);
-                                    setScaleY(scaleY);
-                                } }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, {})] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Left:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: left, onChange: function (e) { return setLeft(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Top:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: top, onChange: function (e) { return setTop(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Angle:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: angle, onChange: function (e) { return setAngle(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleX, onChange: function (e) { return setScaleX(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleY, onChange: function (e) { return setScaleY(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewX, onChange: function (e) { return setSkewX(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewY, onChange: function (e) { return setSkewY(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Stroke Width:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: sw, onChange: function (e) { return setSw(parseInt(e.target.value) || 0); } })] })] }));
+    var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(2), zoom = _a[0], setZoom = _a[1];
+    var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(400), left = _b[0], setLeft = _b[1];
+    var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(400), top = _c[0], setTop = _c[1];
+    var _d = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), angle = _d[0], setAngle = _d[1];
+    var _e = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0.5), scaleX = _e[0], setScaleX = _e[1];
+    var _f = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0.5), scaleY = _f[0], setScaleY = _f[1];
+    var _g = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewX = _g[0], setSkewX = _g[1];
+    var _h = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewY = _h[0], setSkewY = _h[1];
+    var _j = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(12), sw = _j[0], setSw = _j[1];
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { zoom: zoom, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: left, top: top, angle: angle, scaleX: scaleX, scaleY: scaleY, skewX: skewX, skewY: skewY, originX: 0.25, originY: 0.75, width: 200, height: 200, stroke: 'black', strokeWidth: sw, fill: 'none', onChange: function (rect) {
+                                        var left = rect.left, top = rect.top, angle = rect.angle, scaleX = rect.scaleX, scaleY = rect.scaleY;
+                                        setLeft(left);
+                                        setTop(top);
+                                        setAngle(angle);
+                                        setScaleX(scaleX);
+                                        setScaleY(scaleY);
+                                    } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, {})] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Zoom:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: zoom, onChange: function (e) { return setZoom(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Left:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: left, onChange: function (e) { return setLeft(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Top:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: top, onChange: function (e) { return setTop(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Angle:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: angle, onChange: function (e) { return setAngle(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleX, onChange: function (e) { return setScaleX(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleY, onChange: function (e) { return setScaleY(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewX, onChange: function (e) { return setSkewX(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewY, onChange: function (e) { return setSkewY(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Stroke Width:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: sw, onChange: function (e) { return setSw(parseInt(e.target.value) || 0); } })] })] }));
 };
 
 

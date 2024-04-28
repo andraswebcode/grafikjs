@@ -28,6 +28,10 @@ class Canvas extends Collection(Element) {
 	private _selectedShapes = [];
 	private _currentNodeId: string;
 
+	set zoom(value: number){
+		this.zoomTo(value);
+	}
+
 	public constructor(params = {}){
 		super();
 		this.set(params);
@@ -40,16 +44,6 @@ class Canvas extends Collection(Element) {
 			'height',
 			'viewBox'
 		]);
-	}
-
-	public set(key, value?){
-		super.set(key, value);
-		this.setViewBox();
-		return this;
-	}
-
-	public setViewBox(){
-		this.viewBox = [0, 0, this.width, this.height];
 	}
 
 	public selectShapes(shapes: any|any[]){
@@ -83,6 +77,21 @@ class Canvas extends Collection(Element) {
 	public eachSelectedShape(callback: (v: any, i: number, a: any[]) => void){
 		this._selectedShapes.forEach(callback);
 		return this;
+	}
+
+	public zoomTo(zoom: number, point?: Point){
+
+		// First we have to set viewport to update shapes world matrix.
+		this.viewportMatrix.reset().scale(zoom);
+
+		// And we also need to calculate viewBox from viewport to update svg attribute.
+		const {a, d, tx, ty} = this.viewportMatrix;
+		const {width, height} = this;
+
+		this.viewBox = [tx, ty, width / a, height / d];
+
+		return this;
+
 	}
 
 	public getPointer(e) : Point {

@@ -5,6 +5,9 @@ import {
 	Point,
 	Matrix
 } from './../../maths';
+import {
+	toFixed
+} from './../../utils';
 
 class AngleControlNode extends ControlNode {
 
@@ -20,9 +23,11 @@ class AngleControlNode extends ControlNode {
 
 	public onPointerStart(e){
 		const shape = this.getShape();
+		const {left, top} = shape.getWorldMatrix().toOptions();
 		this._isDragging = true;
 		this._startAngle = shape.get('angle');
-		this._startMatrix = shape.getWorldMatrix().invert();
+		// We do not want to get the whole world matrix, just want to get the translate matrix here.
+		this._startMatrix = new Matrix().translate(left, top).invert();
 		this._startVector = new Point().angleTo(shape.getLocalPointer(e, this._startMatrix));
 	}
 
@@ -36,7 +41,7 @@ class AngleControlNode extends ControlNode {
 		const p = shape.getLocalPointer(e, this._startMatrix);
 		const v = new Point().angleTo(p);
 		const cv = v - this._startVector;
-		let angle = Math.ceil(this._startAngle + cv);
+		let angle = toFixed(this._startAngle + cv);
 
 		// Normalize angle to be between 0, and 360.
 		if (angle < 0) angle += 360;

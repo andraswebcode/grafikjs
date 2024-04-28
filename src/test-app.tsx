@@ -40,6 +40,7 @@ const TestComponent = props => {
 
 const TestApp = () => {
 
+	const [zoom, setZoom] = useState(2);
 	const [left, setLeft] = useState(400);
 	const [top, setTop] = useState(400);
 	const [angle, setAngle] = useState(0);
@@ -55,9 +56,10 @@ const TestApp = () => {
 				width={1200}
 				height={800} >
 				<Wrapper>
-					<Canvas>
-					{/*}
+					<Canvas
+						zoom={zoom} >
 						<TestComponent />
+					{/*}
 						<Group
 							left={250}
 							top={250}
@@ -110,8 +112,8 @@ const TestApp = () => {
 							scaleY={scaleY}
 							skewX={skewX}
 							skewY={skewY}
-							// originX={0.2}
-							// originY={0.8}
+							originX={0.25}
+							originY={0.75}
 							width={200}
 							height={200}
 							stroke='black'
@@ -156,6 +158,14 @@ const TestApp = () => {
 					<Interactive />
 				</Wrapper>
 			</CanvasProvider>
+			<label>
+				Zoom:
+				<input
+					type='number'
+					value={zoom}
+					onChange={e => setZoom(parseFloat(e.target.value) || 0)}
+					step={0.1} />
+			</label>
 			<label>
 				Left:
 				<input

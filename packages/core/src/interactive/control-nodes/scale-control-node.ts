@@ -24,11 +24,14 @@ class ScaleControlNode extends ControlNode {
 	}
 
 	public onPointerStart(e){
+
 		const shape = this.getShape();
+
 		this._isDragging = true;
 		this._startScale.set(shape.get('scaleX'), shape.get('scaleY'));
 		this._startSize.copy(this.getControlSize());
 		this._startMatrix = shape.getWorldMatrix().invert();
+
 	}
 
 	public onPointerMove(e){
@@ -48,8 +51,8 @@ class ScaleControlNode extends ControlNode {
 		} else if (this.axis === 'y'){
 			set.scaleY = toFixed(scale.y);
 		} else {
-			set.scaleX = Math.max(scale.x, scale.y);
-			set.scaleY = Math.max(scale.x, scale.y);
+			set.scaleX = toFixed(scale.x);
+			set.scaleY = toFixed(scale.y);
 		}
 
 		shape.set(set);

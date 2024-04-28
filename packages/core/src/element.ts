@@ -19,7 +19,7 @@ class Element {
 			for (let prop in key){
 				this._set(prop, key[prop]);
 			}
-			// Attention please: here - if 'key' is an object, 'silent' becomes 'value'!
+			// Attention please: here - if 'key' is an object - 'value' becomes the 'silent'!
 			if (!value){
 				this.trigger('set', key);
 			}
