@@ -98,6 +98,12 @@ class Point {
 		return this;
 	}
 
+	public multiplyPoints(p1: Point, p2: Point) : Point {
+		this.x = p1.x * p2.x;
+		this.y = p1.y * p2.y;
+		return this;
+	}
+
 	public divide(point: Point) : Point {
 		this.x /= point.x;
 		this.y /= point.y;
@@ -107,6 +113,12 @@ class Point {
 	public divideScalar(scale: number) : Point {
 		this.x /= scale;
 		this.y /= scale;
+		return this;
+	}
+
+	public dividePoints(p1: Point, p2: Point) : Point {
+		this.x = p1.x / p2.x;
+		this.y = p1.y / p2.y;
 		return this;
 	}
 

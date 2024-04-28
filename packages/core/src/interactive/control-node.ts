@@ -48,7 +48,7 @@ class ControlNode extends Collection(Element) {
 
 	public getPosition() : Point {
 
-		const size = this.parent.getSize();
+		const size = this.getControlSize();
 		const {x, y} = this.offset;
 
 		return new Point(size.x * x, size.y * y);
@@ -77,6 +77,10 @@ class ControlNode extends Collection(Element) {
 
 	public getShape(){
 		return this.parent.shape;
+	}
+
+	public getControlSize() : Point {
+		return this.parent.getSize();
 	}
 
 	public getStyle(){

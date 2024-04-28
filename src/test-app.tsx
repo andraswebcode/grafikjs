@@ -43,8 +43,8 @@ const TestApp = () => {
 	const [left, setLeft] = useState(400);
 	const [top, setTop] = useState(400);
 	const [angle, setAngle] = useState(0);
-	const [scaleX, setScaleX] = useState(1);
-	const [scaleY, setScaleY] = useState(1);
+	const [scaleX, setScaleX] = useState(0.5);
+	const [scaleY, setScaleY] = useState(0.5);
 	const [skewX, setSkewX] = useState(0);
 	const [skewY, setSkewY] = useState(0);
 	const [sw, setSw] = useState(12);
@@ -110,8 +110,8 @@ const TestApp = () => {
 							scaleY={scaleY}
 							skewX={skewX}
 							skewY={skewY}
-							originX={0.2}
-							originY={0.8}
+							// originX={0.2}
+							// originY={0.8}
 							width={200}
 							height={200}
 							stroke='black'

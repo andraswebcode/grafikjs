@@ -36,6 +36,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.grafik-wrapper {
 
 .grafik-control {
   position: absolute;
+  cursor: move;
 }
 
 .grafik-control-node {
@@ -2611,7 +2612,7 @@ var ControlNode = /** @class */ (function (_super) {
         configurable: true
     });
     ControlNode.prototype.getPosition = function () {
-        var size = this.parent.getSize();
+        var size = this.getControlSize();
         var _a = this.offset, x = _a.x, y = _a.y;
         return new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(size.x * x, size.y * y);
     };
@@ -2631,6 +2632,9 @@ var ControlNode = /** @class */ (function (_super) {
     };
     ControlNode.prototype.getShape = function () {
         return this.parent.shape;
+    };
+    ControlNode.prototype.getControlSize = function () {
+        return this.parent.getSize();
     };
     ControlNode.prototype.getStyle = function () {
         var _a = this.getPosition(), x = _a.x, y = _a.y;
@@ -2808,6 +2812,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   ScaleControlNode: () => (/* binding */ ScaleControlNode)
 /* harmony export */ });
 /* harmony import */ var _control_node__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../control-node */ "./packages/core/src/interactive/control-node.ts");
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../maths */ "./packages/core/src/maths/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -2824,20 +2829,33 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var ScaleControlNode = /** @class */ (function (_super) {
     __extends(ScaleControlNode, _super);
     function ScaleControlNode() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this._isDragging = false;
+        _this._startScale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
         return _this;
     }
     ScaleControlNode.prototype.onPointerStart = function (e) {
+        var shape = this.getShape();
         this._isDragging = true;
+        this._startScale.set(shape.get('scaleX'), shape.get('scaleY'));
+        this._startMatrix = shape.getWorldMatrix().invert();
     };
     ScaleControlNode.prototype.onPointerMove = function (e) {
         if (!this._isDragging) {
             return;
         }
+        var shape = this.getShape();
+        var lp = shape.getLocalPointer(e, this._startMatrix);
+        var size = this.getControlSize();
+        var ratio = lp.divide(size.divideScalar(2).divide(this._startScale));
+        var scale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().multiplyPoints(this._startScale, ratio);
+        shape.set({
+            scaleX: scale.x
+        });
     };
     ScaleControlNode.prototype.onPointerEnd = function (e) {
         this._isDragging = false;
@@ -4198,6 +4216,11 @@ var Point = /** @class */ (function () {
         this.y *= scale;
         return this;
     };
+    Point.prototype.multiplyPoints = function (p1, p2) {
+        this.x = p1.x * p2.x;
+        this.y = p1.y * p2.y;
+        return this;
+    };
     Point.prototype.divide = function (point) {
         this.x /= point.x;
         this.y /= point.y;
@@ -4206,6 +4229,11 @@ var Point = /** @class */ (function () {
     Point.prototype.divideScalar = function (scale) {
         this.x /= scale;
         this.y /= scale;
+        return this;
+    };
+    Point.prototype.dividePoints = function (p1, p2) {
+        this.x = p1.x / p2.x;
+        this.y = p1.y / p2.y;
         return this;
     };
     Point.prototype.lerp = function (point, t) {
@@ -6106,12 +6134,15 @@ var TestApp = function () {
     var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(400), left = _a[0], setLeft = _a[1];
     var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(400), top = _b[0], setTop = _b[1];
     var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), angle = _c[0], setAngle = _c[1];
-    var _d = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(1), scaleX = _d[0], setScaleX = _d[1];
-    var _e = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(1), scaleY = _e[0], setScaleY = _e[1];
+    var _d = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0.5), scaleX = _d[0], setScaleX = _d[1];
+    var _e = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0.5), scaleY = _e[0], setScaleY = _e[1];
     var _f = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewX = _f[0], setSkewX = _f[1];
     var _g = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewY = _g[0], setSkewY = _g[1];
     var _h = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(12), sw = _h[0], setSw = _h[1];
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: left, top: top, angle: angle, scaleX: scaleX, scaleY: scaleY, skewX: skewX, skewY: skewY, originX: 0.2, originY: 0.8, width: 200, height: 200, stroke: 'black', strokeWidth: sw, fill: 'none', onChange: function (rect) {
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: left, top: top, angle: angle, scaleX: scaleX, scaleY: scaleY, skewX: skewX, skewY: skewY, 
+                                // originX={0.2}
+                                // originY={0.8}
+                                width: 200, height: 200, stroke: 'black', strokeWidth: sw, fill: 'none', onChange: function (rect) {
                                     var left = rect.left, top = rect.top, angle = rect.angle;
                                     setLeft(left);
                                     setTop(top);
