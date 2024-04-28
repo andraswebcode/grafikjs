@@ -21,52 +21,18 @@ const Interactive = ({
 
 	const {canvas, dispatch}: any = useCanvasReducer();
 	const shapes = canvas.getSelectedShapes();
-	const [nodeId, setNodeId] = useState('');
 
 	const onMouseDown = useCallback(e => {
-		const {
-			left,
-			top
-		} = e.currentTarget.getBoundingClientRect();
-		const {
-			dataset
-		} = e.target;
-		const isNode = ('controlNode' in dataset);
-		const pointer = new Point(e.clientX - left, e.clientY - top);
-		const founded = canvas.findLastChildByPointer(pointer);
-		if (isNode){
-			canvas.eachSelectedShape(shape => {
-				shape.getControl().childById(dataset.id).onPointerStart(e);
-			});
-			setNodeId(dataset.id || '');
-		} else {
-			if (founded){
-				if (!e.ctrlKey){
-					canvas.releaseShapes();
-				}
-				canvas.selectShapes(founded);
-			} else {
-				canvas.releaseShapes();
-			}
-			canvas.eachSelectedShape(shape => {
-				shape.getControl().onPointerStart(e);
-			});
-		}
-		// Force rerender component here.
+		e.preventDefault();
+		canvas.onPointerStart(e);
 		dispatch();
-	}, [nodeId]);
+	}, []);
 	const onMouseMove = useCallback(e => {
-		canvas.eachSelectedShape(shape => {
-			shape.getControl().childById(nodeId)?.onPointerMove(e);
-			shape.getControl().onPointerMove(e);
-		});
-	}, [nodeId]);
+		canvas.onPointerMove(e);
+	}, []);
 	const onMouseUp = useCallback(e => {
-		canvas.eachSelectedShape(shape => {
-			shape.getControl().childById(nodeId)?.onPointerEnd(e);
-			shape.getControl().onPointerEnd(e);
-		});
-	}, [nodeId]);
+		canvas.onPointerEnd(e);
+	}, []);
 
 	return (
 		<div

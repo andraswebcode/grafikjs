@@ -6,4 +6,33 @@
 	position: absolute;
 	width: $control-node-size;
 	height: $control-node-size;
+	background: $control-node-color;
+	border-radius: 100%;
+	transform: translate(-50%, -50%);
+	cursor: crosshair;
+}
+
+.#{$prefix}-control-node__o {
+	width: calc($control-node-size / 2);
+	height: calc($control-node-size / 2);
+	background: transparent;
+	border: solid 1px $control-node-color;
+	&:before,
+	&:after {
+		content: "";
+		position: absolute;
+		display: inline-block;
+		left: 50%;
+		top: 50%;
+		background: $control-node-color;
+		transform: translate(-50%, -50%);
+	}
+	&:before {
+		width: calc($control-node-size * 1.5);
+		height: 1px;
+	}
+	&:after {
+		width: 1px;
+		height: calc($control-node-size * 1.5);
+	}
 }

@@ -182,6 +182,11 @@ class Shape extends Element {
 		return new Matrix().copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix()).multiply(this.matrix);
 	}
 
+	public getLocalPointer(e, matrix?: Matrix) : Point {
+		const pointer = this.canvas.getPointer(e);
+		return pointer.transform(matrix || this.getWorldMatrix().invert());
+	}
+
 }
 
 export {

@@ -56,6 +56,7 @@ const TestApp = () => {
 				height={800} >
 				<Wrapper>
 					<Canvas>
+					{/*}
 						<TestComponent />
 						<Group
 							left={250}
@@ -100,6 +101,7 @@ const TestApp = () => {
 									fill='none' />
 							</Group>
 						</Group>
+					{*/}
 						<Rect
 							left={left}
 							top={top}
@@ -116,10 +118,12 @@ const TestApp = () => {
 							strokeWidth={sw}
 							fill='none'
 							onChange={rect => {
-								const {left, top} = rect;
+								const {left, top, angle} = rect;
 								setLeft(left);
 								setTop(top);
+								setAngle(angle);
 							}} />
+					{/*}
 						<Ellipse
 							left={400}
 							top={400}
@@ -145,6 +149,7 @@ const TestApp = () => {
 							stroke='black'
 							strokeWidth={8}
 							fill='none' />
+					{*/}
 					</Canvas>
 					<Interactive />
 				</Wrapper>

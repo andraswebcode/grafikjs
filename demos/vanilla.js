@@ -42,6 +42,34 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.grafik-wrapper {
   position: absolute;
   width: 12px;
   height: 12px;
+  background: forestgreen;
+  border-radius: 100%;
+  transform: translate(-50%, -50%);
+  cursor: crosshair;
+}
+
+.grafik-control-node__o {
+  width: 6px;
+  height: 6px;
+  background: transparent;
+  border: solid 1px forestgreen;
+}
+.grafik-control-node__o:before, .grafik-control-node__o:after {
+  content: "";
+  position: absolute;
+  display: inline-block;
+  left: 50%;
+  top: 50%;
+  background: forestgreen;
+  transform: translate(-50%, -50%);
+}
+.grafik-control-node__o:before {
+  width: 18px;
+  height: 1px;
+}
+.grafik-control-node__o:after {
+  width: 1px;
+  height: 18px;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
@@ -569,6 +597,52 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype.eachSelectedShape = function (callback) {
         this._selectedShapes.forEach(callback);
         return this;
+    };
+    Canvas.prototype.getPointer = function (e) {
+        var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
+        return new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(e.clientX - left, e.clientY - top);
+    };
+    Canvas.prototype.onPointerStart = function (e) {
+        var dataset = e.target.dataset;
+        var isNode = ('controlNode' in dataset);
+        var pointer = this.getPointer(e);
+        var founded = this.findLastChildByPointer(pointer);
+        if (isNode) {
+            this._currentNodeId = dataset.id;
+            this.eachSelectedShape(function (shape) {
+                var _a, _b;
+                (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(dataset.id)) === null || _b === void 0 ? void 0 : _b.onPointerStart(e);
+            });
+        }
+        else {
+            if (founded) {
+                this.releaseShapes();
+                this.selectShapes(founded);
+            }
+            else {
+                this.releaseShapes();
+            }
+            this.eachSelectedShape(function (shape) {
+                shape.getControl().onPointerStart(e);
+            });
+        }
+    };
+    Canvas.prototype.onPointerMove = function (e) {
+        var _this = this;
+        this.eachSelectedShape(function (shape) {
+            var _a, _b;
+            shape.getControl().onPointerMove(e);
+            (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(_this._currentNodeId)) === null || _b === void 0 ? void 0 : _b.onPointerMove(e);
+        });
+    };
+    Canvas.prototype.onPointerEnd = function (e) {
+        var _this = this;
+        this.eachSelectedShape(function (shape) {
+            var _a, _b;
+            shape.getControl().onPointerEnd(e);
+            (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(_this._currentNodeId)) === null || _b === void 0 ? void 0 : _b.onPointerEnd(e);
+        });
+        delete this._currentNodeId;
     };
     return Canvas;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
@@ -1218,6 +1292,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   AngleControlNode: () => (/* binding */ AngleControlNode)
 /* harmony export */ });
 /* harmony import */ var _control_node__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../control-node */ "./packages/core/src/interactive/control-node.ts");
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../maths */ "./packages/core/src/maths/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1234,21 +1309,37 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var AngleControlNode = /** @class */ (function (_super) {
     __extends(AngleControlNode, _super);
     function AngleControlNode() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this._isDragging = false;
+        _this._startAngle = 0;
+        _this._startVector = 0;
         return _this;
     }
     AngleControlNode.prototype.onPointerStart = function (e) {
+        var shape = this.getShape();
         this._isDragging = true;
-        this._startAngle = this.getShape().get('angle');
+        this._startAngle = shape.get('angle');
+        this._startMatrix = shape.getWorldMatrix().invert();
+        this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().angleTo(shape.getLocalPointer(e, this._startMatrix));
     };
     AngleControlNode.prototype.onPointerMove = function (e) {
         if (!this._isDragging) {
             return;
         }
+        var shape = this.getShape();
+        var p = shape.getLocalPointer(e, this._startMatrix);
+        var v = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().angleTo(p);
+        var cv = v - this._startVector;
+        var angle = this._startAngle + cv;
+        // Normalize angle to be between 0, and 360.
+        if (angle < 0)
+            angle += 360;
+        angle %= 360;
+        shape.set('angle', angle);
     };
     AngleControlNode.prototype.onPointerEnd = function (e) {
         this._isDragging = false;
@@ -3531,6 +3622,10 @@ var Shape = /** @class */ (function (_super) {
     Shape.prototype.getWorldMatrix = function () {
         var _a = this.parent, viewportMatrix = _a.viewportMatrix, isCanvas = _a.isCanvas;
         return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix()).multiply(this.matrix);
+    };
+    Shape.prototype.getLocalPointer = function (e, matrix) {
+        var pointer = this.canvas.getPointer(e);
+        return pointer.transform(matrix || this.getWorldMatrix().invert());
     };
     return Shape;
 }(_element__WEBPACK_IMPORTED_MODULE_0__.Element));
