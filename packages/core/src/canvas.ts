@@ -133,7 +133,7 @@ class Canvas extends Collection(Element) {
 			shape.getControl().onPointerEnd(e);
 			shape.getControl()?.childById(this._currentNodeId)?.onPointerEnd(e);
 		});
-		delete this._currentNodeId;
+		this._currentNodeId = '';
 	}
 
 }

@@ -2014,7 +2014,7 @@ var Canvas = /** @class */ (function (_super) {
             shape.getControl().onPointerEnd(e);
             (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(_this._currentNodeId)) === null || _b === void 0 ? void 0 : _b.onPointerEnd(e);
         });
-        delete this._currentNodeId;
+        this._currentNodeId = '';
     };
     return Canvas;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
@@ -2577,26 +2577,28 @@ var __assign = (undefined && undefined.__assign) || function () {
 
 var ControlNode = /** @class */ (function (_super) {
     __extends(ControlNode, _super);
-    function ControlNode(params) {
-        var _this = _super.call(this) || this;
+    function ControlNode() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.tagName = 'div';
         _this.className = 'grafik-control-node';
         _this.name = '';
         _this.id = '';
         _this.offset = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point();
-        _this.set(params);
-        _this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.uniqueId)();
-        if (_this.name) {
-            _this.addClass('grafik-control-node__' + _this.name);
-        }
-        if (params.getPosition) {
-            _this.getPosition = params.getPosition.bind(_this);
-        }
-        _this.onPointerStart = _this.onPointerStart.bind(_this);
-        _this.onPointerMove = _this.onPointerMove.bind(_this);
-        _this.onPointerEnd = _this.onPointerEnd.bind(_this);
         return _this;
     }
+    ControlNode.prototype.init = function (params) {
+        this.set(params);
+        this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.uniqueId)();
+        if (this.name) {
+            this.addClass('grafik-control-node__' + this.name);
+        }
+        if (params.getPosition) {
+            this.getPosition = params.getPosition.bind(this);
+        }
+        this.onPointerStart = this.onPointerStart.bind(this);
+        this.onPointerMove = this.onPointerMove.bind(this);
+        this.onPointerEnd = this.onPointerEnd.bind(this);
+    };
     Object.defineProperty(ControlNode.prototype, "x", {
         set: function (value) {
             this.offset.x = value;
@@ -2688,11 +2690,12 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var AngleControlNode = /** @class */ (function (_super) {
     __extends(AngleControlNode, _super);
-    function AngleControlNode() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function AngleControlNode(params) {
+        var _this = _super.call(this) || this;
         _this._isDragging = false;
         _this._startAngle = 0;
         _this._startVector = 0;
+        _this.init(params);
         return _this;
     }
     AngleControlNode.prototype.onPointerStart = function (e) {
@@ -2778,9 +2781,10 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var OriginControlNode = /** @class */ (function (_super) {
     __extends(OriginControlNode, _super);
-    function OriginControlNode() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function OriginControlNode(params) {
+        var _this = _super.call(this) || this;
         _this._isDragging = false;
+        _this.init(params);
         return _this;
     }
     OriginControlNode.prototype.onPointerStart = function (e) {
@@ -2813,6 +2817,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _control_node__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../control-node */ "./packages/core/src/interactive/control-node.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -2830,18 +2835,23 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
+
 var ScaleControlNode = /** @class */ (function (_super) {
     __extends(ScaleControlNode, _super);
-    function ScaleControlNode() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function ScaleControlNode(params) {
+        var _this = _super.call(this) || this;
+        _this.axis = '';
         _this._isDragging = false;
         _this._startScale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
+        _this._startSize = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
+        _this.init(params);
         return _this;
     }
     ScaleControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
         this._isDragging = true;
         this._startScale.set(shape.get('scaleX'), shape.get('scaleY'));
+        this._startSize.copy(this.getControlSize());
         this._startMatrix = shape.getWorldMatrix().invert();
     };
     ScaleControlNode.prototype.onPointerMove = function (e) {
@@ -2850,12 +2860,20 @@ var ScaleControlNode = /** @class */ (function (_super) {
         }
         var shape = this.getShape();
         var lp = shape.getLocalPointer(e, this._startMatrix);
-        var size = this.getControlSize();
-        var ratio = lp.divide(size.divideScalar(2).divide(this._startScale));
-        var scale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().multiplyPoints(this._startScale, ratio);
-        shape.set({
-            scaleX: scale.x
-        });
+        var ratio = lp.divide(this._startSize.clone().divideScalar(2).divide(this._startScale));
+        var scale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().multiplyPoints(this._startScale, ratio).abs();
+        var set = {};
+        if (this.axis === 'x') {
+            set.scaleX = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(scale.x);
+        }
+        else if (this.axis === 'y') {
+            set.scaleY = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(scale.y);
+        }
+        else {
+            set.scaleX = Math.max(scale.x, scale.y);
+            set.scaleY = Math.max(scale.x, scale.y);
+        }
+        shape.set(set);
     };
     ScaleControlNode.prototype.onPointerEnd = function (e) {
         this._isDragging = false;
@@ -2911,19 +2929,21 @@ var __assign = (undefined && undefined.__assign) || function () {
 
 var Control = /** @class */ (function (_super) {
     __extends(Control, _super);
-    function Control(params) {
-        var _this = _super.call(this) || this;
+    function Control() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.tagName = 'div';
         _this.className = 'grafik-control';
         _this._isDragging = false;
         _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point();
-        _this.set(params);
-        _this.setNodes();
-        _this.onPointerStart = _this.onPointerStart.bind(_this);
-        _this.onPointerMove = _this.onPointerMove.bind(_this);
-        _this.onPointerEnd = _this.onPointerEnd.bind(_this);
         return _this;
     }
+    Control.prototype.init = function (params) {
+        this.set(params);
+        this.setNodes();
+        this.onPointerStart = this.onPointerStart.bind(this);
+        this.onPointerMove = this.onPointerMove.bind(this);
+        this.onPointerEnd = this.onPointerEnd.bind(this);
+    };
     Control.prototype.setNodes = function () {
         console.warn('setNodes() must be implemented by subclass.');
         return this;
@@ -3003,8 +3023,11 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var GradientControl = /** @class */ (function (_super) {
     __extends(GradientControl, _super);
-    function GradientControl() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function GradientControl(params) {
+        var _this = _super.call(this) || this;
+        _this.init(params);
+        _this.addClass('grafik-gradient-control');
+        return _this;
     }
     return GradientControl;
 }(___WEBPACK_IMPORTED_MODULE_0__.Control));
@@ -3065,15 +3088,12 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var PathControl = /** @class */ (function (_super) {
     __extends(PathControl, _super);
     function PathControl(params) {
-        var _this = _super.call(this, params) || this;
+        var _this = _super.call(this) || this;
+        _this.init(params);
         _this.addClass('grafik-path-control');
         return _this;
     }
     PathControl.prototype.setNodes = function () {
-        var nodes = this.path.toPoints().map(function (position) { return new ___WEBPACK_IMPORTED_MODULE_0__.ControlNode({
-            position: position
-        }); });
-        this.setChildren(nodes);
         return this;
     };
     return PathControl;
@@ -3115,7 +3135,8 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var TransformControl = /** @class */ (function (_super) {
     __extends(TransformControl, _super);
     function TransformControl(params) {
-        var _this = _super.call(this, params) || this;
+        var _this = _super.call(this) || this;
+        _this.init(params);
         _this.addClass('grafik-transform-control');
         return _this;
     }
@@ -3125,41 +3146,49 @@ var TransformControl = /** @class */ (function (_super) {
         // Create control nodes.
         var tl = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'tl',
+            axis: '',
             x: 0,
             y: 0
         });
         var tc = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'tc',
+            axis: 'y',
             x: 0.5,
             y: 0
         });
         var tr = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'tr',
+            axis: '',
             x: 1,
             y: 0
         });
         var ml = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'ml',
+            axis: 'x',
             x: 0,
             y: 0.5
         });
         var mr = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'mr',
+            axis: 'x',
             x: 1,
             y: 0.5
         });
         var bl = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'bl',
+            axis: '',
             x: 0,
             y: 1
         });
         var bc = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'bc',
+            axis: 'y',
             x: 0.5,
             y: 1
         });
         var br = new ___WEBPACK_IMPORTED_MODULE_0__.ScaleControlNode({
             name: 'br',
+            axis: '',
             x: 1,
             y: 1
         });
@@ -6153,10 +6182,12 @@ var TestApp = function () {
                                 // originX={0.2}
                                 // originY={0.8}
                                 width: 200, height: 200, stroke: 'black', strokeWidth: sw, fill: 'none', onChange: function (rect) {
-                                    var left = rect.left, top = rect.top, angle = rect.angle;
+                                    var left = rect.left, top = rect.top, angle = rect.angle, scaleX = rect.scaleX, scaleY = rect.scaleY;
                                     setLeft(left);
                                     setTop(top);
                                     setAngle(angle);
+                                    setScaleX(scaleX);
+                                    setScaleY(scaleY);
                                 } }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, {})] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Left:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: left, onChange: function (e) { return setLeft(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Top:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: top, onChange: function (e) { return setTop(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Angle:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: angle, onChange: function (e) { return setAngle(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleX, onChange: function (e) { return setScaleX(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleY, onChange: function (e) { return setScaleY(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewX, onChange: function (e) { return setSkewX(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewY, onChange: function (e) { return setSkewY(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Stroke Width:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: sw, onChange: function (e) { return setSw(parseInt(e.target.value) || 0); } })] })] }));
 };
 

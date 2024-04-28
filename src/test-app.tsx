@@ -118,10 +118,12 @@ const TestApp = () => {
 							strokeWidth={sw}
 							fill='none'
 							onChange={rect => {
-								const {left, top, angle} = rect;
+								const {left, top, angle, scaleX, scaleY} = rect;
 								setLeft(left);
 								setTop(top);
 								setAngle(angle);
+								setScaleX(scaleX);
+								setScaleY(scaleY);
 							}} />
 					{/*}
 						<Ellipse

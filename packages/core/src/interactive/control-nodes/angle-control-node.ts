@@ -13,6 +13,11 @@ class AngleControlNode extends ControlNode {
 	protected _startVector = 0;
 	protected _startMatrix: Matrix;
 
+	public constructor(params?){
+		super();
+		this.init(params);
+	}
+
 	public onPointerStart(e){
 		const shape = this.getShape();
 		this._isDragging = true;

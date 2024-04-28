@@ -1,6 +1,6 @@
 {
   "name": "@grafikjs/styles",
-  "version": "0.0.1",
+  "version": "0.0.12",
   "main": "./src/index.js",
   "scripts": {
     "start": "webpack",

@@ -23,8 +23,7 @@ class ControlNode extends Collection(Element) {
 	private parent;
 	private connectedWith: ControlNode;
 
-	public constructor(params?){
-		super();
+	public init(params?){
 		this.set(params);
 		this.id = uniqueId();
 		if (this.name){

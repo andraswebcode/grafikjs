@@ -18,8 +18,7 @@ class Control extends Collection(Element) {
 	protected _isDragging = false;
 	protected _startVector = new Point();
 
-	public constructor(params?){
-		super();
+	public init(params?){
 		this.set(params);
 		this.setNodes();
 		this.onPointerStart = this.onPointerStart.bind(this);
