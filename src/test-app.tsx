@@ -86,7 +86,7 @@ const TestZoomer = () => {
 
 const TestApp = () => {
 
-	const [zoom, setZoom] = useState(2);
+	const [zoom, setZoom] = useState(1);
 	const [left, setLeft] = useState(400);
 	const [top, setTop] = useState(400);
 	const [angle, setAngle] = useState(0);

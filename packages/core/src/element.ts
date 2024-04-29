@@ -50,7 +50,7 @@ class Element {
 		const attrMap = this.getAttrMap();
 		let value;
 		return attrMap.reduce((memo:object, key:string) : object => {
-			if (this.hasOwnProperty(key)){
+			if (typeof this[key] !== 'undefined'){
 				value = this[key];
 				value = Array.isArray(value) ? value.join(' ') : value;
 				memo[key] = value;

@@ -114,7 +114,6 @@ class Canvas extends Collection(Element) {
 		const size = new Point(this.width, this.height);
 		const zoomSize = size.clone().multiplyScalar(zoom);
 		const translate = new Point().subtractPoints(zoomSize, size).divideScalar(2).add(pan);
-		console.log(translate, pan)
 		this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
 
 		// And we also need to calculate viewBox from viewport to update svg attribute.

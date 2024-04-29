@@ -2,6 +2,7 @@ import {
 	Element
 } from './../element';
 import {
+	Color,
 	Matrix,
 	BBox,
 	Point
@@ -48,10 +49,45 @@ class Shape extends Element {
 	protected skewX = 0;
 	protected skewY = 0;
 
-	protected fill: FillStroke;
-	protected stroke: FillStroke;
+	private _fill: string;
+	private _stroke: string;
+	private _fillObject: FillStroke;
+	private _strokeObject: FillStroke;
+
 	protected strokeWidth: number;
 	protected opacity: number;
+
+	get fill(){
+		return this._fill;
+	}
+
+	set fill(value: FillStroke){
+		if (Color.isColor(value)){
+			// @ts-ignore
+			this._fill = value;
+			this._fillObject = null;
+		} else {
+			// @ts-ignore Why 'id' do not exists on FillStroke?
+			this._fill = `url(#${value.id})`;
+			this._fillObject = value;
+		}
+	}
+
+	get stroke(){
+		return this._stroke;
+	}
+
+	set stroke(value: FillStroke){
+		if (Color.isColor(value)){
+			// @ts-ignore
+			this._stroke = value;
+			this._strokeObject = null;
+		} else {
+			// @ts-ignore Why 'id' do not exists on FillStroke?
+			this._stroke = `url(#${value.id})`;
+			this._strokeObject = value;
+		}
+	}
 
 	set originX(value: number){
 		this.origin.x = value;
@@ -59,6 +95,14 @@ class Shape extends Element {
 
 	set originY(value: number){
 		this.origin.y = value;
+	}
+
+	get originX(){
+		return this.origin.x;
+	}
+
+	get originY(){
+		return this.origin.y;
 	}
 
 	public init(params){

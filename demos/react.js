@@ -2006,7 +2006,6 @@ var Canvas = /** @class */ (function (_super) {
         var size = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(this.width, this.height);
         var zoomSize = size.clone().multiplyScalar(zoom);
         var translate = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point().subtractPoints(zoomSize, size).divideScalar(2).add(pan);
-        console.log(translate, pan);
         this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
@@ -2412,7 +2411,7 @@ var Element = /** @class */ (function () {
         var attrMap = this.getAttrMap();
         var value;
         return attrMap.reduce(function (memo, key) {
-            if (_this.hasOwnProperty(key)) {
+            if (typeof _this[key] !== 'undefined') {
                 value = _this[key];
                 value = Array.isArray(value) ? value.join(' ') : value;
                 memo[key] = value;
@@ -3497,6 +3496,174 @@ var Color = /** @class */ (function () {
     };
     Color.prototype.clone = function () {
         return new Color().copy(this);
+    };
+    Color.isColor = function (value) {
+        return (Color.isHEX(value) || Color.isRGB(value) || Color.isColorName(value));
+    };
+    Color.isColorName = function (value) {
+        return Color.isHEX(Color.colorNameMap[value]);
+    };
+    Color.isHEX = function (value) {
+        var isHex = /^(#?)([a-f0-9]{3}){1,2}$/i.test(value);
+        var isHexa = /^(#?)([a-f0-9]{8})$/i.test(value);
+        return (isHex || isHexa);
+    };
+    Color.isRGB = function (value) {
+        var isRgb = /^(rgb)[(]\s*([\d.]+\s*)\s*,\s*([\d.]+\s*)\s*,\s*([\d.]+\s*)\s*[)]$/.test(value);
+        var isRgba = /^(rgba)[(]\s*([\d.]+\s*)\s*,\s*([\d.]+\s*)\s*,\s*([\d.]+\s*)\s*,\s*([\d.]+\s*)\s*[)]$/.test(value);
+        return (isRgb || isRgba);
+    };
+    Color.colorNameMap = {
+        aliceblue: '#F0F8FF',
+        antiquewhite: '#FAEBD7',
+        aqua: '#00FFFF',
+        aquamarine: '#7FFFD4',
+        azure: '#F0FFFF',
+        beige: '#F5F5DC',
+        bisque: '#FFE4C4',
+        black: '#000000',
+        blanchedalmond: '#FFEBCD',
+        blue: '#0000FF',
+        blueviolet: '#8A2BE2',
+        brown: '#A52A2A',
+        burlywood: '#DEB887',
+        cadetblue: '#5F9EA0',
+        chartreuse: '#7FFF00',
+        chocolate: '#D2691E',
+        coral: '#FF7F50',
+        cornflowerblue: '#6495ED',
+        cornsilk: '#FFF8DC',
+        crimson: '#DC143C',
+        cyan: '#00FFFF',
+        darkblue: '#00008B',
+        darkcyan: '#008B8B',
+        darkgoldenrod: '#B8860B',
+        darkgray: '#A9A9A9',
+        darkgrey: '#A9A9A9',
+        darkgreen: '#006400',
+        darkkhaki: '#BDB76B',
+        darkmagenta: '#8B008B',
+        darkolivegreen: '#556B2F',
+        darkorange: '#FF8C00',
+        darkorchid: '#9932CC',
+        darkred: '#8B0000',
+        darksalmon: '#E9967A',
+        darkseagreen: '#8FBC8F',
+        darkslateblue: '#483D8B',
+        darkslategray: '#2F4F4F',
+        darkslategrey: '#2F4F4F',
+        darkturquoise: '#00CED1',
+        darkviolet: '#9400D3',
+        deeppink: '#FF1493',
+        deepskyblue: '#00BFFF',
+        dimgray: '#696969',
+        dimgrey: '#696969',
+        dodgerblue: '#1E90FF',
+        firebrick: '#B22222',
+        floralwhite: '#FFFAF0',
+        forestgreen: '#228B22',
+        fuchsia: '#FF00FF',
+        gainsboro: '#DCDCDC',
+        ghostwhite: '#F8F8FF',
+        gold: '#FFD700',
+        goldenrod: '#DAA520',
+        gray: '#808080',
+        grey: '#808080',
+        green: '#008000',
+        greenyellow: '#ADFF2F',
+        honeydew: '#F0FFF0',
+        hotpink: '#FF69B4',
+        indianred: '#CD5C5C',
+        indigo: '#4B0082',
+        ivory: '#FFFFF0',
+        khaki: '#F0E68C',
+        lavender: '#E6E6FA',
+        lavenderblush: '#FFF0F5',
+        lawngreen: '#7CFC00',
+        lemonchiffon: '#FFFACD',
+        lightblue: '#ADD8E6',
+        lightcoral: '#F08080',
+        lightcyan: '#E0FFFF',
+        lightgoldenrodyellow: '#FAFAD2',
+        lightgray: '#D3D3D3',
+        lightgrey: '#D3D3D3',
+        lightgreen: '#90EE90',
+        lightpink: '#FFB6C1',
+        lightsalmon: '#FFA07A',
+        lightseagreen: '#20B2AA',
+        lightskyblue: '#87CEFA',
+        lightslategray: '#778899',
+        lightslategrey: '#778899',
+        lightsteelblue: '#B0C4DE',
+        lightyellow: '#FFFFE0',
+        lime: '#00FF00',
+        limegreen: '#32CD32',
+        linen: '#FAF0E6',
+        magenta: '#FF00FF',
+        maroon: '#800000',
+        mediumaquamarine: '#66CDAA',
+        mediumblue: '#0000CD',
+        mediumorchid: '#BA55D3',
+        mediumpurple: '#9370DB',
+        mediumseagreen: '#3CB371',
+        mediumslateblue: '#7B68EE',
+        mediumspringgreen: '#00FA9A',
+        mediumturquoise: '#48D1CC',
+        mediumvioletred: '#C71585',
+        midnightblue: '#191970',
+        mintcream: '#F5FFFA',
+        mistyrose: '#FFE4E1',
+        moccasin: '#FFE4B5',
+        navajowhite: '#FFDEAD',
+        navy: '#000080',
+        oldlace: '#FDF5E6',
+        olive: '#808000',
+        olivedrab: '#6B8E23',
+        orange: '#FFA500',
+        orangered: '#FF4500',
+        orchid: '#DA70D6',
+        palegoldenrod: '#EEE8AA',
+        palegreen: '#98FB98',
+        paleturquoise: '#AFEEEE',
+        palevioletred: '#DB7093',
+        papayawhip: '#FFEFD5',
+        peachpuff: '#FFDAB9',
+        peru: '#CD853F',
+        pink: '#FFC0CB',
+        plum: '#DDA0DD',
+        powderblue: '#B0E0E6',
+        purple: '#800080',
+        rebeccapurple: '#663399',
+        red: '#FF0000',
+        rosybrown: '#BC8F8F',
+        royalblue: '#4169E1',
+        saddlebrown: '#8B4513',
+        salmon: '#FA8072',
+        sandybrown: '#F4A460',
+        seagreen: '#2E8B57',
+        seashell: '#FFF5EE',
+        sienna: '#A0522D',
+        silver: '#C0C0C0',
+        skyblue: '#87CEEB',
+        slateblue: '#6A5ACD',
+        slategray: '#708090',
+        slategrey: '#708090',
+        snow: '#FFFAFA',
+        springgreen: '#00FF7F',
+        steelblue: '#4682B4',
+        tan: '#D2B48C',
+        teal: '#008080',
+        thistle: '#D8BFD8',
+        tomato: '#FF6347',
+        turquoise: '#40E0D0',
+        violet: '#EE82EE',
+        wheat: '#F5DEB3',
+        white: '#FFFFFF',
+        whitesmoke: '#F5F5F5',
+        yellow: '#FFFF00',
+        yellowgreen: '#9ACD32',
+        none: '#00000000',
+        transparent: '#00000000'
     };
     return Color;
 }());
@@ -5083,7 +5250,48 @@ var Shape = /** @class */ (function (_super) {
         _this.skewY = 0;
         return _this;
     }
+    Object.defineProperty(Shape.prototype, "fill", {
+        get: function () {
+            return this._fill;
+        },
+        set: function (value) {
+            if (_maths__WEBPACK_IMPORTED_MODULE_1__.Color.isColor(value)) {
+                // @ts-ignore
+                this._fill = value;
+                this._fillObject = null;
+            }
+            else {
+                // @ts-ignore Why 'id' do not exists on FillStroke?
+                this._fill = "url(#".concat(value.id, ")");
+                this._fillObject = value;
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Shape.prototype, "stroke", {
+        get: function () {
+            return this._stroke;
+        },
+        set: function (value) {
+            if (_maths__WEBPACK_IMPORTED_MODULE_1__.Color.isColor(value)) {
+                // @ts-ignore
+                this._stroke = value;
+                this._strokeObject = null;
+            }
+            else {
+                // @ts-ignore Why 'id' do not exists on FillStroke?
+                this._stroke = "url(#".concat(value.id, ")");
+                this._strokeObject = value;
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Shape.prototype, "originX", {
+        get: function () {
+            return this.origin.x;
+        },
         set: function (value) {
             this.origin.x = value;
         },
@@ -5091,6 +5299,9 @@ var Shape = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(Shape.prototype, "originY", {
+        get: function () {
+            return this.origin.y;
+        },
         set: function (value) {
             this.origin.y = value;
         },
@@ -5335,9 +5546,6 @@ __webpack_require__.r(__webpack_exports__);
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-;
-;
-;
 
 
 
@@ -6319,7 +6527,7 @@ var TestZoomer = function () {
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Zoom:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: zoom, onChange: function (e) { return setZoom(parseFloat(e.target.value) || 0); }, step: 0.1 })] }));
 };
 var TestApp = function () {
-    var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(2), zoom = _a[0], setZoom = _a[1];
+    var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(1), zoom = _a[0], setZoom = _a[1];
     var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(400), left = _b[0], setLeft = _b[1];
     var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(400), top = _c[0], setTop = _c[1];
     var _d = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), angle = _d[0], setAngle = _d[1];

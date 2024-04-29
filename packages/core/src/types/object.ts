@@ -6,13 +6,15 @@ type ColorStopObject = {
 	color:AnyColor
 };
 
-interface GradientObject {
-	colorStops:ColorStopObject[]
-};
+interface ElementObject {
+	id?:string;
+}
 
-interface PatternObject {};
+interface GradientObject extends ElementObject {}
 
-interface ClipPathObject {};
+interface PatternObject extends ElementObject {}
+
+interface ClipPathObject {}
 
 type FillStroke = AnyColor|GradientObject|PatternObject;
 
