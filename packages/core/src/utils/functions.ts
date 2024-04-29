@@ -20,10 +20,29 @@ const uniqueId = () : string => {
 	return 'elem' + uniqueId._index++;
 };
 
+const isEqual = (obj1: any, obj2: any) : boolean => {
+
+	let isEqual = true;
+
+	if (Object.keys(obj1).length !== Object.keys(obj2).length){
+		return false;
+	}
+
+	Object.keys(obj1).forEach(key => {
+		if (obj1[key] !== obj2[key]){
+			isEqual = false;
+		}
+	});
+
+	return isEqual;
+
+};
+
 export {
 	clamp,
 	toFixed,
 	deg2Rad,
 	rad2Deg,
-	uniqueId
+	uniqueId,
+	isEqual
 };

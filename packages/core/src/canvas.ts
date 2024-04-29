@@ -9,6 +9,9 @@ import {
 	Point
 } from './maths';
 import {
+	toFixed
+} from './utils';
+import {
 	ViewBoxArray
 } from './types';
 
@@ -28,8 +31,34 @@ class Canvas extends Collection(Element) {
 	private _selectedShapes = [];
 	private _currentNodeId: string;
 
+	private _zoom = 1;
+	private _pan = new Point();
+
 	set zoom(value: number){
-		this.zoomTo(value);
+		this._zoom = value;
+		this.zoomTo(this._zoom, this._pan);
+	}
+
+	set panX(value: number){
+		this._pan.x = value;
+		this.zoomTo(this._zoom, this._pan);
+	}
+
+	set panY(value: number){
+		this._pan.y = value;
+		this.zoomTo(this._zoom, this._pan);
+	}
+
+	get zoom(){
+		return this._zoom;
+	}
+
+	get panX(){
+		return this._pan.x;
+	}
+
+	get panY(){
+		return this._pan.y;
 	}
 
 	public constructor(params = {}){
@@ -79,23 +108,27 @@ class Canvas extends Collection(Element) {
 		return this;
 	}
 
-	public zoomTo(zoom: number, pointer?: Point){
+	public zoomTo(zoom = 1, pan = new Point()){
 
 		// First we have to set viewport to update shapes world matrix.
-		this.viewportMatrix.reset().scale(zoom || 1);
+		const size = new Point(this.width, this.height);
+		const zoomSize = size.clone().multiplyScalar(zoom);
+		const translate = new Point().subtractPoints(zoomSize, size).divideScalar(2).add(pan);
+		console.log(translate, pan)
+		this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
 
 		// And we also need to calculate viewBox from viewport to update svg attribute.
 		const {a, d, tx, ty} = this.viewportMatrix;
 		const {width, height} = this;
 
-		this.viewBox = [tx, ty, width / a, height / d];
+		this.set('viewBox', [tx / a, ty / d, width / a, height / d]);
+
+		// Update cache values too.
+		this._zoom = zoom;
+		this._pan.copy(pan);
 
 		return this;
 
-	}
-
-	public getZoom() : number {
-		return this.viewportMatrix.a;
 	}
 
 	public getPointer(e) : Point {
@@ -150,7 +183,7 @@ class Canvas extends Collection(Element) {
 	}
 
 	public onWheel(e){
-		this.zoomTo(this.getZoom() * 0.999 ** e.deltaY);
+		this.zoomTo(toFixed(this.zoom * 0.999 ** e.deltaY));
 	}
 
 }

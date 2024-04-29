@@ -1,5 +1,7 @@
 import {
 	useState,
+	useEffect,
+	useCallback,
 	Fragment
 } from 'react';
 import {
@@ -13,7 +15,8 @@ import {
 	Wrapper,
 	Interactive,
 	useCanvas,
-	useCollection
+	useCollection,
+	useCanvasReducer
 } from '@grafikjs/react';
 
 import '@grafikjs/styles';
@@ -29,12 +32,55 @@ const TestComponent = props => {
 		console.log(cv, cl);
 	}
 
-	setTimeout(() => {
-		// @ts-ignore
-		window.path = cv.childAt(4);
-	}, 40);
-
 	return null;
+
+};
+
+const TestCanvas = ({
+	children
+}) => {
+
+	const [zoom, setZoom] = useState(2);
+
+	return (
+		<Canvas
+			zoom={zoom}
+			onChange={canvas => setZoom(canvas.zoom)} >
+			{children}
+		</Canvas>
+	);
+
+};
+
+const TestZoomer = () => {
+
+	const canvas: any = useCanvas();
+	const [zoom, setZoom] = useState(canvas.zoom);
+	const onCanvasSet = useCallback(() => {
+		setZoom(canvas.zoom);
+	}, []);
+
+	useEffect(() => {
+		canvas.on('set', onCanvasSet);
+		return () => {
+			canvas.off('set', onCanvasSet);
+		};
+	}, []);
+
+	useEffect(() => {
+		canvas.set('zoom', zoom, true);
+	}, [zoom]);
+
+	return (
+		<label>
+			Zoom:
+			<input
+				type='number'
+				value={zoom}
+				onChange={e => setZoom(parseFloat(e.target.value) || 0)}
+				step={0.1} />
+		</label>
+	);
 
 };
 
@@ -57,7 +103,8 @@ const TestApp = () => {
 				height={800} >
 				<Wrapper>
 					<Canvas
-						zoom={zoom} >
+						zoom={zoom}
+						onChange={canvas => setZoom(canvas.zoom)} >
 						<TestComponent />
 					{/*}
 						<Group
@@ -147,8 +194,6 @@ const TestApp = () => {
 							d='M0 100 C 40 0 160 0 200 100 C 160 200 40 200 0 100Z'
 							left={800}
 							top={200}
-							width={200}
-							height={200}
 							angle={angle}
 							stroke='black'
 							strokeWidth={8}

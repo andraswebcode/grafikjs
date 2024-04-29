@@ -23,9 +23,11 @@ const Control = ({
 	useEffect(() => {
 
 		control.shape.on('set', onShapeSet);
+		control.shape.canvas.on('set', onShapeSet);
 
 		return () => {
 			control.shape.off('set', onShapeSet);
+			control.shape.canvas.on('set', onShapeSet);
 		};
 
 	}, []);

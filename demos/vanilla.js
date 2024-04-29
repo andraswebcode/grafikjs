@@ -518,6 +518,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./element */ "./packages/core/src/element.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mixins */ "./packages/core/src/mixins/index.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -536,6 +537,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var Canvas = /** @class */ (function (_super) {
     __extends(Canvas, _super);
     function Canvas(params) {
@@ -549,12 +551,40 @@ var Canvas = /** @class */ (function (_super) {
         _this.height = 0;
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_2__.Matrix();
         _this._selectedShapes = [];
+        _this._zoom = 1;
+        _this._pan = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point();
         _this.set(params);
         return _this;
     }
     Object.defineProperty(Canvas.prototype, "zoom", {
+        get: function () {
+            return this._zoom;
+        },
         set: function (value) {
-            this.zoomTo(value);
+            this._zoom = value;
+            this.zoomTo(this._zoom, this._pan);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Canvas.prototype, "panX", {
+        get: function () {
+            return this._pan.x;
+        },
+        set: function (value) {
+            this._pan.x = value;
+            this.zoomTo(this._zoom, this._pan);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Canvas.prototype, "panY", {
+        get: function () {
+            return this._pan.y;
+        },
+        set: function (value) {
+            this._pan.y = value;
+            this.zoomTo(this._zoom, this._pan);
         },
         enumerable: false,
         configurable: true
@@ -598,17 +628,23 @@ var Canvas = /** @class */ (function (_super) {
         this._selectedShapes.forEach(callback);
         return this;
     };
-    Canvas.prototype.zoomTo = function (zoom, pointer) {
+    Canvas.prototype.zoomTo = function (zoom, pan) {
+        if (zoom === void 0) { zoom = 1; }
+        if (pan === void 0) { pan = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(); }
         // First we have to set viewport to update shapes world matrix.
-        this.viewportMatrix.reset().scale(zoom || 1);
+        var size = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(this.width, this.height);
+        var zoomSize = size.clone().multiplyScalar(zoom);
+        var translate = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point().subtractPoints(zoomSize, size).divideScalar(2).add(pan);
+        console.log(translate, pan);
+        this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;
-        this.viewBox = [tx, ty, width / a, height / d];
+        this.set('viewBox', [tx / a, ty / d, width / a, height / d]);
+        // Update cache values too.
+        this._zoom = zoom;
+        this._pan.copy(pan);
         return this;
-    };
-    Canvas.prototype.getZoom = function () {
-        return this.viewportMatrix.a;
     };
     Canvas.prototype.getPointer = function (e) {
         var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
@@ -657,7 +693,7 @@ var Canvas = /** @class */ (function (_super) {
         this._currentNodeId = '';
     };
     Canvas.prototype.onWheel = function (e) {
-        this.zoomTo(this.getZoom() * Math.pow(0.999, e.deltaY));
+        this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_3__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)));
     };
     return Canvas;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
@@ -1141,6 +1177,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   TransformControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.TransformControl),
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.deg2Rad),
+/* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.isEqual),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.rad2Deg),
 /* harmony export */   toFixed: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.toFixed),
 /* harmony export */   uniqueId: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.uniqueId)
@@ -3961,6 +3998,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   clamp: () => (/* binding */ clamp),
 /* harmony export */   deg2Rad: () => (/* binding */ deg2Rad),
+/* harmony export */   isEqual: () => (/* binding */ isEqual),
 /* harmony export */   rad2Deg: () => (/* binding */ rad2Deg),
 /* harmony export */   toFixed: () => (/* binding */ toFixed),
 /* harmony export */   uniqueId: () => (/* binding */ uniqueId)
@@ -3982,6 +4020,18 @@ var uniqueId = function () {
     }
     // @ts-ignore
     return 'elem' + uniqueId._index++;
+};
+var isEqual = function (obj1, obj2) {
+    var isEqual = true;
+    if (Object.keys(obj1).length !== Object.keys(obj2).length) {
+        return false;
+    }
+    Object.keys(obj1).forEach(function (key) {
+        if (obj1[key] !== obj2[key]) {
+            isEqual = false;
+        }
+    });
+    return isEqual;
 };
 
 
@@ -4022,6 +4072,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   SVGImporter: () => (/* reexport safe */ _svg_importer__WEBPACK_IMPORTED_MODULE_1__.SVGImporter),
 /* harmony export */   clamp: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.deg2Rad),
+/* harmony export */   isEqual: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.isEqual),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.rad2Deg),
 /* harmony export */   toFixed: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.toFixed),
 /* harmony export */   uniqueId: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.uniqueId)
@@ -4171,6 +4222,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   TransformControl: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.TransformControl),
 /* harmony export */   clamp: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.deg2Rad),
+/* harmony export */   isEqual: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.isEqual),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.rad2Deg),
 /* harmony export */   toFixed: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.toFixed),
 /* harmony export */   uniqueId: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.uniqueId)

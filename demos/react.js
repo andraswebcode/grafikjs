@@ -1889,6 +1889,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./element */ "./packages/core/src/element.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mixins */ "./packages/core/src/mixins/index.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1907,6 +1908,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var Canvas = /** @class */ (function (_super) {
     __extends(Canvas, _super);
     function Canvas(params) {
@@ -1920,12 +1922,40 @@ var Canvas = /** @class */ (function (_super) {
         _this.height = 0;
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_2__.Matrix();
         _this._selectedShapes = [];
+        _this._zoom = 1;
+        _this._pan = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point();
         _this.set(params);
         return _this;
     }
     Object.defineProperty(Canvas.prototype, "zoom", {
+        get: function () {
+            return this._zoom;
+        },
         set: function (value) {
-            this.zoomTo(value);
+            this._zoom = value;
+            this.zoomTo(this._zoom, this._pan);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Canvas.prototype, "panX", {
+        get: function () {
+            return this._pan.x;
+        },
+        set: function (value) {
+            this._pan.x = value;
+            this.zoomTo(this._zoom, this._pan);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Canvas.prototype, "panY", {
+        get: function () {
+            return this._pan.y;
+        },
+        set: function (value) {
+            this._pan.y = value;
+            this.zoomTo(this._zoom, this._pan);
         },
         enumerable: false,
         configurable: true
@@ -1969,17 +1999,23 @@ var Canvas = /** @class */ (function (_super) {
         this._selectedShapes.forEach(callback);
         return this;
     };
-    Canvas.prototype.zoomTo = function (zoom, pointer) {
+    Canvas.prototype.zoomTo = function (zoom, pan) {
+        if (zoom === void 0) { zoom = 1; }
+        if (pan === void 0) { pan = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(); }
         // First we have to set viewport to update shapes world matrix.
-        this.viewportMatrix.reset().scale(zoom || 1);
+        var size = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(this.width, this.height);
+        var zoomSize = size.clone().multiplyScalar(zoom);
+        var translate = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point().subtractPoints(zoomSize, size).divideScalar(2).add(pan);
+        console.log(translate, pan);
+        this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;
-        this.viewBox = [tx, ty, width / a, height / d];
+        this.set('viewBox', [tx / a, ty / d, width / a, height / d]);
+        // Update cache values too.
+        this._zoom = zoom;
+        this._pan.copy(pan);
         return this;
-    };
-    Canvas.prototype.getZoom = function () {
-        return this.viewportMatrix.a;
     };
     Canvas.prototype.getPointer = function (e) {
         var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
@@ -2028,7 +2064,7 @@ var Canvas = /** @class */ (function (_super) {
         this._currentNodeId = '';
     };
     Canvas.prototype.onWheel = function (e) {
-        this.zoomTo(this.getZoom() * Math.pow(0.999, e.deltaY));
+        this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_3__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)));
     };
     return Canvas;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
@@ -2512,6 +2548,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   TransformControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.TransformControl),
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.deg2Rad),
+/* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.isEqual),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.rad2Deg),
 /* harmony export */   toFixed: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.toFixed),
 /* harmony export */   uniqueId: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.uniqueId)
@@ -5332,6 +5369,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   clamp: () => (/* binding */ clamp),
 /* harmony export */   deg2Rad: () => (/* binding */ deg2Rad),
+/* harmony export */   isEqual: () => (/* binding */ isEqual),
 /* harmony export */   rad2Deg: () => (/* binding */ rad2Deg),
 /* harmony export */   toFixed: () => (/* binding */ toFixed),
 /* harmony export */   uniqueId: () => (/* binding */ uniqueId)
@@ -5353,6 +5391,18 @@ var uniqueId = function () {
     }
     // @ts-ignore
     return 'elem' + uniqueId._index++;
+};
+var isEqual = function (obj1, obj2) {
+    var isEqual = true;
+    if (Object.keys(obj1).length !== Object.keys(obj2).length) {
+        return false;
+    }
+    Object.keys(obj1).forEach(function (key) {
+        if (obj1[key] !== obj2[key]) {
+            isEqual = false;
+        }
+    });
+    return isEqual;
 };
 
 
@@ -5393,6 +5443,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   SVGImporter: () => (/* reexport safe */ _svg_importer__WEBPACK_IMPORTED_MODULE_1__.SVGImporter),
 /* harmony export */   clamp: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.deg2Rad),
+/* harmony export */   isEqual: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.isEqual),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.rad2Deg),
 /* harmony export */   toFixed: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.toFixed),
 /* harmony export */   uniqueId: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.uniqueId)
@@ -5540,8 +5591,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Canvas: () => (/* binding */ Canvas)
 /* harmony export */ });
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../hooks */ "./packages/react/src/hooks.ts");
-/* harmony import */ var _contexts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../contexts */ "./packages/react/src/contexts.ts");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../hooks */ "./packages/react/src/hooks.ts");
+/* harmony import */ var _contexts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../contexts */ "./packages/react/src/contexts.ts");
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -5567,11 +5620,30 @@ var __rest = (undefined && undefined.__rest) || function (s, e) {
 
 
 
+
+var SVG = function (_a) {
+    var children = _a.children, canvas = _a.canvas, props = _a.props;
+    var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)({}), attributes = _b[0], setAttributes = _b[1];
+    var onCanvasSet = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
+        var _a;
+        setAttributes(canvas.getAttributes());
+        (_a = props.onChange) === null || _a === void 0 ? void 0 : _a.call(props, canvas);
+    }, []);
+    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
+        canvas.on('set', onCanvasSet);
+        return function () {
+            canvas.off('set', onCanvasSet);
+        };
+    }, []);
+    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
+        canvas.set(props);
+    }, [props]);
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("svg", __assign({}, attributes, { children: children })));
+};
 var Canvas = function (_a) {
     var children = _a.children, props = __rest(_a, ["children"]);
-    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_1__.useCanvas)();
-    canvas.set(props);
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_contexts__WEBPACK_IMPORTED_MODULE_2__.CollectionContext.Provider, { value: canvas, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("svg", __assign({}, canvas.getAttributes(), { children: children })) }));
+    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvas)();
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_contexts__WEBPACK_IMPORTED_MODULE_3__.CollectionContext.Provider, { value: canvas, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(SVG, { canvas: canvas, props: props, children: children }) }));
 };
 
 
@@ -5847,8 +5919,10 @@ var Control = function (_a) {
     }, []);
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
         control.shape.on('set', onShapeSet);
+        control.shape.canvas.on('set', onShapeSet);
         return function () {
             control.shape.off('set', onShapeSet);
+            control.shape.canvas.on('set', onShapeSet);
         };
     }, []);
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TagName, __assign({}, attributes, { style: style, children: control.mapChildren(function (node) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(___WEBPACK_IMPORTED_MODULE_2__.ControlNode, { node: node }, node.id)); }) })));
@@ -6026,7 +6100,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _contexts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./contexts */ "./packages/react/src/contexts.ts");
+/* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafikjs/core */ "./packages/core/src/index.ts");
+/* harmony import */ var _contexts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./contexts */ "./packages/react/src/contexts.ts");
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -6040,8 +6115,9 @@ var __assign = (undefined && undefined.__assign) || function () {
 };
 
 
-var useCanvas = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_contexts__WEBPACK_IMPORTED_MODULE_1__.CanvasContext); };
-var useCollection = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_contexts__WEBPACK_IMPORTED_MODULE_1__.CollectionContext); };
+
+var useCanvas = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_contexts__WEBPACK_IMPORTED_MODULE_2__.CanvasContext); };
+var useCollection = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_contexts__WEBPACK_IMPORTED_MODULE_2__.CollectionContext); };
 var _canvasReducer = function (state, _a) {
     var _b;
     var method = _a.method, args = _a.args;
@@ -6072,6 +6148,32 @@ var useCanvasReducer = function () {
             });
         },
         canvas: state.canvas
+    };
+};
+var useAttributes = function (object, defs) {
+    if (defs === void 0) { defs = {}; }
+    var _a = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(defs), attributes = _a[0], setAttributes = _a[1];
+    var onObjectSet = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function () {
+        var attrs = Object.keys(defs).reduce(function (memo, key) {
+            memo[key] = object.get(key);
+            return memo;
+        }, {});
+        if (!(0,_grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.isEqual)(attrs, attributes)) {
+            // setAttributes(attrs);
+        }
+    }, []);
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+        object.on('set', onObjectSet);
+        return function () {
+            object.off('set', onObjectSet);
+        };
+    }, []);
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+        object.set(attributes, true);
+    }, []);
+    return {
+        attributes: attributes,
+        setAttributes: setAttributes
     };
 };
 
@@ -6192,11 +6294,29 @@ var TestComponent = function (props) {
         logged = true;
         console.log(cv, cl);
     }
-    setTimeout(function () {
-        // @ts-ignore
-        window.path = cv.childAt(4);
-    }, 40);
     return null;
+};
+var TestCanvas = function (_a) {
+    var children = _a.children;
+    var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(2), zoom = _b[0], setZoom = _b[1];
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { zoom: zoom, onChange: function (canvas) { return setZoom(canvas.zoom); }, children: children }));
+};
+var TestZoomer = function () {
+    var canvas = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.useCanvas)();
+    var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(canvas.zoom), zoom = _a[0], setZoom = _a[1];
+    var onCanvasSet = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
+        setZoom(canvas.zoom);
+    }, []);
+    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
+        canvas.on('set', onCanvasSet);
+        return function () {
+            canvas.off('set', onCanvasSet);
+        };
+    }, []);
+    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
+        canvas.set('zoom', zoom, true);
+    }, [zoom]);
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Zoom:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: zoom, onChange: function (e) { return setZoom(parseFloat(e.target.value) || 0); }, step: 0.1 })] }));
 };
 var TestApp = function () {
     var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(2), zoom = _a[0], setZoom = _a[1];
@@ -6208,7 +6328,7 @@ var TestApp = function () {
     var _g = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewX = _g[0], setSkewX = _g[1];
     var _h = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewY = _h[0], setSkewY = _h[1];
     var _j = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(12), sw = _j[0], setSw = _j[1];
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { zoom: zoom, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: left, top: top, angle: angle, scaleX: scaleX, scaleY: scaleY, skewX: skewX, skewY: skewY, originX: 0.25, originY: 0.75, width: 200, height: 200, stroke: 'black', strokeWidth: sw, fill: 'none', onChange: function (rect) {
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { zoom: zoom, onChange: function (canvas) { return setZoom(canvas.zoom); }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: left, top: top, angle: angle, scaleX: scaleX, scaleY: scaleY, skewX: skewX, skewY: skewY, originX: 0.25, originY: 0.75, width: 200, height: 200, stroke: 'black', strokeWidth: sw, fill: 'none', onChange: function (rect) {
                                         var left = rect.left, top = rect.top, angle = rect.angle, scaleX = rect.scaleX, scaleY = rect.scaleY;
                                         setLeft(left);
                                         setTop(top);

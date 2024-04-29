@@ -1,7 +1,14 @@
 import {
 	useContext,
-	useReducer
+	useReducer,
+	useState,
+	useEffect,
+	useCallback
 } from 'react';
+import {
+	isEqual
+} from '@grafikjs/core';
+
 import {
 	CanvasContext,
 	CollectionContext
@@ -35,6 +42,37 @@ const useCanvasReducer = () => {
 		}),
 		canvas:state.canvas
 	};
+};
+
+const useAttributes = (object: any, defs: any = {}) => {
+
+	const [attributes, setAttributes] = useState(defs);
+	const onObjectSet = useCallback(() => {
+		const attrs = Object.keys(defs).reduce((memo, key) => {
+			memo[key] = object.get(key);
+			return memo;
+		}, {});
+		if (!isEqual(attrs, attributes)){
+			// setAttributes(attrs);
+		}
+	}, []);
+
+	useEffect(() => {
+		object.on('set', onObjectSet);
+		return () => {
+			object.off('set', onObjectSet);
+		};
+	}, []);
+
+	useEffect(() => {
+		object.set(attributes, true);
+	}, []);
+
+	return {
+		attributes,
+		setAttributes
+	};
+
 };
 
 export {
