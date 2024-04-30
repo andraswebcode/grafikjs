@@ -37,6 +37,28 @@ const TestComponent = props => {
 
 };
 
+const G1 = {
+	colorStops:[{
+		offset:0,
+		stopColor:'#F00'
+	},{
+		offset:1,
+		stopColor:'#0F0'
+	}]
+};
+
+const G2 = {
+	colorStops:[{
+		offset:0,
+		stopColor:'#FF0'
+	},{
+		offset:1,
+		stopColor:'#00F'
+	}]
+};
+
+let i = 0;
+
 const TestApp = () => {
 
 	const [zoom, setZoom] = useState(1);
@@ -48,15 +70,7 @@ const TestApp = () => {
 	const [skewX, setSkewX] = useState(0);
 	const [skewY, setSkewY] = useState(0);
 	const [sw, setSw] = useState(12);
-	const [fill, setFill] = useCreateDef('linearGradient', {
-		colorStops:[{
-			offset:0,
-			stopColor:'#f00'
-		},{
-			offset:1,
-			stopColor:'#0f0'
-		}]
-	});
+	const [fill, setFill] = useCreateDef('linearGradient', G1);
 
 	return (
 		<Fragment>
@@ -164,6 +178,9 @@ const TestApp = () => {
 					value={sw}
 					onChange={e => setSw(parseInt(e.target.value) || 0)} />
 			</label>
+			<button onClick={() => setFill(i++ % 2 ? G1 : G2)}>
+				Change Gradient
+			</button>
 		</Fragment>
 	);
 

@@ -6779,6 +6779,25 @@ var TestComponent = function (props) {
     }
     return null;
 };
+var G1 = {
+    colorStops: [{
+            offset: 0,
+            stopColor: '#F00'
+        }, {
+            offset: 1,
+            stopColor: '#0F0'
+        }]
+};
+var G2 = {
+    colorStops: [{
+            offset: 0,
+            stopColor: '#FF0'
+        }, {
+            offset: 1,
+            stopColor: '#00F'
+        }]
+};
+var i = 0;
 var TestApp = function () {
     var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(1), zoom = _a[0], setZoom = _a[1];
     var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(400), left = _b[0], setLeft = _b[1];
@@ -6789,15 +6808,7 @@ var TestApp = function () {
     var _g = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewX = _g[0], setSkewX = _g[1];
     var _h = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewY = _h[0], setSkewY = _h[1];
     var _j = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(12), sw = _j[0], setSw = _j[1];
-    var _k = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.useCreateDef)('linearGradient', {
-        colorStops: [{
-                offset: 0,
-                stopColor: '#f00'
-            }, {
-                offset: 1,
-                stopColor: '#0f0'
-            }]
-    }), fill = _k[0], setFill = _k[1];
+    var _k = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.useCreateDef)('linearGradient', G1), fill = _k[0], setFill = _k[1];
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { zoom: zoom, onChange: function (canvas) { return setZoom(canvas.zoom); }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: left, top: top, angle: angle, scaleX: scaleX, scaleY: scaleY, skewX: skewX, skewY: skewY, originX: 0.25, originY: 0.75, width: 200, height: 200, stroke: 'black', strokeWidth: sw, fill: fill, onChange: function (rect) {
                                         var left = rect.left, top = rect.top, angle = rect.angle, scaleX = rect.scaleX, scaleY = rect.scaleY;
                                         setLeft(left);
@@ -6805,7 +6816,7 @@ var TestApp = function () {
                                         setAngle(angle);
                                         setScaleX(scaleX);
                                         setScaleY(scaleY);
-                                    } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, {})] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Zoom:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: zoom, onChange: function (e) { return setZoom(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Left:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: left, onChange: function (e) { return setLeft(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Top:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: top, onChange: function (e) { return setTop(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Angle:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: angle, onChange: function (e) { return setAngle(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleX, onChange: function (e) { return setScaleX(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleY, onChange: function (e) { return setScaleY(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewX, onChange: function (e) { return setSkewX(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewY, onChange: function (e) { return setSkewY(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Stroke Width:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: sw, onChange: function (e) { return setSw(parseInt(e.target.value) || 0); } })] })] }));
+                                    } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, {})] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Zoom:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: zoom, onChange: function (e) { return setZoom(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Left:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: left, onChange: function (e) { return setLeft(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Top:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: top, onChange: function (e) { return setTop(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Angle:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: angle, onChange: function (e) { return setAngle(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleX, onChange: function (e) { return setScaleX(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleY, onChange: function (e) { return setScaleY(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewX, onChange: function (e) { return setSkewX(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewY, onChange: function (e) { return setSkewY(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Stroke Width:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: sw, onChange: function (e) { return setSw(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { onClick: function () { return setFill(i++ % 2 ? G1 : G2); }, children: "Change Gradient" })] }));
 };
 
 
