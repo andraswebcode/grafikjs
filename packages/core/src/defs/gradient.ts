@@ -1,11 +1,20 @@
 import {
-	Element
-} from './../element';
-import {
-	Collection
-} from './../mixins';
+	Definition,
+	ColorStop
+} from './';
 
-class Gradient extends Collection(Element) {}
+class Gradient extends Definition {
+
+	set colorStops(value: ColorStop[]){
+		const colorStops = value.map(stop => new ColorStop(stop));
+		this.add(colorStops, true);
+	}
+
+	get colorStops() : ColorStop[] {
+		return this.getChildren();
+	}
+
+}
 
 export {
 	Gradient

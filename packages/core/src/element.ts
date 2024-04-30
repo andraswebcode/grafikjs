@@ -1,6 +1,11 @@
+import {
+	uniqueId
+} from './utils';
+
 class Element {
 
 	protected readonly tagName: string;
+	protected id = '';
 	protected className = '';
 	private _listeners = {};
 
@@ -61,6 +66,12 @@ class Element {
 
 	public getStyle() : object {
 		return {};
+	}
+
+	public createId(prefix?: string){
+		if (!this.id){
+			this.id = uniqueId(prefix);
+		}
 	}
 
 	public addClass(...classNames: string[]){

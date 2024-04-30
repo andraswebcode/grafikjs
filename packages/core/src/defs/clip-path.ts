@@ -1,13 +1,15 @@
 import {
-	Element
-} from './../element';
-import {
-	Collection
-} from './../mixins';
+	Definition
+} from './definition';
 
-class ClipPath extends Collection(Element) {
+class ClipPath extends Definition {
 
 	protected readonly tagName = 'clipPath';
+
+	public constructor(params?){
+		super();
+		this.init(params);
+	}
 
 }
 

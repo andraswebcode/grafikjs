@@ -1,10 +1,15 @@
 import {
-	Element
-} from './../element';
+	Definition
+} from './definition';
 
-class Pattern extends Element {
+class Pattern extends Definition {
 
 	protected readonly tagName = 'pattern';
+
+	public constructor(params?){
+		super();
+		this.init(params);
+	}
 
 }
 

@@ -10,7 +10,9 @@ interface ElementObject {
 	id?:string;
 }
 
-interface GradientObject extends ElementObject {}
+interface GradientObject extends ElementObject {
+	colorStops:ColorStopObject[]
+}
 
 interface PatternObject extends ElementObject {}
 

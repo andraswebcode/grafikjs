@@ -1,3 +1,4 @@
+export * from './definition';
 export * from './clip-path';
 export * from './gradient';
 export * from './linear-gradient';

@@ -10,8 +10,7 @@ import {
 	Control
 } from './';
 import {
-	useCanvas,
-	useCanvasReducer
+	useCanvas
 } from './../../hooks';
 
 const Interactive = ({
@@ -19,13 +18,13 @@ const Interactive = ({
 	children
 }: any) => {
 
-	const {canvas, dispatch}: any = useCanvasReducer();
-	const shapes = canvas.getSelectedShapes();
+	const canvas: any = useCanvas();
+	const [shapes, setShapes] = useState([]);
 
 	const onMouseDown = useCallback(e => {
 		e.preventDefault();
 		canvas.onPointerStart(e);
-		dispatch();
+		setShapes(canvas.getSelectedShapes());
 	}, []);
 	const onMouseMove = useCallback(e => {
 		canvas.onPointerMove(e);
@@ -45,7 +44,7 @@ const Interactive = ({
 			onMouseUp={onMouseUp}
 			onMouseLeave={onMouseUp}
 			onWheel={onWheel} >
-			{shapes.map(shape => (
+			{shapes.map((shape: any) => (
 				<Control
 					key={shape.id}
 					control={shape.getControl()} />

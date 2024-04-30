@@ -14,16 +14,12 @@ import {
 	FillStroke,
 	TransformObject
 } from './../types';
-import {
-	uniqueId
-} from './../utils';
 
 class Shape extends Element {
 
 	public readonly isShape = true;
 	protected canvas;
 	protected parent;
-	protected id;
 	protected matrix = new Matrix();
 	protected bBox = new BBox();
 	protected origin = new Point(0.5, 0.5);
@@ -51,8 +47,7 @@ class Shape extends Element {
 
 	private _fill: string;
 	private _stroke: string;
-	private _fillObject: FillStroke;
-	private _strokeObject: FillStroke;
+	private _defs: any = {};
 
 	protected strokeWidth: number;
 	protected opacity: number;
@@ -61,15 +56,18 @@ class Shape extends Element {
 		return this._fill;
 	}
 
-	set fill(value: FillStroke){
+	set fill(value: any){
 		if (Color.isColor(value)){
-			// @ts-ignore
+			if (this._defs.fill){
+				this.canvas?.removeDefs(this._defs.fill);
+			}
 			this._fill = value;
-			this._fillObject = null;
+			this._defs.fill = null;
 		} else {
-			// @ts-ignore Why 'id' do not exists on FillStroke?
+			value.shape = this;
+			this.canvas?.addDefs(value);
 			this._fill = `url(#${value.id})`;
-			this._fillObject = value;
+			this._defs.fill = value;
 		}
 	}
 
@@ -77,15 +75,18 @@ class Shape extends Element {
 		return this._stroke;
 	}
 
-	set stroke(value: FillStroke){
+	set stroke(value: any){
 		if (Color.isColor(value)){
-			// @ts-ignore
+			if (this._defs.stroke){
+				this.canvas?.removeDefs(this._defs.stroke);
+			}
 			this._stroke = value;
-			this._strokeObject = null;
+			this._defs.stroke = null;
 		} else {
-			// @ts-ignore Why 'id' do not exists on FillStroke?
+			value.shape = this;
+			this.canvas?.addDefs(value);
 			this._stroke = `url(#${value.id})`;
-			this._strokeObject = value;
+			this._defs.stroke = value;
 		}
 	}
 
@@ -107,7 +108,7 @@ class Shape extends Element {
 
 	public init(params){
 		this.set(params, true);
-		this.id = uniqueId();
+		this.createId(this.tagName);
 		this.addControl('transform', new TransformControl({
 			shape:this
 		})).setControl('transform');
@@ -134,21 +135,18 @@ class Shape extends Element {
 			if (!silent){
 				this.trigger('set', {[key]:value});
 			}
-			return this;
-		}
-
-		let i, prop;
-
-		// Also check props if key is an object.
-		for (i = 0; i < props.length; i++){
-			prop = props[i];
-			if (prop in key){
-				this.updateMatrix();
-				this.updateOthersWithKeys(Object.keys(key));
-				if (!value){
-					this.trigger('set', key);
+		} else {
+			let i, prop;
+			for (i = 0; i < props.length; i++){
+				prop = props[i];
+				if (prop in key){
+					this.updateMatrix();
+					break;
 				}
-				break;
+			}
+			this.updateOthersWithKeys(Object.keys(key));
+			if (!value){
+				this.trigger('set', key);
 			}
 		}
 

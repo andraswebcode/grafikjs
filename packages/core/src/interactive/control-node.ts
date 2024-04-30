@@ -8,16 +8,12 @@ import {
 	Point,
 	Matrix
 } from './../maths';
-import {
-	uniqueId
-} from './../utils';
 
 class ControlNode extends Collection(Element) {
 
 	protected readonly tagName = 'div';
 	protected className = 'grafik-control-node';
 	protected name = '';
-	protected id = '';
 
 	public offset = new Point();
 	private parent;
@@ -25,7 +21,7 @@ class ControlNode extends Collection(Element) {
 
 	public init(params?){
 		this.set(params);
-		this.id = uniqueId();
+		this.createId('node');
 		if (this.name){
 			this.addClass('grafik-control-node__' + this.name);
 		}

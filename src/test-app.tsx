@@ -7,6 +7,7 @@ import {
 import {
 	CanvasProvider,
 	Canvas,
+	Defs,
 	Group,
 	Rect,
 	Circle,
@@ -16,7 +17,7 @@ import {
 	Interactive,
 	useCanvas,
 	useCollection,
-	useCanvasReducer
+	useCreateDef
 } from '@grafikjs/react';
 
 import '@grafikjs/styles';
@@ -36,54 +37,6 @@ const TestComponent = props => {
 
 };
 
-const TestCanvas = ({
-	children
-}) => {
-
-	const [zoom, setZoom] = useState(2);
-
-	return (
-		<Canvas
-			zoom={zoom}
-			onChange={canvas => setZoom(canvas.zoom)} >
-			{children}
-		</Canvas>
-	);
-
-};
-
-const TestZoomer = () => {
-
-	const canvas: any = useCanvas();
-	const [zoom, setZoom] = useState(canvas.zoom);
-	const onCanvasSet = useCallback(() => {
-		setZoom(canvas.zoom);
-	}, []);
-
-	useEffect(() => {
-		canvas.on('set', onCanvasSet);
-		return () => {
-			canvas.off('set', onCanvasSet);
-		};
-	}, []);
-
-	useEffect(() => {
-		canvas.set('zoom', zoom, true);
-	}, [zoom]);
-
-	return (
-		<label>
-			Zoom:
-			<input
-				type='number'
-				value={zoom}
-				onChange={e => setZoom(parseFloat(e.target.value) || 0)}
-				step={0.1} />
-		</label>
-	);
-
-};
-
 const TestApp = () => {
 
 	const [zoom, setZoom] = useState(1);
@@ -95,6 +48,15 @@ const TestApp = () => {
 	const [skewX, setSkewX] = useState(0);
 	const [skewY, setSkewY] = useState(0);
 	const [sw, setSw] = useState(12);
+	const [fill, setFill] = useCreateDef('linearGradient', {
+		colorStops:[{
+			offset:0,
+			stopColor:'#f00'
+		},{
+			offset:1,
+			stopColor:'#0f0'
+		}]
+	});
 
 	return (
 		<Fragment>
@@ -105,52 +67,8 @@ const TestApp = () => {
 					<Canvas
 						zoom={zoom}
 						onChange={canvas => setZoom(canvas.zoom)} >
+						<Defs />
 						<TestComponent />
-					{/*}
-						<Group
-							left={250}
-							top={250}
-							angle={angle} >
-							<Group
-								skewX={20} >
-								<Rect
-									left={-50}
-									top={-50}
-									width={100}
-									height={100}
-									stroke='forestgreen'
-									strokeWidth={2}
-									fill='none' />
-								<Rect
-									left={50}
-									top={-50}
-									width={100}
-									height={100}
-									stroke='forestgreen'
-									strokeWidth={2}
-									fill='none' />
-							</Group>
-							<Group
-								skewX={-20} >
-								<Rect
-									left={-50}
-									top={50}
-									width={100}
-									height={100}
-									stroke='forestgreen'
-									strokeWidth={2}
-									fill='none' />
-								<Rect
-									left={50}
-									top={50}
-									width={100}
-									height={100}
-									stroke='forestgreen'
-									strokeWidth={2}
-									fill='none' />
-							</Group>
-						</Group>
-					{*/}
 						<Rect
 							left={left}
 							top={top}
@@ -165,7 +83,7 @@ const TestApp = () => {
 							height={200}
 							stroke='black'
 							strokeWidth={sw}
-							fill='none'
+							fill={fill}
 							onChange={rect => {
 								const {left, top, angle, scaleX, scaleY} = rect;
 								setLeft(left);
@@ -174,31 +92,6 @@ const TestApp = () => {
 								setScaleX(scaleX);
 								setScaleY(scaleY);
 							}} />
-					{/*}
-						<Ellipse
-							left={400}
-							top={400}
-							rx={80}
-							ry={40}
-							stroke='black'
-							strokeWidth={2}
-							fill='none' />
-						<Circle
-							left={400}
-							top={400}
-							r={40}
-							stroke='black'
-							strokeWidth={2}
-							fill='none' />
-						<Path
-							d='M0 100 C 40 0 160 0 200 100 C 160 200 40 200 0 100Z'
-							left={800}
-							top={200}
-							angle={angle}
-							stroke='black'
-							strokeWidth={8}
-							fill='none' />
-					{*/}
 					</Canvas>
 					<Interactive />
 				</Wrapper>

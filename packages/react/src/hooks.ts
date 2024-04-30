@@ -1,6 +1,7 @@
 import {
 	useContext,
 	useReducer,
+	useMemo,
 	useState,
 	useEffect,
 	useCallback
@@ -13,6 +14,9 @@ import {
 	CanvasContext,
 	CollectionContext
 } from './contexts';
+import {
+	DEFCLASSES
+} from './utils';
 
 const useCanvas = () : object => useContext(CanvasContext);
 
@@ -30,7 +34,7 @@ const _canvasReducer = (state, {method, args}) => {
 	return {...state};
 };
 
-const useCanvasReducer = () => {
+const __experimental_useCanvasReducer = () => {
 	const canvas = useCanvas();
 	// @ts-ignore
 	const [state, dispatch] = useReducer(_canvasReducer, {canvas});
@@ -44,7 +48,7 @@ const useCanvasReducer = () => {
 	};
 };
 
-const useAttributes = (object: any, defs: any = {}) => {
+const __experimental_useAttributes = (object: any, defs: any = {}) => {
 
 	const [attributes, setAttributes] = useState(defs);
 	const onObjectSet = useCallback(() => {
@@ -75,8 +79,16 @@ const useAttributes = (object: any, defs: any = {}) => {
 
 };
 
+const useCreateDef = (defName: string, initState: any = {}) : [any, Function] => {
+
+	const def = useMemo(() => new DEFCLASSES[defName](initState), []);
+
+	return [def, () => {}];
+
+};
+
 export {
 	useCanvas,
 	useCollection,
-	useCanvasReducer
+	useCreateDef
 };

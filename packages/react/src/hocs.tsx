@@ -7,7 +7,7 @@ import {
 	useCollection
 } from './hooks';
 import {
-	CLASSNAMES
+	CLASSES
 } from './utils';
 
 const withCollectionContext = (Component, tagName: string) => (props: any) => {
@@ -15,7 +15,7 @@ const withCollectionContext = (Component, tagName: string) => (props: any) => {
 	const collection: any = useCollection();
 	
 	const shape = useMemo(() => {
-		const Shape = CLASSNAMES[tagName];
+		const Shape = CLASSES[tagName];
 		return new Shape(props);
 	}, []);
 

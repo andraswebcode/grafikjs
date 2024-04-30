@@ -6,10 +6,11 @@ import {
 	Ellipse,
 	Path,
 	Polygon,
-	Polyline
+	Polyline,
+	LinearGradient
 } from '@grafikjs/core';
 
-const CLASSNAMES = {
+const CLASSES = {
 	'svg':Canvas,
 	'g':Group,
 	'rect':Rect,
@@ -20,6 +21,11 @@ const CLASSNAMES = {
 	'polyline':Polyline
 };
 
+const DEFCLASSES = {
+	'linearGradient':LinearGradient
+};
+
 export {
-	CLASSNAMES
+	CLASSES,
+	DEFCLASSES
 };

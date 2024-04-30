@@ -545,11 +545,12 @@ var Canvas = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.isCanvas = true;
         _this.tagName = 'svg';
-        _this.className = 'grafik-canvas';
         _this.xmlns = 'http://www.w3.org/2000/svg';
+        _this.className = 'grafik-canvas';
         _this.width = 0;
         _this.height = 0;
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_2__.Matrix();
+        _this._defs = [];
         _this._selectedShapes = [];
         _this._zoom = 1;
         _this._pan = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point();
@@ -627,6 +628,35 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype.eachSelectedShape = function (callback) {
         this._selectedShapes.forEach(callback);
         return this;
+    };
+    Canvas.prototype.mapSelectedShapes = function (callback) {
+        return this._selectedShapes.map(callback);
+    };
+    Canvas.prototype.addDefs = function (defs) {
+        var _this = this;
+        defs = Array.isArray(defs) ? defs : [defs];
+        defs.forEach(function (def) {
+            // @ts-ignore
+            if (!_this._defs.includes(def)) {
+                // @ts-ignore
+                _this._defs.push(def);
+            }
+        });
+        this.trigger('defs:added', defs);
+        return this;
+    };
+    Canvas.prototype.removeDefs = function (defs) {
+        return this;
+    };
+    Canvas.prototype.getDefs = function () {
+        return this._defs;
+    };
+    Canvas.prototype.eachDef = function (callback) {
+        this._defs.forEach(callback);
+        return this;
+    };
+    Canvas.prototype.mapDefs = function (callback) {
+        return this._defs.map(callback);
     };
     Canvas.prototype.zoomTo = function (zoom, pan) {
         if (zoom === void 0) { zoom = 1; }
@@ -711,8 +741,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ClipPath: () => (/* binding */ ClipPath)
 /* harmony export */ });
-/* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
-/* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
+/* harmony import */ var _definition__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./definition */ "./packages/core/src/defs/definition.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -729,16 +758,16 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
-
 var ClipPath = /** @class */ (function (_super) {
     __extends(ClipPath, _super);
-    function ClipPath() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function ClipPath(params) {
+        var _this = _super.call(this) || this;
         _this.tagName = 'clipPath';
+        _this.init(params);
         return _this;
     }
     return ClipPath;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
+}(_definition__WEBPACK_IMPORTED_MODULE_0__.Definition));
 
 
 
@@ -773,11 +802,23 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var ColorStop = /** @class */ (function (_super) {
     __extends(ColorStop, _super);
-    function ColorStop() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function ColorStop(params) {
+        var _this = _super.call(this) || this;
         _this.tagName = 'stop';
+        _this.offset = 0;
+        _this.stopColor = '';
+        _this.stopOpacity = 1;
+        _this.set(params);
+        _this.createId('stop');
         return _this;
     }
+    ColorStop.prototype.getAttrMap = function () {
+        return [
+            'offset',
+            'stopColor',
+            'stopOpacity'
+        ];
+    };
     return ColorStop;
 }(_element__WEBPACK_IMPORTED_MODULE_0__.Element));
 
@@ -785,15 +826,15 @@ var ColorStop = /** @class */ (function (_super) {
 
 /***/ }),
 
-/***/ "./packages/core/src/defs/gradient.ts":
-/*!********************************************!*\
-  !*** ./packages/core/src/defs/gradient.ts ***!
-  \********************************************/
+/***/ "./packages/core/src/defs/definition.ts":
+/*!**********************************************!*\
+  !*** ./packages/core/src/defs/definition.ts ***!
+  \**********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Gradient: () => (/* binding */ Gradient)
+/* harmony export */   Definition: () => (/* binding */ Definition)
 /* harmony export */ });
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
@@ -814,13 +855,74 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
+var Definition = /** @class */ (function (_super) {
+    __extends(Definition, _super);
+    function Definition() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.isDefinition = true;
+        return _this;
+    }
+    Definition.prototype.init = function (params) {
+        this.set(params, true);
+        this.createId(this.tagName);
+    };
+    Definition.prototype.getAttrMap = function () {
+        return [
+            'id'
+        ];
+    };
+    return Definition;
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/defs/gradient.ts":
+/*!********************************************!*\
+  !*** ./packages/core/src/defs/gradient.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Gradient: () => (/* binding */ Gradient)
+/* harmony export */ });
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ */ "./packages/core/src/defs/index.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
 var Gradient = /** @class */ (function (_super) {
     __extends(Gradient, _super);
     function Gradient() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    Object.defineProperty(Gradient.prototype, "colorStops", {
+        get: function () {
+            return this.getChildren();
+        },
+        set: function (value) {
+            var colorStops = value.map(function (stop) { return new ___WEBPACK_IMPORTED_MODULE_0__.ColorStop(stop); });
+            this.add(colorStops, true);
+        },
+        enumerable: false,
+        configurable: true
+    });
     return Gradient;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
+}(___WEBPACK_IMPORTED_MODULE_0__.Definition));
 
 
 
@@ -834,19 +936,22 @@ var Gradient = /** @class */ (function (_super) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ClipPath: () => (/* reexport safe */ _clip_path__WEBPACK_IMPORTED_MODULE_0__.ClipPath),
-/* harmony export */   ColorStop: () => (/* reexport safe */ _color_stop__WEBPACK_IMPORTED_MODULE_4__.ColorStop),
-/* harmony export */   Gradient: () => (/* reexport safe */ _gradient__WEBPACK_IMPORTED_MODULE_1__.Gradient),
-/* harmony export */   LinearGradient: () => (/* reexport safe */ _linear_gradient__WEBPACK_IMPORTED_MODULE_2__.LinearGradient),
-/* harmony export */   Pattern: () => (/* reexport safe */ _pattern__WEBPACK_IMPORTED_MODULE_5__.Pattern),
-/* harmony export */   RadialGradient: () => (/* reexport safe */ _radial_gradient__WEBPACK_IMPORTED_MODULE_3__.RadialGradient)
+/* harmony export */   ClipPath: () => (/* reexport safe */ _clip_path__WEBPACK_IMPORTED_MODULE_1__.ClipPath),
+/* harmony export */   ColorStop: () => (/* reexport safe */ _color_stop__WEBPACK_IMPORTED_MODULE_5__.ColorStop),
+/* harmony export */   Definition: () => (/* reexport safe */ _definition__WEBPACK_IMPORTED_MODULE_0__.Definition),
+/* harmony export */   Gradient: () => (/* reexport safe */ _gradient__WEBPACK_IMPORTED_MODULE_2__.Gradient),
+/* harmony export */   LinearGradient: () => (/* reexport safe */ _linear_gradient__WEBPACK_IMPORTED_MODULE_3__.LinearGradient),
+/* harmony export */   Pattern: () => (/* reexport safe */ _pattern__WEBPACK_IMPORTED_MODULE_6__.Pattern),
+/* harmony export */   RadialGradient: () => (/* reexport safe */ _radial_gradient__WEBPACK_IMPORTED_MODULE_4__.RadialGradient)
 /* harmony export */ });
-/* harmony import */ var _clip_path__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./clip-path */ "./packages/core/src/defs/clip-path.ts");
-/* harmony import */ var _gradient__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./gradient */ "./packages/core/src/defs/gradient.ts");
-/* harmony import */ var _linear_gradient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./linear-gradient */ "./packages/core/src/defs/linear-gradient.ts");
-/* harmony import */ var _radial_gradient__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./radial-gradient */ "./packages/core/src/defs/radial-gradient.ts");
-/* harmony import */ var _color_stop__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./color-stop */ "./packages/core/src/defs/color-stop.ts");
-/* harmony import */ var _pattern__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./pattern */ "./packages/core/src/defs/pattern.ts");
+/* harmony import */ var _definition__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./definition */ "./packages/core/src/defs/definition.ts");
+/* harmony import */ var _clip_path__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./clip-path */ "./packages/core/src/defs/clip-path.ts");
+/* harmony import */ var _gradient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./gradient */ "./packages/core/src/defs/gradient.ts");
+/* harmony import */ var _linear_gradient__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./linear-gradient */ "./packages/core/src/defs/linear-gradient.ts");
+/* harmony import */ var _radial_gradient__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./radial-gradient */ "./packages/core/src/defs/radial-gradient.ts");
+/* harmony import */ var _color_stop__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./color-stop */ "./packages/core/src/defs/color-stop.ts");
+/* harmony import */ var _pattern__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./pattern */ "./packages/core/src/defs/pattern.ts");
+
 
 
 
@@ -886,9 +991,10 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var LinearGradient = /** @class */ (function (_super) {
     __extends(LinearGradient, _super);
-    function LinearGradient() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function LinearGradient(params) {
+        var _this = _super.call(this) || this;
         _this.tagName = 'linearGradient';
+        _this.init(params);
         return _this;
     }
     return LinearGradient;
@@ -908,7 +1014,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Pattern: () => (/* binding */ Pattern)
 /* harmony export */ });
-/* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
+/* harmony import */ var _definition__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./definition */ "./packages/core/src/defs/definition.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -927,13 +1033,14 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var Pattern = /** @class */ (function (_super) {
     __extends(Pattern, _super);
-    function Pattern() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function Pattern(params) {
+        var _this = _super.call(this) || this;
         _this.tagName = 'pattern';
+        _this.init(params);
         return _this;
     }
     return Pattern;
-}(_element__WEBPACK_IMPORTED_MODULE_0__.Element));
+}(_definition__WEBPACK_IMPORTED_MODULE_0__.Definition));
 
 
 
@@ -968,9 +1075,10 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var RadialGradient = /** @class */ (function (_super) {
     __extends(RadialGradient, _super);
-    function RadialGradient() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function RadialGradient(params) {
+        var _this = _super.call(this) || this;
         _this.tagName = 'radialGradient';
+        _this.init(params);
         return _this;
     }
     return RadialGradient;
@@ -990,8 +1098,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Element: () => (/* binding */ Element)
 /* harmony export */ });
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
+
 var Element = /** @class */ (function () {
     function Element() {
+        this.id = '';
         this.className = '';
         this._listeners = {};
     }
@@ -1050,6 +1161,11 @@ var Element = /** @class */ (function () {
     };
     Element.prototype.getStyle = function () {
         return {};
+    };
+    Element.prototype.createId = function (prefix) {
+        if (!this.id) {
+            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.uniqueId)(prefix);
+        }
     };
     Element.prototype.addClass = function () {
         var classNames = [];
@@ -1145,6 +1261,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   CubicBezierCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_6__.CubicBezierCurve),
 /* harmony export */   Curve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.Curve),
 /* harmony export */   CurvePath: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.CurvePath),
+/* harmony export */   Definition: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.Definition),
 /* harmony export */   Element: () => (/* reexport safe */ _element__WEBPACK_IMPORTED_MODULE_0__.Element),
 /* harmony export */   Ellipse: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Ellipse),
 /* harmony export */   Gradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.Gradient),
@@ -1178,6 +1295,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.isEqual),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.rad2Deg),
+/* harmony export */   randInt: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.randInt),
 /* harmony export */   toFixed: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.toFixed),
 /* harmony export */   uniqueId: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.uniqueId)
 /* harmony export */ });
@@ -1223,7 +1341,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1253,7 +1370,6 @@ var __assign = (undefined && undefined.__assign) || function () {
 
 
 
-
 var ControlNode = /** @class */ (function (_super) {
     __extends(ControlNode, _super);
     function ControlNode() {
@@ -1261,13 +1377,12 @@ var ControlNode = /** @class */ (function (_super) {
         _this.tagName = 'div';
         _this.className = 'grafik-control-node';
         _this.name = '';
-        _this.id = '';
         _this.offset = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point();
         return _this;
     }
     ControlNode.prototype.init = function (params) {
         this.set(params);
-        this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.uniqueId)();
+        this.createId('node');
         if (this.name) {
             this.addClass('grafik-control-node__' + this.name);
         }
@@ -3238,17 +3353,33 @@ function Collection(Base) {
             this.add(children, silent);
             return this;
         };
+        Collection.prototype.getChildren = function () {
+            return this.children;
+        };
         Collection.prototype.add = function (children, silent) {
             var _this = this;
             if (silent === void 0) { silent = false; }
             children = Array.isArray(children) ? children : [children];
+            // @ts-ignore
+            var canvas = this.isCanvas ? this : this.canvas;
             children.forEach(function (child) {
                 _this.children.push(child);
                 child.set({
                     parent: _this,
-                    // @ts-ignore
-                    canvas: _this.isCanvas ? _this : _this.canvas
+                    canvas: canvas
                 }, true);
+                var defs = child.get('_defs') || {};
+                var def2Add = [];
+                var key, def;
+                for (key in defs) {
+                    def = defs[key];
+                    if (def === null || def === void 0 ? void 0 : def.isDefinition) {
+                        def2Add.push(def);
+                    }
+                }
+                if (def2Add.length) {
+                    canvas === null || canvas === void 0 ? void 0 : canvas.addDefs(def2Add);
+                }
             });
             if (!silent) {
                 // @ts-ignore
@@ -3821,7 +3952,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
 /* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../interactive */ "./packages/core/src/interactive/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -3851,7 +3981,6 @@ var __assign = (undefined && undefined.__assign) || function () {
 
 
 
-
 var Shape = /** @class */ (function (_super) {
     __extends(Shape, _super);
     function Shape() {
@@ -3877,6 +4006,7 @@ var Shape = /** @class */ (function (_super) {
         _this.scaleY = 1;
         _this.skewX = 0;
         _this.skewY = 0;
+        _this._defs = {};
         return _this;
     }
     Object.defineProperty(Shape.prototype, "fill", {
@@ -3884,15 +4014,19 @@ var Shape = /** @class */ (function (_super) {
             return this._fill;
         },
         set: function (value) {
+            var _a, _b;
             if (_maths__WEBPACK_IMPORTED_MODULE_1__.Color.isColor(value)) {
-                // @ts-ignore
+                if (this._defs.fill) {
+                    (_a = this.canvas) === null || _a === void 0 ? void 0 : _a.removeDefs(this._defs.fill);
+                }
                 this._fill = value;
-                this._fillObject = null;
+                this._defs.fill = null;
             }
             else {
-                // @ts-ignore Why 'id' do not exists on FillStroke?
+                value.shape = this;
+                (_b = this.canvas) === null || _b === void 0 ? void 0 : _b.addDefs(value);
                 this._fill = "url(#".concat(value.id, ")");
-                this._fillObject = value;
+                this._defs.fill = value;
             }
         },
         enumerable: false,
@@ -3903,15 +4037,19 @@ var Shape = /** @class */ (function (_super) {
             return this._stroke;
         },
         set: function (value) {
+            var _a, _b;
             if (_maths__WEBPACK_IMPORTED_MODULE_1__.Color.isColor(value)) {
-                // @ts-ignore
+                if (this._defs.stroke) {
+                    (_a = this.canvas) === null || _a === void 0 ? void 0 : _a.removeDefs(this._defs.stroke);
+                }
                 this._stroke = value;
-                this._strokeObject = null;
+                this._defs.stroke = null;
             }
             else {
-                // @ts-ignore Why 'id' do not exists on FillStroke?
+                value.shape = this;
+                (_b = this.canvas) === null || _b === void 0 ? void 0 : _b.addDefs(value);
                 this._stroke = "url(#".concat(value.id, ")");
-                this._strokeObject = value;
+                this._defs.stroke = value;
             }
         },
         enumerable: false,
@@ -3939,7 +4077,7 @@ var Shape = /** @class */ (function (_super) {
     });
     Shape.prototype.init = function (params) {
         this.set(params, true);
-        this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.uniqueId)();
+        this.createId(this.tagName);
         this.addControl('transform', new _interactive__WEBPACK_IMPORTED_MODULE_2__.TransformControl({
             shape: this
         })).setControl('transform');
@@ -3963,19 +4101,19 @@ var Shape = /** @class */ (function (_super) {
             if (!silent) {
                 this.trigger('set', (_a = {}, _a[key] = value, _a));
             }
-            return this;
         }
-        var i, prop;
-        // Also check props if key is an object.
-        for (i = 0; i < props.length; i++) {
-            prop = props[i];
-            if (prop in key) {
-                this.updateMatrix();
-                this.updateOthersWithKeys(Object.keys(key));
-                if (!value) {
-                    this.trigger('set', key);
+        else {
+            var i = void 0, prop = void 0;
+            for (i = 0; i < props.length; i++) {
+                prop = props[i];
+                if (prop in key) {
+                    this.updateMatrix();
+                    break;
                 }
-                break;
+            }
+            this.updateOthersWithKeys(Object.keys(key));
+            if (!value) {
+                this.trigger('set', key);
             }
         }
         return this;
@@ -4208,6 +4346,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   deg2Rad: () => (/* binding */ deg2Rad),
 /* harmony export */   isEqual: () => (/* binding */ isEqual),
 /* harmony export */   rad2Deg: () => (/* binding */ rad2Deg),
+/* harmony export */   randInt: () => (/* binding */ randInt),
 /* harmony export */   toFixed: () => (/* binding */ toFixed),
 /* harmony export */   uniqueId: () => (/* binding */ uniqueId)
 /* harmony export */ });
@@ -4220,14 +4359,15 @@ var toFixed = function (value, fractionDigits) {
 };
 var deg2Rad = function (degree) { return (degree * _constants__WEBPACK_IMPORTED_MODULE_0__.PIBY180); };
 var rad2Deg = function (degree) { return (degree / _constants__WEBPACK_IMPORTED_MODULE_0__.PIBY180); };
-var uniqueId = function () {
-    // @ts-ignore
-    if (!uniqueId._index) {
-        // @ts-ignore
-        uniqueId._index = 0;
+var randInt = function (min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; };
+var uniqueId = function (prefix) {
+    var pf = prefix ? prefix + '-' : '';
+    var charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var str = '', i;
+    for (i = 0; i < 12; i++) {
+        str += charset[randInt(0, charset.length - 1)];
     }
-    // @ts-ignore
-    return 'elem' + uniqueId._index++;
+    return pf + str;
 };
 var isEqual = function (obj1, obj2) {
     var isEqual = true;
@@ -4282,6 +4422,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.isEqual),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.rad2Deg),
+/* harmony export */   randInt: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.randInt),
 /* harmony export */   toFixed: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.toFixed),
 /* harmony export */   uniqueId: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_4__.uniqueId)
 /* harmony export */ });
@@ -4398,6 +4539,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   CubicBezierCurve: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.CubicBezierCurve),
 /* harmony export */   Curve: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Curve),
 /* harmony export */   CurvePath: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.CurvePath),
+/* harmony export */   Definition: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Definition),
 /* harmony export */   Element: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Element),
 /* harmony export */   Ellipse: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Ellipse),
 /* harmony export */   Gradient: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Gradient),
@@ -4432,6 +4574,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.isEqual),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.rad2Deg),
+/* harmony export */   randInt: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.randInt),
 /* harmony export */   toFixed: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.toFixed),
 /* harmony export */   uniqueId: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.uniqueId)
 /* harmony export */ });
