@@ -1576,6 +1576,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   OriginControlNode: () => (/* binding */ OriginControlNode)
 /* harmony export */ });
 /* harmony import */ var _control_node__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../control-node */ "./packages/core/src/interactive/control-node.ts");
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1592,21 +1594,43 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
+
 var OriginControlNode = /** @class */ (function (_super) {
     __extends(OriginControlNode, _super);
     function OriginControlNode(params) {
         var _this = _super.call(this) || this;
         _this._isDragging = false;
+        _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
+        _this._startPosition = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
+        _this._startOrigin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
         _this.init(params);
         return _this;
     }
     OriginControlNode.prototype.onPointerStart = function (e) {
+        var shape = this.getShape();
+        var canvas = shape.get('canvas');
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
+        this._startVector.copy(canvas.getPointer(e));
+        this._startPosition.set(left, top);
+        this._startOrigin.copy(shape.get('origin'));
     };
     OriginControlNode.prototype.onPointerMove = function (e) {
         if (!this._isDragging) {
             return;
         }
+        var shape = this.getShape();
+        var canvas = shape.get('canvas');
+        var vpt = shape.parent.isCanvas ? canvas.get('viewportMatrix').clone() : shape.parent.getWorldMatrix();
+        var move = canvas.getPointer(e).subtract(this._startVector.clone().subtract(this._startPosition)).transform(vpt.clone().invert());
+        var dimMatrix = shape.getWorldMatrix().invert().translate(0, 0);
+        var origin = canvas.getPointer(e).subtract(this._startVector).divide(shape.bBox.getSize()).transform(dimMatrix).add(this._startOrigin);
+        shape.set({
+            left: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.x),
+            top: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.y),
+            origin: origin
+        });
     };
     OriginControlNode.prototype.onPointerEnd = function (e) {
         this._isDragging = false;
@@ -2012,8 +2036,9 @@ var TransformControl = /** @class */ (function (_super) {
         return this;
     };
     TransformControl.prototype.onPointerStart = function (e) {
-        var canvas = this.shape.get('canvas');
-        var _a = this.shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        var shape = this.shape;
+        var canvas = shape.get('canvas');
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.subtractPoints(canvas.getPointer(e), new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(left, top));
     };
@@ -2025,7 +2050,7 @@ var TransformControl = /** @class */ (function (_super) {
         var canvas = shape.get('canvas');
         var vpt = shape.parent.isCanvas ? canvas.get('viewportMatrix').clone() : shape.parent.getWorldMatrix();
         var move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
-        this.shape.set({
+        shape.set({
             left: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.x),
             top: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.y)
         });

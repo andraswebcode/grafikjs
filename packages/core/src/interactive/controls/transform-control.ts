@@ -107,8 +107,9 @@ class TransformControl extends Control {
 
 	public onPointerStart(e){
 
-		const canvas = this.shape.get('canvas');
-		const {left, top} = this.shape.getWorldMatrix().toOptions();
+		const shape = this.shape;
+		const canvas = shape.get('canvas');
+		const {left, top} = shape.getWorldMatrix().toOptions();
 
 		this._isDragging = true;
 		this._startVector.subtractPoints(canvas.getPointer(e), new Point(left, top));
@@ -126,7 +127,7 @@ class TransformControl extends Control {
 		const vpt = shape.parent.isCanvas ? canvas.get('viewportMatrix').clone() : shape.parent.getWorldMatrix();
 		const move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
 
-		this.shape.set({
+		shape.set({
 			left:toFixed(move.x),
 			top:toFixed(move.y)
 		});

@@ -83,22 +83,22 @@ const TestApp = () => {
 				<Wrapper>
 					<Canvas>
 						<Defs />
-						<TestComponent />
+						<TestComponent />{/*}
 						<Group
 							left={600}
 							top={400} >
 							<Group
 								left={0}
-								top={-100} >
+								top={-100} >{*/}
 								<Rect
-									left={-100}
-									top={0}
+									left={600}
+									top={400}
 									angle={angle}
 									width={200}
 									height={200}
 									stroke='black'
 									strokeWidth={2}
-									fill='none' />
+									fill='none' />{/*}
 								<Rect
 									left={100}
 									top={0}
