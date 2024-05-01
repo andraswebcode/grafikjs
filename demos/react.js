@@ -2780,6 +2780,9 @@ var ControlNode = /** @class */ (function (_super) {
         this.onPointerEnd = this.onPointerEnd.bind(this);
     };
     Object.defineProperty(ControlNode.prototype, "x", {
+        get: function () {
+            return this.offset.x;
+        },
         set: function (value) {
             this.offset.x = value;
         },
@@ -2787,6 +2790,9 @@ var ControlNode = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(ControlNode.prototype, "y", {
+        get: function () {
+            return this.offset.y;
+        },
         set: function (value) {
             this.offset.y = value;
         },
@@ -3052,6 +3058,7 @@ var ScaleControlNode = /** @class */ (function (_super) {
         _this._isDragging = false;
         _this._startScale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
         _this._startSize = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
+        _this._startMatrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix();
         _this.init(params);
         return _this;
     }
@@ -3060,7 +3067,7 @@ var ScaleControlNode = /** @class */ (function (_super) {
         this._isDragging = true;
         this._startScale.set(shape.get('scaleX'), shape.get('scaleY'));
         this._startSize.copy(this.getControlSize());
-        this._startMatrix = shape.getWorldMatrix().invert();
+        this._startMatrix.copy(shape.getWorldMatrix().invert());
     };
     ScaleControlNode.prototype.onPointerMove = function (e) {
         if (!this._isDragging) {
@@ -3068,7 +3075,9 @@ var ScaleControlNode = /** @class */ (function (_super) {
         }
         var shape = this.getShape();
         var lp = shape.getLocalPointer(e, this._startMatrix);
-        var ratio = lp.divide(this._startSize.clone().divideScalar(2).divide(this._startScale));
+        var origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(this.x + (1 - 2 * this.x) * shape.originX, this.y + (1 - 2 * this.y) * shape.originX);
+        console.log(new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(this.x + (1 - 2 * this.x), this.y + (1 - 2 * this.y)));
+        var ratio = lp.divide(this._startSize.clone().multiply(origin).divide(this._startScale));
         var scale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().multiplyPoints(this._startScale, ratio).abs();
         var set = {};
         if (this.axis === 'x') {
@@ -6911,7 +6920,7 @@ var TestApp = function () {
     var _h = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewY = _h[0], setSkewY = _h[1];
     var _j = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(12), sw = _j[0], setSw = _j[1];
     var _k = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.useCreateDef)('linearGradient', G1), fill = _k[0], setFill = _k[1];
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 600, top: 400, angle: angle, width: 200, height: 200, stroke: 'black', strokeWidth: 2, fill: 'none' })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, {})] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Zoom:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: zoom, onChange: function (e) { return setZoom(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Left:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: left, onChange: function (e) { return setLeft(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Top:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: top, onChange: function (e) { return setTop(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Angle:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: angle, onChange: function (e) { return setAngle(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleX, onChange: function (e) { return setScaleX(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleY, onChange: function (e) { return setScaleY(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewX, onChange: function (e) { return setSkewX(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewY, onChange: function (e) { return setSkewY(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Stroke Width:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: sw, onChange: function (e) { return setSw(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { onClick: function () {
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 600, top: 400, angle: 0, width: 200, height: 200, originX: 0.25, originY: 0.25, stroke: 'black', strokeWidth: 2, fill: 'none' })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, {})] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Zoom:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: zoom, onChange: function (e) { return setZoom(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Left:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: left, onChange: function (e) { return setLeft(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Top:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: top, onChange: function (e) { return setTop(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Angle:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: angle, onChange: function (e) { return setAngle(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleX, onChange: function (e) { return setScaleX(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleY, onChange: function (e) { return setScaleY(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewX, onChange: function (e) { return setSkewX(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewY, onChange: function (e) { return setSkewY(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Stroke Width:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: sw, onChange: function (e) { return setSw(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { onClick: function () {
                     setFill(i++ % 2 ? G1 : G2);
                 }, children: "Change Gradient" })] }));
 };

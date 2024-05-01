@@ -93,9 +93,11 @@ const TestApp = () => {
 								<Rect
 									left={600}
 									top={400}
-									angle={angle}
+									angle={0}
 									width={200}
 									height={200}
+									originX={0.25}
+									originY={0.25}
 									stroke='black'
 									strokeWidth={2}
 									fill='none' />{/*}

@@ -41,6 +41,14 @@ class ControlNode extends Collection(Element) {
 		this.offset.y = value;
 	}
 
+	get x(){
+		return this.offset.x;
+	}
+
+	get y(){
+		return this.offset.y;
+	}
+
 	public getPosition() : Point {
 
 		const size = this.getControlSize();

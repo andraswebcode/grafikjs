@@ -16,7 +16,7 @@ class ScaleControlNode extends ControlNode {
 	protected _isDragging = false;
 	protected _startScale = new Point();
 	protected _startSize = new Point();
-	protected _startMatrix: Matrix;
+	protected _startMatrix = new Matrix();
 
 	public constructor(params?){
 		super();
@@ -30,7 +30,7 @@ class ScaleControlNode extends ControlNode {
 		this._isDragging = true;
 		this._startScale.set(shape.get('scaleX'), shape.get('scaleY'));
 		this._startSize.copy(this.getControlSize());
-		this._startMatrix = shape.getWorldMatrix().invert();
+		this._startMatrix.copy(shape.getWorldMatrix().invert());
 
 	}
 
@@ -42,7 +42,9 @@ class ScaleControlNode extends ControlNode {
 
 		const shape = this.getShape();
 		const lp = shape.getLocalPointer(e, this._startMatrix);
-		const ratio = lp.divide(this._startSize.clone().divideScalar(2).divide(this._startScale));
+		const origin = new Point(this.x + (1 - 2 * this.x) * shape.originX, this.y + (1 - 2 * this.y) * shape.originX);
+		console.log(new Point(this.x + (1 - 2 * this.x), this.y + (1 - 2 * this.y)))
+		const ratio = lp.divide(this._startSize.clone().multiply(origin).divide(this._startScale));
 		const scale = new Point().multiplyPoints(this._startScale, ratio).abs();
 		const set: any = {};
 

@@ -1409,6 +1409,9 @@ var ControlNode = /** @class */ (function (_super) {
         this.onPointerEnd = this.onPointerEnd.bind(this);
     };
     Object.defineProperty(ControlNode.prototype, "x", {
+        get: function () {
+            return this.offset.x;
+        },
         set: function (value) {
             this.offset.x = value;
         },
@@ -1416,6 +1419,9 @@ var ControlNode = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(ControlNode.prototype, "y", {
+        get: function () {
+            return this.offset.y;
+        },
         set: function (value) {
             this.offset.y = value;
         },
@@ -1681,6 +1687,7 @@ var ScaleControlNode = /** @class */ (function (_super) {
         _this._isDragging = false;
         _this._startScale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
         _this._startSize = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
+        _this._startMatrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix();
         _this.init(params);
         return _this;
     }
@@ -1689,7 +1696,7 @@ var ScaleControlNode = /** @class */ (function (_super) {
         this._isDragging = true;
         this._startScale.set(shape.get('scaleX'), shape.get('scaleY'));
         this._startSize.copy(this.getControlSize());
-        this._startMatrix = shape.getWorldMatrix().invert();
+        this._startMatrix.copy(shape.getWorldMatrix().invert());
     };
     ScaleControlNode.prototype.onPointerMove = function (e) {
         if (!this._isDragging) {
@@ -1697,7 +1704,9 @@ var ScaleControlNode = /** @class */ (function (_super) {
         }
         var shape = this.getShape();
         var lp = shape.getLocalPointer(e, this._startMatrix);
-        var ratio = lp.divide(this._startSize.clone().divideScalar(2).divide(this._startScale));
+        var origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(this.x + (1 - 2 * this.x) * shape.originX, this.y + (1 - 2 * this.y) * shape.originX);
+        console.log(new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(this.x + (1 - 2 * this.x), this.y + (1 - 2 * this.y)));
+        var ratio = lp.divide(this._startSize.clone().multiply(origin).divide(this._startScale));
         var scale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().multiplyPoints(this._startScale, ratio).abs();
         var set = {};
         if (this.axis === 'x') {
