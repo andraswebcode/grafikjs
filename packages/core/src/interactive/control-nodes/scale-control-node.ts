@@ -43,7 +43,6 @@ class ScaleControlNode extends ControlNode {
 		const shape = this.getShape();
 		const lp = shape.getLocalPointer(e, this._startMatrix);
 		const origin = new Point(this.x + (1 - 2 * this.x) * shape.originX, this.y + (1 - 2 * this.y) * shape.originX);
-		console.log(new Point(this.x + (1 - 2 * this.x), this.y + (1 - 2 * this.y)))
 		const ratio = lp.divide(this._startSize.clone().multiply(origin).divide(this._startScale));
 		const scale = new Point().multiplyPoints(this._startScale, ratio).abs();
 		const set: any = {};

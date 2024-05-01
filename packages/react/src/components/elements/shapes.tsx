@@ -11,6 +11,7 @@ const Ellipse = withCollectionContext(ShapeBase, 'ellipse');
 const Path = withCollectionContext(ShapeBase, 'path');
 const Polygon = withCollectionContext(ShapeBase, 'polygon');
 const Polyline = withCollectionContext(ShapeBase, 'polyline');
+const Image = withCollectionContext(ShapeBase, 'image');
 
 export {
 	Rect,
@@ -18,5 +19,6 @@ export {
 	Ellipse,
 	Path,
 	Polygon,
-	Polyline
+	Polyline,
+	Image
 };

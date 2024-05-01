@@ -13,6 +13,7 @@ import {
 	Circle,
 	Ellipse,
 	Path,
+	Image,
 	Wrapper,
 	Interactive,
 	useCanvas,
@@ -83,24 +84,24 @@ const TestApp = () => {
 				<Wrapper>
 					<Canvas>
 						<Defs />
-						<TestComponent />{/*}
+						<TestComponent />
 						<Group
 							left={600}
 							top={400} >
 							<Group
 								left={0}
-								top={-100} >{*/}
+								top={-100} >
 								<Rect
-									left={600}
-									top={400}
-									angle={0}
+									left={-100}
+									top={0}
+									angle={angle}
 									width={200}
 									height={200}
 									originX={0.25}
 									originY={0.25}
 									stroke='black'
 									strokeWidth={2}
-									fill='none' />{/*}
+									fill='none' />
 								<Rect
 									left={100}
 									top={0}
@@ -159,6 +160,35 @@ const TestApp = () => {
 								setScaleY(scaleY);
 							}} />
 						{*/}
+						<Ellipse
+							left={400}
+							top={400}
+							rx={80}
+							ry={40}
+							stroke='black'
+							strokeWidth={2}
+							fill='none' />
+						<Circle
+							left={400}
+							top={400}
+							r={40}
+							stroke='black'
+							strokeWidth={2}
+							fill='none' />
+						<Path
+							d='M0 100 C 40 0 160 0 200 100 C 160 200 40 200 0 100Z'
+							left={800}
+							top={200}
+							angle={angle}
+							stroke='black'
+							strokeWidth={8}
+							fill='none' />
+						<Image
+							href='img.jpg'
+							left={600}
+							top={400}
+							scaleX={0.4}
+							scaleY={0.4} />
 					</Canvas>
 					<Interactive />
 				</Wrapper>
