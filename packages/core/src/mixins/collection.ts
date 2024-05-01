@@ -34,17 +34,22 @@ function Collection<TBase extends Constructor>(Base: TBase){
 		public add(children: any|any[], silent = false) : Collection {
 
 			children = Array.isArray(children) ? children : [children];
-			// @ts-ignore
-			const canvas = this.isCanvas ? this : this.canvas;
 
 			children.forEach(child => {
+				// Set up child.
 				this.children.push(child);
-				child.set({
-					parent:this,
-					canvas
-				}, true);
+				child.set('parent', this, true);
+				// @ts-ignore
+				if (this.isCanvas){
+					const setCanvas = child => child.set('canvas', this, true);
+					setCanvas(child);
+					if (child.isCollection){
+						child.eachChild(setCanvas);
+					}
+				}
+				// Set up defs.
 				const defs = child.get('_defs') || {};
-				const def2Add: any = [];
+				const def2Add = [];
 				let key, def;
 				for (key in defs){
 					def = defs[key];
@@ -53,7 +58,8 @@ function Collection<TBase extends Constructor>(Base: TBase){
 					}
 				}
 				if (def2Add.length){
-					canvas?.addDefs(def2Add);
+					// @ts-ignore
+					this.canvas?.addDefs(def2Add);
 				}
 			});
 

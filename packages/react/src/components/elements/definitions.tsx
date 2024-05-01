@@ -9,7 +9,11 @@ const withTagName = tagName => props => (
 );
 
 const LinearGradient = withTagName('linearGradient');
+const RadialGradient = withTagName('radialGradient');
+const Pattern = withTagName('pattern');
 
 export {
-	LinearGradient
+	LinearGradient,
+	RadialGradient,
+	Pattern
 };

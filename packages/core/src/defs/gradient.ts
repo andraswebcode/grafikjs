@@ -7,7 +7,7 @@ class Gradient extends Definition {
 
 	set colorStops(value: ColorStop[]){
 		const colorStops = value.map(stop => new ColorStop(stop));
-		this.add(colorStops, true);
+		this.setChildren(colorStops, true);
 	}
 
 	get colorStops() : ColorStop[] {

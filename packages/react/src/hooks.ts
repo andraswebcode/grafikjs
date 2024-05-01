@@ -82,8 +82,11 @@ const __experimental_useAttributes = (object: any, defs: any = {}) => {
 const useCreateDef = (defName: string, initState: any = {}) : [any, Function] => {
 
 	const def = useMemo(() => new DEFCLASSES[defName](initState), []);
+	const setDef = useCallback(options => {
+		def.set(options);
+	}, []);
 
-	return [def, () => {}];
+	return [def, setDef];
 
 };
 

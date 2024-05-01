@@ -1,6 +1,6 @@
 {
   "name": "@grafikjs/core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "./src/index.ts",
   "types":"./src/index.d.ts",
   "scripts": {
@@ -10,11 +10,25 @@
   "author": "Andras Tovishati",
   "license": "MIT",
   "description": "",
-  "dependencies":{},
-  "devDependencies":{
+  "dependencies": {},
+  "devDependencies": {
     "webpack":"*",
     "webpack-cli":"*",
     "typescript":"*",
     "ts-loader":"*"
-  }
+  },
+  "homepage":"https://grafikjs.andrasweb.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andraswebcode/grafikjs/tree/main/packages/core"
+  },
+  "keywords": [
+    "SVG",
+    "graphic",
+    "graphics",
+    "drag",
+    "scale",
+    "move",
+    "rotate"
+  ]
 }

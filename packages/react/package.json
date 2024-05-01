@@ -23,5 +23,20 @@
     "@types/node":"*",
     "@types/react":"*",
     "@types/react-dom":"*"
-  }
+  },
+  "homepage":"https://grafikjs.andrasweb.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andraswebcode/grafikjs/tree/main/packages/react"
+  },
+  "keywords": [
+    "SVG",
+    "graphic",
+    "graphics",
+    "drag",
+    "scale",
+    "move",
+    "rotate",
+    "react"
+  ]
 }

@@ -14,13 +14,13 @@ const ShapeBase = ({
 	children
 }) => {
 
-	const [wrapperAttributes, setWrapperAttributes] = useState({});
-	const [attributes, setAttributes] = useState({});
+	const [wrapperAttributes, setWrapperAttributes] = useState(shape.getWrapperAttributes());
+	const [attributes, setAttributes] = useState(shape.getAttributes());
 	const onShapeSet = useCallback(() => {
 		setWrapperAttributes(shape.getWrapperAttributes());
 		setAttributes(shape.getAttributes());
 		props.onChange?.(shape);
-	}, []);
+	}, [props]);
 
 	useEffect(() => {
 

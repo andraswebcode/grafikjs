@@ -57,10 +57,10 @@ class Shape extends Element {
 	}
 
 	set fill(value: any){
+		if (this._defs.fill){
+			this.canvas?.removeDefs(this._defs.fill);
+		}
 		if (Color.isColor(value)){
-			if (this._defs.fill){
-				this.canvas?.removeDefs(this._defs.fill);
-			}
 			this._fill = value;
 			this._defs.fill = null;
 		} else {
@@ -76,10 +76,10 @@ class Shape extends Element {
 	}
 
 	set stroke(value: any){
+		if (this._defs.stroke){
+			this.canvas?.removeDefs(this._defs.stroke);
+		}
 		if (Color.isColor(value)){
-			if (this._defs.stroke){
-				this.canvas?.removeDefs(this._defs.stroke);
-			}
 			this._stroke = value;
 			this._defs.stroke = null;
 		} else {

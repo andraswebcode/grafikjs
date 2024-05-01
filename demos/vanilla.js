@@ -632,8 +632,9 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype.mapSelectedShapes = function (callback) {
         return this._selectedShapes.map(callback);
     };
-    Canvas.prototype.addDefs = function (defs) {
+    Canvas.prototype.addDefs = function (defs, silent) {
         var _this = this;
+        if (silent === void 0) { silent = false; }
         defs = Array.isArray(defs) ? defs : [defs];
         defs.forEach(function (def) {
             // @ts-ignore
@@ -642,10 +643,13 @@ var Canvas = /** @class */ (function (_super) {
                 _this._defs.push(def);
             }
         });
-        this.trigger('defs:added', defs);
+        if (!silent) {
+            this.trigger('defs:added', defs);
+        }
         return this;
     };
-    Canvas.prototype.removeDefs = function (defs) {
+    Canvas.prototype.removeDefs = function (defs, silent) {
+        if (silent === void 0) { silent = false; }
         return this;
     };
     Canvas.prototype.getDefs = function () {
@@ -657,6 +661,9 @@ var Canvas = /** @class */ (function (_super) {
     };
     Canvas.prototype.mapDefs = function (callback) {
         return this._defs.map(callback);
+    };
+    Canvas.prototype.setResponsiveSize = function (width, height) {
+        return this;
     };
     Canvas.prototype.zoomTo = function (zoom, pan) {
         if (zoom === void 0) { zoom = 1; }
@@ -681,9 +688,15 @@ var Canvas = /** @class */ (function (_super) {
     };
     Canvas.prototype.onPointerStart = function (e) {
         var dataset = e.target.dataset;
+        var shape = dataset.shape;
         var isNode = ('controlNode' in dataset);
         var pointer = this.getPointer(e);
         var founded = this.findLastChildByPointer(pointer);
+        if (this.getSelectedShapes().includes(founded) && founded.isCollection) {
+            founded = founded.findLastChildByPointer(pointer);
+            if (founded)
+                shape = ''; // To create recursive selection.
+        }
         if (isNode) {
             this._currentNodeId = dataset.id;
             this.eachSelectedShape(function (shape) {
@@ -692,12 +705,14 @@ var Canvas = /** @class */ (function (_super) {
             });
         }
         else {
-            if (founded) {
-                this.releaseShapes();
-                this.selectShapes(founded);
-            }
-            else {
-                this.releaseShapes();
+            if (!shape) {
+                if (founded) {
+                    this.releaseShapes();
+                    this.selectShapes(founded);
+                }
+                else {
+                    this.releaseShapes();
+                }
             }
             this.eachSelectedShape(function (shape) {
                 shape.getControl().onPointerStart(e);
@@ -916,7 +931,7 @@ var Gradient = /** @class */ (function (_super) {
         },
         set: function (value) {
             var colorStops = value.map(function (stop) { return new ___WEBPACK_IMPORTED_MODULE_0__.ColorStop(stop); });
-            this.add(colorStops, true);
+            this.setChildren(colorStops, true);
         },
         enumerable: false,
         configurable: true
@@ -2006,8 +2021,9 @@ var TransformControl = /** @class */ (function (_super) {
         if (!this._isDragging) {
             return;
         }
-        var canvas = this.shape.get('canvas');
-        var vpt = canvas.get('viewportMatrix').clone();
+        var shape = this.shape;
+        var canvas = shape.get('canvas');
+        var vpt = shape.parent.isCanvas ? canvas.get('viewportMatrix').clone() : shape.parent.getWorldMatrix();
         var move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
         this.shape.set({
             left: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.x),
@@ -3360,14 +3376,20 @@ function Collection(Base) {
             var _this = this;
             if (silent === void 0) { silent = false; }
             children = Array.isArray(children) ? children : [children];
-            // @ts-ignore
-            var canvas = this.isCanvas ? this : this.canvas;
             children.forEach(function (child) {
+                var _a;
+                // Set up child.
                 _this.children.push(child);
-                child.set({
-                    parent: _this,
-                    canvas: canvas
-                }, true);
+                child.set('parent', _this, true);
+                // @ts-ignore
+                if (_this.isCanvas) {
+                    var setCanvas = function (child) { return child.set('canvas', _this, true); };
+                    setCanvas(child);
+                    if (child.isCollection) {
+                        child.eachChild(setCanvas);
+                    }
+                }
+                // Set up defs.
                 var defs = child.get('_defs') || {};
                 var def2Add = [];
                 var key, def;
@@ -3378,7 +3400,8 @@ function Collection(Base) {
                     }
                 }
                 if (def2Add.length) {
-                    canvas === null || canvas === void 0 ? void 0 : canvas.addDefs(def2Add);
+                    // @ts-ignore
+                    (_a = _this.canvas) === null || _a === void 0 ? void 0 : _a.addDefs(def2Add);
                 }
             });
             if (!silent) {
@@ -3616,8 +3639,30 @@ var Group = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.tagName = 'g';
         _this.init(params);
+        _this.updateBBox = _this.updateBBox.bind(_this);
         return _this;
     }
+    Group.prototype.updateBBox = function () {
+        var edges = this.mapChildren(function (child) { return child.bBox.getLineEdges(child.matrix); }).flat();
+        this.bBox.fromPoints(edges);
+        this.origin.copy(this.bBox.getOrigin());
+        return this;
+    };
+    Group.prototype.add = function (children, silent) {
+        var _this = this;
+        _super.prototype.add.call(this, children, silent);
+        children = Array.isArray(children) ? children : [children];
+        children.forEach(function (child) { return child.on('set', _this.updateBBox); });
+        this.updateBBox();
+        return this;
+    };
+    Group.prototype.remove = function (children, silent) {
+        var _this = this;
+        _super.prototype.remove.call(this, children, silent);
+        children.forEach(function (child) { return child.off('set', _this.updateBBox); });
+        this.updateBBox();
+        return this;
+    };
     return Group;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_shape__WEBPACK_IMPORTED_MODULE_0__.Shape)));
 
@@ -4015,10 +4060,10 @@ var Shape = /** @class */ (function (_super) {
         },
         set: function (value) {
             var _a, _b;
+            if (this._defs.fill) {
+                (_a = this.canvas) === null || _a === void 0 ? void 0 : _a.removeDefs(this._defs.fill);
+            }
             if (_maths__WEBPACK_IMPORTED_MODULE_1__.Color.isColor(value)) {
-                if (this._defs.fill) {
-                    (_a = this.canvas) === null || _a === void 0 ? void 0 : _a.removeDefs(this._defs.fill);
-                }
                 this._fill = value;
                 this._defs.fill = null;
             }
@@ -4038,10 +4083,10 @@ var Shape = /** @class */ (function (_super) {
         },
         set: function (value) {
             var _a, _b;
+            if (this._defs.stroke) {
+                (_a = this.canvas) === null || _a === void 0 ? void 0 : _a.removeDefs(this._defs.stroke);
+            }
             if (_maths__WEBPACK_IMPORTED_MODULE_1__.Color.isColor(value)) {
-                if (this._defs.stroke) {
-                    (_a = this.canvas) === null || _a === void 0 ? void 0 : _a.removeDefs(this._defs.stroke);
-                }
                 this._stroke = value;
                 this._defs.stroke = null;
             }

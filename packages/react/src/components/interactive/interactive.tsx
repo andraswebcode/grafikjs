@@ -33,7 +33,7 @@ const Interactive = ({
 		canvas.onPointerEnd(e);
 	}, []);
 	const onWheel = useCallback(e => {
-		canvas.onWheel(e);
+		// canvas.onWheel(e);
 	}, []);
 
 	return (

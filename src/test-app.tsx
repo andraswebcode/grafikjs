@@ -42,6 +42,9 @@ const G1 = {
 		offset:0,
 		stopColor:'#F00'
 	},{
+		offset:0.5,
+		stopColor:'#FFF'
+	},{
 		offset:1,
 		stopColor:'#0F0'
 	}]
@@ -64,7 +67,7 @@ const TestApp = () => {
 	const [zoom, setZoom] = useState(1);
 	const [left, setLeft] = useState(400);
 	const [top, setTop] = useState(400);
-	const [angle, setAngle] = useState(0);
+	const [angle, setAngle] = useState(45);
 	const [scaleX, setScaleX] = useState(0.5);
 	const [scaleY, setScaleY] = useState(0.5);
 	const [skewX, setSkewX] = useState(0);
@@ -78,11 +81,58 @@ const TestApp = () => {
 				width={1200}
 				height={800} >
 				<Wrapper>
-					<Canvas
-						zoom={zoom}
-						onChange={canvas => setZoom(canvas.zoom)} >
+					<Canvas>
 						<Defs />
 						<TestComponent />
+						<Group
+							left={600}
+							top={400} >
+							<Group
+								left={0}
+								top={-100} >
+								<Rect
+									left={-100}
+									top={0}
+									angle={angle}
+									width={200}
+									height={200}
+									stroke='black'
+									strokeWidth={2}
+									fill='none' />
+								<Rect
+									left={100}
+									top={0}
+									angle={angle}
+									width={200}
+									height={200}
+									stroke='black'
+									strokeWidth={2}
+									fill='none' />
+							</Group>
+							<Group
+								left={0}
+								top={100} >
+								<Rect
+									left={-100}
+									top={0}
+									angle={angle}
+									width={200}
+									height={200}
+									stroke='black'
+									strokeWidth={2}
+									fill='none' />
+								<Rect
+									left={100}
+									top={0}
+									angle={angle}
+									width={200}
+									height={200}
+									stroke='black'
+									strokeWidth={2}
+									fill='none' />
+							</Group>
+						</Group>
+						{/*}
 						<Rect
 							left={left}
 							top={top}
@@ -106,6 +156,7 @@ const TestApp = () => {
 								setScaleX(scaleX);
 								setScaleY(scaleY);
 							}} />
+						{*/}
 					</Canvas>
 					<Interactive />
 				</Wrapper>
@@ -178,7 +229,9 @@ const TestApp = () => {
 					value={sw}
 					onChange={e => setSw(parseInt(e.target.value) || 0)} />
 			</label>
-			<button onClick={() => setFill(i++ % 2 ? G1 : G2)}>
+			<button onClick={() => {
+				setFill(i++ % 2 ? G1 : G2);
+			}}>
 				Change Gradient
 			</button>
 		</Fragment>

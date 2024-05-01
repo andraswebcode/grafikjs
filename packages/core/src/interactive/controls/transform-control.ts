@@ -121,8 +121,9 @@ class TransformControl extends Control {
 			return;
 		}
 
-		const canvas = this.shape.get('canvas');
-		const vpt = canvas.get('viewportMatrix').clone();
+		const shape = this.shape;
+		const canvas = shape.get('canvas');
+		const vpt = shape.parent.isCanvas ? canvas.get('viewportMatrix').clone() : shape.parent.getWorldMatrix();
 		const move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
 
 		this.shape.set({

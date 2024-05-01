@@ -124,7 +124,7 @@ class Canvas extends Collection(Element) {
 		return this._selectedShapes.map(callback);
 	}
 
-	public addDefs(defs: any|any[]){
+	public addDefs(defs: any|any[], silent = false){
 
 		defs = Array.isArray(defs) ? defs : [defs];
 
@@ -135,13 +135,15 @@ class Canvas extends Collection(Element) {
 				this._defs.push(def);
 			}
 		});
-		this.trigger('defs:added', defs);
+		if (!silent){
+			this.trigger('defs:added', defs);
+		}
 
 		return this;
 
 	}
 
-	public removeDefs(defs: any|any[]){
+	public removeDefs(defs: any|any[], silent = false){
 		return this;
 	}
 
@@ -156,6 +158,10 @@ class Canvas extends Collection(Element) {
 
 	public mapDefs(callback) : any[] {
 		return this._defs.map(callback);
+	}
+
+	public setResponsiveSize(width: number, height: number){
+		return this;
 	}
 
 	public zoomTo(zoom = 1, pan = new Point()){
@@ -193,9 +199,17 @@ class Canvas extends Collection(Element) {
 		const {
 			dataset
 		} = e.target;
+		let {
+			shape
+		} = dataset;
 		const isNode = ('controlNode' in dataset);
 		const pointer = this.getPointer(e);
-		const founded = this.findLastChildByPointer(pointer);
+		let founded = this.findLastChildByPointer(pointer);
+
+		if (this.getSelectedShapes().includes(founded) && founded.isCollection){
+			founded = founded.findLastChildByPointer(pointer);
+			if (founded) shape = ''; // To create recursive selection.
+		}
 
 		if (isNode){
 			this._currentNodeId = dataset.id;
@@ -203,11 +217,13 @@ class Canvas extends Collection(Element) {
 				shape.getControl()?.childById(dataset.id)?.onPointerStart(e);
 			});
 		} else {
-			if (founded){
-				this.releaseShapes();
-				this.selectShapes(founded);
-			} else {
-				this.releaseShapes();
+			if (!shape){
+				if (founded){
+					this.releaseShapes();
+					this.selectShapes(founded);
+				} else {
+					this.releaseShapes();
+				}
 			}
 			this.eachSelectedShape(shape => {
 				shape.getControl().onPointerStart(e);
