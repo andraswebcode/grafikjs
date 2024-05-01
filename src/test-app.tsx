@@ -14,6 +14,7 @@ import {
 	Ellipse,
 	Path,
 	Image,
+	Text,
 	Wrapper,
 	Interactive,
 	useCanvas,
@@ -85,6 +86,17 @@ const TestApp = () => {
 					<Canvas>
 						<Defs />
 						<TestComponent />
+						<Rect
+							left={100}
+							top={100}
+							angle={angle}
+							width={200}
+							height={200}
+							originX={0.25}
+							originY={0.25}
+							stroke='black'
+							strokeWidth={2}
+							fill={fill} />{/*}
 						<Group
 							left={600}
 							top={400} >
@@ -97,8 +109,6 @@ const TestApp = () => {
 									angle={angle}
 									width={200}
 									height={200}
-									originX={0.25}
-									originY={0.25}
 									stroke='black'
 									strokeWidth={2}
 									fill='none' />
@@ -135,31 +145,6 @@ const TestApp = () => {
 									fill='none' />
 							</Group>
 						</Group>
-						{/*}
-						<Rect
-							left={left}
-							top={top}
-							angle={angle}
-							scaleX={scaleX}
-							scaleY={scaleY}
-							skewX={skewX}
-							skewY={skewY}
-							originX={0.25}
-							originY={0.75}
-							width={200}
-							height={200}
-							stroke='black'
-							strokeWidth={sw}
-							fill={fill}
-							onChange={rect => {
-								const {left, top, angle, scaleX, scaleY} = rect;
-								setLeft(left);
-								setTop(top);
-								setAngle(angle);
-								setScaleX(scaleX);
-								setScaleY(scaleY);
-							}} />
-						{*/}
 						<Ellipse
 							left={400}
 							top={400}
@@ -182,13 +167,17 @@ const TestApp = () => {
 							angle={angle}
 							stroke='black'
 							strokeWidth={8}
-							fill='none' />
+							fill='none' />{*/}
 						<Image
 							href='img.jpg'
 							left={600}
 							top={400}
 							scaleX={0.4}
 							scaleY={0.4} />
+						<Text
+							text='Hello GrafikJS!'
+							left={600}
+							top={400} />
 					</Canvas>
 					<Interactive />
 				</Wrapper>

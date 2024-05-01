@@ -49,7 +49,7 @@ function Collection<TBase extends Constructor>(Base: TBase){
 				}
 				// Set up defs.
 				const defs = child.get('_defs') || {};
-				const def2Add = [];
+				const def2Add: any[] = [];
 				let key, def;
 				for (key in defs){
 					def = defs[key];
@@ -59,7 +59,7 @@ function Collection<TBase extends Constructor>(Base: TBase){
 				}
 				if (def2Add.length){
 					// @ts-ignore
-					this.canvas?.addDefs(def2Add);
+					child.get('canvas')?.addDefs(def2Add);
 				}
 			});
 

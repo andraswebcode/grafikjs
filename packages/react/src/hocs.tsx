@@ -10,7 +10,10 @@ import {
 	CLASSES
 } from './utils';
 
-const withCollectionContext = (Component, tagName: string) => (props: any) => {
+const withCollectionContext = (Component, tagName: string) => ({
+	children,
+	...props
+}: any) => {
 
 	const collection: any = useCollection();
 	
@@ -33,7 +36,9 @@ const withCollectionContext = (Component, tagName: string) => (props: any) => {
 		<Component
 			TagName={tagName}
 			shape={shape}
-			props={props} />
+			props={props} >
+			{children}
+		</Component>
 	);
 
 };

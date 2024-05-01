@@ -1,6 +1,6 @@
 import {
-	Shape
-} from './shape';
+	Rect
+} from './rect';
 import {
 	ImageLoader
 } from './../loaders';
@@ -8,12 +8,10 @@ import {
 	Point
 } from './../maths';
 
-class Image extends Shape {
+class Image extends Rect {
 
 	protected readonly tagName = 'image';
 	private href = '';
-	private width = 0;
-	private height = 0;
 
 	private loader = new ImageLoader();
 
@@ -39,25 +37,8 @@ class Image extends Shape {
 
 	protected getAttrMap() : string[] {
 		return super.getAttrMap().concat([
-			'href',
-			'width',
-			'height'
+			'href'
 		]);
-	}
-
-	protected updateOthersWithKeys(keys){
-
-		if (keys.includes('width') || keys.includes('height')){
-			this.updateBBox();
-		}
-
-		return this;
-
-	}
-
-	public updateBBox(){
-		this.bBox.fromSizeAndOrigin(new Point(this.width, this.height), this.origin);
-		return this;
 	}
 
 }

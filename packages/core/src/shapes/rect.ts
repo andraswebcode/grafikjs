@@ -7,7 +7,7 @@ import {
 
 class Rect extends Shape {
 
-	protected readonly tagName = 'rect';
+	protected tagName = 'rect';
 	private width = 0;
 	private height = 0;
 

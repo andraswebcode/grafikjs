@@ -1,6 +1,9 @@
 class Loader {
 
-	protected _listeners = {
+	protected _listeners: {
+		load:Function[],
+		error:Function[]
+	} = {
 		load:[],
 		error:[]
 	};
