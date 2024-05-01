@@ -546,6 +546,7 @@ var Canvas = /** @class */ (function (_super) {
         _this.isCanvas = true;
         _this.tagName = 'svg';
         _this.xmlns = 'http://www.w3.org/2000/svg';
+        _this.preserveAspectRatio = 'xMidYMid slice';
         _this.className = 'grafik-canvas';
         _this.width = 0;
         _this.height = 0;
@@ -595,7 +596,8 @@ var Canvas = /** @class */ (function (_super) {
             'xmlns',
             'width',
             'height',
-            'viewBox'
+            'viewBox',
+            'preserveAspectRatio'
         ]);
     };
     Canvas.prototype.selectShapes = function (shapes) {

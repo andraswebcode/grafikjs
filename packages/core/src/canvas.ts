@@ -21,6 +21,7 @@ class Canvas extends Collection(Element) {
 	public readonly isCanvas = true;
 	protected readonly tagName = 'svg';
 	protected readonly xmlns = 'http://www.w3.org/2000/svg';
+	protected preserveAspectRatio = 'xMidYMid slice';
 	protected className = 'grafik-canvas';
 
 	protected width = 0;
@@ -73,7 +74,8 @@ class Canvas extends Collection(Element) {
 			'xmlns',
 			'width',
 			'height',
-			'viewBox'
+			'viewBox',
+			'preserveAspectRatio'
 		]);
 	}
 

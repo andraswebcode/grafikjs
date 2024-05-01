@@ -8,7 +8,7 @@ import {
 const TextBase = ({
 	children,
 	...props
-}: any) => {console.log(props)
+}: any) => {
 	return (
 		<ShapeBase {...props}>
 			{props.props.text}

@@ -93,5 +93,7 @@ const useCreateDef = (defName: string, initState: any = {}) : [any, Function] =>
 export {
 	useCanvas,
 	useCollection,
-	useCreateDef
+	useCreateDef,
+	__experimental_useAttributes,
+	__experimental_useCanvasReducer
 };

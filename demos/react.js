@@ -1917,6 +1917,7 @@ var Canvas = /** @class */ (function (_super) {
         _this.isCanvas = true;
         _this.tagName = 'svg';
         _this.xmlns = 'http://www.w3.org/2000/svg';
+        _this.preserveAspectRatio = 'xMidYMid slice';
         _this.className = 'grafik-canvas';
         _this.width = 0;
         _this.height = 0;
@@ -1966,7 +1967,8 @@ var Canvas = /** @class */ (function (_super) {
             'xmlns',
             'width',
             'height',
-            'viewBox'
+            'viewBox',
+            'preserveAspectRatio'
         ]);
     };
     Canvas.prototype.selectShapes = function (shapes) {
@@ -6559,7 +6561,6 @@ var __rest = (undefined && undefined.__rest) || function (s, e) {
 
 var TextBase = function (_a) {
     var children = _a.children, props = __rest(_a, ["children"]);
-    console.log(props);
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_shape_base__WEBPACK_IMPORTED_MODULE_2__.ShapeBase, __assign({}, props, { children: props.props.text })));
 };
 var ReactText = (0,_hocs__WEBPACK_IMPORTED_MODULE_1__.withCollectionContext)(TextBase, 'text');
@@ -6881,6 +6882,8 @@ var withCollectionContext = function (Component, tagName) { return function (_a)
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   __experimental_useAttributes: () => (/* binding */ __experimental_useAttributes),
+/* harmony export */   __experimental_useCanvasReducer: () => (/* binding */ __experimental_useCanvasReducer),
 /* harmony export */   useCanvas: () => (/* binding */ useCanvas),
 /* harmony export */   useCollection: () => (/* binding */ useCollection),
 /* harmony export */   useCreateDef: () => (/* binding */ useCreateDef)
@@ -7007,6 +7010,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Rect: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_0__.Rect),
 /* harmony export */   Text: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_0__.Text),
 /* harmony export */   Wrapper: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_0__.Wrapper),
+/* harmony export */   __experimental_useAttributes: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.__experimental_useAttributes),
+/* harmony export */   __experimental_useCanvasReducer: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.__experimental_useCanvasReducer),
 /* harmony export */   useCanvas: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useCanvas),
 /* harmony export */   useCollection: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useCollection),
 /* harmony export */   useCreateDef: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useCreateDef),
@@ -7086,60 +7091,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   TestApp: () => (/* binding */ TestApp)
 /* harmony export */ });
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _grafikjs_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @grafikjs/react */ "./packages/react/src/index.ts");
-/* harmony import */ var _grafikjs_styles__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @grafikjs/styles */ "./packages/styles/src/index.js");
+/* harmony import */ var _grafikjs_react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafikjs/react */ "./packages/react/src/index.ts");
+/* harmony import */ var _grafikjs_styles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @grafikjs/styles */ "./packages/styles/src/index.js");
 
 
 
-
-var logged = false;
-var TestComponent = function (props) {
-    var cv = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.useCanvas)();
-    var cl = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.useCollection)();
-    if (!logged) {
-        logged = true;
-        console.log(cv, cl);
-    }
-    return null;
-};
-var G1 = {
-    colorStops: [{
-            offset: 0,
-            stopColor: '#F00'
-        }, {
-            offset: 0.5,
-            stopColor: '#FFF'
-        }, {
-            offset: 1,
-            stopColor: '#0F0'
-        }]
-};
-var G2 = {
-    colorStops: [{
-            offset: 0,
-            stopColor: '#FF0'
-        }, {
-            offset: 1,
-            stopColor: '#00F'
-        }]
-};
-var i = 0;
 var TestApp = function () {
-    var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(1), zoom = _a[0], setZoom = _a[1];
-    var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(400), left = _b[0], setLeft = _b[1];
-    var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(400), top = _c[0], setTop = _c[1];
-    var _d = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(45), angle = _d[0], setAngle = _d[1];
-    var _e = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0.5), scaleX = _e[0], setScaleX = _e[1];
-    var _f = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0.5), scaleY = _f[0], setScaleY = _f[1];
-    var _g = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewX = _g[0], setSkewX = _g[1];
-    var _h = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), skewY = _h[0], setSkewY = _h[1];
-    var _j = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(12), sw = _j[0], setSw = _j[1];
-    var _k = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.useCreateDef)('linearGradient', G1), fill = _k[0], setFill = _k[1];
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 100, top: 100, angle: angle, width: 200, height: 200, originX: 0.25, originY: 0.25, stroke: 'black', strokeWidth: 2, fill: fill }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Image, { href: 'img.jpg', left: 600, top: 400, scaleX: 0.4, scaleY: 0.4 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Text, { text: 'Hello GrafikJS!', left: 600, top: 400 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, {})] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Zoom:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: zoom, onChange: function (e) { return setZoom(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Left:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: left, onChange: function (e) { return setLeft(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Top:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: top, onChange: function (e) { return setTop(parseInt(e.target.value) || 0); }, step: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Angle:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: angle, onChange: function (e) { return setAngle(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleX, onChange: function (e) { return setScaleX(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ScaleY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: scaleY, onChange: function (e) { return setScaleY(parseFloat(e.target.value) || 0); }, step: 0.1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewX:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewX, onChange: function (e) { return setSkewX(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["SkewY:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: skewY, onChange: function (e) { return setSkewY(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["Stroke Width:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: sw, onChange: function (e) { return setSw(parseInt(e.target.value) || 0); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { onClick: function () {
-                    setFill(i++ % 2 ? G1 : G2);
-                }, children: "Change Gradient" })] }));
+    var _a = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.useCreateDef)('linearGradient', {
+        colorStops: [{
+                offset: 0,
+                stopColor: '#FF0'
+            }, {
+                offset: 1,
+                stopColor: '#00F'
+            }]
+    }), fill = _a[0], setFill = _a[1];
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.CanvasProvider, { width: 600, height: 200, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Rect, { left: 120, top: 100, width: 100, height: 100, angle: 45, fill: fill }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Text, { text: 'Hello GrafikJS! :-)', left: 400, top: 100, angle: 10 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Interactive, {})] }) }));
 };
 
 
