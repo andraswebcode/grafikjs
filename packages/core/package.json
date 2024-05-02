@@ -24,11 +24,14 @@
   },
   "keywords": [
     "SVG",
+    "interactive",
     "graphic",
     "graphics",
     "drag",
     "scale",
     "move",
-    "rotate"
+    "rotate",
+    "object",
+    "model"
   ]
 }

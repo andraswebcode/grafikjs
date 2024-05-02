@@ -1,5 +1,6 @@
 import {
 	useRef,
+	useState,
 	useEffect,
 	useCallback
 } from 'react';
@@ -13,8 +14,20 @@ const Wrapper = ({
 }: any) => {
 
 	const canvas: any = useCanvas();
-	// @ts-ignore
-	const style = canvas.get(['width', 'height']);
+	const [style, setStyle] = useState(canvas.get(['width', 'height']));
+	const onCanvasSet = useCallback(() => {
+		setStyle(canvas.get(['width', 'height']));
+	}, []);
+
+	useEffect(() => {
+
+		canvas.on('set', onCanvasSet);
+
+		return () => {
+			canvas.off('set', onCanvasSet);
+		};
+
+	}, []);
 	const ref = useRef(null);
 	const onResize = useCallback(() => {
 		if (ref?.current){

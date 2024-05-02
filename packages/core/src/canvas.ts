@@ -5,6 +5,9 @@ import {
 	Collection
 } from './mixins';
 import {
+	Selector
+} from './interactive';
+import {
 	Matrix,
 	Point
 } from './maths';
@@ -33,6 +36,8 @@ class Canvas extends Collection(Element) {
 	private _defs = [];
 	private _selectedShapes = [];
 	private _currentNodeId: string;
+	private _selector = new Selector();
+	private _selection = false;
 
 	private _zoom = 1;
 	private _pan = new Point();
@@ -79,9 +84,11 @@ class Canvas extends Collection(Element) {
 		]);
 	}
 
-	public selectShapes(shapes: any|any[]){
+	public selectShapes(shapes: any|any[], silent = false){
 
 		shapes = Array.isArray(shapes) ? shapes : [shapes];
+
+		const prevShapesLength = this._selectedShapes.length;
 
 		shapes.forEach(shape => {
 			// @ts-ignore
@@ -91,15 +98,20 @@ class Canvas extends Collection(Element) {
 			}
 		});
 
-		this.trigger('selected', shapes);
+		if (!silent || prevShapesLength !== this._selectedShapes.length){
+			this.trigger('shapes:selected', shapes);
+			this.trigger('shapes:selection:updated', shapes);
+		}
 
 		return this;
 
 	}
 
-	public releaseShapes(shapes?: any|any[]){
+	public releaseShapes(shapes?: any|any[], silent = false){
 
 		shapes = Array.isArray(shapes) ? shapes : [shapes];
+
+		const prevShapesLength = this._selectedShapes.length;
 
 		if (shapes?.[0]){
 			this._selectedShapes = this._selectedShapes.filter(shape => !shapes.includes(shape));
@@ -107,7 +119,10 @@ class Canvas extends Collection(Element) {
 			this._selectedShapes = [];
 		}
 
-		this.trigger('released', shapes);
+		if (!silent || prevShapesLength !== this._selectedShapes.length){
+			this.trigger('shapes:released', shapes);
+			this.trigger('shapes:selection:updated', shapes);
+		}
 
 		return this;
 
@@ -160,6 +175,10 @@ class Canvas extends Collection(Element) {
 
 	public mapDefs(callback) : any[] {
 		return this._defs.map(callback);
+	}
+
+	public getSelector() : Selector {
+		return this._selector;
 	}
 
 	public setResponsiveSize(width: number, height: number){
@@ -225,6 +244,10 @@ class Canvas extends Collection(Element) {
 					this.selectShapes(founded);
 				} else {
 					this.releaseShapes();
+					this._selector.bBox.reset().min.copy(pointer);
+					this._selector.bBox.max.copy(pointer);
+					this.trigger('selector:updated');
+					this._selection = true;
 				}
 			}
 			this.eachSelectedShape(shape => {
@@ -239,6 +262,10 @@ class Canvas extends Collection(Element) {
 			shape.getControl().onPointerMove(e);
 			shape.getControl()?.childById(this._currentNodeId)?.onPointerMove(e);
 		});
+		if (this._selection){
+			this._selector.bBox.max.copy(this.getPointer(e));
+			this.trigger('selector:updated');
+		}
 	}
 
 	public onPointerEnd(e){
@@ -247,6 +274,9 @@ class Canvas extends Collection(Element) {
 			shape.getControl()?.childById(this._currentNodeId)?.onPointerEnd(e);
 		});
 		this._currentNodeId = '';
+		this._selection = false;
+		this._selector.bBox.reset();
+		this.trigger('selector:updated');
 	}
 
 	public onWheel(e){

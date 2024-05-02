@@ -80,7 +80,12 @@ class BBox {
 	}
 
 	public intersects(bBox: BBox) : boolean {
-		return false;
+		return (
+			bBox.max.x >= this.min.x &&
+			bBox.min.x <= this.max.x &&
+			bBox.max.y >= this.min.y &&
+			bBox.min.y <= this.max.y
+		);
 	}
 
 	public transform(matrix: Matrix) : BBox {

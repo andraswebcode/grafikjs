@@ -1,6 +1,7 @@
 .#{$prefix}-control {
 	position: absolute;
 	cursor: move;
+	border: $control-line-border;
 }
 
 .#{$prefix}-control-node {

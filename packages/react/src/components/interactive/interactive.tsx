@@ -1,5 +1,6 @@
 import {
 	useState,
+	useEffect,
 	useCallback
 } from 'react';
 import {
@@ -20,11 +21,13 @@ const Interactive = ({
 
 	const canvas: any = useCanvas();
 	const [shapes, setShapes] = useState([]);
+	const onShapesSelected = useCallback(() => {
+		setShapes([...canvas.getSelectedShapes()]);
+	}, []);
 
 	const onMouseDown = useCallback(e => {
 		e.preventDefault();
 		canvas.onPointerStart(e);
-		setShapes(canvas.getSelectedShapes());
 	}, []);
 	const onMouseMove = useCallback(e => {
 		canvas.onPointerMove(e);
@@ -34,6 +37,16 @@ const Interactive = ({
 	}, []);
 	const onWheel = useCallback(e => {
 		// canvas.onWheel(e);
+	}, []);
+
+	useEffect(() => {
+
+		canvas.on('shapes:selection:updated', onShapesSelected);
+
+		return () => {
+			canvas.off('shapes:selection:updated', onShapesSelected);
+		};
+
 	}, []);
 
 	return (

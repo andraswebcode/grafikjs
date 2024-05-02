@@ -176,9 +176,21 @@ class Point {
 		return this;
 	}
 
+	public minPoints(p1: Point, p2: Point) : Point {
+		this.x = Math.min(p1.x, p2.x);
+		this.y = Math.min(p1.y, p2.y);
+		return this;
+	}
+
 	public max(point: Point) : Point {
 		this.x = Math.max(this.x, point.x);
 		this.y = Math.max(this.y, point.y);
+		return this;
+	}
+
+	public maxPoints(p1: Point, p2: Point) : Point {
+		this.x = Math.max(p1.x, p2.x);
+		this.y = Math.max(p1.y, p2.y);
 		return this;
 	}
 

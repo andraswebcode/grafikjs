@@ -3,19 +3,41 @@ import {
 	Canvas,
 	Defs,
 	Rect,
+	Group,
 	Image,
 	Text,
 	Wrapper,
 	Interactive,
+	Selector,
 	useCanvas,
-	useCreateDef
+	__experimental_useCanvasReducer as useCanvasReducer,
+	useDefinition
 } from '@grafikjs/react';
 
 import '@grafikjs/styles';
 
+const TestComponent = () => {
+
+	const canvas : any = useCanvas();
+	console.log(canvas);
+
+	return (
+		<ul>
+			{canvas.mapChildren(shape => (
+				<li key={shape.id}>
+					<button>
+						{shape.tagName}
+					</button>
+				</li>
+			))}
+		</ul>
+	);
+
+};
+
 const TestApp = () => {
 
-	const [fill, setFill] = useCreateDef('linearGradient', {
+	const [fill] = useDefinition('linearGradient', {
 		colorStops:[{
 			offset:0,
 			stopColor:'#FF0'
@@ -27,26 +49,35 @@ const TestApp = () => {
 
 	return (
 		<CanvasProvider
-			width={600}
-			height={200} >
+			width={1200}
+			height={800} >
 			<Wrapper>
 				<Canvas>
 					<Defs />
 					<Rect
-						left={120}
-						top={100}
+						left={550}
+						top={350}
 						width={100}
 						height={100}
 						angle={45}
+						stroke='#000'
+						strokeWidth={2}
 						fill={fill} />
-					<Text
-						text='Hello GrafikJS! :-)'
-						left={400}
-						top={100}
-						angle={10} />
+					<Rect
+						left={650}
+						top={450}
+						width={100}
+						height={100}
+						angle={45}
+						stroke='#000'
+						strokeWidth={2}
+						fill={fill} />
 				</Canvas>
-				<Interactive />
+				<Interactive>
+					<Selector />
+				</Interactive>
 			</Wrapper>
+			<TestComponent />
 		</CanvasProvider>
 	);
 

@@ -100,6 +100,10 @@ function Collection<TBase extends Constructor>(Base: TBase){
 			return this.children.find(el => (el.id === id));
 		}
 
+		public childByName(name: string){
+			return this.children.find(el => (el.name === name));
+		}
+
 		public findChildrenByPointer(pointer: Point) : any[] {
 
 			return this.mapChildren(child => {

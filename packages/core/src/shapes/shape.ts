@@ -24,7 +24,7 @@ class Shape extends Element {
 	protected bBox = new BBox();
 	protected origin = new Point(0.5, 0.5);
 
-	protected controls = {};
+	protected _controls = {};
 	protected _activeControl: string;
 
 	protected transformProps: string[] = [
@@ -192,13 +192,13 @@ class Shape extends Element {
 
 	public addControl(name: string, control: any){
 		if (name){
-			this.controls[name] = control;
+			this._controls[name] = control;
 		}
 		return this;
 	}
 
 	public getControl(name?: string){
-		return this.controls[name || this._activeControl];
+		return this._controls[name || this._activeControl];
 	}
 
 	public setControl(name: string){

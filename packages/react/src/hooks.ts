@@ -79,7 +79,7 @@ const __experimental_useAttributes = (object: any, defs: any = {}) => {
 
 };
 
-const useCreateDef = (defName: string, initState: any = {}) : [any, Function] => {
+const useDefinition = (defName: string, initState: any = {}) : [any, Function] => {
 
 	const def = useMemo(() => new DEFCLASSES[defName](initState), []);
 	const setDef = useCallback(options => {
@@ -93,7 +93,7 @@ const useCreateDef = (defName: string, initState: any = {}) : [any, Function] =>
 export {
 	useCanvas,
 	useCollection,
-	useCreateDef,
+	useDefinition,
 	__experimental_useAttributes,
 	__experimental_useCanvasReducer
 };

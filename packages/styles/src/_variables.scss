@@ -1,5 +1,9 @@
 $prefix:					"grafik";
 
-$control-node-size:			12px;
+$control-node-size:			12px !default;
 
-$control-node-color:		forestgreen;
+$control-node-color:		forestgreen !default;
+$selector-color:			rgba(lightblue, 0.4) !default;
+
+$control-line-border:		dashed 2px $control-node-color !default;
+$selector-border:			dashed 2px darken($selector-color, 25%) !default;

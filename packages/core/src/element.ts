@@ -6,6 +6,7 @@ class Element {
 
 	protected readonly tagName: string;
 	protected id = '';
+	protected name = '';
 	protected className = '';
 	private _listeners = {};
 

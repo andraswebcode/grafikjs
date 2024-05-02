@@ -1,6 +1,7 @@
 import {
 	useState,
-	useEffect
+	useEffect,
+	useCallback
 } from 'react';
 
 import {
@@ -14,11 +15,14 @@ const Defs = () => {
 
 	const canvas: any = useCanvas();
 	const [defs, setDefs] = useState(canvas.getDefs());
+	const onSetDefs = useCallback(() => {
+		setDefs([...canvas.getDefs()]);
+	}, []);
 
 	useEffect(() => {
-		canvas.on('defs:added', setDefs);
+		canvas.on('defs:added', onSetDefs);
 		return () => {
-			canvas.off('defs:added', setDefs);
+			canvas.off('defs:added', onSetDefs);
 		};
 	}, []);
 

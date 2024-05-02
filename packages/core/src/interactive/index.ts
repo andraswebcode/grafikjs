@@ -1,3 +1,4 @@
+export * from './selector';
 export * from './control';
 export * from './control-node';
 export * from './controls';

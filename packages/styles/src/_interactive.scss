@@ -10,3 +10,9 @@
 	width: 100%;
 	height: 100%;
 }
+
+.#{$prefix}-selector {
+	position: absolute;
+	background: $selector-color;
+	border: $selector-border;
+}
