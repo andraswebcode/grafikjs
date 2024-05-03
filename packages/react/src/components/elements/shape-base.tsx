@@ -20,7 +20,7 @@ const ShapeBase = ({
 		setWrapperAttributes(shape.getWrapperAttributes());
 		setAttributes(shape.getAttributes());
 		props.onChange?.(shape);
-	}, [props]);
+	}, [props.onChange]);
 
 	useEffect(() => {
 

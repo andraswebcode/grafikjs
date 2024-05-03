@@ -135,7 +135,10 @@ class Shape extends Element {
 			}
 			this.updateOthersWithKeys([key]);
 			if (!silent){
-				this.trigger('set', {[key]:value});
+				this.trigger('set', {[key]:value}, this);
+				if (this.canvas){
+					this.canvas.trigger('shapes:set', {[key]:value}, this);
+				}
 			}
 		} else {
 			let i, prop;
@@ -148,7 +151,10 @@ class Shape extends Element {
 			}
 			this.updateOthersWithKeys(Object.keys(key));
 			if (!value){
-				this.trigger('set', key);
+				this.trigger('set', key, this);
+				if (this.canvas){
+					this.canvas.trigger('shapes:set', key, this);
+				}
 			}
 		}
 

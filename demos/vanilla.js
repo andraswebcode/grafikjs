@@ -553,7 +553,7 @@ var Canvas = /** @class */ (function (_super) {
         if (params === void 0) { params = {}; }
         var _this = _super.call(this) || this;
         _this.isCanvas = true;
-        _this.multiselection = false;
+        _this.multiselection = true;
         _this.tagName = 'svg';
         _this.xmlns = 'http://www.w3.org/2000/svg';
         _this.preserveAspectRatio = 'xMidYMid slice';
@@ -1182,7 +1182,7 @@ var Element = /** @class */ (function () {
         if (typeof key === 'string' && typeof value !== 'undefined') {
             this._set(key, value);
             if (!silent) {
-                this.trigger('set', (_a = {}, _a[key] = value, _a));
+                this.trigger('set', (_a = {}, _a[key] = value, _a), this);
             }
         }
         else {
@@ -1191,7 +1191,7 @@ var Element = /** @class */ (function () {
             }
             // Attention please: here - if 'key' is an object - 'value' becomes the 'silent'!
             if (!value) {
-                this.trigger('set', key);
+                this.trigger('set', key, this);
             }
         }
         return this;
@@ -1289,14 +1289,22 @@ var Element = /** @class */ (function () {
         }
         return this;
     };
-    Element.prototype.trigger = function (eventName, options) {
-        if (options === void 0) { options = {}; }
-        var listeners = this._listeners[eventName];
-        if (!listeners) {
-            return this;
+    Element.prototype.trigger = function (eventName) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
         }
-        for (var i = 0; i < listeners.length; i++) {
-            listeners[i].call(this, options);
+        var listeners = this._listeners[eventName];
+        var allListeners = this._listeners.all;
+        if (listeners) {
+            for (var i = 0; i < listeners.length; i++) {
+                listeners[i].apply(this, args);
+            }
+        }
+        if (allListeners) {
+            for (var i = 0; i < allListeners.length; i++) {
+                allListeners[i].apply(this, args);
+            }
         }
         return this;
     };
@@ -4535,7 +4543,7 @@ var Shape = /** @class */ (function (_super) {
         this.updateBBox();
     };
     Shape.prototype.set = function (key, value, silent) {
-        var _a;
+        var _a, _b;
         if (silent === void 0) { silent = false; }
         _super.prototype.set.call(this, key, value, true);
         if (!key) {
@@ -4549,7 +4557,10 @@ var Shape = /** @class */ (function (_super) {
             }
             this.updateOthersWithKeys([key]);
             if (!silent) {
-                this.trigger('set', (_a = {}, _a[key] = value, _a));
+                this.trigger('set', (_a = {}, _a[key] = value, _a), this);
+                if (this.canvas) {
+                    this.canvas.trigger('shapes:set', (_b = {}, _b[key] = value, _b), this);
+                }
             }
         }
         else {
@@ -4563,7 +4574,10 @@ var Shape = /** @class */ (function (_super) {
             }
             this.updateOthersWithKeys(Object.keys(key));
             if (!value) {
-                this.trigger('set', key);
+                this.trigger('set', key, this);
+                if (this.canvas) {
+                    this.canvas.trigger('shapes:set', key, this);
+                }
             }
         }
         return this;

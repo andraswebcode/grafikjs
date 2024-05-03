@@ -36,9 +36,9 @@ const TestComponent = () => {
 
 };
 
-const json = [{"id":"g-9IOi2HPyR3mN","name":"","tagName":"g","children":[{"id":"rect-NGsj372Vf5Hp","name":"","tagName":"rect","fill":{"id":"linearGradient-sGrhl9NMoPD1","name":"","tagName":"linearGradient","children":[{"id":"stop-Y7ysXFQE4phj","name":"","tagName":"stop","offset":0,"stopColor":"#FF0","stopOpacity":1},{"id":"stop-Byxxl3ku2yUG","name":"","tagName":"stop","offset":1,"stopColor":"#00F","stopOpacity":1}]},"stroke":"#000","strokeWidth":2,"width":100,"height":100,"transform":"translate(-50 -50)","left":-154,"top":40,"angle":45,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0},{"id":"rect-rYWZN1bwW79H","name":"","tagName":"rect","fill":{"id":"linearGradient-sGrhl9NMoPD1","name":"","tagName":"linearGradient","children":[{"id":"stop-Y7ysXFQE4phj","name":"","tagName":"stop","offset":0,"stopColor":"#FF0","stopOpacity":1},{"id":"stop-Byxxl3ku2yUG","name":"","tagName":"stop","offset":1,"stopColor":"#00F","stopOpacity":1}]},"stroke":"#000","strokeWidth":2,"width":100,"height":100,"transform":"translate(-50 -50)","left":150,"top":20,"angle":45,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0}],"left":479,"top":369,"angle":0,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0}];
+const json = [{"id":"g-QyAzNX8TCHXT","name":"","tagName":"g","children":[{"id":"rect-hMFHNAa0Uf2e","name":"","tagName":"rect","fill":{"id":"linearGradient-JZ7WYmdncNv4","name":"","tagName":"linearGradient","children":[{"id":"stop-EQ87jx2suVlf","name":"","tagName":"stop","offset":0,"stopColor":"#FF0","stopOpacity":1},{"id":"stop-vXBHNTYnYYxy","name":"","tagName":"stop","offset":1,"stopColor":"#00F","stopOpacity":1}]},"stroke":"#000","strokeWidth":2,"width":100,"height":100,"transform":"translate(-50 -50)","left":-100,"top":0,"angle":45,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0},{"id":"rect-V7M80dAWO7CE","name":"","tagName":"rect","fill":{"id":"linearGradient-JZ7WYmdncNv4","name":"","tagName":"linearGradient","children":[{"id":"stop-EQ87jx2suVlf","name":"","tagName":"stop","offset":0,"stopColor":"#FF0","stopOpacity":1},{"id":"stop-vXBHNTYnYYxy","name":"","tagName":"stop","offset":1,"stopColor":"#00F","stopOpacity":1}]},"stroke":"#000","strokeWidth":2,"width":100,"height":100,"transform":"translate(-50 -50)","left":100,"top":0,"angle":45,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0}],"left":600,"top":400,"angle":0,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0}];
 
-const TestApp = () => {
+const TestApp1 = () => {
 
 	return (
 		<CanvasProvider
@@ -112,7 +112,7 @@ const TestApp3 = () => {
 
 };
 
-const TestApp2 = () => {
+const TestApp = () => {
 
 	const [fill] = useDefinition('linearGradient', {
 		colorStops:[{
@@ -149,8 +149,6 @@ const TestApp2 = () => {
 						stroke='#000'
 						strokeWidth={2}
 						fill={fill} />
-					<ShapeTree
-						json={json} />
 				</Canvas>
 				<Interactive>
 					<Selector />

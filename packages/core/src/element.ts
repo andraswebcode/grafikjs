@@ -8,7 +8,8 @@ class Element {
 	protected id = '';
 	protected name = '';
 	protected className = '';
-	private _listeners = {};
+
+	private _listeners: any = {};
 
 	protected getAttrMap() : string[] {
 		return ['className'];
@@ -19,7 +20,7 @@ class Element {
 		if (typeof key === 'string' && typeof value !== 'undefined'){
 			this._set(key, value);
 			if (!silent){
-				this.trigger('set', {[key]:value});
+				this.trigger('set', {[key]:value}, this);
 			}
 		} else {
 			for (let prop in key){
@@ -27,7 +28,7 @@ class Element {
 			}
 			// Attention please: here - if 'key' is an object - 'value' becomes the 'silent'!
 			if (!value){
-				this.trigger('set', key);
+				this.trigger('set', key, this);
 			}
 		}
 
@@ -131,16 +132,21 @@ class Element {
 
 	}
 
-	public trigger(eventName: string, options = {}){
+	public trigger(eventName: string, ...args: any[]){
 
 		const listeners: Function[] = this._listeners[eventName];
+		const allListeners: Function[] = this._listeners.all;
 
-		if (!listeners){
-			return this;
+		if (listeners){
+			for (let i = 0; i < listeners.length; i++){
+				listeners[i].apply(this, args);
+			}
 		}
 
-		for (let i = 0; i < listeners.length; i++){
-			listeners[i].call(this, options);
+		if (allListeners){
+			for (let i = 0; i < allListeners.length; i++){
+				allListeners[i].apply(this, args);
+			}
 		}
 
 		return this;
