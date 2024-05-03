@@ -2524,7 +2524,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Element: () => (/* binding */ Element)
 /* harmony export */ });
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./observable */ "./packages/core/src/observable.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -2537,12 +2553,15 @@ var __assign = (undefined && undefined.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 
-var Element = /** @class */ (function () {
+
+var Element = /** @class */ (function (_super) {
+    __extends(Element, _super);
     function Element() {
-        this.id = '';
-        this.name = '';
-        this.className = '';
-        this._listeners = {};
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.id = '';
+        _this.name = '';
+        _this.className = '';
+        return _this;
     }
     Element.prototype.getAttrMap = function () {
         return ['className'];
@@ -2602,7 +2621,7 @@ var Element = /** @class */ (function () {
     };
     Element.prototype.createId = function (prefix) {
         if (!this.id) {
-            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.uniqueId)(prefix);
+            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.uniqueId)(prefix);
         }
     };
     Element.prototype.addClass = function () {
@@ -2624,61 +2643,6 @@ var Element = /** @class */ (function () {
         this.set('className', currentClasses.filter(function (cn) { return !classNames.includes(cn); }).join(' '));
         return this;
     };
-    Element.prototype.on = function (eventName, listener) {
-        if (typeof eventName === 'object') {
-            for (var key in eventName) {
-                this.on(key, eventName[key]);
-            }
-        }
-        else {
-            if (!this._listeners[eventName]) {
-                this._listeners[eventName] = [];
-            }
-            if (this._listeners[eventName].indexOf(listener) === -1) {
-                this._listeners[eventName].push(listener);
-            }
-        }
-        return this;
-    };
-    Element.prototype.once = function () {
-        return this;
-    };
-    Element.prototype.off = function (eventName, listener) {
-        if (typeof eventName === 'object') {
-            for (var key in eventName) {
-                this.off(key, eventName[key]);
-            }
-        }
-        else {
-            var listeners = this._listeners[eventName];
-            if (listeners) {
-                var index = listeners.indexOf(listener);
-                if (index !== -1) {
-                    listeners.splice(index, 1);
-                }
-            }
-        }
-        return this;
-    };
-    Element.prototype.trigger = function (eventName) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        var listeners = this._listeners[eventName];
-        var allListeners = this._listeners.all;
-        if (listeners) {
-            for (var i = 0; i < listeners.length; i++) {
-                listeners[i].apply(this, args);
-            }
-        }
-        if (allListeners) {
-            for (var i = 0; i < allListeners.length; i++) {
-                allListeners[i].apply(this, args);
-            }
-        }
-        return this;
-    };
     Element.prototype.toJSON = function () {
         var _a = this, id = _a.id, name = _a.name, tagName = _a.tagName;
         var json = __assign({ id: id, name: name, tagName: tagName }, this.getAttributes());
@@ -2690,7 +2654,7 @@ var Element = /** @class */ (function () {
         return json;
     };
     return Element;
-}());
+}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
 
 
 
@@ -5226,6 +5190,82 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Collection: () => (/* reexport safe */ _collection__WEBPACK_IMPORTED_MODULE_0__.Collection)
 /* harmony export */ });
 /* harmony import */ var _collection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./collection */ "./packages/core/src/mixins/collection.ts");
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/observable.ts":
+/*!*****************************************!*\
+  !*** ./packages/core/src/observable.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Observable: () => (/* binding */ Observable)
+/* harmony export */ });
+var Observable = /** @class */ (function () {
+    function Observable() {
+        this._listeners = {};
+    }
+    Observable.prototype.on = function (eventName, listener) {
+        if (typeof eventName === 'object') {
+            for (var key in eventName) {
+                this.on(key, eventName[key]);
+            }
+        }
+        else {
+            if (!this._listeners[eventName]) {
+                this._listeners[eventName] = [];
+            }
+            if (this._listeners[eventName].indexOf(listener) === -1) {
+                this._listeners[eventName].push(listener);
+            }
+        }
+        return this;
+    };
+    Observable.prototype.once = function () {
+        return this;
+    };
+    Observable.prototype.off = function (eventName, listener) {
+        if (typeof eventName === 'object') {
+            for (var key in eventName) {
+                this.off(key, eventName[key]);
+            }
+        }
+        else {
+            var listeners = this._listeners[eventName];
+            if (listeners) {
+                var index = listeners.indexOf(listener);
+                if (index !== -1) {
+                    listeners.splice(index, 1);
+                }
+            }
+        }
+        return this;
+    };
+    Observable.prototype.trigger = function (eventName) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var listeners = this._listeners[eventName];
+        var allListeners = this._listeners.all;
+        if (listeners) {
+            for (var i = 0; i < listeners.length; i++) {
+                listeners[i].apply(this, args);
+            }
+        }
+        if (allListeners) {
+            for (var i = 0; i < allListeners.length; i++) {
+                allListeners[i].apply(this, args);
+            }
+        }
+        return this;
+    };
+    return Observable;
+}());
 
 
 
