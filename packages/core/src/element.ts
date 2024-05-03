@@ -147,6 +147,26 @@ class Element {
 
 	}
 
+	public toJSON() : object {
+
+		const {id, name, tagName} = this;
+		const json: any = {
+			id,
+			name,
+			tagName,
+			...this.getAttributes()
+		};
+		// @ts-ignore
+		const children = this.isCollection && this.mapChildren(child => child.toJSON());
+
+		if (children){
+			json.children = children;
+		}
+
+		return json;
+
+	}
+
 }
 
 export {

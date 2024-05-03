@@ -120,7 +120,7 @@ function Collection<TBase extends Constructor>(Base: TBase){
 					new LineCurve(bl, tl)
 				);
 				return (polygon.containsPoint(pointer, 1) && child);
-			}).filter(child => !!child);
+			}).filter(child => child?.selectable);
 
 		}
 

@@ -18,6 +18,8 @@ import {
 class Shape extends Element {
 
 	public readonly isShape = true;
+	public selectable = true;
+
 	protected canvas;
 	protected parent;
 	protected matrix = new Matrix();
@@ -227,6 +229,33 @@ class Shape extends Element {
 	public getLocalPointer(e, matrix?: Matrix) : Point {
 		const pointer = this.canvas.getPointer(e);
 		return pointer.transform(matrix || this.getWorldMatrix().invert());
+	}
+
+	public toJSON() : object {
+
+		const json = super.toJSON();
+		const transform = this.transformProps.reduce((memo, prop) => {
+			if (typeof this[prop] !== 'undefined'){
+				memo[prop] = this[prop];
+			}
+			return memo;
+		}, {});
+		const defs = {};
+		let key, def;
+
+		for (key in this._defs){
+			def = this._defs[key];
+			if (def) {
+				defs[key] = def.toJSON();
+			}
+		}
+
+		return {
+			...json,
+			...transform,
+			...defs
+		};
+
 	}
 
 }

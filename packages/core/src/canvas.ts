@@ -22,6 +22,8 @@ import {
 class Canvas extends Collection(Element) {
 
 	public readonly isCanvas = true;
+	public multiselection = false;
+
 	protected readonly tagName = 'svg';
 	protected readonly xmlns = 'http://www.w3.org/2000/svg';
 	protected preserveAspectRatio = 'xMidYMid slice';
@@ -92,7 +94,7 @@ class Canvas extends Collection(Element) {
 
 		shapes.forEach(shape => {
 			// @ts-ignore
-			if (!this._selectedShapes.includes(shape)){
+			if (!this._selectedShapes.includes(shape) && shape.selectable){
 				// @ts-ignore
 				this._selectedShapes.push(shape);
 			}
@@ -244,10 +246,12 @@ class Canvas extends Collection(Element) {
 					this.selectShapes(founded);
 				} else {
 					this.releaseShapes();
-					this._selector.bBox.reset().min.copy(pointer);
-					this._selector.bBox.max.copy(pointer);
-					this.trigger('selector:updated');
-					this._selection = true;
+					if (this.multiselection){
+						this._selector.bBox.reset().min.copy(pointer);
+						this._selector.bBox.max.copy(pointer);
+						this.trigger('selector:updated');
+						this._selection = true;
+					}
 				}
 			}
 			this.eachSelectedShape(shape => {

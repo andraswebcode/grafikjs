@@ -553,6 +553,7 @@ var Canvas = /** @class */ (function (_super) {
         if (params === void 0) { params = {}; }
         var _this = _super.call(this) || this;
         _this.isCanvas = true;
+        _this.multiselection = false;
         _this.tagName = 'svg';
         _this.xmlns = 'http://www.w3.org/2000/svg';
         _this.preserveAspectRatio = 'xMidYMid slice';
@@ -618,7 +619,7 @@ var Canvas = /** @class */ (function (_super) {
         var prevShapesLength = this._selectedShapes.length;
         shapes.forEach(function (shape) {
             // @ts-ignore
-            if (!_this._selectedShapes.includes(shape)) {
+            if (!_this._selectedShapes.includes(shape) && shape.selectable) {
                 // @ts-ignore
                 _this._selectedShapes.push(shape);
             }
@@ -738,10 +739,12 @@ var Canvas = /** @class */ (function (_super) {
                 }
                 else {
                     this.releaseShapes();
-                    this._selector.bBox.reset().min.copy(pointer);
-                    this._selector.bBox.max.copy(pointer);
-                    this.trigger('selector:updated');
-                    this._selection = true;
+                    if (this.multiselection) {
+                        this._selector.bBox.reset().min.copy(pointer);
+                        this._selector.bBox.max.copy(pointer);
+                        this.trigger('selector:updated');
+                        this._selection = true;
+                    }
                 }
             }
             this.eachSelectedShape(function (shape) {
@@ -1151,6 +1154,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Element: () => (/* binding */ Element)
 /* harmony export */ });
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 
 var Element = /** @class */ (function () {
     function Element() {
@@ -1285,6 +1299,16 @@ var Element = /** @class */ (function () {
             listeners[i].call(this, options);
         }
         return this;
+    };
+    Element.prototype.toJSON = function () {
+        var _a = this, id = _a.id, name = _a.name, tagName = _a.tagName;
+        var json = __assign({ id: id, name: name, tagName: tagName }, this.getAttributes());
+        // @ts-ignore
+        var children = this.isCollection && this.mapChildren(function (child) { return child.toJSON(); });
+        if (children) {
+            json.children = children;
+        }
+        return json;
     };
     return Element;
 }());
@@ -3798,7 +3822,7 @@ function Collection(Base) {
                 var _a = bBox.getLineEdges(child.getWorldMatrix()), tl = _a[0], tr = _a[1], br = _a[2], bl = _a[3];
                 var polygon = new _maths__WEBPACK_IMPORTED_MODULE_0__.CurvePath(new _maths_curves__WEBPACK_IMPORTED_MODULE_1__.MoveCurve(tl), new _maths_curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(tl, tr), new _maths_curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(tr, br), new _maths_curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(br, bl), new _maths_curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(bl, tl));
                 return (polygon.containsPoint(pointer, 1) && child);
-            }).filter(function (child) { return !!child; });
+            }).filter(function (child) { return child === null || child === void 0 ? void 0 : child.selectable; });
         };
         Collection.prototype.findLastChildByPointer = function (pointer) {
             var children = this.findChildrenByPointer(pointer);
@@ -4411,6 +4435,7 @@ var Shape = /** @class */ (function (_super) {
     function Shape() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.isShape = true;
+        _this.selectable = true;
         _this.matrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix();
         _this.bBox = new _maths__WEBPACK_IMPORTED_MODULE_1__.BBox();
         _this.origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(0.5, 0.5);
@@ -4600,6 +4625,25 @@ var Shape = /** @class */ (function (_super) {
     Shape.prototype.getLocalPointer = function (e, matrix) {
         var pointer = this.canvas.getPointer(e);
         return pointer.transform(matrix || this.getWorldMatrix().invert());
+    };
+    Shape.prototype.toJSON = function () {
+        var _this = this;
+        var json = _super.prototype.toJSON.call(this);
+        var transform = this.transformProps.reduce(function (memo, prop) {
+            if (typeof _this[prop] !== 'undefined') {
+                memo[prop] = _this[prop];
+            }
+            return memo;
+        }, {});
+        var defs = {};
+        var key, def;
+        for (key in this._defs) {
+            def = this._defs[key];
+            if (def) {
+                defs[key] = def.toJSON();
+            }
+        }
+        return __assign(__assign(__assign({}, json), transform), defs);
     };
     return Shape;
 }(_element__WEBPACK_IMPORTED_MODULE_0__.Element));
