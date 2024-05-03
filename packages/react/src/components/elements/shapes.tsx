@@ -1,9 +1,9 @@
 import {
-	withCollectionContext
-} from './../../hocs';
-import {
 	ShapeBase
 } from './shape-base';
+import {
+	withCollectionContext
+} from './../../hocs';
 
 const Rect = withCollectionContext(ShapeBase, 'rect');
 const Circle = withCollectionContext(ShapeBase, 'circle');
