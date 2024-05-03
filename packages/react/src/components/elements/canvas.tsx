@@ -4,7 +4,7 @@ import {
 	useCallback
 } from 'react';
 import {
-	useCanvas
+	useCanvasContext
 } from './../../hooks';
 import {
 	CollectionContext
@@ -49,7 +49,7 @@ const Canvas = ({
 	...props
 }: any) => {
 
-	const canvas: any = useCanvas();
+	const canvas: any = useCanvasContext();
 
 	return (
 		<CollectionContext.Provider value={canvas} >

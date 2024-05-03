@@ -2668,65 +2668,68 @@ var Element = /** @class */ (function (_super) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   AngleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.AngleControlNode),
-/* harmony export */   BBox: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.BBox),
-/* harmony export */   Canvas: () => (/* reexport safe */ _canvas__WEBPACK_IMPORTED_MODULE_1__.Canvas),
-/* harmony export */   Circle: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Circle),
-/* harmony export */   ClipPath: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.ClipPath),
-/* harmony export */   CloseCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_6__.CloseCurve),
-/* harmony export */   Color: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.Color),
-/* harmony export */   ColorStop: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.ColorStop),
-/* harmony export */   Control: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.Control),
-/* harmony export */   ControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.ControlNode),
-/* harmony export */   CubicBezierCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_6__.CubicBezierCurve),
-/* harmony export */   Curve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.Curve),
-/* harmony export */   CurvePath: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.CurvePath),
-/* harmony export */   Definition: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.Definition),
-/* harmony export */   Element: () => (/* reexport safe */ _element__WEBPACK_IMPORTED_MODULE_0__.Element),
-/* harmony export */   Ellipse: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Ellipse),
-/* harmony export */   Gradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.Gradient),
-/* harmony export */   GradientControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.GradientControl),
-/* harmony export */   Group: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Group),
-/* harmony export */   Image: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Image),
-/* harmony export */   LineCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_6__.LineCurve),
-/* harmony export */   LinearGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.LinearGradient),
-/* harmony export */   Matrix: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.Matrix),
-/* harmony export */   MoveCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_6__.MoveCurve),
-/* harmony export */   OriginControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.OriginControlNode),
-/* harmony export */   PIBY180: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.PIBY180),
-/* harmony export */   Path: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Path),
-/* harmony export */   PathControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.PathControl),
-/* harmony export */   Pattern: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.Pattern),
-/* harmony export */   Point: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_5__.Point),
-/* harmony export */   Polygon: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Polygon),
-/* harmony export */   Polyline: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Polyline),
-/* harmony export */   QuadraticBezierCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_6__.QuadraticBezierCurve),
-/* harmony export */   RadialGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_3__.RadialGradient),
-/* harmony export */   Rect: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Rect),
-/* harmony export */   ScaleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.ScaleControlNode),
-/* harmony export */   Selector: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.Selector),
-/* harmony export */   Shape: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Shape),
-/* harmony export */   Text: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Text),
-/* harmony export */   TextPath: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.TextPath),
-/* harmony export */   TransformControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_4__.TransformControl),
-/* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.clamp),
-/* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.deg2Rad),
-/* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.isEqual),
-/* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.rad2Deg),
-/* harmony export */   randInt: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.randInt),
-/* harmony export */   toFixed: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.toFixed),
-/* harmony export */   uniqueId: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.uniqueId)
+/* harmony export */   AngleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.AngleControlNode),
+/* harmony export */   BBox: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.BBox),
+/* harmony export */   Canvas: () => (/* reexport safe */ _canvas__WEBPACK_IMPORTED_MODULE_2__.Canvas),
+/* harmony export */   Circle: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Circle),
+/* harmony export */   ClipPath: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.ClipPath),
+/* harmony export */   CloseCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_7__.CloseCurve),
+/* harmony export */   Color: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Color),
+/* harmony export */   ColorStop: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.ColorStop),
+/* harmony export */   Control: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.Control),
+/* harmony export */   ControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.ControlNode),
+/* harmony export */   CubicBezierCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_7__.CubicBezierCurve),
+/* harmony export */   Curve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Curve),
+/* harmony export */   CurvePath: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.CurvePath),
+/* harmony export */   Definition: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.Definition),
+/* harmony export */   Element: () => (/* reexport safe */ _element__WEBPACK_IMPORTED_MODULE_1__.Element),
+/* harmony export */   Ellipse: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Ellipse),
+/* harmony export */   Gradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.Gradient),
+/* harmony export */   GradientControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.GradientControl),
+/* harmony export */   Group: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Group),
+/* harmony export */   Image: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Image),
+/* harmony export */   LineCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_7__.LineCurve),
+/* harmony export */   LinearGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.LinearGradient),
+/* harmony export */   Matrix: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Matrix),
+/* harmony export */   MoveCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_7__.MoveCurve),
+/* harmony export */   Observable: () => (/* reexport safe */ _observable__WEBPACK_IMPORTED_MODULE_0__.Observable),
+/* harmony export */   OriginControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.OriginControlNode),
+/* harmony export */   PIBY180: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.PIBY180),
+/* harmony export */   Path: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Path),
+/* harmony export */   PathControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.PathControl),
+/* harmony export */   Pattern: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.Pattern),
+/* harmony export */   Point: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Point),
+/* harmony export */   Polygon: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Polygon),
+/* harmony export */   Polyline: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Polyline),
+/* harmony export */   QuadraticBezierCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_7__.QuadraticBezierCurve),
+/* harmony export */   RadialGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.RadialGradient),
+/* harmony export */   Rect: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Rect),
+/* harmony export */   ScaleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.ScaleControlNode),
+/* harmony export */   Selector: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.Selector),
+/* harmony export */   Shape: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Shape),
+/* harmony export */   Text: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Text),
+/* harmony export */   TextPath: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.TextPath),
+/* harmony export */   TransformControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.TransformControl),
+/* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
+/* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
+/* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.isEqual),
+/* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.rad2Deg),
+/* harmony export */   randInt: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.randInt),
+/* harmony export */   toFixed: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.toFixed),
+/* harmony export */   uniqueId: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.uniqueId)
 /* harmony export */ });
-/* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./element */ "./packages/core/src/element.ts");
-/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas */ "./packages/core/src/canvas.ts");
-/* harmony import */ var _shapes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./shapes */ "./packages/core/src/shapes/index.ts");
-/* harmony import */ var _defs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./defs */ "./packages/core/src/defs/index.ts");
-/* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./interactive */ "./packages/core/src/interactive/index.ts");
-/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./maths */ "./packages/core/src/maths/index.ts");
-/* harmony import */ var _maths_curves__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./maths/curves */ "./packages/core/src/maths/curves/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
-/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./types */ "./packages/core/src/types/index.ts");
+/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./observable */ "./packages/core/src/observable.ts");
+/* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./element */ "./packages/core/src/element.ts");
+/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./canvas */ "./packages/core/src/canvas.ts");
+/* harmony import */ var _shapes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./shapes */ "./packages/core/src/shapes/index.ts");
+/* harmony import */ var _defs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./defs */ "./packages/core/src/defs/index.ts");
+/* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./interactive */ "./packages/core/src/interactive/index.ts");
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _maths_curves__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./maths/curves */ "./packages/core/src/maths/curves/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./types */ "./packages/core/src/types/index.ts");
 // Core
+
 
 
 // Shapes
@@ -6444,7 +6447,7 @@ var SVG = function (_a) {
 };
 var Canvas = function (_a) {
     var children = _a.children, props = __rest(_a, ["children"]);
-    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvas)();
+    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvasContext)();
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_contexts__WEBPACK_IMPORTED_MODULE_3__.CollectionContext.Provider, { value: canvas, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(SVG, { canvas: canvas, props: props, children: children }) }));
 };
 
@@ -6562,7 +6565,7 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
 
 
 var Defs = function () {
-    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvas)();
+    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvasContext)();
     var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(canvas.getDefs()), defs = _a[0], setDefs = _a[1];
     var onSetDefs = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
         setDefs(__spreadArray([], canvas.getDefs(), true));
@@ -6619,7 +6622,7 @@ var __rest = (undefined && undefined.__rest) || function (s, e) {
 
 var ReactGroup = function (_a) {
     var children = _a.children, props = __rest(_a, ["children"]);
-    var collection = (0,_hooks__WEBPACK_IMPORTED_MODULE_4__.useCollection)();
+    var collection = (0,_hooks__WEBPACK_IMPORTED_MODULE_4__.useCollectionContext)();
     var group = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(function () { return new _grafikjs_core__WEBPACK_IMPORTED_MODULE_2__.Group(); }, []);
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
         collection.add(group);
@@ -7050,7 +7053,7 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
 
 var Interactive = function (_a) {
     var _b = _a.className, className = _b === void 0 ? 'grafik-interactive' : _b, children = _a.children;
-    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_3__.useCanvas)();
+    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_3__.useCanvasContext)();
     var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]), shapes = _c[0], setShapes = _c[1];
     var onShapesSelected = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
         setShapes(__spreadArray([], canvas.getSelectedShapes(), true));
@@ -7110,7 +7113,7 @@ var __assign = (undefined && undefined.__assign) || function () {
 
 
 var Selector = function () {
-    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvas)();
+    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvasContext)();
     var selector = canvas.getSelector();
     var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(selector.getStyle()), style = _a[0], setStyle = _a[1];
     var onShapesSelecting = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
@@ -7148,7 +7151,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var Wrapper = function (_a) {
     var _b = _a.className, className = _b === void 0 ? 'grafik-wrapper' : _b, children = _a.children;
-    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvas)();
+    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvasContext)();
     var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(canvas.get(['width', 'height'])), style = _c[0], setStyle = _c[1];
     var onCanvasSet = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
         setStyle(canvas.get(['width', 'height']));
@@ -7232,7 +7235,7 @@ var __rest = (undefined && undefined.__rest) || function (s, e) {
 
 var withCollectionContext = function (Component, tagName) { return function (_a) {
     var children = _a.children, props = __rest(_a, ["children"]);
-    var collection = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCollection)();
+    var collection = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCollectionContext)();
     var shape = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(function () {
         var Shape = _utils__WEBPACK_IMPORTED_MODULE_3__.CLASSES[tagName];
         return new Shape(props);
@@ -7258,99 +7261,48 @@ var withCollectionContext = function (Component, tagName) { return function (_a)
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   __experimental_useAttributes: () => (/* binding */ __experimental_useAttributes),
-/* harmony export */   __experimental_useCanvasReducer: () => (/* binding */ __experimental_useCanvasReducer),
 /* harmony export */   useCanvas: () => (/* binding */ useCanvas),
+/* harmony export */   useCanvasContext: () => (/* binding */ useCanvasContext),
 /* harmony export */   useCollection: () => (/* binding */ useCollection),
-/* harmony export */   useDefinition: () => (/* binding */ useDefinition)
+/* harmony export */   useCollectionContext: () => (/* binding */ useCollectionContext)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafikjs/core */ "./packages/core/src/index.ts");
 /* harmony import */ var _contexts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./contexts */ "./packages/react/src/contexts.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils */ "./packages/react/src/utils/index.ts");
-var __assign = (undefined && undefined.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 
 
 
-
-var useCanvas = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_contexts__WEBPACK_IMPORTED_MODULE_2__.CanvasContext); };
-var useCollection = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_contexts__WEBPACK_IMPORTED_MODULE_2__.CollectionContext); };
-var _canvasReducer = function (state, _a) {
-    var _b;
-    var method = _a.method, args = _a.args;
-    if (!method) {
-        return __assign({}, state);
+var useCanvasContext = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_contexts__WEBPACK_IMPORTED_MODULE_2__.CanvasContext); };
+var useCollectionContext = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_contexts__WEBPACK_IMPORTED_MODULE_2__.CollectionContext); };
+var _useCollector = function (collector, context) {
+    var collectedRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
+    if (!collectedRef.current) {
+        collectedRef.current = collector(context);
     }
-    if (!state.canvas[method]) {
-        console.warn("Method: ".concat(method, "() does not exists on canvas."));
-        return __assign({}, state);
-    }
-    (_b = state.canvas)[method].apply(_b, args);
-    return __assign({}, state);
-};
-var __experimental_useCanvasReducer = function () {
-    var canvas = useCanvas();
-    // @ts-ignore
-    var _a = (0,react__WEBPACK_IMPORTED_MODULE_0__.useReducer)(_canvasReducer, { canvas: canvas }), state = _a[0], dispatch = _a[1];
-    return {
-        // @ts-ignore
-        dispatch: function (method) {
-            var args = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                args[_i - 1] = arguments[_i];
-            }
-            return dispatch({
-                method: method,
-                args: args
-            });
-        },
-        canvas: state.canvas
-    };
-};
-var __experimental_useAttributes = function (object, defs) {
-    if (defs === void 0) { defs = {}; }
-    var _a = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(defs), attributes = _a[0], setAttributes = _a[1];
-    var onObjectSet = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function () {
-        var attrs = Object.keys(defs).reduce(function (memo, key) {
-            memo[key] = object.get(key);
-            return memo;
-        }, {});
-        if (!(0,_grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.isEqual)(attrs, attributes)) {
-            // setAttributes(attrs);
+    var _a = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(collectedRef.current), collected = _a[0], setCollected = _a[1];
+    var onAll = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function () {
+        var newCollected = collector(context);
+        if (!(0,_grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.isEqual)(collectedRef.current, newCollected)) {
+            setCollected(newCollected);
+            collectedRef.current = newCollected;
         }
     }, []);
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-        object.on('set', onObjectSet);
+        context.on('all', onAll);
         return function () {
-            object.off('set', onObjectSet);
+            context.off('all', onAll);
         };
     }, []);
-    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-        object.set(attributes, true);
-    }, []);
-    return {
-        attributes: attributes,
-        setAttributes: setAttributes
-    };
+    return collected;
 };
-var useDefinition = function (defName, initState) {
-    if (initState === void 0) { initState = {}; }
-    var def = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () { return new _utils__WEBPACK_IMPORTED_MODULE_3__.DEFCLASSES[defName](initState); }, []);
-    var setDef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (options) {
-        def.set(options);
-    }, []);
-    return [def, setDef];
+var useCanvas = function (collector) {
+    var canvas = useCanvasContext();
+    return _useCollector(collector, canvas);
+};
+var useCollection = function (collector) {
+    var collection = useCollectionContext();
+    return _useCollector(collector, collection);
 };
 
 
@@ -7388,11 +7340,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   ShapeTree: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_0__.ShapeTree),
 /* harmony export */   Text: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_0__.Text),
 /* harmony export */   Wrapper: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_0__.Wrapper),
-/* harmony export */   __experimental_useAttributes: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.__experimental_useAttributes),
-/* harmony export */   __experimental_useCanvasReducer: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.__experimental_useCanvasReducer),
 /* harmony export */   useCanvas: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useCanvas),
+/* harmony export */   useCanvasContext: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useCanvasContext),
 /* harmony export */   useCollection: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useCollection),
-/* harmony export */   useDefinition: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useDefinition),
+/* harmony export */   useCollectionContext: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useCollectionContext),
 /* harmony export */   withCollectionContext: () => (/* reexport safe */ _hocs__WEBPACK_IMPORTED_MODULE_2__.withCollectionContext)
 /* harmony export */ });
 /* harmony import */ var _components__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components */ "./packages/react/src/components/index.ts");
@@ -7475,37 +7426,21 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var TestComponent = function () {
-    var canvas = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.useCanvas)();
-    console.log(canvas);
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { children: canvas.mapChildren(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { children: shape.tagName }) }, shape.id)); }) }));
+    var shapes = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.useCanvas)(function (canvas) { return ({
+        shapes: canvas.get('children')
+    }); }).shapes;
+    console.log(shapes);
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { children: shapes === null || shapes === void 0 ? void 0 : shapes.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { children: shape.tagName }) }, shape.id)); }) }));
 };
 var json = [{ "id": "g-QyAzNX8TCHXT", "name": "", "tagName": "g", "children": [{ "id": "rect-hMFHNAa0Uf2e", "name": "", "tagName": "rect", "fill": { "id": "linearGradient-JZ7WYmdncNv4", "name": "", "tagName": "linearGradient", "children": [{ "id": "stop-EQ87jx2suVlf", "name": "", "tagName": "stop", "offset": 0, "stopColor": "#FF0", "stopOpacity": 1 }, { "id": "stop-vXBHNTYnYYxy", "name": "", "tagName": "stop", "offset": 1, "stopColor": "#00F", "stopOpacity": 1 }] }, "stroke": "#000", "strokeWidth": 2, "width": 100, "height": 100, "transform": "translate(-50 -50)", "left": -100, "top": 0, "angle": 45, "scaleX": 1, "scaleY": 1, "skewX": 0, "skewY": 0 }, { "id": "rect-V7M80dAWO7CE", "name": "", "tagName": "rect", "fill": { "id": "linearGradient-JZ7WYmdncNv4", "name": "", "tagName": "linearGradient", "children": [{ "id": "stop-EQ87jx2suVlf", "name": "", "tagName": "stop", "offset": 0, "stopColor": "#FF0", "stopOpacity": 1 }, { "id": "stop-vXBHNTYnYYxy", "name": "", "tagName": "stop", "offset": 1, "stopColor": "#00F", "stopOpacity": 1 }] }, "stroke": "#000", "strokeWidth": 2, "width": 100, "height": 100, "transform": "translate(-50 -50)", "left": 100, "top": 0, "angle": 45, "scaleX": 1, "scaleY": 1, "skewX": 0, "skewY": 0 }], "left": 600, "top": 400, "angle": 0, "scaleX": 1, "scaleY": 1, "skewX": 0, "skewY": 0 }];
 var TestApp1 = function () {
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.CanvasProvider, { width: 1200, height: 800, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.ShapeTree, { json: json })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
 };
 var TestApp3 = function () {
-    var fill = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.useDefinition)('linearGradient', {
-        colorStops: [{
-                offset: 0,
-                stopColor: '#FF0'
-            }, {
-                offset: 1,
-                stopColor: '#00F'
-            }]
-    })[0];
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.CanvasProvider, { width: 1200, height: 800, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Group, { left: 600, top: 400, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Rect, { left: -100, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: fill }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Rect, { left: 100, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: fill })] })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.CanvasProvider, { width: 1200, height: 800, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Group, { left: 600, top: 400, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Rect, { left: -100, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Rect, { left: 100, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' })] })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
 };
 var TestApp = function () {
-    var fill = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.useDefinition)('linearGradient', {
-        colorStops: [{
-                offset: 0,
-                stopColor: '#FF0'
-            }, {
-                offset: 1,
-                stopColor: '#00F'
-            }]
-    })[0];
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.CanvasProvider, { width: 1200, height: 800, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Rect, { left: 550, top: 350, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: fill }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Rect, { left: 650, top: 450, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: fill })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.CanvasProvider, { width: 1200, height: 800, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Rect, { left: 550, top: 350, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Rect, { left: 650, top: 450, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
 };
 
 

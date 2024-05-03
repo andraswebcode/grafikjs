@@ -5,7 +5,7 @@ import {
 } from 'react';
 
 import {
-	useCanvas
+	useCanvasContext
 } from './../../hooks';
 import {
 	DefBase
@@ -13,7 +13,7 @@ import {
 
 const Defs = () => {
 
-	const canvas: any = useCanvas();
+	const canvas: any = useCanvasContext();
 	const [defs, setDefs] = useState(canvas.getDefs());
 	const onSetDefs = useCallback(() => {
 		setDefs([...canvas.getDefs()]);

@@ -1,4 +1,5 @@
 // Core
+export * from './observable';
 export * from './element';
 export * from './canvas';
 

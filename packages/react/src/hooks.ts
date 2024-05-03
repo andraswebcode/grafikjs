@@ -1,7 +1,6 @@
 import {
+	useRef,
 	useContext,
-	useReducer,
-	useMemo,
 	useState,
 	useEffect,
 	useCallback
@@ -14,86 +13,55 @@ import {
 	CanvasContext,
 	CollectionContext
 } from './contexts';
-import {
-	DEFCLASSES
-} from './utils';
 
-const useCanvas = () : object => useContext(CanvasContext);
+const useCanvasContext = () : any => useContext(CanvasContext);
 
-const useCollection = () : object => useContext(CollectionContext);
+const useCollectionContext = () : any => useContext(CollectionContext);
 
-const _canvasReducer = (state, {method, args}) => {
-	if (!method){
-		return {...state};
+const _useCollector = (collector: Function, context: any) => {
+
+	const collectedRef = useRef(null);
+
+	if (!collectedRef.current){
+		collectedRef.current = collector(context);
 	}
-	if (!state.canvas[method]){
-		console.warn(`Method: ${method}() does not exists on canvas.`);
-		return {...state};
-	}
-	state.canvas[method](...args);
-	return {...state};
-};
 
-const __experimental_useCanvasReducer = () => {
-	const canvas = useCanvas();
-	// @ts-ignore
-	const [state, dispatch] = useReducer(_canvasReducer, {canvas});
-	return {
-		// @ts-ignore
-		dispatch:(method, ...args) => dispatch({
-			method,
-			args
-		}),
-		canvas:state.canvas
-	};
-};
-
-const __experimental_useAttributes = (object: any, defs: any = {}) => {
-
-	const [attributes, setAttributes] = useState(defs);
-	const onObjectSet = useCallback(() => {
-		const attrs = Object.keys(defs).reduce((memo, key) => {
-			memo[key] = object.get(key);
-			return memo;
-		}, {});
-		if (!isEqual(attrs, attributes)){
-			// setAttributes(attrs);
+	const [collected, setCollected] = useState(collectedRef.current);
+	const onAll = useCallback(() => {
+		const newCollected = collector(context);
+		if (!isEqual(collectedRef.current, newCollected)){
+			setCollected(newCollected);
+			collectedRef.current = newCollected;
 		}
 	}, []);
 
 	useEffect(() => {
-		object.on('set', onObjectSet);
+
+		context.on('all', onAll);
+
 		return () => {
-			object.off('set', onObjectSet);
+			context.off('all', onAll);
 		};
+
 	}, []);
 
-	useEffect(() => {
-		object.set(attributes, true);
-	}, []);
-
-	return {
-		attributes,
-		setAttributes
-	};
+	return collected;
 
 };
 
-const useDefinition = (defName: string, initState: any = {}) : [any, Function] => {
+const useCanvas = (collector: Function) => {
+	const canvas = useCanvasContext();
+	return _useCollector(collector, canvas);
+};
 
-	const def = useMemo(() => new DEFCLASSES[defName](initState), []);
-	const setDef = useCallback(options => {
-		def.set(options);
-	}, []);
-
-	return [def, setDef];
-
+const useCollection = (collector: Function) => {
+	const collection = useCollectionContext();
+	return _useCollector(collector, collection);
 };
 
 export {
 	useCanvas,
 	useCollection,
-	useDefinition,
-	__experimental_useAttributes,
-	__experimental_useCanvasReducer
+	useCanvasContext,
+	useCollectionContext
 };

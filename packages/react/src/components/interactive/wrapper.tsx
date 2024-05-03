@@ -5,7 +5,7 @@ import {
 	useCallback
 } from 'react';
 import {
-	useCanvas
+	useCanvasContext
 } from './../../hooks';
 
 const Wrapper = ({
@@ -13,7 +13,7 @@ const Wrapper = ({
 	children
 }: any) => {
 
-	const canvas: any = useCanvas();
+	const canvas: any = useCanvasContext();
 	const [style, setStyle] = useState(canvas.get(['width', 'height']));
 	const onCanvasSet = useCallback(() => {
 		setStyle(canvas.get(['width', 'height']));

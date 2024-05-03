@@ -4,7 +4,7 @@ import {
 } from 'react';
 
 import {
-	useCollection
+	useCollectionContext
 } from './hooks';
 import {
 	CLASSES
@@ -15,7 +15,7 @@ const withCollectionContext = (Component, tagName: string) => ({
 	...props
 }: any) => {
 
-	const collection: any = useCollection();
+	const collection: any = useCollectionContext();
 	
 	const shape = useMemo(() => {
 		const Shape = CLASSES[tagName];

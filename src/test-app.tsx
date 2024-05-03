@@ -11,20 +11,21 @@ import {
 	Interactive,
 	Selector,
 	useCanvas,
-	__experimental_useCanvasReducer as useCanvasReducer,
-	useDefinition
+	useCanvasContext
 } from '@grafikjs/react';
 
 import '@grafikjs/styles';
 
 const TestComponent = () => {
 
-	const canvas : any = useCanvas();
-	console.log(canvas);
+	const {shapes} : any = useCanvas(canvas => ({
+		shapes:canvas.get('children')
+	}));
+	console.log(shapes);
 
 	return (
 		<ul>
-			{canvas.mapChildren(shape => (
+			{shapes?.map(shape => (
 				<li key={shape.id}>
 					<button>
 						{shape.tagName}
@@ -62,16 +63,6 @@ const TestApp1 = () => {
 
 const TestApp3 = () => {
 
-	const [fill] = useDefinition('linearGradient', {
-		colorStops:[{
-			offset:0,
-			stopColor:'#FF0'
-		},{
-			offset:1,
-			stopColor:'#00F'
-		}]
-	});
-
 	return (
 		<CanvasProvider
 			width={1200}
@@ -90,7 +81,7 @@ const TestApp3 = () => {
 							angle={45}
 							stroke='#000'
 							strokeWidth={2}
-							fill={fill} />
+							fill='none' />
 						<Rect
 							left={100}
 							top={0}
@@ -99,7 +90,7 @@ const TestApp3 = () => {
 							angle={45}
 							stroke='#000'
 							strokeWidth={2}
-							fill={fill} />
+							fill='none' />
 					</Group>
 				</Canvas>
 				<Interactive>
@@ -113,16 +104,6 @@ const TestApp3 = () => {
 };
 
 const TestApp = () => {
-
-	const [fill] = useDefinition('linearGradient', {
-		colorStops:[{
-			offset:0,
-			stopColor:'#FF0'
-		},{
-			offset:1,
-			stopColor:'#00F'
-		}]
-	});
 
 	return (
 		<CanvasProvider
@@ -139,7 +120,7 @@ const TestApp = () => {
 						angle={45}
 						stroke='#000'
 						strokeWidth={2}
-						fill={fill} />
+						fill='none' />
 					<Rect
 						left={650}
 						top={450}
@@ -148,7 +129,7 @@ const TestApp = () => {
 						angle={45}
 						stroke='#000'
 						strokeWidth={2}
-						fill={fill} />
+						fill='none' />
 				</Canvas>
 				<Interactive>
 					<Selector />

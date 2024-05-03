@@ -11,7 +11,7 @@ import {
 	Control
 } from './';
 import {
-	useCanvas
+	useCanvasContext
 } from './../../hooks';
 
 const Interactive = ({
@@ -19,7 +19,7 @@ const Interactive = ({
 	children
 }: any) => {
 
-	const canvas: any = useCanvas();
+	const canvas: any = useCanvasContext();
 	const [shapes, setShapes] = useState([]);
 	const onShapesSelected = useCallback(() => {
 		setShapes([...canvas.getSelectedShapes()]);

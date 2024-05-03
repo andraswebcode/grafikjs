@@ -10,7 +10,7 @@ import {
 	CollectionContext
 } from './../../contexts';
 import {
-	useCollection
+	useCollectionContext
 } from './../../hooks';
 import {
 	ShapeBase
@@ -21,7 +21,7 @@ const ReactGroup = ({
 	...props
 }: any) => {
 
-	const collection: any = useCollection();
+	const collection: any = useCollectionContext();
 	
 	const group = useMemo(() => new Group(), []);
 

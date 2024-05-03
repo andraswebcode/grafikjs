@@ -4,12 +4,12 @@ import {
 	useCallback
 } from 'react';
 import {
-	useCanvas
+	useCanvasContext
 } from './../../hooks'
 
 const Selector = () => {
 
-	const canvas: any = useCanvas();
+	const canvas: any = useCanvasContext();
 	const selector = canvas.getSelector();
 	const [style, setStyle] = useState(selector.getStyle());
 	const onShapesSelecting = useCallback(() => {
