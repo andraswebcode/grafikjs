@@ -26,11 +26,11 @@ const Selector = () => {
 
 	}, []);
 
-	return (
+	return canvas.multiselection ? (
 		<div
 			style={style}
 			{...selector.getAttributes()} />
-	);
+	) : null;
 
 };
 
