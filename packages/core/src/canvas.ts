@@ -2,7 +2,7 @@ import {
 	Element
 } from './element';
 import {
-	Collection
+	ElementCollection
 } from './mixins';
 import {
 	Selector
@@ -19,7 +19,7 @@ import {
 	FillStroke
 } from './types';
 
-class Canvas extends Collection(Element) {
+class Canvas extends ElementCollection(Element) {
 
 	public readonly isCanvas = true;
 	public multiselection = true;
@@ -74,6 +74,7 @@ class Canvas extends Collection(Element) {
 	public constructor(params = {}){
 		super();
 		this.set(params, true);
+		this.trigger('init', this);
 	}
 
 	protected getAttrMap() : string[] {

@@ -2,20 +2,15 @@ import {
 	Constructor
 } from './../types/mixin';
 import {
-	Point,
-	CurvePath
+	Point
 } from './../maths';
-import {
-	MoveCurve,
-	LineCurve
-} from './../maths/curves';
 
 function Collection<TBase extends Constructor>(Base: TBase){
 
 	return class Collection extends Base {
 
 		public readonly isCollection = true;
-		private children: any[] = [];
+		protected children: any[] = [];
 
 		public setChildren(children: any|any[], silent = false) : Collection {
 
@@ -36,31 +31,7 @@ function Collection<TBase extends Constructor>(Base: TBase){
 			children = Array.isArray(children) ? children : [children];
 
 			children.forEach(child => {
-				// Set up child.
 				this.children.push(child);
-				child.set('parent', this, true);
-				// @ts-ignore
-				if (this.isCanvas){
-					const setCanvas = child => child.set('canvas', this, true);
-					setCanvas(child);
-					if (child.isCollection){
-						child.eachChild(setCanvas);
-					}
-				}
-				// Set up defs.
-				const defs = child.get('_defs') || {};
-				const def2Add: any[] = [];
-				let key, def;
-				for (key in defs){
-					def = defs[key];
-					if (def?.isDefinition){
-						def2Add.push(def);
-					}
-				}
-				if (def2Add.length){
-					// @ts-ignore
-					child.get('canvas')?.addDefs(def2Add);
-				}
 			});
 
 			if (!silent){
@@ -102,24 +73,6 @@ function Collection<TBase extends Constructor>(Base: TBase){
 
 		public childByName(name: string){
 			return this.children.find(el => (el.name === name));
-		}
-
-		public findChildrenByPointer(pointer: Point) : any[] {
-
-			return this.mapChildren(child => {
-				const bBox = child.get('bBox');
-				if (!bBox){
-					return false;
-				}
-				const polygon = bBox.toPolygon(child.getWorldMatrix());
-				return (polygon.containsPoint(pointer, 1) && child);
-			}).filter(child => child?.selectable);
-
-		}
-
-		public findLastChildByPointer(pointer: Point){
-			const children = this.findChildrenByPointer(pointer);
-			return children[children.length - 1];
 		}
 
 	}

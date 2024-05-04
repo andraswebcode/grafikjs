@@ -2,10 +2,10 @@ import {
 	Shape
 } from './shape';
 import {
-	Collection
+	ElementCollection
 } from './../mixins';
 
-class Group extends Collection(Shape) {
+class Group extends ElementCollection(Shape) {
 
 	protected readonly tagName = 'g';
 

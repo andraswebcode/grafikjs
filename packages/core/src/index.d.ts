@@ -15,6 +15,9 @@ export * from './interactive';
 // Maths
 export * from './maths';
 
+// Animation
+export * from './animation';
+
 // Utils
 export * from './utils';
 

@@ -2,10 +2,10 @@ import {
 	Element
 } from './../element';
 import {
-	Collection
+	ElementCollection
 } from './../mixins';
 
-class Definition extends Collection(Element) {
+class Definition extends ElementCollection(Element) {
 
 	public readonly isDefinition = true;
 	public shape: any;
@@ -13,6 +13,7 @@ class Definition extends Collection(Element) {
 	public init(params){
 		this.set(params, true);
 		this.createId(this.tagName);
+		this.trigger('init', this);
 	}
 
 	protected getAttrMap() : string[] {

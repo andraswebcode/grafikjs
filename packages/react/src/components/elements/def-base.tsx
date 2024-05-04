@@ -19,7 +19,7 @@ const DefBase = ({
 	} = useElement(def, def => ({
 		attributes:def.getAttributes(),
 		isCollection:def.isCollection,
-		mapDefs:def.mapChildren.bind(def)
+		mapDefs:def.mapChildren?.bind(def)
 	}), 'set');
 
 	return (

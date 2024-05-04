@@ -116,6 +116,7 @@ class Shape extends Element {
 		})).setControl('transform');
 		this.updateMatrix();
 		this.updateBBox();
+		this.trigger('init', this);
 	}
 
 	public set(key, value?, silent = false){

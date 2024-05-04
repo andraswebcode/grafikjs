@@ -1,6 +1,6 @@
 {
   "name": "@grafikjs/react",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "./src/index.ts",
   "types":"./src/index.d.ts",
   "scripts": {
@@ -11,7 +11,7 @@
   "license": "MIT",
   "description": "",
   "dependencies":{
-    "@grafikjs/core":"*",
+    "@grafikjs/core":"^0.0.4",
     "react": "*",
     "react-dom": "*"
   },

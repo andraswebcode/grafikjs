@@ -2,10 +2,14 @@ import {
 	useState
 } from 'react';
 import {
+	LinearGradient
+} from '@grafikjs/core';
+import {
 	CanvasProvider,
 	Canvas,
 	Defs,
 	Rect,
+	Circle,
 	Group,
 	Image,
 	Text,
@@ -48,6 +52,13 @@ const TestComponent = () => {
 };
 
 const json = [{"id":"g-QyAzNX8TCHXT","name":"","tagName":"g","children":[{"id":"rect-hMFHNAa0Uf2e","name":"","tagName":"rect","fill":{"id":"linearGradient-JZ7WYmdncNv4","name":"","tagName":"linearGradient","children":[{"id":"stop-EQ87jx2suVlf","name":"","tagName":"stop","offset":0,"stopColor":"#FF0","stopOpacity":1},{"id":"stop-vXBHNTYnYYxy","name":"","tagName":"stop","offset":1,"stopColor":"#00F","stopOpacity":1}]},"stroke":"#000","strokeWidth":2,"width":100,"height":100,"transform":"translate(-50 -50)","left":-100,"top":0,"angle":45,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0},{"id":"rect-V7M80dAWO7CE","name":"","tagName":"rect","fill":{"id":"linearGradient-JZ7WYmdncNv4","name":"","tagName":"linearGradient","children":[{"id":"stop-EQ87jx2suVlf","name":"","tagName":"stop","offset":0,"stopColor":"#FF0","stopOpacity":1},{"id":"stop-vXBHNTYnYYxy","name":"","tagName":"stop","offset":1,"stopColor":"#00F","stopOpacity":1}]},"stroke":"#000","strokeWidth":2,"width":100,"height":100,"transform":"translate(-50 -50)","left":100,"top":0,"angle":45,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0}],"left":600,"top":400,"angle":0,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0}];
+const colorStops = [{
+	offset:0,
+	stopColor:'red'
+},{
+	offset:1,
+	stopColor:'blue'
+}];
 
 const TestApp1 = () => {
 
@@ -115,6 +126,10 @@ const TestApp3 = () => {
 
 const TestApp = () => {
 
+	const lg = new LinearGradient({
+		colorStops
+	});
+
 	return (
 		<CanvasProvider
 			width={1200}
@@ -122,15 +137,14 @@ const TestApp = () => {
 			<Wrapper>
 				<Canvas>
 					<Defs />
-					<Rect
+					<Circle
 						left={550}
 						top={350}
-						width={100}
-						height={100}
+						r={50}
 						angle={45}
 						stroke='#000'
 						strokeWidth={2}
-						fill='none' />
+						fill={lg} />
 					<Rect
 						left={650}
 						top={450}

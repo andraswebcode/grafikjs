@@ -2,13 +2,13 @@ import {
 	Element
 } from './../element';
 import {
-	Collection
+	ElementCollection
 } from './../mixins';
 import {
 	Point
 } from './../maths';
 
-class Control extends Collection(Element) {
+class Control extends ElementCollection(Element) {
 
 	protected readonly tagName = 'div';
 	protected className = 'grafik-control';
