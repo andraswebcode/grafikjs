@@ -2,6 +2,9 @@ import {
 	Point
 } from './point';
 import {
+	BBox
+} from './bbox';
+import {
 	MoveCurve,
 	CloseCurve,
 	LineCurve,
@@ -53,34 +56,39 @@ function _separate(points1: Point[], points2: Point[], axis: Point) : boolean {
 
 class CurvePath {
 
-	private curves: object[] = [];
-	private currentPoint = new Point();
+	private _curves: object[] = [];
+	private _currentPoint = new Point();
+	private _bBox = new BBox();
 
-	public constructor(...curves: object[]){
-		this.set(curves);
+	public constructor(curves?: any|any[]){
+		if (curves){
+			this.set(curves);
+		}
 	}
 
 	public get length(){
-		return this.curves.length;
+		return this._curves.length;
 	}
 
 	public at(index: number){
-		return this.curves[index];
+		return this._curves[index];
 	}
 
-	public add(...curves: object[]){
+	public add(curves: any|any[]){
 
-		this.curves.push(...curves);
+		curves = Array.isArray(curves) ? curves : [curves];
+
+		this._curves.push(...curves);
 
 		return this;
 
 	}
 
-	public set(curves: object[]){
+	public set(curves: any|any[]){
 
-		this.curves = curves;
+		this._curves = [];
 
-		return this;
+		return this.add(curves);
 
 	}
 
@@ -88,7 +96,7 @@ class CurvePath {
 
 		const curve = new MoveCurve(new Point(x, y));
 
-		this.currentPoint.set(x, y);
+		this._currentPoint.set(x, y);
 
 		return this.add(curve);
 
@@ -96,9 +104,9 @@ class CurvePath {
 
 	public lineTo(x: number, y: number) : CurvePath {
 
-		const curve = new LineCurve(this.currentPoint.clone(), new Point(x, y));
+		const curve = new LineCurve(this._currentPoint.clone(), new Point(x, y));
 
-		this.currentPoint.set(x, y);
+		this._currentPoint.set(x, y);
 
 		return this.add(curve);
 
@@ -107,12 +115,12 @@ class CurvePath {
 	public quadraticCurveTo(cx: number, cy: number, x: number, y: number) : CurvePath {
 
 		const curve = new QuadraticBezierCurve(
-			this.currentPoint.clone(),
+			this._currentPoint.clone(),
 			new Point(cx, cy),
 			new Point(x, y)
 		);
 
-		this.currentPoint.set(x, y);
+		this._currentPoint.set(x, y);
 
 		return this.add(curve);
 
@@ -121,13 +129,13 @@ class CurvePath {
 	public cubicCurveTo(c1x: number, c1y: number, c2x: number, c2y: number, x: number, y: number) : CurvePath {
 
 		const curve = new CubicBezierCurve(
-			this.currentPoint.clone(),
+			this._currentPoint.clone(),
 			new Point(c1x, c1y),
 			new Point(c2x, c2y),
 			new Point(x, y)
 		);
 
-		this.currentPoint.set(x, y);
+		this._currentPoint.set(x, y);
 
 		return this.add(curve);
 
@@ -157,7 +165,7 @@ class CurvePath {
 
 	public toString() : string {
 		// @ts-ignore
-		return this.curves.map(curve => curve.toString(' ')).join(' ');
+		return this._curves.map(curve => curve.toString(' ')).join(' ');
 	}
 
 	// Parses points attribute of polyline, or polygon.
@@ -197,15 +205,18 @@ class CurvePath {
 		});
 	}
 
-	public toCenter() : CurvePath {
-		return this;
+	public getBBox() : BBox {
+		this.eachCurve(curve => {
+			this._bBox.union(curve.getBBox());
+		});
+		return this._bBox;
 	}
 
 	// Thanks ChatGPT to help implementing the raycasting algorithm! :-)
 	public containsPoint(point: Point, divisions?: number) : boolean {
 
 		const {x, y} = point;
-		const polygon = this.mapCurves(curve => curve.getPoints(divisions)).flat();
+		const polygon = this.toPoints(divisions);
 		let contains = false, intersects, i, j, xi, yi, xj, yj;
 
 		for (i = 0, j = polygon.length - 1; i < polygon.length; j = i++){
@@ -258,13 +269,22 @@ class CurvePath {
 
 	}
 
+	public center() : CurvePath {
+		this.updateOrigin(new Point(0.5, 0.5));
+		return this;
+	}
+
+	public updateOrigin(origin: Point) : CurvePath {
+		return this;
+	}
+
 	public eachCurve(callback: (v: any, i: number, a: any[]) => void) : CurvePath {
-		this.curves.forEach(callback);
+		this._curves.forEach(callback);
 		return this;
 	}
 
 	public mapCurves(callback) : any[] {
-		return this.curves.map(callback);
+		return this._curves.map(callback);
 	}
 
 }

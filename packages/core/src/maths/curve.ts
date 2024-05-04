@@ -2,12 +2,16 @@ import {
 	Point
 } from './point';
 import {
+	BBox
+} from './bbox';
+import {
 	toFixed
 } from './../utils';
 
 class Curve {
 
 	protected command = '';
+	private _bBox = new BBox();
 
 	public getPoint(t: number) : Point {
 		console.warn('getPoint() must be implemented by subclass.');
@@ -25,6 +29,10 @@ class Curve {
 
 		return points;
 
+	}
+
+	public getBBox() : BBox {
+		return this._bBox.fromPoints(this.getPoints());
 	}
 
 	public fromString(string: string, prevString = '') : Curve {

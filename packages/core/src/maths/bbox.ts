@@ -76,13 +76,13 @@ class BBox {
 
 	public toPolygon(matrix?: Matrix) : CurvePath {
 		const [tl, tr, br, bl] = this.getLineEdges(matrix);
-		return new CurvePath(
+		return new CurvePath([
 			new MoveCurve(tl),
 			new LineCurve(tl, tr),
 			new LineCurve(tr, br),
 			new LineCurve(br, bl),
 			new LineCurve(bl, tl)
-		);
+		]);
 	}
 
 	public contains(point: Point) : boolean {
@@ -122,6 +122,18 @@ class BBox {
 
 	public isEqual(bBox: BBox) : boolean {
 		return (this.min.isEqual(bBox.min) && this.max.isEqual(bBox.max));
+	}
+
+	public intersect(bBox: BBox) : BBox {
+		this.min.max(bBox.min);
+		this.max.min(bBox.max);
+		return this;
+	}
+
+	public union(bBox: BBox) : BBox {
+		this.min.min(bBox.min);
+		this.max.max(bBox.max);
+		return this;
 	}
 
 	public copy(bBox: BBox) : BBox {

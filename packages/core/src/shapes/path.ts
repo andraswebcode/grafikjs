@@ -43,7 +43,7 @@ class Path extends Shape {
 	}
 
 	public updateBBox(){
-		this.bBox.fromPoints(this.path.toPoints());
+		this.bBox.copy(this.path.getBBox());
 		return this;
 	}
 

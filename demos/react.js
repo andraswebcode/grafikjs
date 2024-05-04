@@ -4100,7 +4100,13 @@ var BBox = /** @class */ (function () {
     };
     BBox.prototype.toPolygon = function (matrix) {
         var _a = this.getLineEdges(matrix), tl = _a[0], tr = _a[1], br = _a[2], bl = _a[3];
-        return new ___WEBPACK_IMPORTED_MODULE_0__.CurvePath(new ___WEBPACK_IMPORTED_MODULE_0__.MoveCurve(tl), new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(tl, tr), new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(tr, br), new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(br, bl), new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(bl, tl));
+        return new ___WEBPACK_IMPORTED_MODULE_0__.CurvePath([
+            new ___WEBPACK_IMPORTED_MODULE_0__.MoveCurve(tl),
+            new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(tl, tr),
+            new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(tr, br),
+            new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(br, bl),
+            new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(bl, tl)
+        ]);
     };
     BBox.prototype.contains = function (point) {
         return (point.x >= this.min.x && point.x <= this.max.x &&
@@ -4131,6 +4137,16 @@ var BBox = /** @class */ (function () {
     };
     BBox.prototype.isEqual = function (bBox) {
         return (this.min.isEqual(bBox.min) && this.max.isEqual(bBox.max));
+    };
+    BBox.prototype.intersect = function (bBox) {
+        this.min.max(bBox.min);
+        this.max.min(bBox.max);
+        return this;
+    };
+    BBox.prototype.union = function (bBox) {
+        this.min.min(bBox.min);
+        this.max.max(bBox.max);
+        return this;
     };
     BBox.prototype.copy = function (bBox) {
         this.min.copy(bBox.min);
@@ -4427,17 +4443,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   CurvePath: () => (/* binding */ CurvePath)
 /* harmony export */ });
 /* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./point */ "./packages/core/src/maths/point.ts");
-/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./curves */ "./packages/core/src/maths/curves/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _bbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bbox */ "./packages/core/src/maths/bbox.ts");
+/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./curves */ "./packages/core/src/maths/curves/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
+
 
 
 
 var CURVES = {
-    'M': _curves__WEBPACK_IMPORTED_MODULE_1__.MoveCurve,
-    'L': _curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve,
-    'Q': _curves__WEBPACK_IMPORTED_MODULE_1__.QuadraticBezierCurve,
-    'C': _curves__WEBPACK_IMPORTED_MODULE_1__.CubicBezierCurve,
-    'Z': _curves__WEBPACK_IMPORTED_MODULE_1__.CloseCurve
+    'M': _curves__WEBPACK_IMPORTED_MODULE_2__.MoveCurve,
+    'L': _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve,
+    'Q': _curves__WEBPACK_IMPORTED_MODULE_2__.QuadraticBezierCurve,
+    'C': _curves__WEBPACK_IMPORTED_MODULE_2__.CubicBezierCurve,
+    'Z': _curves__WEBPACK_IMPORTED_MODULE_2__.CloseCurve
 };
 var _axis = new _point__WEBPACK_IMPORTED_MODULE_0__.Point();
 // Function to project a polygon onto an axis. Thanks ChatGPT! :-)
@@ -4458,60 +4476,56 @@ function _separate(points1, points2, axis) {
     return (project1.max < project2.min) || (project2.max < project1.min);
 }
 var CurvePath = /** @class */ (function () {
-    function CurvePath() {
-        var curves = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            curves[_i] = arguments[_i];
+    function CurvePath(curves) {
+        this._curves = [];
+        this._currentPoint = new _point__WEBPACK_IMPORTED_MODULE_0__.Point();
+        this._bBox = new _bbox__WEBPACK_IMPORTED_MODULE_1__.BBox();
+        if (curves) {
+            this.set(curves);
         }
-        this.curves = [];
-        this.currentPoint = new _point__WEBPACK_IMPORTED_MODULE_0__.Point();
-        this.set(curves);
     }
     Object.defineProperty(CurvePath.prototype, "length", {
         get: function () {
-            return this.curves.length;
+            return this._curves.length;
         },
         enumerable: false,
         configurable: true
     });
     CurvePath.prototype.at = function (index) {
-        return this.curves[index];
+        return this._curves[index];
     };
-    CurvePath.prototype.add = function () {
+    CurvePath.prototype.add = function (curves) {
         var _a;
-        var curves = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            curves[_i] = arguments[_i];
-        }
-        (_a = this.curves).push.apply(_a, curves);
+        curves = Array.isArray(curves) ? curves : [curves];
+        (_a = this._curves).push.apply(_a, curves);
         return this;
     };
     CurvePath.prototype.set = function (curves) {
-        this.curves = curves;
-        return this;
+        this._curves = [];
+        return this.add(curves);
     };
     CurvePath.prototype.moveTo = function (x, y) {
-        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.MoveCurve(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
-        this.currentPoint.set(x, y);
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.MoveCurve(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
+        this._currentPoint.set(x, y);
         return this.add(curve);
     };
     CurvePath.prototype.lineTo = function (x, y) {
-        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(this.currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
-        this.currentPoint.set(x, y);
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve(this._currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
+        this._currentPoint.set(x, y);
         return this.add(curve);
     };
     CurvePath.prototype.quadraticCurveTo = function (cx, cy, x, y) {
-        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.QuadraticBezierCurve(this.currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(cx, cy), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
-        this.currentPoint.set(x, y);
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.QuadraticBezierCurve(this._currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(cx, cy), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
+        this._currentPoint.set(x, y);
         return this.add(curve);
     };
     CurvePath.prototype.cubicCurveTo = function (c1x, c1y, c2x, c2y, x, y) {
-        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.CubicBezierCurve(this.currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(c1x, c1y), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(c2x, c2y), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
-        this.currentPoint.set(x, y);
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.CubicBezierCurve(this._currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(c1x, c1y), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(c2x, c2y), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
+        this._currentPoint.set(x, y);
         return this.add(curve);
     };
     CurvePath.prototype.closePath = function () {
-        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.CloseCurve();
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.CloseCurve();
         return this.add(curve);
     };
     CurvePath.prototype.fromString = function (string) {
@@ -4526,16 +4540,16 @@ var CurvePath = /** @class */ (function () {
     };
     CurvePath.prototype.toString = function () {
         // @ts-ignore
-        return this.curves.map(function (curve) { return curve.toString(' '); }).join(' ');
+        return this._curves.map(function (curve) { return curve.toString(' '); }).join(' ');
     };
     // Parses points attribute of polyline, or polygon.
     CurvePath.prototype.fromNumbers = function (numbers) {
         // @ts-ignore
-        var nums = numbers.replace(/\,\s?/g, ' ').split(' ').map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(n); });
+        var nums = numbers.replace(/\,\s?/g, ' ').split(' ').map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_3__.toFixed)(n); });
         var curves = [];
         var i, prevPoint;
         for (i = 0; i < nums.length; i += 2) {
-            curves.push(new _curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[i], nums[i + 1]), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[(i + 2) % nums.length], nums[(i + 3) % nums.length])));
+            curves.push(new _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[i], nums[i + 1]), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[(i + 2) % nums.length], nums[(i + 3) % nums.length])));
         }
         return this.set(curves);
     };
@@ -4553,13 +4567,17 @@ var CurvePath = /** @class */ (function () {
             return !p.isEqual(pp);
         });
     };
-    CurvePath.prototype.toCenter = function () {
-        return this;
+    CurvePath.prototype.getBBox = function () {
+        var _this = this;
+        this.eachCurve(function (curve) {
+            _this._bBox.union(curve.getBBox());
+        });
+        return this._bBox;
     };
     // Thanks ChatGPT to help implementing the raycasting algorithm! :-)
     CurvePath.prototype.containsPoint = function (point, divisions) {
         var x = point.x, y = point.y;
-        var polygon = this.mapCurves(function (curve) { return curve.getPoints(divisions); }).flat();
+        var polygon = this.toPoints(divisions);
         var contains = false, intersects, i, j, xi, yi, xj, yj;
         for (i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
             xi = polygon[i].x;
@@ -4602,12 +4620,19 @@ var CurvePath = /** @class */ (function () {
         }
         return true;
     };
+    CurvePath.prototype.center = function () {
+        this.updateOrigin(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(0.5, 0.5));
+        return this;
+    };
+    CurvePath.prototype.updateOrigin = function (origin) {
+        return this;
+    };
     CurvePath.prototype.eachCurve = function (callback) {
-        this.curves.forEach(callback);
+        this._curves.forEach(callback);
         return this;
     };
     CurvePath.prototype.mapCurves = function (callback) {
-        return this.curves.map(callback);
+        return this._curves.map(callback);
     };
     return CurvePath;
 }());
@@ -4627,12 +4652,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Curve: () => (/* binding */ Curve)
 /* harmony export */ });
 /* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./point */ "./packages/core/src/maths/point.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _bbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bbox */ "./packages/core/src/maths/bbox.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
+
 
 
 var Curve = /** @class */ (function () {
     function Curve() {
         this.command = '';
+        this._bBox = new _bbox__WEBPACK_IMPORTED_MODULE_1__.BBox();
     }
     Curve.prototype.getPoint = function (t) {
         console.warn('getPoint() must be implemented by subclass.');
@@ -4647,10 +4675,13 @@ var Curve = /** @class */ (function () {
         }
         return points;
     };
+    Curve.prototype.getBBox = function () {
+        return this._bBox.fromPoints(this.getPoints());
+    };
     Curve.prototype.fromString = function (string, prevString) {
         if (prevString === void 0) { prevString = ''; }
-        var prevValues = (prevString.match(/[\-\.\d]+/g) || []).map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)(n); });
-        var values = (string.match(/[\-\.\d]+/g) || []).map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)(n); });
+        var prevValues = (prevString.match(/[\-\.\d]+/g) || []).map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(n); });
+        var values = (string.match(/[\-\.\d]+/g) || []).map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(n); });
         var prevLength = prevValues.length;
         var length = values.length;
         var point;
@@ -6061,7 +6092,7 @@ var Path = /** @class */ (function (_super) {
         return this;
     };
     Path.prototype.updateBBox = function () {
-        this.bBox.fromPoints(this.path.toPoints());
+        this.bBox.copy(this.path.getBBox());
         return this;
     };
     return Path;
@@ -6163,7 +6194,7 @@ var Polyline = /** @class */ (function (_super) {
         return this;
     };
     Polyline.prototype.updateBBox = function () {
-        this.bBox.fromPoints(this.path.toPoints());
+        this.bBox.copy(this.path.getBBox());
         return this;
     };
     return Polyline;
