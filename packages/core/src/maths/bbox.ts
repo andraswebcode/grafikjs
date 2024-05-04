@@ -28,7 +28,7 @@ class BBox {
 
 	public fromPoints(points: Point[]) : BBox {
 
-		this.reset();
+		this.flip();
 
 		for (let i = 0; i < points.length; i++){
 			this.expandByPoint(points[i]);
@@ -117,6 +117,12 @@ class BBox {
 	public reset() : BBox {
 		this.min.set(0, 0);
 		this.max.set(0, 0);
+		return this;
+	}
+
+	public flip() : BBox {
+		this.min.set(Infinity, Infinity);
+		this.max.set(- Infinity, - Infinity);
 		return this;
 	}
 

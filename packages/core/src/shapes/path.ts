@@ -36,7 +36,7 @@ class Path extends Shape {
 	protected updateOthersWithKeys(keys){
 
 		if (keys.includes('d')){
-			this.path.fromString(this.d);
+			this.path.fromString(this.d).adjust();
 			this.updateBBox();
 		}
 
@@ -45,8 +45,7 @@ class Path extends Shape {
 	}
 
 	public updateBBox(){
-		this.bBox.copy(this.path.updateBBox().updateOrigin(this.origin).getBBox());
-		// this.origin.copy(this.bBox.getOrigin());
+		this.bBox.fromSizeAndOrigin(this.path.updateBBox().getBBox().getSize(), this.origin);
 		return this;
 	}
 

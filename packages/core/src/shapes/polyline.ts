@@ -28,7 +28,7 @@ class Polyline extends Shape {
 	protected updateOthersWithKeys(keys){
 
 		if (keys.includes('points')){
-			this.path.fromNumbers(this.points);
+			this.path.fromNumbers(this.points).adjust();
 			this.updateBBox();
 		}
 
@@ -37,8 +37,7 @@ class Polyline extends Shape {
 	}
 
 	public updateBBox(){
-		this.bBox.copy(this.path.updateBBox().updateOrigin(this.origin).getBBox());
-		// this.origin.copy(this.bBox.getOrigin());
+		this.bBox.fromSizeAndOrigin(this.path.updateBBox().getBBox().getSize(), this.origin);
 		return this;
 	}
 

@@ -173,7 +173,7 @@ const TestApp = () => {
 						left={450}
 						top={250} />
 					<Polygon
-						points='50 0 100 100 0 100'
+						points='120 70 170 170 70 170'
 						fill={lg1}
 						left={350}
 						top={150} />

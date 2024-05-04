@@ -209,22 +209,8 @@ class CurvePath {
 		});
 	}
 
-	public center() : CurvePath {
-		this.updateOrigin(new Point(0.5, 0.5));
-		return this;
-	}
-
-	public updateOrigin(origin: Point) : CurvePath {
-		const oldOrigin = this._bBox.getOrigin();
-		const size = this._bBox.getSize();
-		const translate = oldOrigin.subtract(origin).multiply(size).abs();/*
-		this.eachCurve(curve => {
-			curve.translate(translate.x, translate.y);
-		});*/
-		return this;
-	}
-
 	public updateBBox() : CurvePath {
+		this._bBox.flip();
 		return this.eachCurve(curve => {
 			this._bBox.union(curve.updateBBox().getBBox());
 		});
@@ -232,6 +218,14 @@ class CurvePath {
 
 	public getBBox() : BBox {
 		return this._bBox;
+	}
+
+	public adjust() : CurvePath {
+		const {x, y} = this._bBox.min;
+		this.eachCurve(curve => {
+			curve.translate(-x, -y);
+		});
+		return this;
 	}
 
 	// Thanks ChatGPT to help implementing the raycasting algorithm! :-)

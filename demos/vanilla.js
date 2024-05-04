@@ -2693,7 +2693,7 @@ var BBox = /** @class */ (function () {
         return this;
     };
     BBox.prototype.fromPoints = function (points) {
-        this.reset();
+        this.flip();
         for (var i = 0; i < points.length; i++) {
             this.expandByPoint(points[i]);
         }
@@ -2761,6 +2761,11 @@ var BBox = /** @class */ (function () {
     BBox.prototype.reset = function () {
         this.min.set(0, 0);
         this.max.set(0, 0);
+        return this;
+    };
+    BBox.prototype.flip = function () {
+        this.min.set(Infinity, Infinity);
+        this.max.set(-Infinity, -Infinity);
         return this;
     };
     BBox.prototype.isEqual = function (bBox) {
@@ -3199,27 +3204,22 @@ var CurvePath = /** @class */ (function () {
             return !p.isEqual(pp);
         });
     };
-    CurvePath.prototype.center = function () {
-        this.updateOrigin(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(0.5, 0.5));
-        return this;
-    };
-    CurvePath.prototype.updateOrigin = function (origin) {
-        var oldOrigin = this._bBox.getOrigin();
-        var size = this._bBox.getSize();
-        var translate = oldOrigin.subtract(origin).multiply(size).abs(); /*
-        this.eachCurve(curve => {
-            curve.translate(translate.x, translate.y);
-        });*/
-        return this;
-    };
     CurvePath.prototype.updateBBox = function () {
         var _this = this;
+        this._bBox.flip();
         return this.eachCurve(function (curve) {
             _this._bBox.union(curve.updateBBox().getBBox());
         });
     };
     CurvePath.prototype.getBBox = function () {
         return this._bBox;
+    };
+    CurvePath.prototype.adjust = function () {
+        var _a = this._bBox.min, x = _a.x, y = _a.y;
+        this.eachCurve(function (curve) {
+            curve.translate(-x, -y);
+        });
+        return this;
     };
     // Thanks ChatGPT to help implementing the raycasting algorithm! :-)
     CurvePath.prototype.containsPoint = function (point, divisions) {
@@ -4749,14 +4749,13 @@ var Path = /** @class */ (function (_super) {
     };
     Path.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('d')) {
-            this.path.fromString(this.d);
+            this.path.fromString(this.d).adjust();
             this.updateBBox();
         }
         return this;
     };
     Path.prototype.updateBBox = function () {
-        this.bBox.copy(this.path.updateBBox().updateOrigin(this.origin).getBBox());
-        // this.origin.copy(this.bBox.getOrigin());
+        this.bBox.fromSizeAndOrigin(this.path.updateBBox().getBBox().getSize(), this.origin);
         return this;
     };
     return Path;
@@ -4862,14 +4861,13 @@ var Polyline = /** @class */ (function (_super) {
     };
     Polyline.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('points')) {
-            this.path.fromNumbers(this.points);
+            this.path.fromNumbers(this.points).adjust();
             this.updateBBox();
         }
         return this;
     };
     Polyline.prototype.updateBBox = function () {
-        this.bBox.copy(this.path.updateBBox().updateOrigin(this.origin).getBBox());
-        // this.origin.copy(this.bBox.getOrigin());
+        this.bBox.fromSizeAndOrigin(this.path.updateBBox().getBBox().getSize(), this.origin);
         return this;
     };
     return Polyline;

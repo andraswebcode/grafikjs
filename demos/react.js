@@ -4064,7 +4064,7 @@ var BBox = /** @class */ (function () {
         return this;
     };
     BBox.prototype.fromPoints = function (points) {
-        this.reset();
+        this.flip();
         for (var i = 0; i < points.length; i++) {
             this.expandByPoint(points[i]);
         }
@@ -4132,6 +4132,11 @@ var BBox = /** @class */ (function () {
     BBox.prototype.reset = function () {
         this.min.set(0, 0);
         this.max.set(0, 0);
+        return this;
+    };
+    BBox.prototype.flip = function () {
+        this.min.set(Infinity, Infinity);
+        this.max.set(-Infinity, -Infinity);
         return this;
     };
     BBox.prototype.isEqual = function (bBox) {
@@ -4570,27 +4575,22 @@ var CurvePath = /** @class */ (function () {
             return !p.isEqual(pp);
         });
     };
-    CurvePath.prototype.center = function () {
-        this.updateOrigin(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(0.5, 0.5));
-        return this;
-    };
-    CurvePath.prototype.updateOrigin = function (origin) {
-        var oldOrigin = this._bBox.getOrigin();
-        var size = this._bBox.getSize();
-        var translate = oldOrigin.subtract(origin).multiply(size).abs(); /*
-        this.eachCurve(curve => {
-            curve.translate(translate.x, translate.y);
-        });*/
-        return this;
-    };
     CurvePath.prototype.updateBBox = function () {
         var _this = this;
+        this._bBox.flip();
         return this.eachCurve(function (curve) {
             _this._bBox.union(curve.updateBBox().getBBox());
         });
     };
     CurvePath.prototype.getBBox = function () {
         return this._bBox;
+    };
+    CurvePath.prototype.adjust = function () {
+        var _a = this._bBox.min, x = _a.x, y = _a.y;
+        this.eachCurve(function (curve) {
+            curve.translate(-x, -y);
+        });
+        return this;
     };
     // Thanks ChatGPT to help implementing the raycasting algorithm! :-)
     CurvePath.prototype.containsPoint = function (point, divisions) {
@@ -6120,14 +6120,13 @@ var Path = /** @class */ (function (_super) {
     };
     Path.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('d')) {
-            this.path.fromString(this.d);
+            this.path.fromString(this.d).adjust();
             this.updateBBox();
         }
         return this;
     };
     Path.prototype.updateBBox = function () {
-        this.bBox.copy(this.path.updateBBox().updateOrigin(this.origin).getBBox());
-        // this.origin.copy(this.bBox.getOrigin());
+        this.bBox.fromSizeAndOrigin(this.path.updateBBox().getBBox().getSize(), this.origin);
         return this;
     };
     return Path;
@@ -6233,14 +6232,13 @@ var Polyline = /** @class */ (function (_super) {
     };
     Polyline.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('points')) {
-            this.path.fromNumbers(this.points);
+            this.path.fromNumbers(this.points).adjust();
             this.updateBBox();
         }
         return this;
     };
     Polyline.prototype.updateBBox = function () {
-        this.bBox.copy(this.path.updateBBox().updateOrigin(this.origin).getBBox());
-        // this.origin.copy(this.bBox.getOrigin());
+        this.bBox.fromSizeAndOrigin(this.path.updateBBox().getBBox().getSize(), this.origin);
         return this;
     };
     return Polyline;
@@ -8004,7 +8002,7 @@ var TestApp = function () {
     var lg2 = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.LinearGradient({
         colorStops: colorStops2
     });
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Circle, { left: 550, top: 350, r: 50, angle: 45, stroke: '#000', strokeWidth: 2, fill: lg1 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 650, top: 450, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Path, { d: 'M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25', fill: lg2, left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Polygon, { points: '50 0 100 100 0 100', fill: lg1, left: 350, top: 150 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Text, { text: 'Hello GrafikJS! :-)', left: 800, top: 250 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Circle, { left: 550, top: 350, r: 50, angle: 45, stroke: '#000', strokeWidth: 2, fill: lg1 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 650, top: 450, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Path, { d: 'M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25', fill: lg2, left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Polygon, { points: '120 70 170 170 70 170', fill: lg1, left: 350, top: 150 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Text, { text: 'Hello GrafikJS! :-)', left: 800, top: 250 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
 };
 
 
