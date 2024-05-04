@@ -197,6 +197,10 @@ class CurvePath {
 		});
 	}
 
+	public toCenter() : CurvePath {
+		return this;
+	}
+
 	// Thanks ChatGPT to help implementing the raycasting algorithm! :-)
 	public containsPoint(point: Point, divisions?: number) : boolean {
 

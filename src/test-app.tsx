@@ -67,7 +67,7 @@ const colorStops2 = [{
 	stopColor:'red'
 },{
 	offset:1,
-	stopColor:'#88F'
+	stopColor:'#F44'
 }];
 
 const TestApp1 = () => {
@@ -169,10 +169,18 @@ const TestApp = () => {
 						fill='none' />
 					<Path
 						d='M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25'
-						fill={lg2} />
+						fill={lg2}
+						left={450}
+						top={250} />
 					<Polygon
 						points='50 0 100 100 0 100'
-						fill={lg1} />
+						fill={lg1}
+						left={350}
+						top={150} />
+					<Text
+						text='Hello GrafikJS! :-)'
+						left={800}
+						top={250} />
 				</Canvas>
 				<Interactive>
 					<Selector />

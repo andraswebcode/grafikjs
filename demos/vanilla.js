@@ -42,7 +42,15 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.grafik-wrapper {
 
 .grafik-control {
   position: absolute;
+}
+
+.grafik-transform-control {
   cursor: move;
+  border: dashed 2px forestgreen;
+}
+
+.grafik-text-control {
+  cursor: text;
   border: dashed 2px forestgreen;
 }
 
@@ -1536,6 +1544,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Selector: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.Selector),
 /* harmony export */   Shape: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Shape),
 /* harmony export */   Text: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Text),
+/* harmony export */   TextControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.TextControl),
 /* harmony export */   TextPath: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.TextPath),
 /* harmony export */   Timeline: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.Timeline),
 /* harmony export */   Track: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.Track),
@@ -2025,7 +2034,6 @@ var Control = /** @class */ (function (_super) {
         this.onPointerEnd = this.onPointerEnd.bind(this);
     };
     Control.prototype.setNodes = function () {
-        console.warn('setNodes() must be implemented by subclass.');
         return this;
     };
     Control.prototype.getSize = function () {
@@ -2109,13 +2117,16 @@ var GradientControl = /** @class */ (function (_super) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   GradientControl: () => (/* reexport safe */ _gradient_control__WEBPACK_IMPORTED_MODULE_2__.GradientControl),
+/* harmony export */   GradientControl: () => (/* reexport safe */ _gradient_control__WEBPACK_IMPORTED_MODULE_3__.GradientControl),
 /* harmony export */   PathControl: () => (/* reexport safe */ _path_control__WEBPACK_IMPORTED_MODULE_1__.PathControl),
+/* harmony export */   TextControl: () => (/* reexport safe */ _text_control__WEBPACK_IMPORTED_MODULE_2__.TextControl),
 /* harmony export */   TransformControl: () => (/* reexport safe */ _transform_control__WEBPACK_IMPORTED_MODULE_0__.TransformControl)
 /* harmony export */ });
 /* harmony import */ var _transform_control__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./transform-control */ "./packages/core/src/interactive/controls/transform-control.ts");
 /* harmony import */ var _path_control__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./path-control */ "./packages/core/src/interactive/controls/path-control.ts");
-/* harmony import */ var _gradient_control__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./gradient-control */ "./packages/core/src/interactive/controls/gradient-control.ts");
+/* harmony import */ var _text_control__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./text-control */ "./packages/core/src/interactive/controls/text-control.ts");
+/* harmony import */ var _gradient_control__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./gradient-control */ "./packages/core/src/interactive/controls/gradient-control.ts");
+
 
 
 
@@ -2162,6 +2173,48 @@ var PathControl = /** @class */ (function (_super) {
         return this;
     };
     return PathControl;
+}(___WEBPACK_IMPORTED_MODULE_0__.Control));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/interactive/controls/text-control.ts":
+/*!****************************************************************!*\
+  !*** ./packages/core/src/interactive/controls/text-control.ts ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   TextControl: () => (/* binding */ TextControl)
+/* harmony export */ });
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../ */ "./packages/core/src/interactive/index.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var TextControl = /** @class */ (function (_super) {
+    __extends(TextControl, _super);
+    function TextControl(params) {
+        var _this = _super.call(this) || this;
+        _this.init(params);
+        _this.addClass('grafik-text-control');
+        return _this;
+    }
+    return TextControl;
 }(___WEBPACK_IMPORTED_MODULE_0__.Control));
 
 
@@ -2326,6 +2379,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   PathControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_3__.PathControl),
 /* harmony export */   ScaleControlNode: () => (/* reexport safe */ _control_nodes__WEBPACK_IMPORTED_MODULE_4__.ScaleControlNode),
 /* harmony export */   Selector: () => (/* reexport safe */ _selector__WEBPACK_IMPORTED_MODULE_0__.Selector),
+/* harmony export */   TextControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_3__.TextControl),
 /* harmony export */   TransformControl: () => (/* reexport safe */ _controls__WEBPACK_IMPORTED_MODULE_3__.TransformControl)
 /* harmony export */ });
 /* harmony import */ var _selector__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./selector */ "./packages/core/src/interactive/selector.ts");
@@ -3127,6 +3181,9 @@ var CurvePath = /** @class */ (function () {
             }
             return !p.isEqual(pp);
         });
+    };
+    CurvePath.prototype.toCenter = function () {
+        return this;
     };
     // Thanks ChatGPT to help implementing the raycasting algorithm! :-)
     CurvePath.prototype.containsPoint = function (point, divisions) {
@@ -5035,6 +5092,10 @@ var Shape = /** @class */ (function (_super) {
     };
     Shape.prototype.setControl = function (name) {
         this._activeControl = name;
+        this.trigger('control:switched', this.getControl(), this);
+        if (this.canvas) {
+            this.canvas.trigger('shapes:control:switched', this.getControl(), this);
+        }
         return this;
     };
     Shape.prototype.updateMatrix = function () {
@@ -5133,6 +5194,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./packages/core/src/shapes/shape.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../interactive */ "./packages/core/src/interactive/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -5150,6 +5212,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
+
 // We use CanvasRenderingContext2D API to measure text size.
 var CANVASCONTEXT = document.createElement('canvas').getContext('2d');
 var Text = /** @class */ (function (_super) {
@@ -5164,6 +5227,9 @@ var Text = /** @class */ (function (_super) {
         _this.x = 0;
         _this.y = 40;
         _this.init(params);
+        _this.addControl('text', new _interactive__WEBPACK_IMPORTED_MODULE_2__.TextControl({
+            shape: _this
+        }));
         return _this;
     }
     Text.prototype.getAttrMap = function () {
@@ -5443,6 +5509,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Selector: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Selector),
 /* harmony export */   Shape: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Shape),
 /* harmony export */   Text: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Text),
+/* harmony export */   TextControl: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.TextControl),
 /* harmony export */   TextPath: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.TextPath),
 /* harmony export */   Timeline: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Timeline),
 /* harmony export */   Track: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Track),

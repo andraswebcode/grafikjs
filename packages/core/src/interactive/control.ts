@@ -24,7 +24,6 @@ class Control extends ElementCollection(Element) {
 	}
 
 	public setNodes(){
-		console.warn('setNodes() must be implemented by subclass.');
 		return this;
 	}
 

@@ -213,6 +213,10 @@ class Shape extends Element {
 
 	public setControl(name: string){
 		this._activeControl = name;
+		this.trigger('control:switched', this.getControl(), this);
+		if (this.canvas){
+			this.canvas.trigger('shapes:control:switched', this.getControl(), this);
+		}
 		return this;
 	}
 

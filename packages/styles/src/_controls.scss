@@ -1,6 +1,14 @@
 .#{$prefix}-control {
 	position: absolute;
+}
+
+.#{$prefix}-transform-control {
 	cursor: move;
+	border: $control-line-border;
+}
+
+.#{$prefix}-text-control {
+	cursor: text;
 	border: $control-line-border;
 }
 

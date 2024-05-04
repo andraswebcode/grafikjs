@@ -4,6 +4,9 @@ import {
 import {
 	Point
 } from './../maths';
+import {
+	TextControl
+} from './../interactive';
 
 // We use CanvasRenderingContext2D API to measure text size.
 const CANVASCONTEXT = document.createElement('canvas').getContext('2d');
@@ -21,6 +24,9 @@ class Text extends Shape {
 	public constructor(params?){
 		super();
 		this.init(params);
+		this.addControl('text', new TextControl({
+			shape:this
+		}));
 	}
 
 	protected getAttrMap() : string[] {
