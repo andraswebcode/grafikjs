@@ -107,10 +107,10 @@ class BBox {
 		return this.fromPoints(edges).translate(tx, ty);
 	}
 
-	public translate(x: number|Point, y?: number) : BBox {
-		if (typeof x === 'number') x = new Point(x, y);
-		this.min.add(x);
-		this.max.add(x);
+	public translate(x: number, y: number) : BBox {
+		const point = new Point(x, y);
+		this.min.add(point);
+		this.max.add(point);
 		return this;
 	}
 

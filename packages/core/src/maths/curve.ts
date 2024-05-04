@@ -8,6 +8,8 @@ import {
 	toFixed
 } from './../utils';
 
+const _point = new Point();
+
 class Curve {
 
 	protected command = '';
@@ -31,8 +33,13 @@ class Curve {
 
 	}
 
+	public updateBBox() : Curve {
+		this._bBox.fromPoints(this.getPoints());
+		return this;
+	}
+
 	public getBBox() : BBox {
-		return this._bBox.fromPoints(this.getPoints());
+		return this._bBox;
 	}
 
 	public fromString(string: string, prevString = '') : Curve {
@@ -76,6 +83,19 @@ class Curve {
 		}
 
 		return this.command + ' ' + points.join(' ');
+
+	}
+
+	public translate(x: number, y: number) : Curve {
+
+		let n = 0;
+
+		while (this['p' + n]){
+			this['p' + n].add(_point.set(x, y));
+			n++;
+		}
+
+		return this;
 
 	}
 

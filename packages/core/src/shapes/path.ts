@@ -25,10 +25,12 @@ class Path extends Shape {
 		}));
 	}
 
-	protected getAttrMap() : string[] {
-		return super.getAttrMap().concat([
-			'd'
-		]);
+	public getAttributes() : object {
+		const defaultAttributes = super.getAttributes();
+		return {
+			...defaultAttributes,
+			d:this.path.toString()
+		};
 	}
 
 	protected updateOthersWithKeys(keys){
@@ -43,7 +45,8 @@ class Path extends Shape {
 	}
 
 	public updateBBox(){
-		this.bBox.copy(this.path.getBBox());
+		this.bBox.copy(this.path.updateBBox().updateOrigin(this.origin).getBBox());
+		// this.origin.copy(this.bBox.getOrigin());
 		return this;
 	}
 

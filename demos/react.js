@@ -4124,10 +4124,9 @@ var BBox = /** @class */ (function () {
         return this.fromPoints(edges).translate(tx, ty);
     };
     BBox.prototype.translate = function (x, y) {
-        if (typeof x === 'number')
-            x = new ___WEBPACK_IMPORTED_MODULE_0__.Point(x, y);
-        this.min.add(x);
-        this.max.add(x);
+        var point = new ___WEBPACK_IMPORTED_MODULE_0__.Point(x, y);
+        this.min.add(point);
+        this.max.add(point);
         return this;
     };
     BBox.prototype.reset = function () {
@@ -4555,7 +4554,11 @@ var CurvePath = /** @class */ (function () {
     };
     // Makes points attribute for polyline, or polygon.
     CurvePath.prototype.toNumbers = function () {
-        return '';
+        return this.mapCurves(function (curve) {
+            if (curve instanceof _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve) {
+                return curve.p0.toString();
+            }
+        }).filter(function (str) { return !!str; }).join(' ');
     };
     CurvePath.prototype.toPoints = function (divisions) {
         var pp; // Previous point.
@@ -4567,11 +4570,26 @@ var CurvePath = /** @class */ (function () {
             return !p.isEqual(pp);
         });
     };
-    CurvePath.prototype.getBBox = function () {
+    CurvePath.prototype.center = function () {
+        this.updateOrigin(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(0.5, 0.5));
+        return this;
+    };
+    CurvePath.prototype.updateOrigin = function (origin) {
+        var oldOrigin = this._bBox.getOrigin();
+        var size = this._bBox.getSize();
+        var translate = oldOrigin.subtract(origin).multiply(size).abs(); /*
+        this.eachCurve(curve => {
+            curve.translate(translate.x, translate.y);
+        });*/
+        return this;
+    };
+    CurvePath.prototype.updateBBox = function () {
         var _this = this;
-        this.eachCurve(function (curve) {
-            _this._bBox.union(curve.getBBox());
+        return this.eachCurve(function (curve) {
+            _this._bBox.union(curve.updateBBox().getBBox());
         });
+    };
+    CurvePath.prototype.getBBox = function () {
         return this._bBox;
     };
     // Thanks ChatGPT to help implementing the raycasting algorithm! :-)
@@ -4620,13 +4638,6 @@ var CurvePath = /** @class */ (function () {
         }
         return true;
     };
-    CurvePath.prototype.center = function () {
-        this.updateOrigin(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(0.5, 0.5));
-        return this;
-    };
-    CurvePath.prototype.updateOrigin = function (origin) {
-        return this;
-    };
     CurvePath.prototype.eachCurve = function (callback) {
         this._curves.forEach(callback);
         return this;
@@ -4657,6 +4668,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var _point = new _point__WEBPACK_IMPORTED_MODULE_0__.Point();
 var Curve = /** @class */ (function () {
     function Curve() {
         this.command = '';
@@ -4675,8 +4687,12 @@ var Curve = /** @class */ (function () {
         }
         return points;
     };
+    Curve.prototype.updateBBox = function () {
+        this._bBox.fromPoints(this.getPoints());
+        return this;
+    };
     Curve.prototype.getBBox = function () {
-        return this._bBox.fromPoints(this.getPoints());
+        return this._bBox;
     };
     Curve.prototype.fromString = function (string, prevString) {
         if (prevString === void 0) { prevString = ''; }
@@ -4712,6 +4728,14 @@ var Curve = /** @class */ (function () {
             n++;
         }
         return this.command + ' ' + points.join(' ');
+    };
+    Curve.prototype.translate = function (x, y) {
+        var n = 0;
+        while (this['p' + n]) {
+            this['p' + n].add(_point.set(x, y));
+            n++;
+        }
+        return this;
     };
     return Curve;
 }());
@@ -6063,6 +6087,17 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 
 
 
@@ -6079,10 +6114,9 @@ var Path = /** @class */ (function (_super) {
         }));
         return _this;
     }
-    Path.prototype.getAttrMap = function () {
-        return _super.prototype.getAttrMap.call(this).concat([
-            'd'
-        ]);
+    Path.prototype.getAttributes = function () {
+        var defaultAttributes = _super.prototype.getAttributes.call(this);
+        return __assign(__assign({}, defaultAttributes), { d: this.path.toString() });
     };
     Path.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('d')) {
@@ -6092,7 +6126,8 @@ var Path = /** @class */ (function (_super) {
         return this;
     };
     Path.prototype.updateBBox = function () {
-        this.bBox.copy(this.path.getBBox());
+        this.bBox.copy(this.path.updateBBox().updateOrigin(this.origin).getBBox());
+        // this.origin.copy(this.bBox.getOrigin());
         return this;
     };
     return Path;
@@ -6170,6 +6205,17 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 
 
 var Polyline = /** @class */ (function (_super) {
@@ -6181,10 +6227,9 @@ var Polyline = /** @class */ (function (_super) {
         _this.init(params);
         return _this;
     }
-    Polyline.prototype.getAttrMap = function () {
-        return _super.prototype.getAttrMap.call(this).concat([
-            'points'
-        ]);
+    Polyline.prototype.getAttributes = function () {
+        var defaultAttributes = _super.prototype.getAttributes.call(this);
+        return __assign(__assign({}, defaultAttributes), { points: this.path.toNumbers() });
     };
     Polyline.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('points')) {
@@ -6194,7 +6239,8 @@ var Polyline = /** @class */ (function (_super) {
         return this;
     };
     Polyline.prototype.updateBBox = function () {
-        this.bBox.copy(this.path.getBBox());
+        this.bBox.copy(this.path.updateBBox().updateOrigin(this.origin).getBBox());
+        // this.origin.copy(this.bBox.getOrigin());
         return this;
     };
     return Polyline;

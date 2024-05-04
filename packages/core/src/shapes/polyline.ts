@@ -17,10 +17,12 @@ class Polyline extends Shape {
 		this.init(params);
 	}
 
-	protected getAttrMap() : string[] {
-		return super.getAttrMap().concat([
-			'points'
-		]);
+	public getAttributes() : object {
+		const defaultAttributes = super.getAttributes();
+		return {
+			...defaultAttributes,
+			points:this.path.toNumbers()
+		};
 	}
 
 	protected updateOthersWithKeys(keys){
@@ -35,7 +37,8 @@ class Polyline extends Shape {
 	}
 
 	public updateBBox(){
-		this.bBox.copy(this.path.getBBox());
+		this.bBox.copy(this.path.updateBBox().updateOrigin(this.origin).getBBox());
+		// this.origin.copy(this.bBox.getOrigin());
 		return this;
 	}
 

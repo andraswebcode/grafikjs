@@ -191,7 +191,11 @@ class CurvePath {
 
 	// Makes points attribute for polyline, or polygon.
 	public toNumbers() : string {
-		return '';
+		return this.mapCurves(curve => {
+			if (curve instanceof LineCurve){
+				return curve.p0.toString();
+			}
+		}).filter(str => !!str).join(' ');
 	}
 
 	public toPoints(divisions?: number) : Point[] {
@@ -205,10 +209,28 @@ class CurvePath {
 		});
 	}
 
-	public getBBox() : BBox {
+	public center() : CurvePath {
+		this.updateOrigin(new Point(0.5, 0.5));
+		return this;
+	}
+
+	public updateOrigin(origin: Point) : CurvePath {
+		const oldOrigin = this._bBox.getOrigin();
+		const size = this._bBox.getSize();
+		const translate = oldOrigin.subtract(origin).multiply(size).abs();/*
 		this.eachCurve(curve => {
-			this._bBox.union(curve.getBBox());
+			curve.translate(translate.x, translate.y);
+		});*/
+		return this;
+	}
+
+	public updateBBox() : CurvePath {
+		return this.eachCurve(curve => {
+			this._bBox.union(curve.updateBBox().getBBox());
 		});
+	}
+
+	public getBBox() : BBox {
 		return this._bBox;
 	}
 
@@ -267,15 +289,6 @@ class CurvePath {
 
 		return true;
 
-	}
-
-	public center() : CurvePath {
-		this.updateOrigin(new Point(0.5, 0.5));
-		return this;
-	}
-
-	public updateOrigin(origin: Point) : CurvePath {
-		return this;
 	}
 
 	public eachCurve(callback: (v: any, i: number, a: any[]) => void) : CurvePath {
