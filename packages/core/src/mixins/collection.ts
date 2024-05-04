@@ -111,14 +111,7 @@ function Collection<TBase extends Constructor>(Base: TBase){
 				if (!bBox){
 					return false;
 				}
-				const [tl, tr, br, bl] = bBox.getLineEdges(child.getWorldMatrix());
-				const polygon = new CurvePath(
-					new MoveCurve(tl),
-					new LineCurve(tl, tr),
-					new LineCurve(tr, br),
-					new LineCurve(br, bl),
-					new LineCurve(bl, tl)
-				);
+				const polygon = bBox.toPolygon(child.getWorldMatrix());
 				return (polygon.containsPoint(pointer, 1) && child);
 			}).filter(child => child?.selectable);
 

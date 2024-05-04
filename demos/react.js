@@ -2144,6 +2144,12 @@ var Canvas = /** @class */ (function (_super) {
         });
         this._currentNodeId = '';
         if (this._selection) {
+            var selectedShapes = this.mapChildren(function (shape) {
+                var selectorPolygon = _this._selector.bBox.toPolygon();
+                var shapePolygon = shape.bBox.toPolygon(shape.getWorldMatrix());
+                return (selectorPolygon.intersects(shapePolygon) && shape);
+            }).filter(function (shape) { return !!shape; });
+            this.selectShapes(selectedShapes);
             this._selector.bBox.reset();
             this.trigger('selector:updated');
         }
@@ -2675,12 +2681,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Canvas: () => (/* reexport safe */ _canvas__WEBPACK_IMPORTED_MODULE_2__.Canvas),
 /* harmony export */   Circle: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Circle),
 /* harmony export */   ClipPath: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.ClipPath),
-/* harmony export */   CloseCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_7__.CloseCurve),
+/* harmony export */   CloseCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.CloseCurve),
 /* harmony export */   Color: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Color),
 /* harmony export */   ColorStop: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.ColorStop),
 /* harmony export */   Control: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.Control),
 /* harmony export */   ControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.ControlNode),
-/* harmony export */   CubicBezierCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_7__.CubicBezierCurve),
+/* harmony export */   CubicBezierCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.CubicBezierCurve),
 /* harmony export */   Curve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Curve),
 /* harmony export */   CurvePath: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.CurvePath),
 /* harmony export */   Definition: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.Definition),
@@ -2690,20 +2696,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   GradientControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.GradientControl),
 /* harmony export */   Group: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Group),
 /* harmony export */   Image: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Image),
-/* harmony export */   LineCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_7__.LineCurve),
+/* harmony export */   LineCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.LineCurve),
 /* harmony export */   LinearGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.LinearGradient),
 /* harmony export */   Matrix: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Matrix),
-/* harmony export */   MoveCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_7__.MoveCurve),
+/* harmony export */   MoveCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.MoveCurve),
 /* harmony export */   Observable: () => (/* reexport safe */ _observable__WEBPACK_IMPORTED_MODULE_0__.Observable),
 /* harmony export */   OriginControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.OriginControlNode),
-/* harmony export */   PIBY180: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.PIBY180),
+/* harmony export */   PIBY180: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.PIBY180),
 /* harmony export */   Path: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Path),
 /* harmony export */   PathControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.PathControl),
 /* harmony export */   Pattern: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.Pattern),
 /* harmony export */   Point: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Point),
 /* harmony export */   Polygon: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Polygon),
 /* harmony export */   Polyline: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Polyline),
-/* harmony export */   QuadraticBezierCurve: () => (/* reexport safe */ _maths_curves__WEBPACK_IMPORTED_MODULE_7__.QuadraticBezierCurve),
+/* harmony export */   QuadraticBezierCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.QuadraticBezierCurve),
 /* harmony export */   RadialGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.RadialGradient),
 /* harmony export */   Rect: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Rect),
 /* harmony export */   ScaleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.ScaleControlNode),
@@ -2712,13 +2718,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Text: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Text),
 /* harmony export */   TextPath: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.TextPath),
 /* harmony export */   TransformControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.TransformControl),
-/* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
-/* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
-/* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.isEqual),
-/* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.rad2Deg),
-/* harmony export */   randInt: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.randInt),
-/* harmony export */   toFixed: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.toFixed),
-/* harmony export */   uniqueId: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.uniqueId)
+/* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.clamp),
+/* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.deg2Rad),
+/* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.isEqual),
+/* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.rad2Deg),
+/* harmony export */   randInt: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.randInt),
+/* harmony export */   toFixed: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.toFixed),
+/* harmony export */   uniqueId: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_7__.uniqueId)
 /* harmony export */ });
 /* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./observable */ "./packages/core/src/observable.ts");
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./element */ "./packages/core/src/element.ts");
@@ -2727,9 +2733,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _defs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./defs */ "./packages/core/src/defs/index.ts");
 /* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./interactive */ "./packages/core/src/interactive/index.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./maths */ "./packages/core/src/maths/index.ts");
-/* harmony import */ var _maths_curves__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./maths/curves */ "./packages/core/src/maths/curves/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
-/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./types */ "./packages/core/src/types/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./types */ "./packages/core/src/types/index.ts");
 // Core
 
 
@@ -2741,7 +2746,6 @@ __webpack_require__.r(__webpack_exports__);
 // Interactive
 
 // Maths
-
 
 // Utils
 
@@ -3844,6 +3848,10 @@ var BBox = /** @class */ (function () {
         }
         return [tl, tr, br, bl];
     };
+    BBox.prototype.toPolygon = function (matrix) {
+        var _a = this.getLineEdges(matrix), tl = _a[0], tr = _a[1], br = _a[2], bl = _a[3];
+        return new ___WEBPACK_IMPORTED_MODULE_0__.CurvePath(new ___WEBPACK_IMPORTED_MODULE_0__.MoveCurve(tl), new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(tl, tr), new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(tr, br), new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(br, bl), new ___WEBPACK_IMPORTED_MODULE_0__.LineCurve(bl, tl));
+    };
     BBox.prototype.contains = function (point) {
         return (point.x >= this.min.x && point.x <= this.max.x &&
             point.y >= this.min.y && point.y <= this.max.y);
@@ -3855,6 +3863,15 @@ var BBox = /** @class */ (function () {
             bBox.min.y <= this.max.y);
     };
     BBox.prototype.transform = function (matrix) {
+        var tx = matrix.tx, ty = matrix.ty;
+        var edges = this.getLineEdges(matrix.clone().translate(0, 0));
+        return this.fromPoints(edges).translate(tx, ty);
+    };
+    BBox.prototype.translate = function (x, y) {
+        if (typeof x === 'number')
+            x = new ___WEBPACK_IMPORTED_MODULE_0__.Point(x, y);
+        this.min.add(x);
+        this.max.add(x);
         return this;
     };
     BBox.prototype.reset = function () {
@@ -4159,7 +4176,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   CurvePath: () => (/* binding */ CurvePath)
 /* harmony export */ });
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./point */ "./packages/core/src/maths/point.ts");
 /* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./curves */ "./packages/core/src/maths/curves/index.ts");
 
 
@@ -4170,6 +4187,24 @@ var CURVES = {
     'C': _curves__WEBPACK_IMPORTED_MODULE_1__.CubicBezierCurve,
     'Z': _curves__WEBPACK_IMPORTED_MODULE_1__.CloseCurve
 };
+var _axis = new _point__WEBPACK_IMPORTED_MODULE_0__.Point();
+// Function to project a polygon onto an axis. Thanks ChatGPT! :-)
+function _project(points, axis) {
+    var min = Infinity, max = -Infinity, i, point, dot;
+    for (i = 0; i < points.length; i++) {
+        point = points[i];
+        dot = point.dot(axis);
+        min = Math.min(min, dot);
+        max = Math.max(max, dot);
+    }
+    return { min: min, max: max };
+}
+// Function to check if an edge separates two polygons. Thanks ChatGPT! :-)
+function _separate(points1, points2, axis) {
+    var project1 = _project(points1, axis);
+    var project2 = _project(points2, axis);
+    return (project1.max < project2.min) || (project2.max < project1.min);
+}
 var CurvePath = /** @class */ (function () {
     function CurvePath() {
         var curves = [];
@@ -4177,7 +4212,7 @@ var CurvePath = /** @class */ (function () {
             curves[_i] = arguments[_i];
         }
         this.curves = [];
-        this.currentPoint = new ___WEBPACK_IMPORTED_MODULE_0__.Point();
+        this.currentPoint = new _point__WEBPACK_IMPORTED_MODULE_0__.Point();
         this.set(curves);
     }
     Object.defineProperty(CurvePath.prototype, "length", {
@@ -4204,22 +4239,22 @@ var CurvePath = /** @class */ (function () {
         return this;
     };
     CurvePath.prototype.moveTo = function (x, y) {
-        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.MoveCurve(new ___WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.MoveCurve(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this.currentPoint.set(x, y);
         return this.add(curve);
     };
     CurvePath.prototype.lineTo = function (x, y) {
-        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(this.currentPoint.clone(), new ___WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(this.currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this.currentPoint.set(x, y);
         return this.add(curve);
     };
     CurvePath.prototype.quadraticCurveTo = function (cx, cy, x, y) {
-        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.QuadraticBezierCurve(this.currentPoint.clone(), new ___WEBPACK_IMPORTED_MODULE_0__.Point(cx, cy), new ___WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.QuadraticBezierCurve(this.currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(cx, cy), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this.currentPoint.set(x, y);
         return this.add(curve);
     };
     CurvePath.prototype.cubicCurveTo = function (c1x, c1y, c2x, c2y, x, y) {
-        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.CubicBezierCurve(this.currentPoint.clone(), new ___WEBPACK_IMPORTED_MODULE_0__.Point(c1x, c1y), new ___WEBPACK_IMPORTED_MODULE_0__.Point(c2x, c2y), new ___WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_1__.CubicBezierCurve(this.currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(c1x, c1y), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(c2x, c2y), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this.currentPoint.set(x, y);
         return this.add(curve);
     };
@@ -4251,6 +4286,7 @@ var CurvePath = /** @class */ (function () {
             return !p.isEqual(pp);
         });
     };
+    // Thanks ChatGPT to help implementing the raycasting algorithm! :-)
     CurvePath.prototype.containsPoint = function (point, divisions) {
         var x = point.x, y = point.y;
         var polygon = this.mapCurves(function (curve) { return curve.getPoints(divisions); }).flat();
@@ -4266,6 +4302,35 @@ var CurvePath = /** @class */ (function () {
             }
         }
         return contains;
+    };
+    // Thanks ChatGPT to help implementing the Separating Axis Theorem (SAT) algorithm! :-)
+    CurvePath.prototype.intersects = function (curvePath, divisions) {
+        var points1 = this.toPoints(divisions);
+        var points2 = curvePath.toPoints(divisions);
+        var p1Length = points1.length;
+        var p2Length = points2.length;
+        var i, point, next, x, y;
+        for (i = 0; i < p1Length; i++) {
+            point = points1[i];
+            next = points1[(i + 1) % p1Length];
+            _axis.copy(next).subtract(point);
+            x = _axis.x;
+            y = _axis.y;
+            if (_separate(points1, points2, _axis.set(-y, x))) {
+                return false;
+            }
+        }
+        for (i = 0; i < p2Length; i++) {
+            point = points2[i];
+            next = points2[(i + 1) % p2Length];
+            _axis.copy(next).subtract(point);
+            x = _axis.x;
+            y = _axis.y;
+            if (_separate(points1, points2, _axis.set(-y, x))) {
+                return false;
+            }
+        }
+        return true;
     };
     CurvePath.prototype.eachCurve = function (callback) {
         this.curves.forEach(callback);
@@ -4654,18 +4719,25 @@ var QuadraticBezierCurve = /** @class */ (function (_super) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   BBox: () => (/* reexport safe */ _bbox__WEBPACK_IMPORTED_MODULE_0__.BBox),
+/* harmony export */   CloseCurve: () => (/* reexport safe */ _curves__WEBPACK_IMPORTED_MODULE_3__.CloseCurve),
 /* harmony export */   Color: () => (/* reexport safe */ _color__WEBPACK_IMPORTED_MODULE_1__.Color),
+/* harmony export */   CubicBezierCurve: () => (/* reexport safe */ _curves__WEBPACK_IMPORTED_MODULE_3__.CubicBezierCurve),
 /* harmony export */   Curve: () => (/* reexport safe */ _curve__WEBPACK_IMPORTED_MODULE_2__.Curve),
-/* harmony export */   CurvePath: () => (/* reexport safe */ _curve_path__WEBPACK_IMPORTED_MODULE_3__.CurvePath),
-/* harmony export */   Matrix: () => (/* reexport safe */ _matrix__WEBPACK_IMPORTED_MODULE_4__.Matrix),
-/* harmony export */   Point: () => (/* reexport safe */ _point__WEBPACK_IMPORTED_MODULE_5__.Point)
+/* harmony export */   CurvePath: () => (/* reexport safe */ _curve_path__WEBPACK_IMPORTED_MODULE_4__.CurvePath),
+/* harmony export */   LineCurve: () => (/* reexport safe */ _curves__WEBPACK_IMPORTED_MODULE_3__.LineCurve),
+/* harmony export */   Matrix: () => (/* reexport safe */ _matrix__WEBPACK_IMPORTED_MODULE_5__.Matrix),
+/* harmony export */   MoveCurve: () => (/* reexport safe */ _curves__WEBPACK_IMPORTED_MODULE_3__.MoveCurve),
+/* harmony export */   Point: () => (/* reexport safe */ _point__WEBPACK_IMPORTED_MODULE_6__.Point),
+/* harmony export */   QuadraticBezierCurve: () => (/* reexport safe */ _curves__WEBPACK_IMPORTED_MODULE_3__.QuadraticBezierCurve)
 /* harmony export */ });
 /* harmony import */ var _bbox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bbox */ "./packages/core/src/maths/bbox.ts");
 /* harmony import */ var _color__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./color */ "./packages/core/src/maths/color.ts");
 /* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./curve */ "./packages/core/src/maths/curve.ts");
-/* harmony import */ var _curve_path__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./curve-path */ "./packages/core/src/maths/curve-path.ts");
-/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./matrix */ "./packages/core/src/maths/matrix.ts");
-/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./point */ "./packages/core/src/maths/point.ts");
+/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./curves */ "./packages/core/src/maths/curves/index.ts");
+/* harmony import */ var _curve_path__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./curve-path */ "./packages/core/src/maths/curve-path.ts");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./matrix */ "./packages/core/src/maths/matrix.ts");
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./point */ "./packages/core/src/maths/point.ts");
+
 
 
 
@@ -4998,6 +5070,9 @@ var Point = /** @class */ (function () {
         var dy = this.y - point.y;
         return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
     };
+    Point.prototype.dot = function (point) {
+        return (this.x * point.x + this.y * point.y);
+    };
     Point.prototype.transform = function (matrix) {
         var _a = this, x = _a.x, y = _a.y;
         var a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
@@ -5062,8 +5137,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Collection: () => (/* binding */ Collection)
 /* harmony export */ });
-/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
-/* harmony import */ var _maths_curves__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../maths/curves */ "./packages/core/src/maths/curves/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -5079,8 +5152,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-
-
 function Collection(Base) {
     return /** @class */ (function (_super) {
         __extends(Collection, _super);
@@ -5167,8 +5238,7 @@ function Collection(Base) {
                 if (!bBox) {
                     return false;
                 }
-                var _a = bBox.getLineEdges(child.getWorldMatrix()), tl = _a[0], tr = _a[1], br = _a[2], bl = _a[3];
-                var polygon = new _maths__WEBPACK_IMPORTED_MODULE_0__.CurvePath(new _maths_curves__WEBPACK_IMPORTED_MODULE_1__.MoveCurve(tl), new _maths_curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(tl, tr), new _maths_curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(tr, br), new _maths_curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(br, bl), new _maths_curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(bl, tl));
+                var polygon = bBox.toPolygon(child.getWorldMatrix());
                 return (polygon.containsPoint(pointer, 1) && child);
             }).filter(function (child) { return child === null || child === void 0 ? void 0 : child.selectable; });
         };

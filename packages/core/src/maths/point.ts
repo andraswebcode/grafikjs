@@ -158,6 +158,10 @@ class Point {
 		return Math.sqrt(dx ** 2 + dy ** 2);
 	}
 
+	public dot(point: Point) : number {
+		return (this.x * point.x + this.y * point.y);
+	}
+
 	public transform(matrix: Matrix) : Point {
 
 		const {x, y} = this;

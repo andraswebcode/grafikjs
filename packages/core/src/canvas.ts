@@ -262,27 +262,41 @@ class Canvas extends Collection(Element) {
 	}
 
 	public onPointerMove(e){
+
 		this.eachSelectedShape(shape => {
 			shape.getControl().onPointerMove(e);
 			shape.getControl()?.childById(this._currentNodeId)?.onPointerMove(e);
 		});
+
 		if (this._selection){
 			this._selector.bBox.max.copy(this.getPointer(e));
 			this.trigger('selector:updated');
 		}
+
 	}
 
 	public onPointerEnd(e){
+
 		this.eachSelectedShape(shape => {
 			shape.getControl().onPointerEnd(e);
 			shape.getControl()?.childById(this._currentNodeId)?.onPointerEnd(e);
 		});
+
 		this._currentNodeId = '';
+
 		if (this._selection){
+			const selectedShapes = this.mapChildren(shape => {
+				const selectorPolygon = this._selector.bBox.toPolygon();
+				const shapePolygon = shape.bBox.toPolygon(shape.getWorldMatrix());
+				return (selectorPolygon.intersects(shapePolygon) && shape);
+			}).filter(shape => !!shape);
+			this.selectShapes(selectedShapes);
 			this._selector.bBox.reset();
 			this.trigger('selector:updated');
 		}
+
 		this._selection = false;
+
 	}
 
 	public onWheel(e){

@@ -1,8 +1,10 @@
 import {
 	Point,
-	Matrix
+	Matrix,
+	CurvePath,
+	MoveCurve,
+	LineCurve
 } from './';
-
 class BBox {
 
 	public min: Point;
@@ -72,6 +74,17 @@ class BBox {
 
 	}
 
+	public toPolygon(matrix?: Matrix) : CurvePath {
+		const [tl, tr, br, bl] = this.getLineEdges(matrix);
+		return new CurvePath(
+			new MoveCurve(tl),
+			new LineCurve(tl, tr),
+			new LineCurve(tr, br),
+			new LineCurve(br, bl),
+			new LineCurve(bl, tl)
+		);
+	}
+
 	public contains(point: Point) : boolean {
 		return (
 			point.x >= this.min.x && point.x <= this.max.x &&
@@ -89,6 +102,15 @@ class BBox {
 	}
 
 	public transform(matrix: Matrix) : BBox {
+		const {tx, ty} = matrix;
+		const edges = this.getLineEdges(matrix.clone().translate(0, 0));
+		return this.fromPoints(edges).translate(tx, ty);
+	}
+
+	public translate(x: number|Point, y?: number) : BBox {
+		if (typeof x === 'number') x = new Point(x, y);
+		this.min.add(x);
+		this.max.add(x);
 		return this;
 	}
 

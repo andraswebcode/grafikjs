@@ -1,6 +1,6 @@
 import {
 	Point
-} from './';
+} from './point';
 import {
 	MoveCurve,
 	CloseCurve,
@@ -16,6 +16,37 @@ const CURVES = {
 	'C':CubicBezierCurve,
 	'Z':CloseCurve
 };
+
+const _axis = new Point();
+
+// Function to project a polygon onto an axis. Thanks ChatGPT! :-)
+function _project(points: Point[], axis: Point) : {
+	min: number,
+	max: number
+} {
+
+	let min = Infinity, max = -Infinity, i, point, dot;
+
+	for (i = 0; i < points.length; i++){
+		point = points[i];
+		dot = point.dot(axis);
+		min = Math.min(min, dot);
+		max = Math.max(max, dot);
+	}
+
+	return {min, max};
+
+}
+
+// Function to check if an edge separates two polygons. Thanks ChatGPT! :-)
+function _separate(points1: Point[], points2: Point[], axis: Point) : boolean {
+
+	const project1 = _project(points1, axis);
+	const project2 = _project(points2, axis);
+
+	return (project1.max < project2.min) || (project2.max < project1.min);
+
+}
 
 class CurvePath {
 
@@ -137,6 +168,7 @@ class CurvePath {
 		});
 	}
 
+	// Thanks ChatGPT to help implementing the raycasting algorithm! :-)
 	public containsPoint(point: Point, divisions?: number) : boolean {
 
 		const {x, y} = point;
@@ -155,6 +187,41 @@ class CurvePath {
 		}
 
 		return contains;
+
+	}
+
+	// Thanks ChatGPT to help implementing the Separating Axis Theorem (SAT) algorithm! :-)
+	public intersects(curvePath: CurvePath, divisions?: number) : boolean {
+
+		const points1 = this.toPoints(divisions);
+		const points2 = curvePath.toPoints(divisions);
+		const p1Length = points1.length;
+		const p2Length = points2.length;
+		let i, point, next, x, y;
+
+		for (i = 0; i < p1Length; i++){
+			point = points1[i];
+			next = points1[(i + 1) % p1Length];
+			_axis.copy(next).subtract(point);
+			x = _axis.x;
+			y = _axis.y;
+			if (_separate(points1, points2, _axis.set(-y, x))){
+				return false;
+			}
+		}
+
+		for (i = 0; i < p2Length; i++){
+			point = points2[i];
+			next = points2[(i + 1) % p2Length];
+			_axis.copy(next).subtract(point);
+			x = _axis.x;
+			y = _axis.y;
+			if (_separate(points1, points2, _axis.set(-y, x))){
+				return false;
+			}
+		}
+
+		return true;
 
 	}
 
