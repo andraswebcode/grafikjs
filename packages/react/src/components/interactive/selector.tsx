@@ -4,32 +4,25 @@ import {
 	useCallback
 } from 'react';
 import {
-	useCanvasContext
+	useCanvas
 } from './../../hooks'
 
 const Selector = () => {
 
-	const canvas: any = useCanvasContext();
-	const selector = canvas.getSelector();
-	const [style, setStyle] = useState(selector.getStyle());
-	const onShapesSelecting = useCallback(() => {
-		setStyle(selector.getStyle());
-	}, []);
+	const {
+		style,
+		attributes,
+		multiselection
+	} : any = useCanvas(canvas => ({
+		style:canvas.getSelector().getStyle(),
+		attributes:canvas.getSelector().getAttributes(),
+		multiselection:canvas.multiselection
+	}), 'selector:updated');
 
-	useEffect(() => {
-
-		canvas.on('selector:updated', onShapesSelecting);
-
-		return () => {
-			canvas.off('selector:updated', onShapesSelecting);
-		};
-
-	}, []);
-
-	return canvas.multiselection ? (
+	return multiselection ? (
 		<div
 			style={style}
-			{...selector.getAttributes()} />
+			{...attributes} />
 	) : null;
 
 };

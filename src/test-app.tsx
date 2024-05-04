@@ -1,4 +1,7 @@
 import {
+	useState
+} from 'react';
+import {
 	CanvasProvider,
 	Canvas,
 	Defs,
@@ -10,29 +13,36 @@ import {
 	Wrapper,
 	Interactive,
 	Selector,
-	useCanvas,
-	useCanvasContext
+	useCanvas
 } from '@grafikjs/react';
 
 import '@grafikjs/styles';
 
 const TestComponent = () => {
 
-	const {shapes} : any = useCanvas(canvas => ({
-		shapes:canvas.get('children')
-	}));
-	console.log(shapes);
+	const obj : any = useCanvas(canvas => ({
+		canvas,
+		width:canvas.get('width'),
+		set:canvas.set.bind(canvas),
+		left:canvas.getSelectedShapes()[0]?.get('left'),
+		setShape:canvas.getSelectedShapes()[0]?.set.bind(canvas.getSelectedShapes()[0])
+	}), 'set shapes:set');
+	console.log(obj);
 
 	return (
-		<ul>
-			{shapes?.map(shape => (
-				<li key={shape.id}>
-					<button>
-						{shape.tagName}
-					</button>
-				</li>
-			))}
-		</ul>
+		<>
+			<input type='number' value={obj.width} onChange={e => obj.set('width', parseInt(e.target.value))} />
+			<input type='number' value={obj.left} onChange={e => obj.setShape('left', parseInt(e.target.value))} />
+			<ul>
+				{obj.shapes?.map(shape => (
+					<li key={shape.id}>
+						<button>
+							{shape.tagName}
+						</button>
+					</li>
+				))}
+			</ul>
+		</>
 	);
 
 };

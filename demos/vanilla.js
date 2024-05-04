@@ -567,7 +567,7 @@ var Canvas = /** @class */ (function (_super) {
         _this._selection = false;
         _this._zoom = 1;
         _this._pan = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point();
-        _this.set(params);
+        _this.set(params, true);
         return _this;
     }
     Object.defineProperty(Canvas.prototype, "zoom", {
@@ -772,9 +772,11 @@ var Canvas = /** @class */ (function (_super) {
             (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(_this._currentNodeId)) === null || _b === void 0 ? void 0 : _b.onPointerEnd(e);
         });
         this._currentNodeId = '';
+        if (this._selection) {
+            this._selector.bBox.reset();
+            this.trigger('selector:updated');
+        }
         this._selection = false;
-        this._selector.bBox.reset();
-        this.trigger('selector:updated');
     };
     Canvas.prototype.onWheel = function (e) {
         this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_4__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)));
@@ -3837,15 +3839,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Observable: () => (/* binding */ Observable)
 /* harmony export */ });
+var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var Observable = /** @class */ (function () {
     function Observable() {
         this._listeners = {};
     }
     Observable.prototype.on = function (eventName, listener) {
+        var _this = this;
         if (typeof eventName === 'object') {
             for (var key in eventName) {
                 this.on(key, eventName[key]);
             }
+        }
+        else if (typeof eventName === 'string' && eventName.indexOf(' ') !== -1) {
+            eventName.split(' ').forEach(function (en) { return _this.on(en, listener); });
         }
         else {
             if (!this._listeners[eventName]) {
@@ -3878,6 +3893,7 @@ var Observable = /** @class */ (function () {
         return this;
     };
     Observable.prototype.trigger = function (eventName) {
+        var _a, _b;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
@@ -3886,12 +3902,12 @@ var Observable = /** @class */ (function () {
         var allListeners = this._listeners.all;
         if (listeners) {
             for (var i = 0; i < listeners.length; i++) {
-                listeners[i].apply(this, args);
+                (_a = listeners[i]).call.apply(_a, __spreadArray(__spreadArray([this], args, false), [eventName], false));
             }
         }
         if (allListeners) {
             for (var i = 0; i < allListeners.length; i++) {
-                allListeners[i].apply(this, args);
+                (_b = allListeners[i]).call.apply(_b, __spreadArray(__spreadArray([this], args, false), [eventName], false));
             }
         }
         return this;
@@ -4606,7 +4622,7 @@ var Shape = /** @class */ (function (_super) {
                 }
             }
         }
-        else {
+        else { // Check props if key is an object.
             var i = void 0, prop = void 0;
             for (i = 0; i < props.length; i++) {
                 prop = props[i];
@@ -4616,6 +4632,7 @@ var Shape = /** @class */ (function (_super) {
                 }
             }
             this.updateOthersWithKeys(Object.keys(key));
+            // If key is an object, the 'value' represents the 'silent'.
             if (!value) {
                 this.trigger('set', key, this);
                 if (this.canvas) {
@@ -4932,17 +4949,64 @@ var uniqueId = function (prefix) {
     }
     return pf + str;
 };
-var isEqual = function (obj1, obj2) {
-    var isEqual = true;
-    if (Object.keys(obj1).length !== Object.keys(obj2).length) {
+// Thanks ChatGPT! :-)
+var isEqual = function (value1, value2, visited) {
+    if (visited === void 0) { visited = new Set(); }
+    // Check if both values are of the same type
+    if (typeof value1 !== typeof value2) {
         return false;
     }
-    Object.keys(obj1).forEach(function (key) {
-        if (obj1[key] !== obj2[key]) {
-            isEqual = false;
+    // If values are primitive types, directly compare them
+    if (typeof value1 !== 'object' || value1 === null || value2 === null) {
+        return value1 === value2;
+    }
+    // If both values are the same object reference, they are equal
+    if (value1 === value2) {
+        return true;
+    }
+    // Check for circular references
+    if (visited.has(value1) || visited.has(value2)) {
+        return false;
+    }
+    visited.add(value1);
+    visited.add(value2);
+    // Check if both values are arrays
+    if (Array.isArray(value1) && Array.isArray(value2)) {
+        if (value1.length !== value2.length) {
+            return false;
         }
-    });
-    return isEqual;
+        // Compare array elements recursively
+        for (var i = 0; i < value1.length; i++) {
+            if (!isEqual(value1[i], value2[i], visited)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    // Check if both values are functions
+    if (typeof value1 === 'function' && typeof value2 === 'function') {
+        // Check if function sources are the same
+        return value1.toString() === value2.toString();
+    }
+    // Check if both values are objects
+    if (typeof value1 === 'object' && typeof value2 === 'object') {
+        var keys1 = Object.keys(value1);
+        var keys2 = Object.keys(value2);
+        // Check if both objects have the same number of keys
+        if (keys1.length !== keys2.length) {
+            return false;
+        }
+        // Compare keys and values recursively
+        for (var _i = 0, keys1_1 = keys1; _i < keys1_1.length; _i++) {
+            var key = keys1_1[_i];
+            if (!isEqual(value1[key], value2[key], visited)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    // If values are of different types and not arrays or objects, they are not equal
+    return false;
 };
 
 

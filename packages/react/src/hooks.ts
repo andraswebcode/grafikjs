@@ -18,7 +18,7 @@ const useCanvasContext = () : any => useContext(CanvasContext);
 
 const useCollectionContext = () : any => useContext(CollectionContext);
 
-const _useCollector = (collector: Function, context: any) => {
+const _useCollector = (collector: Function, context: any, eventName = 'all') => {
 
 	const collectedRef = useRef(null);
 
@@ -27,7 +27,7 @@ const _useCollector = (collector: Function, context: any) => {
 	}
 
 	const [collected, setCollected] = useState(collectedRef.current);
-	const onAll = useCallback(() => {
+	const onEventEmitted = useCallback(() => {
 		const newCollected = collector(context);
 		if (!isEqual(collectedRef.current, newCollected)){
 			setCollected(newCollected);
@@ -37,10 +37,10 @@ const _useCollector = (collector: Function, context: any) => {
 
 	useEffect(() => {
 
-		context.on('all', onAll);
+		context.on(eventName, onEventEmitted);
 
 		return () => {
-			context.off('all', onAll);
+			context.off(eventName, onEventEmitted);
 		};
 
 	}, []);
@@ -49,19 +49,24 @@ const _useCollector = (collector: Function, context: any) => {
 
 };
 
-const useCanvas = (collector: Function) => {
+const useCanvas = (collector: Function, eventName?: string) => {
 	const canvas = useCanvasContext();
-	return _useCollector(collector, canvas);
+	return _useCollector(collector, canvas, eventName);
 };
 
-const useCollection = (collector: Function) => {
+const useCollection = (collector: Function, eventName?: string) => {
 	const collection = useCollectionContext();
-	return _useCollector(collector, collection);
+	return _useCollector(collector, collection, eventName);
+};
+
+const useElement = (element: any, collector: Function, eventName?: string) => {
+	return _useCollector(collector, element, eventName);
 };
 
 export {
 	useCanvas,
 	useCollection,
+	useElement,
 	useCanvasContext,
 	useCollectionContext
 };

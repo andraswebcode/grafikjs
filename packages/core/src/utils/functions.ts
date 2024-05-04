@@ -26,23 +26,77 @@ const uniqueId = (prefix?: string) : string => {
 
 };
 
-const isEqual = (obj1: any, obj2: any) : boolean => {
+// Thanks ChatGPT! :-)
+const isEqual = (value1: any, value2: any, visited = new Set()) : boolean => {
 
-	let isEqual = true;
-
-	if (Object.keys(obj1).length !== Object.keys(obj2).length){
+	// Check if both values are of the same type
+	if (typeof value1 !== typeof value2) {
 		return false;
 	}
 
-	Object.keys(obj1).forEach(key => {
-		if (obj1[key] !== obj2[key]){
-			isEqual = false;
+	// If values are primitive types, directly compare them
+	if (typeof value1 !== 'object' || value1 === null || value2 === null) {
+		return value1 === value2;
+	}
+
+	// If both values are the same object reference, they are equal
+	if (value1 === value2) {
+		return true;
+	}
+
+	// Check for circular references
+	if (visited.has(value1) || visited.has(value2)) {
+		return false;
+	}
+
+	visited.add(value1);
+	visited.add(value2);
+
+	// Check if both values are arrays
+	if (Array.isArray(value1) && Array.isArray(value2)) {
+		if (value1.length !== value2.length) {
+			return false;
 		}
-	});
+		// Compare array elements recursively
+		for (let i = 0; i < value1.length; i++) {
+			if (!isEqual(value1[i], value2[i], visited)) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-	return isEqual;
+	// Check if both values are functions
+	if (typeof value1 === 'function' && typeof value2 === 'function') {
+		// Check if function sources are the same
+		return value1.toString() === value2.toString();
+	}
 
-};
+	// Check if both values are objects
+	if (typeof value1 === 'object' && typeof value2 === 'object') {
+		const keys1 = Object.keys(value1);
+		const keys2 = Object.keys(value2);
+
+		// Check if both objects have the same number of keys
+		if (keys1.length !== keys2.length) {
+			return false;
+		}
+
+		// Compare keys and values recursively
+		for (const key of keys1) {
+			if (!isEqual(value1[key], value2[key], visited)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// If values are of different types and not arrays or objects, they are not equal
+	return false;
+
+}
+
+
 
 export {
 	clamp,

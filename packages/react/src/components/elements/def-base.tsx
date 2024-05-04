@@ -3,30 +3,28 @@ import {
 	useEffect,
 	useCallback
 } from 'react';
+import {
+	useElement
+} from './../../hooks';
 
 const DefBase = ({
 	TagName,
 	def
 }: any) => {
 
-	const [attributes, setAttributes] = useState(def.getAttributes());
-	const onDefSet = useCallback(() => {
-		setAttributes(def.getAttributes());
-	}, []);
-
-	useEffect(() => {
-
-		def.on('set', onDefSet);
-
-		return () => {
-			def.off('set', onDefSet);
-		};
-
-	}, []);
+	const {
+		attributes,
+		isCollection,
+		mapDefs
+	} = useElement(def, def => ({
+		attributes:def.getAttributes(),
+		isCollection:def.isCollection,
+		mapDefs:def.mapChildren.bind(def)
+	}), 'set');
 
 	return (
 		<TagName {...attributes}>
-			{def.isCollection && def.mapChildren(child => (
+			{isCollection && mapDefs(child => (
 				<DefBase
 					key={child.id}
 					TagName={child.get('tagName')}

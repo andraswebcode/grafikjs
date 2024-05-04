@@ -8,6 +8,8 @@ class Observable {
 			for (let key in eventName){
 				this.on(key, eventName[key]);
 			}
+		} else if (typeof eventName === 'string' && eventName.indexOf(' ') !== -1){
+			eventName.split(' ').forEach(en => this.on(en, listener));
 		} else {
 			if (!this._listeners[eventName]){
 				this._listeners[eventName] = [];
@@ -52,13 +54,13 @@ class Observable {
 
 		if (listeners){
 			for (let i = 0; i < listeners.length; i++){
-				listeners[i].apply(this, args);
+				listeners[i].call(this, ...args, eventName);
 			}
 		}
 
 		if (allListeners){
 			for (let i = 0; i < allListeners.length; i++){
-				allListeners[i].apply(this, args);
+				allListeners[i].call(this, ...args, eventName);
 			}
 		}
 

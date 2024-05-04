@@ -27,7 +27,7 @@ const Control = ({
 
 		return () => {
 			control.shape.off('set', onShapeSet);
-			control.shape.canvas.on('set', onShapeSet);
+			control.shape.canvas.off('set', onShapeSet);
 		};
 
 	}, []);

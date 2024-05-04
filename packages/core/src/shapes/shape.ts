@@ -140,7 +140,7 @@ class Shape extends Element {
 					this.canvas.trigger('shapes:set', {[key]:value}, this);
 				}
 			}
-		} else {
+		} else { // Check props if key is an object.
 			let i, prop;
 			for (i = 0; i < props.length; i++){
 				prop = props[i];
@@ -150,6 +150,7 @@ class Shape extends Element {
 				}
 			}
 			this.updateOthersWithKeys(Object.keys(key));
+			// If key is an object, the 'value' represents the 'silent'.
 			if (!value){
 				this.trigger('set', key, this);
 				if (this.canvas){

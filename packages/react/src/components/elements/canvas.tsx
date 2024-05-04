@@ -16,7 +16,7 @@ const SVG = ({
 	props
 }) => {
 
-	const [attributes, setAttributes] = useState({});
+	const [attributes, setAttributes] = useState(canvas.getAttributes());
 	const onCanvasSet = useCallback(() => {
 		setAttributes(canvas.getAttributes());
 		props.onChange?.(canvas);

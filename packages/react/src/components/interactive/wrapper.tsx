@@ -5,7 +5,7 @@ import {
 	useCallback
 } from 'react';
 import {
-	useCanvasContext
+	useCanvas
 } from './../../hooks';
 
 const Wrapper = ({
@@ -13,21 +13,13 @@ const Wrapper = ({
 	children
 }: any) => {
 
-	const canvas: any = useCanvasContext();
-	const [style, setStyle] = useState(canvas.get(['width', 'height']));
-	const onCanvasSet = useCallback(() => {
-		setStyle(canvas.get(['width', 'height']));
-	}, []);
-
-	useEffect(() => {
-
-		canvas.on('set', onCanvasSet);
-
-		return () => {
-			canvas.off('set', onCanvasSet);
-		};
-
-	}, []);
+	const {
+		style,
+		setResponsiveSize
+	} : any = useCanvas(canvas => ({
+		style:canvas.get(['width', 'height']),
+		setResponsiveSize:canvas.setResponsiveSize.bind(canvas)
+	}), 'set');
 	const ref = useRef(null);
 	const onResize = useCallback(() => {
 		if (ref?.current){
@@ -35,7 +27,7 @@ const Wrapper = ({
 				clientWidth,
 				clientHeight
 			} = ref.current.parentElement;
-			canvas.setResponsiveSize(clientWidth, clientHeight);
+			setResponsiveSize(clientWidth, clientHeight);
 		}
 	}, []);
 

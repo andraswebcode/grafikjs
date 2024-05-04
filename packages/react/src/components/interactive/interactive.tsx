@@ -11,7 +11,7 @@ import {
 	Control
 } from './';
 import {
-	useCanvasContext
+	useCanvas
 } from './../../hooks';
 
 const Interactive = ({
@@ -19,34 +19,30 @@ const Interactive = ({
 	children
 }: any) => {
 
-	const canvas: any = useCanvasContext();
-	const [shapes, setShapes] = useState([]);
-	const onShapesSelected = useCallback(() => {
-		setShapes([...canvas.getSelectedShapes()]);
-	}, []);
+	const {
+		shapes,
+		onPointerStart,
+		onPointerMove,
+		onPointerEnd
+	} : any = useCanvas(canvas => ({
+		shapes:canvas.getSelectedShapes(),
+		onPointerStart:canvas.onPointerStart.bind(canvas),
+		onPointerMove:canvas.onPointerMove.bind(canvas),
+		onPointerEnd:canvas.onPointerEnd.bind(canvas),
+	}), 'shapes:selection:updated');
 
 	const onMouseDown = useCallback(e => {
 		e.preventDefault();
-		canvas.onPointerStart(e);
+		onPointerStart(e);
 	}, []);
 	const onMouseMove = useCallback(e => {
-		canvas.onPointerMove(e);
+		onPointerMove(e);
 	}, []);
 	const onMouseUp = useCallback(e => {
-		canvas.onPointerEnd(e);
+		onPointerEnd(e);
 	}, []);
 	const onWheel = useCallback(e => {
 		// canvas.onWheel(e);
-	}, []);
-
-	useEffect(() => {
-
-		canvas.on('shapes:selection:updated', onShapesSelected);
-
-		return () => {
-			canvas.off('shapes:selection:updated', onShapesSelected);
-		};
-
 	}, []);
 
 	return (

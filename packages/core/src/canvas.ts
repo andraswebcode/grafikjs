@@ -73,7 +73,7 @@ class Canvas extends Collection(Element) {
 
 	public constructor(params = {}){
 		super();
-		this.set(params);
+		this.set(params, true);
 	}
 
 	protected getAttrMap() : string[] {
@@ -278,9 +278,11 @@ class Canvas extends Collection(Element) {
 			shape.getControl()?.childById(this._currentNodeId)?.onPointerEnd(e);
 		});
 		this._currentNodeId = '';
+		if (this._selection){
+			this._selector.bBox.reset();
+			this.trigger('selector:updated');
+		}
 		this._selection = false;
-		this._selector.bBox.reset();
-		this.trigger('selector:updated');
 	}
 
 	public onWheel(e){

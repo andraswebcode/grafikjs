@@ -1938,7 +1938,7 @@ var Canvas = /** @class */ (function (_super) {
         _this._selection = false;
         _this._zoom = 1;
         _this._pan = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point();
-        _this.set(params);
+        _this.set(params, true);
         return _this;
     }
     Object.defineProperty(Canvas.prototype, "zoom", {
@@ -2143,9 +2143,11 @@ var Canvas = /** @class */ (function (_super) {
             (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(_this._currentNodeId)) === null || _b === void 0 ? void 0 : _b.onPointerEnd(e);
         });
         this._currentNodeId = '';
+        if (this._selection) {
+            this._selector.bBox.reset();
+            this.trigger('selector:updated');
+        }
         this._selection = false;
-        this._selector.bBox.reset();
-        this.trigger('selector:updated');
     };
     Canvas.prototype.onWheel = function (e) {
         this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_4__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)));
@@ -5208,15 +5210,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Observable: () => (/* binding */ Observable)
 /* harmony export */ });
+var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var Observable = /** @class */ (function () {
     function Observable() {
         this._listeners = {};
     }
     Observable.prototype.on = function (eventName, listener) {
+        var _this = this;
         if (typeof eventName === 'object') {
             for (var key in eventName) {
                 this.on(key, eventName[key]);
             }
+        }
+        else if (typeof eventName === 'string' && eventName.indexOf(' ') !== -1) {
+            eventName.split(' ').forEach(function (en) { return _this.on(en, listener); });
         }
         else {
             if (!this._listeners[eventName]) {
@@ -5249,6 +5264,7 @@ var Observable = /** @class */ (function () {
         return this;
     };
     Observable.prototype.trigger = function (eventName) {
+        var _a, _b;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
@@ -5257,12 +5273,12 @@ var Observable = /** @class */ (function () {
         var allListeners = this._listeners.all;
         if (listeners) {
             for (var i = 0; i < listeners.length; i++) {
-                listeners[i].apply(this, args);
+                (_a = listeners[i]).call.apply(_a, __spreadArray(__spreadArray([this], args, false), [eventName], false));
             }
         }
         if (allListeners) {
             for (var i = 0; i < allListeners.length; i++) {
-                allListeners[i].apply(this, args);
+                (_b = allListeners[i]).call.apply(_b, __spreadArray(__spreadArray([this], args, false), [eventName], false));
             }
         }
         return this;
@@ -5977,7 +5993,7 @@ var Shape = /** @class */ (function (_super) {
                 }
             }
         }
-        else {
+        else { // Check props if key is an object.
             var i = void 0, prop = void 0;
             for (i = 0; i < props.length; i++) {
                 prop = props[i];
@@ -5987,6 +6003,7 @@ var Shape = /** @class */ (function (_super) {
                 }
             }
             this.updateOthersWithKeys(Object.keys(key));
+            // If key is an object, the 'value' represents the 'silent'.
             if (!value) {
                 this.trigger('set', key, this);
                 if (this.canvas) {
@@ -6303,17 +6320,64 @@ var uniqueId = function (prefix) {
     }
     return pf + str;
 };
-var isEqual = function (obj1, obj2) {
-    var isEqual = true;
-    if (Object.keys(obj1).length !== Object.keys(obj2).length) {
+// Thanks ChatGPT! :-)
+var isEqual = function (value1, value2, visited) {
+    if (visited === void 0) { visited = new Set(); }
+    // Check if both values are of the same type
+    if (typeof value1 !== typeof value2) {
         return false;
     }
-    Object.keys(obj1).forEach(function (key) {
-        if (obj1[key] !== obj2[key]) {
-            isEqual = false;
+    // If values are primitive types, directly compare them
+    if (typeof value1 !== 'object' || value1 === null || value2 === null) {
+        return value1 === value2;
+    }
+    // If both values are the same object reference, they are equal
+    if (value1 === value2) {
+        return true;
+    }
+    // Check for circular references
+    if (visited.has(value1) || visited.has(value2)) {
+        return false;
+    }
+    visited.add(value1);
+    visited.add(value2);
+    // Check if both values are arrays
+    if (Array.isArray(value1) && Array.isArray(value2)) {
+        if (value1.length !== value2.length) {
+            return false;
         }
-    });
-    return isEqual;
+        // Compare array elements recursively
+        for (var i = 0; i < value1.length; i++) {
+            if (!isEqual(value1[i], value2[i], visited)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    // Check if both values are functions
+    if (typeof value1 === 'function' && typeof value2 === 'function') {
+        // Check if function sources are the same
+        return value1.toString() === value2.toString();
+    }
+    // Check if both values are objects
+    if (typeof value1 === 'object' && typeof value2 === 'object') {
+        var keys1 = Object.keys(value1);
+        var keys2 = Object.keys(value2);
+        // Check if both objects have the same number of keys
+        if (keys1.length !== keys2.length) {
+            return false;
+        }
+        // Compare keys and values recursively
+        for (var _i = 0, keys1_1 = keys1; _i < keys1_1.length; _i++) {
+            var key = keys1_1[_i];
+            if (!isEqual(value1[key], value2[key], visited)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    // If values are of different types and not arrays or objects, they are not equal
+    return false;
 };
 
 
@@ -6428,7 +6492,7 @@ var __rest = (undefined && undefined.__rest) || function (s, e) {
 
 var SVG = function (_a) {
     var children = _a.children, canvas = _a.canvas, props = _a.props;
-    var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)({}), attributes = _b[0], setAttributes = _b[1];
+    var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(canvas.getAttributes()), attributes = _b[0], setAttributes = _b[1];
     var onCanvasSet = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
         var _a;
         setAttributes(canvas.getAttributes());
@@ -6466,8 +6530,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   DefBase: () => (/* binding */ DefBase)
 /* harmony export */ });
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../hooks */ "./packages/react/src/hooks.ts");
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -6483,17 +6546,12 @@ var __assign = (undefined && undefined.__assign) || function () {
 
 var DefBase = function (_a) {
     var TagName = _a.TagName, def = _a.def;
-    var _b = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(def.getAttributes()), attributes = _b[0], setAttributes = _b[1];
-    var onDefSet = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
-        setAttributes(def.getAttributes());
-    }, []);
-    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
-        def.on('set', onDefSet);
-        return function () {
-            def.off('set', onDefSet);
-        };
-    }, []);
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TagName, __assign({}, attributes, { children: def.isCollection && def.mapChildren(function (child) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(DefBase, { TagName: child.get('tagName'), def: child }, child.id)); }) })));
+    var _b = (0,_hooks__WEBPACK_IMPORTED_MODULE_1__.useElement)(def, function (def) { return ({
+        attributes: def.getAttributes(),
+        isCollection: def.isCollection,
+        mapDefs: def.mapChildren.bind(def)
+    }); }, 'set'), attributes = _b.attributes, isCollection = _b.isCollection, mapDefs = _b.mapDefs;
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TagName, __assign({}, attributes, { children: isCollection && mapDefs(function (child) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(DefBase, { TagName: child.get('tagName'), def: child }, child.id)); }) })));
 };
 
 
@@ -6985,7 +7043,7 @@ var Control = function (_a) {
         control.shape.canvas.on('set', onShapeSet);
         return function () {
             control.shape.off('set', onShapeSet);
-            control.shape.canvas.on('set', onShapeSet);
+            control.shape.canvas.off('set', onShapeSet);
         };
     }, []);
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TagName, __assign({}, attributes, { style: style, children: control.mapChildren(function (node) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(___WEBPACK_IMPORTED_MODULE_2__.ControlNode, { node: node }, node.id)); }) })));
@@ -7038,44 +7096,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ */ "./packages/react/src/components/interactive/index.ts");
 /* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../hooks */ "./packages/react/src/hooks.ts");
-var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 
 
 
 
 var Interactive = function (_a) {
     var _b = _a.className, className = _b === void 0 ? 'grafik-interactive' : _b, children = _a.children;
-    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_3__.useCanvasContext)();
-    var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]), shapes = _c[0], setShapes = _c[1];
-    var onShapesSelected = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
-        setShapes(__spreadArray([], canvas.getSelectedShapes(), true));
-    }, []);
+    var _c = (0,_hooks__WEBPACK_IMPORTED_MODULE_3__.useCanvas)(function (canvas) { return ({
+        shapes: canvas.getSelectedShapes(),
+        onPointerStart: canvas.onPointerStart.bind(canvas),
+        onPointerMove: canvas.onPointerMove.bind(canvas),
+        onPointerEnd: canvas.onPointerEnd.bind(canvas),
+    }); }, 'shapes:selection:updated'), shapes = _c.shapes, onPointerStart = _c.onPointerStart, onPointerMove = _c.onPointerMove, onPointerEnd = _c.onPointerEnd;
     var onMouseDown = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
         e.preventDefault();
-        canvas.onPointerStart(e);
+        onPointerStart(e);
     }, []);
     var onMouseMove = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
-        canvas.onPointerMove(e);
+        onPointerMove(e);
     }, []);
     var onMouseUp = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
-        canvas.onPointerEnd(e);
+        onPointerEnd(e);
     }, []);
     var onWheel = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (e) {
         // canvas.onWheel(e);
-    }, []);
-    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
-        canvas.on('shapes:selection:updated', onShapesSelected);
-        return function () {
-            canvas.off('shapes:selection:updated', onShapesSelected);
-        };
     }, []);
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: className, onMouseDown: onMouseDown, onMouseMove: onMouseMove, onMouseUp: onMouseUp, onMouseLeave: onMouseUp, onWheel: onWheel, children: [shapes.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(___WEBPACK_IMPORTED_MODULE_2__.Control, { control: shape.getControl() }, shape.id)); }), children] }));
 };
@@ -7095,9 +7139,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Selector: () => (/* binding */ Selector)
 /* harmony export */ });
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../hooks */ "./packages/react/src/hooks.ts");
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../hooks */ "./packages/react/src/hooks.ts");
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -7111,21 +7153,13 @@ var __assign = (undefined && undefined.__assign) || function () {
 };
 
 
-
 var Selector = function () {
-    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvasContext)();
-    var selector = canvas.getSelector();
-    var _a = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(selector.getStyle()), style = _a[0], setStyle = _a[1];
-    var onShapesSelecting = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
-        setStyle(selector.getStyle());
-    }, []);
-    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
-        canvas.on('selector:updated', onShapesSelecting);
-        return function () {
-            canvas.off('selector:updated', onShapesSelecting);
-        };
-    }, []);
-    return canvas.multiselection ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", __assign({ style: style }, selector.getAttributes()))) : null;
+    var _a = (0,_hooks__WEBPACK_IMPORTED_MODULE_1__.useCanvas)(function (canvas) { return ({
+        style: canvas.getSelector().getStyle(),
+        attributes: canvas.getSelector().getAttributes(),
+        multiselection: canvas.multiselection
+    }); }, 'selector:updated'), style = _a.style, attributes = _a.attributes, multiselection = _a.multiselection;
+    return multiselection ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", __assign({ style: style }, attributes))) : null;
 };
 
 
@@ -7151,22 +7185,15 @@ __webpack_require__.r(__webpack_exports__);
 
 var Wrapper = function (_a) {
     var _b = _a.className, className = _b === void 0 ? 'grafik-wrapper' : _b, children = _a.children;
-    var canvas = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvasContext)();
-    var _c = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(canvas.get(['width', 'height'])), style = _c[0], setStyle = _c[1];
-    var onCanvasSet = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
-        setStyle(canvas.get(['width', 'height']));
-    }, []);
-    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
-        canvas.on('set', onCanvasSet);
-        return function () {
-            canvas.off('set', onCanvasSet);
-        };
-    }, []);
+    var _c = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvas)(function (canvas) { return ({
+        style: canvas.get(['width', 'height']),
+        setResponsiveSize: canvas.setResponsiveSize.bind(canvas)
+    }); }, 'set'), style = _c.style, setResponsiveSize = _c.setResponsiveSize;
     var ref = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)(null);
     var onResize = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () {
         if (ref === null || ref === void 0 ? void 0 : ref.current) {
             var _a = ref.current.parentElement, clientWidth = _a.clientWidth, clientHeight = _a.clientHeight;
-            canvas.setResponsiveSize(clientWidth, clientHeight);
+            setResponsiveSize(clientWidth, clientHeight);
         }
     }, []);
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
@@ -7264,7 +7291,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   useCanvas: () => (/* binding */ useCanvas),
 /* harmony export */   useCanvasContext: () => (/* binding */ useCanvasContext),
 /* harmony export */   useCollection: () => (/* binding */ useCollection),
-/* harmony export */   useCollectionContext: () => (/* binding */ useCollectionContext)
+/* harmony export */   useCollectionContext: () => (/* binding */ useCollectionContext),
+/* harmony export */   useElement: () => (/* binding */ useElement)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
@@ -7275,13 +7303,14 @@ __webpack_require__.r(__webpack_exports__);
 
 var useCanvasContext = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_contexts__WEBPACK_IMPORTED_MODULE_2__.CanvasContext); };
 var useCollectionContext = function () { return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_contexts__WEBPACK_IMPORTED_MODULE_2__.CollectionContext); };
-var _useCollector = function (collector, context) {
+var _useCollector = function (collector, context, eventName) {
+    if (eventName === void 0) { eventName = 'all'; }
     var collectedRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
     if (!collectedRef.current) {
         collectedRef.current = collector(context);
     }
     var _a = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(collectedRef.current), collected = _a[0], setCollected = _a[1];
-    var onAll = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function () {
+    var onEventEmitted = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function () {
         var newCollected = collector(context);
         if (!(0,_grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.isEqual)(collectedRef.current, newCollected)) {
             setCollected(newCollected);
@@ -7289,20 +7318,23 @@ var _useCollector = function (collector, context) {
         }
     }, []);
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-        context.on('all', onAll);
+        context.on(eventName, onEventEmitted);
         return function () {
-            context.off('all', onAll);
+            context.off(eventName, onEventEmitted);
         };
     }, []);
     return collected;
 };
-var useCanvas = function (collector) {
+var useCanvas = function (collector, eventName) {
     var canvas = useCanvasContext();
-    return _useCollector(collector, canvas);
+    return _useCollector(collector, canvas, eventName);
 };
-var useCollection = function (collector) {
+var useCollection = function (collector, eventName) {
     var collection = useCollectionContext();
-    return _useCollector(collector, collection);
+    return _useCollector(collector, collection, eventName);
+};
+var useElement = function (element, collector, eventName) {
+    return _useCollector(collector, element, eventName);
 };
 
 
@@ -7344,6 +7376,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   useCanvasContext: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useCanvasContext),
 /* harmony export */   useCollection: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useCollection),
 /* harmony export */   useCollectionContext: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useCollectionContext),
+/* harmony export */   useElement: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_3__.useElement),
 /* harmony export */   withCollectionContext: () => (/* reexport safe */ _hocs__WEBPACK_IMPORTED_MODULE_2__.withCollectionContext)
 /* harmony export */ });
 /* harmony import */ var _components__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components */ "./packages/react/src/components/index.ts");
@@ -7426,11 +7459,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var TestComponent = function () {
-    var shapes = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.useCanvas)(function (canvas) { return ({
-        shapes: canvas.get('children')
-    }); }).shapes;
-    console.log(shapes);
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { children: shapes === null || shapes === void 0 ? void 0 : shapes.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { children: shape.tagName }) }, shape.id)); }) }));
+    var _a;
+    var obj = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_1__.useCanvas)(function (canvas) {
+        var _a, _b;
+        return ({
+            canvas: canvas,
+            width: canvas.get('width'),
+            set: canvas.set.bind(canvas),
+            left: (_a = canvas.getSelectedShapes()[0]) === null || _a === void 0 ? void 0 : _a.get('left'),
+            setShape: (_b = canvas.getSelectedShapes()[0]) === null || _b === void 0 ? void 0 : _b.set.bind(canvas.getSelectedShapes()[0])
+        });
+    }, 'set shapes:set');
+    console.log(obj);
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: obj.width, onChange: function (e) { return obj.set('width', parseInt(e.target.value)); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: obj.left, onChange: function (e) { return obj.setShape('left', parseInt(e.target.value)); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { children: (_a = obj.shapes) === null || _a === void 0 ? void 0 : _a.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { children: shape.tagName }) }, shape.id)); }) })] }));
 };
 var json = [{ "id": "g-QyAzNX8TCHXT", "name": "", "tagName": "g", "children": [{ "id": "rect-hMFHNAa0Uf2e", "name": "", "tagName": "rect", "fill": { "id": "linearGradient-JZ7WYmdncNv4", "name": "", "tagName": "linearGradient", "children": [{ "id": "stop-EQ87jx2suVlf", "name": "", "tagName": "stop", "offset": 0, "stopColor": "#FF0", "stopOpacity": 1 }, { "id": "stop-vXBHNTYnYYxy", "name": "", "tagName": "stop", "offset": 1, "stopColor": "#00F", "stopOpacity": 1 }] }, "stroke": "#000", "strokeWidth": 2, "width": 100, "height": 100, "transform": "translate(-50 -50)", "left": -100, "top": 0, "angle": 45, "scaleX": 1, "scaleY": 1, "skewX": 0, "skewY": 0 }, { "id": "rect-V7M80dAWO7CE", "name": "", "tagName": "rect", "fill": { "id": "linearGradient-JZ7WYmdncNv4", "name": "", "tagName": "linearGradient", "children": [{ "id": "stop-EQ87jx2suVlf", "name": "", "tagName": "stop", "offset": 0, "stopColor": "#FF0", "stopOpacity": 1 }, { "id": "stop-vXBHNTYnYYxy", "name": "", "tagName": "stop", "offset": 1, "stopColor": "#00F", "stopOpacity": 1 }] }, "stroke": "#000", "strokeWidth": 2, "width": 100, "height": 100, "transform": "translate(-50 -50)", "left": 100, "top": 0, "angle": 45, "scaleX": 1, "scaleY": 1, "skewX": 0, "skewY": 0 }], "left": 600, "top": 400, "angle": 0, "scaleX": 1, "scaleY": 1, "skewX": 0, "skewY": 0 }];
 var TestApp1 = function () {
