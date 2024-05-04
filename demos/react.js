@@ -1894,6 +1894,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Animation: () => (/* binding */ Animation)
 /* harmony export */ });
 /* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./packages/core/src/observable.ts");
+/* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1910,13 +1911,14 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var Animation = /** @class */ (function (_super) {
     __extends(Animation, _super);
     function Animation() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return Animation;
-}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
 
 
@@ -2038,6 +2040,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Track: () => (/* binding */ Track)
 /* harmony export */ });
 /* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./packages/core/src/observable.ts");
+/* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -2054,13 +2057,14 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var Track = /** @class */ (function (_super) {
     __extends(Track, _super);
     function Track() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return Track;
-}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
 
 
@@ -4370,6 +4374,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./point */ "./packages/core/src/maths/point.ts");
 /* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./curves */ "./packages/core/src/maths/curves/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
+
 
 
 var CURVES = {
@@ -4467,6 +4473,21 @@ var CurvePath = /** @class */ (function () {
     CurvePath.prototype.toString = function () {
         // @ts-ignore
         return this.curves.map(function (curve) { return curve.toString(' '); }).join(' ');
+    };
+    // Parses points attribute of polyline, or polygon.
+    CurvePath.prototype.fromNumbers = function (numbers) {
+        // @ts-ignore
+        var nums = numbers.replace(/\,\s?/g, ' ').split(' ').map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(n); });
+        var curves = [];
+        var i, prevPoint;
+        for (i = 0; i < nums.length; i += 2) {
+            curves.push(new _curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[i], nums[i + 1]), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[(i + 2) % nums.length], nums[(i + 3) % nums.length])));
+        }
+        return this.set(curves);
+    };
+    // Makes points attribute for polyline, or polygon.
+    CurvePath.prototype.toNumbers = function () {
+        return '';
     };
     CurvePath.prototype.toPoints = function (divisions) {
         var pp; // Previous point.
@@ -5984,7 +6005,6 @@ var Path = /** @class */ (function (_super) {
     };
     Path.prototype.updateBBox = function () {
         this.bBox.fromPoints(this.path.toPoints());
-        this.origin.copy(this.bBox.getOrigin());
         return this;
     };
     return Path;
@@ -6080,8 +6100,13 @@ var Polyline = /** @class */ (function (_super) {
     };
     Polyline.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('points')) {
-            this.path.fromString(this.points);
+            this.path.fromNumbers(this.points);
+            this.updateBBox();
         }
+        return this;
+    };
+    Polyline.prototype.updateBBox = function () {
+        this.bBox.fromPoints(this.path.toPoints());
         return this;
     };
     return Polyline;
@@ -6416,6 +6441,7 @@ var Shape = /** @class */ (function (_super) {
                 defs[key] = def.toJSON();
             }
         }
+        delete json.transform;
         return __assign(__assign(__assign({}, json), transform), defs);
     };
     return Shape;
@@ -7803,16 +7829,24 @@ var TestComponent = function () {
             setShape: (_b = canvas.getSelectedShapes()[0]) === null || _b === void 0 ? void 0 : _b.set.bind(canvas.getSelectedShapes()[0])
         });
     }, 'set shapes:set');
-    console.log(obj);
+    // @ts-ignore
+    window.c = obj.canvas;
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: obj.width, onChange: function (e) { return obj.set('width', parseInt(e.target.value)); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: obj.left, onChange: function (e) { return obj.setShape('left', parseInt(e.target.value)); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { children: (_a = obj.shapes) === null || _a === void 0 ? void 0 : _a.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { children: shape.tagName }) }, shape.id)); }) })] }));
 };
 var json = [{ "id": "g-QyAzNX8TCHXT", "name": "", "tagName": "g", "children": [{ "id": "rect-hMFHNAa0Uf2e", "name": "", "tagName": "rect", "fill": { "id": "linearGradient-JZ7WYmdncNv4", "name": "", "tagName": "linearGradient", "children": [{ "id": "stop-EQ87jx2suVlf", "name": "", "tagName": "stop", "offset": 0, "stopColor": "#FF0", "stopOpacity": 1 }, { "id": "stop-vXBHNTYnYYxy", "name": "", "tagName": "stop", "offset": 1, "stopColor": "#00F", "stopOpacity": 1 }] }, "stroke": "#000", "strokeWidth": 2, "width": 100, "height": 100, "transform": "translate(-50 -50)", "left": -100, "top": 0, "angle": 45, "scaleX": 1, "scaleY": 1, "skewX": 0, "skewY": 0 }, { "id": "rect-V7M80dAWO7CE", "name": "", "tagName": "rect", "fill": { "id": "linearGradient-JZ7WYmdncNv4", "name": "", "tagName": "linearGradient", "children": [{ "id": "stop-EQ87jx2suVlf", "name": "", "tagName": "stop", "offset": 0, "stopColor": "#FF0", "stopOpacity": 1 }, { "id": "stop-vXBHNTYnYYxy", "name": "", "tagName": "stop", "offset": 1, "stopColor": "#00F", "stopOpacity": 1 }] }, "stroke": "#000", "strokeWidth": 2, "width": 100, "height": 100, "transform": "translate(-50 -50)", "left": 100, "top": 0, "angle": 45, "scaleX": 1, "scaleY": 1, "skewX": 0, "skewY": 0 }], "left": 600, "top": 400, "angle": 0, "scaleX": 1, "scaleY": 1, "skewX": 0, "skewY": 0 }];
-var colorStops = [{
+var colorStops1 = [{
         offset: 0,
         stopColor: 'red'
     }, {
         offset: 1,
         stopColor: 'blue'
+    }];
+var colorStops2 = [{
+        offset: 0,
+        stopColor: 'red'
+    }, {
+        offset: 1,
+        stopColor: '#88F'
     }];
 var TestApp1 = function () {
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.ShapeTree, { json: json })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
@@ -7821,10 +7855,13 @@ var TestApp3 = function () {
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Group, { left: 600, top: 400, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: -100, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 100, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' })] })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
 };
 var TestApp = function () {
-    var lg = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.LinearGradient({
-        colorStops: colorStops
+    var lg1 = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.LinearGradient({
+        colorStops: colorStops1
     });
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Circle, { left: 550, top: 350, r: 50, angle: 45, stroke: '#000', strokeWidth: 2, fill: lg }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 650, top: 450, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
+    var lg2 = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.LinearGradient({
+        colorStops: colorStops2
+    });
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.CanvasProvider, { width: 1200, height: 800, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Canvas, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Circle, { left: 550, top: 350, r: 50, angle: 45, stroke: '#000', strokeWidth: 2, fill: lg1 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Rect, { left: 650, top: 450, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Path, { d: 'M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25', fill: lg2 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Polygon, { points: '50 0 100 100 0 100', fill: lg1 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_2__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
 };
 
 

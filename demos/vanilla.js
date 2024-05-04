@@ -523,6 +523,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Animation: () => (/* binding */ Animation)
 /* harmony export */ });
 /* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./packages/core/src/observable.ts");
+/* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -539,13 +540,14 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var Animation = /** @class */ (function (_super) {
     __extends(Animation, _super);
     function Animation() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return Animation;
-}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
 
 
@@ -667,6 +669,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Track: () => (/* binding */ Track)
 /* harmony export */ });
 /* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./packages/core/src/observable.ts");
+/* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -683,13 +686,14 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var Track = /** @class */ (function (_super) {
     __extends(Track, _super);
     function Track() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return Track;
-}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
 
 
@@ -2999,6 +3003,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./point */ "./packages/core/src/maths/point.ts");
 /* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./curves */ "./packages/core/src/maths/curves/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
+
 
 
 var CURVES = {
@@ -3096,6 +3102,21 @@ var CurvePath = /** @class */ (function () {
     CurvePath.prototype.toString = function () {
         // @ts-ignore
         return this.curves.map(function (curve) { return curve.toString(' '); }).join(' ');
+    };
+    // Parses points attribute of polyline, or polygon.
+    CurvePath.prototype.fromNumbers = function (numbers) {
+        // @ts-ignore
+        var nums = numbers.replace(/\,\s?/g, ' ').split(' ').map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(n); });
+        var curves = [];
+        var i, prevPoint;
+        for (i = 0; i < nums.length; i += 2) {
+            curves.push(new _curves__WEBPACK_IMPORTED_MODULE_1__.LineCurve(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[i], nums[i + 1]), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[(i + 2) % nums.length], nums[(i + 3) % nums.length])));
+        }
+        return this.set(curves);
+    };
+    // Makes points attribute for polyline, or polygon.
+    CurvePath.prototype.toNumbers = function () {
+        return '';
     };
     CurvePath.prototype.toPoints = function (divisions) {
         var pp; // Previous point.
@@ -4613,7 +4634,6 @@ var Path = /** @class */ (function (_super) {
     };
     Path.prototype.updateBBox = function () {
         this.bBox.fromPoints(this.path.toPoints());
-        this.origin.copy(this.bBox.getOrigin());
         return this;
     };
     return Path;
@@ -4709,8 +4729,13 @@ var Polyline = /** @class */ (function (_super) {
     };
     Polyline.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('points')) {
-            this.path.fromString(this.points);
+            this.path.fromNumbers(this.points);
+            this.updateBBox();
         }
+        return this;
+    };
+    Polyline.prototype.updateBBox = function () {
+        this.bBox.fromPoints(this.path.toPoints());
         return this;
     };
     return Polyline;
@@ -5045,6 +5070,7 @@ var Shape = /** @class */ (function (_super) {
                 defs[key] = def.toJSON();
             }
         }
+        delete json.transform;
         return __assign(__assign(__assign({}, json), transform), defs);
     };
     return Shape;

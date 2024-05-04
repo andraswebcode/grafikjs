@@ -26,11 +26,17 @@ class Polyline extends Shape {
 	protected updateOthersWithKeys(keys){
 
 		if (keys.includes('points')){
-			this.path.fromString(this.points);
+			this.path.fromNumbers(this.points);
+			this.updateBBox();
 		}
 
 		return this;
 
+	}
+
+	public updateBBox(){
+		this.bBox.fromPoints(this.path.toPoints());
+		return this;
 	}
 
 }

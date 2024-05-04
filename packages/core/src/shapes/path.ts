@@ -44,7 +44,6 @@ class Path extends Shape {
 
 	public updateBBox(){
 		this.bBox.fromPoints(this.path.toPoints());
-		this.origin.copy(this.bBox.getOrigin());
 		return this;
 	}
 

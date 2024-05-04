@@ -8,6 +8,9 @@ import {
 	QuadraticBezierCurve,
 	CubicBezierCurve
 } from './curves';
+import {
+	toFixed
+} from './../utils';
 
 const CURVES = {
 	'M':MoveCurve,
@@ -155,6 +158,32 @@ class CurvePath {
 	public toString() : string {
 		// @ts-ignore
 		return this.curves.map(curve => curve.toString(' ')).join(' ');
+	}
+
+	// Parses points attribute of polyline, or polygon.
+	public fromNumbers(numbers: string) : CurvePath {
+
+		// @ts-ignore
+		const nums = numbers.replace(/\,\s?/g, ' ').split(' ').map(n => toFixed(n));
+		const curves = [];
+		let i, prevPoint;
+
+		for (i = 0; i < nums.length; i += 2){
+			curves.push(
+				new LineCurve(
+					new Point(nums[i], nums[i + 1]),
+					new Point(nums[(i + 2) % nums.length], nums[(i + 3) % nums.length])
+				)
+			);
+		}
+
+		return this.set(curves);
+
+	}
+
+	// Makes points attribute for polyline, or polygon.
+	public toNumbers() : string {
+		return '';
 	}
 
 	public toPoints(divisions?: number) : Point[] {

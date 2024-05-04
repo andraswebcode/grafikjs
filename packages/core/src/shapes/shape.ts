@@ -241,7 +241,7 @@ class Shape extends Element {
 
 	public toJSON() : object {
 
-		const json = super.toJSON();
+		const json: any = super.toJSON();
 		const transform = this.transformProps.reduce((memo, prop) => {
 			if (typeof this[prop] !== 'undefined'){
 				memo[prop] = this[prop];
@@ -257,6 +257,8 @@ class Shape extends Element {
 				defs[key] = def.toJSON();
 			}
 		}
+
+		delete json.transform;
 
 		return {
 			...json,
