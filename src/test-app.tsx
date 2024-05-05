@@ -199,7 +199,6 @@ const TestApp = () => {
 						fill={lg2}
 						left={450}
 						top={250} />
-					{/*}
 					<Path
 						d='M 0 315 L 40 315 A 30 50 0 0 1 160 160 L 160 100 H 400 V 200'
 						stroke='green'
@@ -207,7 +206,6 @@ const TestApp = () => {
 						fill='none'
 						left={450}
 						top={250} />
-					{*/}
 					<Polygon
 						points='120 70 170 170 70 170'
 						fill={lg1}
