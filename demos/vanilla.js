@@ -5968,7 +5968,7 @@ var isEqual = function (value1, value2, visited) {
     // If values are of different types and not arrays or objects, they are not equal
     return false;
 };
-var COMMAND_VALUE_LENGTHS = {
+var CURVE_VALUES_LENGTHS = {
     'M': 2,
     'm': 2,
     'L': 2,
@@ -5979,12 +5979,12 @@ var COMMAND_VALUE_LENGTHS = {
     'v': 1,
     'C': 6,
     'c': 6,
-    'S': 0,
-    's': 0,
+    'S': 4,
+    's': 4,
     'Q': 4,
     'q': 4,
-    'T': 0,
-    't': 0,
+    'T': 2,
+    't': 2,
     'A': 7,
     'a': 7,
     'Z': 0,
@@ -6003,7 +6003,7 @@ var parsePath = function (string) {
         curve = curve.trim();
         var command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
         var values = (curve.match(/[\-\.\d]+/g) || []).map(function (n) { return toFixed(n); });
-        var commandLength = COMMAND_VALUE_LENGTHS[command];
+        var commandLength = CURVE_VALUES_LENGTHS[command];
         if (values.length === commandLength) {
             parsed.push(__spreadArray([command], values, true));
         }

@@ -96,7 +96,7 @@ const isEqual = (value1: any, value2: any, visited = new Set()) : boolean => {
 
 }
 
-const COMMAND_VALUE_LENGTHS = {
+const CURVE_VALUES_LENGTHS = {
 	'M':2,
 	'm':2,
 	'L':2,
@@ -107,12 +107,12 @@ const COMMAND_VALUE_LENGTHS = {
 	'v':1,
 	'C':6,
 	'c':6,
-	'S':0,
-	's':0,
+	'S':4,
+	's':4,
 	'Q':4,
 	'q':4,
-	'T':0,
-	't':0,
+	'T':2,
+	't':2,
 	'A':7,
 	'a':7,
 	'Z':0,
@@ -139,7 +139,7 @@ const parsePath = (string: string) : string[][]|number[][] => {
 		curve = curve.trim();
 		const command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
 		const values = (curve.match(/[\-\.\d]+/g) || []).map(n => toFixed(n));
-		const commandLength = COMMAND_VALUE_LENGTHS[command];
+		const commandLength = CURVE_VALUES_LENGTHS[command];
 		if (values.length === commandLength){
 			parsed.push([command, ...values]);
 		} else {
