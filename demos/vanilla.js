@@ -5968,13 +5968,52 @@ var isEqual = function (value1, value2, visited) {
     // If values are of different types and not arrays or objects, they are not equal
     return false;
 };
+var COMMAND_VALUE_LENGTHS = {
+    'M': 2,
+    'm': 2,
+    'L': 2,
+    'l': 2,
+    'H': 1,
+    'h': 1,
+    'V': 1,
+    'v': 1,
+    'C': 6,
+    'c': 6,
+    'S': 0,
+    's': 0,
+    'Q': 4,
+    'q': 4,
+    'T': 0,
+    't': 0,
+    'A': 7,
+    'a': 7,
+    'Z': 0,
+    'z': 0
+};
+var _groupArray = function (array, size) {
+    var grouped = [];
+    for (var i = 0; i < array.length; i += size) {
+        grouped.push(array.slice(i, i + size));
+    }
+    return grouped;
+};
 var parsePath = function (string) {
-    return (string.match(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g) || []).map(function (curve, i, array) {
+    var parsed = [];
+    (string.match(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g) || []).forEach(function (curve, i, array) {
         curve = curve.trim();
         var command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
         var values = (curve.match(/[\-\.\d]+/g) || []).map(function (n) { return toFixed(n); });
-        return __spreadArray([command], values, true);
+        var commandLength = COMMAND_VALUE_LENGTHS[command];
+        if (values.length === commandLength) {
+            parsed.push(__spreadArray([command], values, true));
+        }
+        else {
+            _groupArray(values, commandLength).forEach(function (values) {
+                parsed.push(__spreadArray([command], values, true));
+            });
+        }
     });
+    return parsed;
 };
 
 

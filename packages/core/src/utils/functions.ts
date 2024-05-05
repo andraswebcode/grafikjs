@@ -96,13 +96,61 @@ const isEqual = (value1: any, value2: any, visited = new Set()) : boolean => {
 
 }
 
+const COMMAND_VALUE_LENGTHS = {
+	'M':2,
+	'm':2,
+	'L':2,
+	'l':2,
+	'H':1,
+	'h':1,
+	'V':1,
+	'v':1,
+	'C':6,
+	'c':6,
+	'S':0,
+	's':0,
+	'Q':4,
+	'q':4,
+	'T':0,
+	't':0,
+	'A':7,
+	'a':7,
+	'Z':0,
+	'z':0
+};
+
+const _groupArray = (array, size) => {
+
+	const grouped = [];
+
+	for (let i = 0; i < array.length; i += size){
+		grouped.push(array.slice(i, i + size));
+	}
+
+	return grouped;
+
+};
+
 const parsePath = (string: string) : string[][]|number[][] => {
-	return (string.match(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g) || []).map((curve, i, array) => {
+
+	const parsed = [];
+
+	(string.match(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g) || []).forEach((curve, i, array) => {
 		curve = curve.trim();
 		const command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
 		const values = (curve.match(/[\-\.\d]+/g) || []).map(n => toFixed(n));
-		return [command, ...values];
+		const commandLength = COMMAND_VALUE_LENGTHS[command];
+		if (values.length === commandLength){
+			parsed.push([command, ...values]);
+		} else {
+			_groupArray(values, commandLength).forEach(values => {
+				parsed.push([command, ...values]);
+			});
+		}
 	});
+
+	return parsed;
+
 };
 
 export {
