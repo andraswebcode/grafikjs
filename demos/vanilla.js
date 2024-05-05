@@ -3253,7 +3253,7 @@ var CurvePath = /** @class */ (function () {
     };
     CurvePath.prototype.fromString = function (string) {
         var curves = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.parsePath)(string).map(function (curve, i, array) {
-            var command = curve[0];
+            var command = (curve[0] || '').toUpperCase();
             var Curve = CURVES[command];
             return new Curve().fromArray(curve, i, array);
         });
@@ -3413,6 +3413,12 @@ var Curve = /** @class */ (function () {
         var prevCurve = path[index - 1] || [];
         var prevLength = prevCurve.length;
         var length = curve.length;
+        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_0__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 2], 
+        // @ts-ignore
+        prevCurve[prevLength - 1]);
         var point, i, p;
         // @ts-ignore
         if (this.p0) {
@@ -3422,12 +3428,15 @@ var Curve = /** @class */ (function () {
             }
             else {
                 // @ts-ignore
-                this.p0.set(prevCurve[prevLength - 2], prevCurve[prevLength - 1]);
+                this.p0.copy(prevCurveEndPoint);
             }
         }
         for (i = 0, p = 1; i < length - 1; i += 2, p++) {
             if (point = this['p' + p]) {
                 point.set(curve[i + 1], curve[i + 2]);
+                if (isRelative) {
+                    point.add(prevCurveEndPoint);
+                }
             }
         }
         return this;

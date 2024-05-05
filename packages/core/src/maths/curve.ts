@@ -51,6 +51,13 @@ class Curve {
 		const prevCurve = path[index - 1] || [];
 		const prevLength = prevCurve.length;
 		const length = curve.length;
+		const isRelative = (curve[0] === curve[0].toLowerCase());
+		const prevCurveEndPoint = new Point(
+			// @ts-ignore
+			prevCurve[prevLength - 2],
+			// @ts-ignore
+			prevCurve[prevLength - 1]
+		);
 		let point, i, p;
 
 		// @ts-ignore
@@ -60,13 +67,16 @@ class Curve {
 				this.p0.set(curve[1], curve[2]);
 			} else {
 				// @ts-ignore
-				this.p0.set(prevCurve[prevLength - 2], prevCurve[prevLength - 1]);
+				this.p0.copy(prevCurveEndPoint);
 			}
 		}
 
 		for (i = 0, p = 1; i < length - 1; i += 2, p++){
 			if (point = this['p' + p]){
 				point.set(curve[i + 1], curve[i + 2]);
+				if (isRelative){
+					point.add(prevCurveEndPoint);
+				}
 			}
 		}
 

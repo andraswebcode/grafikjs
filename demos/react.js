@@ -4624,7 +4624,7 @@ var CurvePath = /** @class */ (function () {
     };
     CurvePath.prototype.fromString = function (string) {
         var curves = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.parsePath)(string).map(function (curve, i, array) {
-            var command = curve[0];
+            var command = (curve[0] || '').toUpperCase();
             var Curve = CURVES[command];
             return new Curve().fromArray(curve, i, array);
         });
@@ -4784,6 +4784,12 @@ var Curve = /** @class */ (function () {
         var prevCurve = path[index - 1] || [];
         var prevLength = prevCurve.length;
         var length = curve.length;
+        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_0__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 2], 
+        // @ts-ignore
+        prevCurve[prevLength - 1]);
         var point, i, p;
         // @ts-ignore
         if (this.p0) {
@@ -4793,12 +4799,15 @@ var Curve = /** @class */ (function () {
             }
             else {
                 // @ts-ignore
-                this.p0.set(prevCurve[prevLength - 2], prevCurve[prevLength - 1]);
+                this.p0.copy(prevCurveEndPoint);
             }
         }
         for (i = 0, p = 1; i < length - 1; i += 2, p++) {
             if (point = this['p' + p]) {
                 point.set(curve[i + 1], curve[i + 2]);
+                if (isRelative) {
+                    point.add(prevCurveEndPoint);
+                }
             }
         }
         return this;
@@ -8498,7 +8507,7 @@ var TestApp = function () {
     var lg2 = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_2__.LinearGradient({
         colorStops: colorStops2
     });
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.CanvasProvider, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Canvas, { width: 1200, height: 800, mode: 'select', children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Circle, { left: 600, top: 400, r: 50, stroke: '#000', strokeWidth: 2, fill: lg1 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Rect, { left: 0, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25', fill: lg2, left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M 0 315 L 40 315 A 30 50 0 0 1 160 160 L 160 100 H 400 V 200', stroke: 'green', strokeWidth: 8, fill: 'none', left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Polygon, { points: '120 70 170 170 70 170', fill: lg1, left: 350, top: 150 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Text, { text: 'Hello GrafikJS! :-)', left: 800, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Image, { href: 'img.jpg', left: 300, top: 600 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.CanvasProvider, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Canvas, { width: 1200, height: 800, mode: 'select', children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Circle, { left: 600, top: 400, r: 50, stroke: '#000', strokeWidth: 2, fill: lg1 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Rect, { left: 0, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25', fill: lg2, left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M 0 315 L 40 315 A 30 50 0 0 1 160 160 L 160 100 H 400 V 200', stroke: 'green', strokeWidth: 8, fill: 'none', left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M 100 100 L 200 100 L 200 200 l 20 20', stroke: 'blue', strokeWidth: 8, fill: 'none', left: 800, top: 500 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Polygon, { points: '120 70 170 170 70 170', fill: lg1, left: 350, top: 150 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Text, { text: 'Hello GrafikJS! :-)', left: 800, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Image, { href: 'img.jpg', left: 300, top: 600 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
 };
 
 

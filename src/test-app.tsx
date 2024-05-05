@@ -206,6 +206,13 @@ const TestApp = () => {
 						fill='none'
 						left={450}
 						top={250} />
+					<Path
+						d='M 100 100 L 200 100 L 200 200 l 20 20'
+						stroke='blue'
+						strokeWidth={8}
+						fill='none'
+						left={800}
+						top={500} />
 					<Polygon
 						points='120 70 170 170 70 170'
 						fill={lg1}

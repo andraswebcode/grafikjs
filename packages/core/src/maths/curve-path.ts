@@ -163,7 +163,7 @@ class CurvePath {
 	public fromString(string: string) : CurvePath {
 
 		const curves = parsePath(string).map((curve, i, array) => {
-			const command = curve[0];
+			const command = (curve[0] || '').toUpperCase();
 			const Curve = CURVES[command];
 			return new Curve().fromArray(curve, i, array);
 		});
