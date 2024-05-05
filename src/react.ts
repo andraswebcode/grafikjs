@@ -5,10 +5,10 @@ import {
 	createRoot
 } from 'react-dom/client';
 import {
-	TestApp
-} from './test-app';
+	Example
+} from './example';
 
 const container = document.getElementById('wrap');
 const root = createRoot(container);
 
-root.render(createElement(TestApp));
+root.render(createElement(Example));

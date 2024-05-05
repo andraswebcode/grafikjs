@@ -176,7 +176,7 @@ const TestApp = () => {
 				<Canvas
 					width={1200}
 					height={800}
-					mode='pan' >
+					mode='select' >
 					<Defs />
 					<Circle
 						left={600}

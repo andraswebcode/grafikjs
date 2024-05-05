@@ -911,6 +911,16 @@ var Canvas = /** @class */ (function (_super) {
         return this._selector;
     };
     Canvas.prototype.setResponsiveSize = function (width, height) {
+        if (!this._originalWidth) {
+            this._originalWidth = this.width;
+        }
+        if (!this._originalHeight) {
+            this._originalHeight = this.height;
+        }
+        this.set({
+            width: Math.min(width, this._originalWidth),
+            height: Math.min(height, this._originalHeight)
+        }).zoomTo();
         return this;
     };
     Canvas.prototype.zoomTo = function (zoom, pan) {
@@ -1036,6 +1046,7 @@ var Canvas = /** @class */ (function (_super) {
     };
     Canvas.prototype.onWheel = function (e) {
         if (this.zoomable) {
+            e.preventDefault();
             var pointer = this.getPointer(e);
             var size = this.getSize();
             this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_4__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)));

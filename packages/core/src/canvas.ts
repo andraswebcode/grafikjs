@@ -67,6 +67,8 @@ class Canvas extends ElementCollection(Element) {
 	private _pan = new Point();
 	private _isDragging = false;
 	private _startVector = new Point();
+	private _originalWidth: number;
+	private _originalHeight: number;
 
 	set zoom(value: number){
 		this._zoom = value;
@@ -209,7 +211,21 @@ class Canvas extends ElementCollection(Element) {
 	}
 
 	public setResponsiveSize(width: number, height: number){
+
+		if (!this._originalWidth){
+			this._originalWidth = this.width;
+		}
+		if (!this._originalHeight){
+			this._originalHeight = this.height;
+		}
+
+		this.set({
+			width:Math.min(width, this._originalWidth),
+			height:Math.min(height, this._originalHeight)
+		}).zoomTo();
+
 		return this;
+
 	}
 
 	public zoomTo(zoom = 1, pan = new Point()){
@@ -369,6 +385,7 @@ class Canvas extends ElementCollection(Element) {
 
 	public onWheel(e){
 		if (this.zoomable){
+			e.preventDefault();
 			const pointer = this.getPointer(e);
 			const size = this.getSize();
 			this.zoomTo(toFixed(this.zoom * 0.999 ** e.deltaY));
