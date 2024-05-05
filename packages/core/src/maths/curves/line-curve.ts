@@ -8,7 +8,7 @@ import {
 
 class LineCurve extends Curve {
 
-	protected readonly command = 'L';
+	protected command = 'L';
 
 	public p0: Point;
 	public p1: Point;

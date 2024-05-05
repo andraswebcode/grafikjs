@@ -5,7 +5,7 @@ import {
 
 class CubicBezierCurve extends Curve {
 
-	protected readonly command = 'C';
+	protected command = 'C';
 
 	public p0: Point;
 	public p1: Point;

@@ -10,11 +10,9 @@ class ImageLoader extends Loader {
 
 		img.src = url;
 
-		img.addEventListener('load', () => {
-			this._listeners.load.forEach((callback: Function) => {
-				callback.call(this, img);
-			});
-		});
+		img.onload = () => {
+			this.trigger('loaded', img);
+		};
 
 		return this;
 

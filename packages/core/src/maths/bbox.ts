@@ -130,6 +130,10 @@ class BBox {
 		return (this.min.isEqual(bBox.min) && this.max.isEqual(bBox.max));
 	}
 
+	public isEmpty() : boolean {
+		return (this.min.isEqual(this.max));
+	}
+
 	public intersect(bBox: BBox) : BBox {
 		this.min.max(bBox.min);
 		this.max.min(bBox.max);

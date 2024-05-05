@@ -1,12 +1,8 @@
-class Loader {
+import {
+	Observable
+} from './../observable';
 
-	protected _listeners: {
-		load:Function[],
-		error:Function[]
-	} = {
-		load:[],
-		error:[]
-	};
+class Loader extends Observable {
 
 	public fromURL(url: string){
 		return this;
@@ -17,23 +13,11 @@ class Loader {
 	}
 
 	public onLoad(callback: Function){
-
-		if (!this._listeners.load.includes(callback)){
-			this._listeners.load.push(callback);
-		}
-
-		return this;
-
+		return this.on('loaded', callback);
 	}
 
 	public onError(callback: Function){
-
-		if (!this._listeners.error.includes(callback)){
-			this._listeners.error.push(callback);
-		}
-
 		return this;
-
 	}
 
 }

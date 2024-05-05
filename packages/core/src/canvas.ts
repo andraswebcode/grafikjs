@@ -289,7 +289,7 @@ class Canvas extends ElementCollection(Element) {
 			const selectedShapes = this.mapChildren(shape => {
 				const selectorPolygon = this._selector.bBox.toPolygon();
 				const shapePolygon = shape.bBox.toPolygon(shape.getWorldMatrix());
-				return (selectorPolygon.intersects(shapePolygon) && shape);
+				return (!this._selector.bBox.isEmpty() && selectorPolygon.intersects(shapePolygon) && shape);
 			}).filter(shape => !!shape);
 			this.selectShapes(selectedShapes);
 			this._selector.bBox.reset();

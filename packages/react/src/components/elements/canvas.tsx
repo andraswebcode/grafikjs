@@ -26,6 +26,11 @@ const SVG = ({
 
 		canvas.on('set', onCanvasSet);
 
+		// Usually, I do not love setTimeout() for any reason like this,
+		// but I still didn't find any solution to re-render the parent component: <Wrapper>
+		// when we set width, and height props for <Canvas> component.
+		setTimeout(() => canvas.set(props), 0);
+
 		return () => {
 			canvas.off('set', onCanvasSet);
 		};

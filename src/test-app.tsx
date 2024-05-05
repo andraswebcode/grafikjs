@@ -54,6 +54,33 @@ const TestComponent = () => {
 
 };
 
+const TestCanvas = ({
+	children
+}) => {
+
+	const [w, setW] = useState(1200);
+	const [h, setH] = useState(800);
+
+	return (
+		<>
+			<Canvas
+				width={w}
+				height={h} >
+				{children}
+			</Canvas>
+			<input style={{
+				position:'relative',
+				zIndex:9
+			}} type='number' value={w} onChange={e => setW(parseInt(e.target.value))} />
+			<input style={{
+				position:'relative',
+				zIndex:9
+			}} type='number' value={h} onChange={e => setH(parseInt(e.target.value))} />
+		</>
+	);
+
+};
+
 const json = [{"id":"g-QyAzNX8TCHXT","name":"","tagName":"g","children":[{"id":"rect-hMFHNAa0Uf2e","name":"","tagName":"rect","fill":{"id":"linearGradient-JZ7WYmdncNv4","name":"","tagName":"linearGradient","children":[{"id":"stop-EQ87jx2suVlf","name":"","tagName":"stop","offset":0,"stopColor":"#FF0","stopOpacity":1},{"id":"stop-vXBHNTYnYYxy","name":"","tagName":"stop","offset":1,"stopColor":"#00F","stopOpacity":1}]},"stroke":"#000","strokeWidth":2,"width":100,"height":100,"transform":"translate(-50 -50)","left":-100,"top":0,"angle":45,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0},{"id":"rect-V7M80dAWO7CE","name":"","tagName":"rect","fill":{"id":"linearGradient-JZ7WYmdncNv4","name":"","tagName":"linearGradient","children":[{"id":"stop-EQ87jx2suVlf","name":"","tagName":"stop","offset":0,"stopColor":"#FF0","stopOpacity":1},{"id":"stop-vXBHNTYnYYxy","name":"","tagName":"stop","offset":1,"stopColor":"#00F","stopOpacity":1}]},"stroke":"#000","strokeWidth":2,"width":100,"height":100,"transform":"translate(-50 -50)","left":100,"top":0,"angle":45,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0}],"left":600,"top":400,"angle":0,"scaleX":1,"scaleY":1,"skewX":0,"skewY":0}];
 const colorStops1 = [{
 	offset:0,
@@ -144,11 +171,9 @@ const TestApp = () => {
 	});
 
 	return (
-		<CanvasProvider
-			width={1200}
-			height={800} >
+		<CanvasProvider>
 			<Wrapper>
-				<Canvas>
+				<TestCanvas>
 					<Defs />
 					<Circle
 						left={550}
@@ -172,6 +197,13 @@ const TestApp = () => {
 						fill={lg2}
 						left={450}
 						top={250} />
+					<Path
+						d='M 0 315 L 40 315 A 30 50 0 0 1 160 160 L 160 100 H 400 V 200'
+						stroke='green'
+						strokeWidth={8}
+						fill='none'
+						left={450}
+						top={250} />
 					<Polygon
 						points='120 70 170 170 70 170'
 						fill={lg1}
@@ -181,7 +213,11 @@ const TestApp = () => {
 						text='Hello GrafikJS! :-)'
 						left={800}
 						top={250} />
-				</Canvas>
+					<Image
+						href='img.jpg'
+						left={300}
+						top={600} />
+				</TestCanvas>
 				<Interactive>
 					<Selector />
 				</Interactive>

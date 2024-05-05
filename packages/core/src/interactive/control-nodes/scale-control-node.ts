@@ -52,8 +52,8 @@ class ScaleControlNode extends ControlNode {
 		} else if (this.axis === 'y'){
 			set.scaleY = toFixed(scale.y);
 		} else {
-			set.scaleX = toFixed(scale.x);
-			set.scaleY = toFixed(scale.y);
+			set.scaleX = toFixed(Math.max(scale.x, scale.y));
+			set.scaleY = toFixed(Math.max(scale.x, scale.y));
 		}
 
 		shape.set(set);

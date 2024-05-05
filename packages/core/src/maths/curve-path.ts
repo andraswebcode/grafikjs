@@ -8,8 +8,13 @@ import {
 	MoveCurve,
 	CloseCurve,
 	LineCurve,
+	VerticalLineCurve,
+	HorizontalLineCurve,
 	QuadraticBezierCurve,
-	CubicBezierCurve
+	CubicBezierCurve,
+	SmoothQuadraticBezierCurve,
+	SmoothCubicBezierCurve,
+	ArcCurve
 } from './curves';
 import {
 	toFixed
@@ -18,8 +23,13 @@ import {
 const CURVES = {
 	'M':MoveCurve,
 	'L':LineCurve,
+	'V':VerticalLineCurve,
+	'H':HorizontalLineCurve,
 	'Q':QuadraticBezierCurve,
 	'C':CubicBezierCurve,
+	'T':SmoothQuadraticBezierCurve,
+	'S':SmoothCubicBezierCurve,
+	'A':ArcCurve,
 	'Z':CloseCurve
 };
 

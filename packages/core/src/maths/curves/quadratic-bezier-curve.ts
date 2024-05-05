@@ -5,7 +5,7 @@ import {
 
 class QuadraticBezierCurve extends Curve {
 
-	protected readonly command = 'Q';
+	protected command = 'Q';
 
 	public p0: Point;
 	public p1: Point;
