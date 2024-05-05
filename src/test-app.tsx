@@ -175,13 +175,13 @@ const TestApp = () => {
 			<Wrapper>
 				<Canvas
 					width={1200}
-					height={800} >
+					height={800}
+					mode='pan' >
 					<Defs />
 					<Circle
 						left={600}
 						top={400}
 						r={50}
-						angle={45}
 						stroke='#000'
 						strokeWidth={2}
 						fill={lg1} />

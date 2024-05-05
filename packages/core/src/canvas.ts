@@ -19,10 +19,32 @@ import {
 	FillStroke
 } from './types';
 
+const POINTEREVENTS = {
+	'start':{
+		'select':'_onPointerStartInSelectMode',
+		'pan':'_onPointerStartInPanMode',
+		'draw':'_onPointerStartInDrawMode'
+	},
+	'move':{
+		'select':'_onPointerMoveInSelectMode',
+		'pan':'_onPointerMoveInPanMode',
+		'draw':'_onPointerMoveInDrawMode'
+	},
+	'end':{
+		'select':'_onPointerEndInSelectMode',
+		'pan':'_onPointerEndInPanMode',
+		'draw':'_onPointerEndInDrawMode'
+	}
+};
+
+type ModeType = 'select'|'pan'|'draw';
+
 class Canvas extends ElementCollection(Element) {
 
 	public readonly isCanvas = true;
 	public multiselection = true;
+	public zoomable = true;
+	public mode: ModeType = 'select';
 
 	protected readonly tagName = 'svg';
 	protected readonly xmlns = 'http://www.w3.org/2000/svg';
@@ -43,6 +65,8 @@ class Canvas extends ElementCollection(Element) {
 
 	private _zoom = 1;
 	private _pan = new Point();
+	private _isDragging = false;
+	private _startVector = new Point();
 
 	set zoom(value: number){
 		this._zoom = value;
@@ -191,7 +215,7 @@ class Canvas extends ElementCollection(Element) {
 	public zoomTo(zoom = 1, pan = new Point()){
 
 		// First we have to set viewport to update shapes world matrix.
-		const size = new Point(this.width, this.height);
+		const size = this.getSize();
 		const zoomSize = size.clone().multiplyScalar(zoom);
 		const translate = new Point().subtractPoints(zoomSize, size).divideScalar(2).multiplyScalar(-1).add(pan);
 		this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
@@ -210,6 +234,10 @@ class Canvas extends ElementCollection(Element) {
 
 	}
 
+	public getSize(){
+		return new Point(this.width, this.height);
+	}
+
 	public getPointer(e) : Point {
 		const {
 			left,
@@ -218,7 +246,7 @@ class Canvas extends ElementCollection(Element) {
 		return new Point(e.clientX - left, e.clientY - top);
 	}
 
-	public onPointerStart(e){
+	private _onPointerStartInSelectMode(e){
 
 		const {
 			dataset
@@ -262,7 +290,7 @@ class Canvas extends ElementCollection(Element) {
 
 	}
 
-	public onPointerMove(e){
+	private _onPointerMoveInSelectMode(e){
 
 		this.eachSelectedShape(shape => {
 			shape.getControl().onPointerMove(e);
@@ -276,7 +304,7 @@ class Canvas extends ElementCollection(Element) {
 
 	}
 
-	public onPointerEnd(e){
+	private _onPointerEndInSelectMode(e){
 
 		this.eachSelectedShape(shape => {
 			shape.getControl().onPointerEnd(e);
@@ -300,8 +328,51 @@ class Canvas extends ElementCollection(Element) {
 
 	}
 
+	private _onPointerStartInPanMode(e){
+		this._isDragging = true;
+		this._startVector.subtractPoints(this.getPointer(e), this._pan);
+	}
+
+	private _onPointerMoveInPanMode(e){
+
+		if (!this._isDragging){
+			return;
+		}
+
+		const pan = this.getPointer(e).subtract(this._startVector);
+
+		this.zoomTo(this._zoom, pan);
+
+	}
+
+	private _onPointerEndInPanMode(e){
+		this._isDragging = false;
+	}
+
+	private _onPointerStartInDrawMode(e){}
+
+	private _onPointerMoveInDrawMode(e){}
+
+	private _onPointerEndInDrawMode(e){}
+
+	public onPointerStart(e){
+		this[POINTEREVENTS.start[this.mode]](e);
+	}
+
+	public onPointerMove(e){
+		this[POINTEREVENTS.move[this.mode]](e);
+	}
+
+	public onPointerEnd(e){
+		this[POINTEREVENTS.end[this.mode]](e);
+	}
+
 	public onWheel(e){
-		this.zoomTo(toFixed(this.zoom * 0.999 ** e.deltaY));
+		if (this.zoomable){
+			const pointer = this.getPointer(e);
+			const size = this.getSize();
+			this.zoomTo(toFixed(this.zoom * 0.999 ** e.deltaY));
+		}
 	}
 
 }

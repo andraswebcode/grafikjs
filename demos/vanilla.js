@@ -746,6 +746,23 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+var POINTEREVENTS = {
+    'start': {
+        'select': '_onPointerStartInSelectMode',
+        'pan': '_onPointerStartInPanMode',
+        'draw': '_onPointerStartInDrawMode'
+    },
+    'move': {
+        'select': '_onPointerMoveInSelectMode',
+        'pan': '_onPointerMoveInPanMode',
+        'draw': '_onPointerMoveInDrawMode'
+    },
+    'end': {
+        'select': '_onPointerEndInSelectMode',
+        'pan': '_onPointerEndInPanMode',
+        'draw': '_onPointerEndInDrawMode'
+    }
+};
 var Canvas = /** @class */ (function (_super) {
     __extends(Canvas, _super);
     function Canvas(params) {
@@ -753,6 +770,8 @@ var Canvas = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.isCanvas = true;
         _this.multiselection = true;
+        _this.zoomable = true;
+        _this.mode = 'select';
         _this.tagName = 'svg';
         _this.xmlns = 'http://www.w3.org/2000/svg';
         _this.preserveAspectRatio = 'xMidYMid slice';
@@ -766,6 +785,8 @@ var Canvas = /** @class */ (function (_super) {
         _this._selection = false;
         _this._zoom = 1;
         _this._pan = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point();
+        _this._isDragging = false;
+        _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point();
         _this.set(params, true);
         _this.trigger('init', _this);
         return _this;
@@ -896,7 +917,7 @@ var Canvas = /** @class */ (function (_super) {
         if (zoom === void 0) { zoom = 1; }
         if (pan === void 0) { pan = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(); }
         // First we have to set viewport to update shapes world matrix.
-        var size = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(this.width, this.height);
+        var size = this.getSize();
         var zoomSize = size.clone().multiplyScalar(zoom);
         var translate = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point().subtractPoints(zoomSize, size).divideScalar(2).multiplyScalar(-1).add(pan);
         this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
@@ -909,11 +930,14 @@ var Canvas = /** @class */ (function (_super) {
         this._pan.copy(pan);
         return this;
     };
+    Canvas.prototype.getSize = function () {
+        return new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(this.width, this.height);
+    };
     Canvas.prototype.getPointer = function (e) {
         var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
         return new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(e.clientX - left, e.clientY - top);
     };
-    Canvas.prototype.onPointerStart = function (e) {
+    Canvas.prototype._onPointerStartInSelectMode = function (e) {
         var dataset = e.target.dataset;
         var shape = dataset.shape;
         var isNode = ('controlNode' in dataset);
@@ -952,7 +976,7 @@ var Canvas = /** @class */ (function (_super) {
             });
         }
     };
-    Canvas.prototype.onPointerMove = function (e) {
+    Canvas.prototype._onPointerMoveInSelectMode = function (e) {
         var _this = this;
         this.eachSelectedShape(function (shape) {
             var _a, _b;
@@ -964,7 +988,7 @@ var Canvas = /** @class */ (function (_super) {
             this.trigger('selector:updated');
         }
     };
-    Canvas.prototype.onPointerEnd = function (e) {
+    Canvas.prototype._onPointerEndInSelectMode = function (e) {
         var _this = this;
         this.eachSelectedShape(function (shape) {
             var _a, _b;
@@ -984,8 +1008,38 @@ var Canvas = /** @class */ (function (_super) {
         }
         this._selection = false;
     };
+    Canvas.prototype._onPointerStartInPanMode = function (e) {
+        this._isDragging = true;
+        this._startVector.subtractPoints(this.getPointer(e), this._pan);
+    };
+    Canvas.prototype._onPointerMoveInPanMode = function (e) {
+        if (!this._isDragging) {
+            return;
+        }
+        var pan = this.getPointer(e).subtract(this._startVector);
+        this.zoomTo(this._zoom, pan);
+    };
+    Canvas.prototype._onPointerEndInPanMode = function (e) {
+        this._isDragging = false;
+    };
+    Canvas.prototype._onPointerStartInDrawMode = function (e) { };
+    Canvas.prototype._onPointerMoveInDrawMode = function (e) { };
+    Canvas.prototype._onPointerEndInDrawMode = function (e) { };
+    Canvas.prototype.onPointerStart = function (e) {
+        this[POINTEREVENTS.start[this.mode]](e);
+    };
+    Canvas.prototype.onPointerMove = function (e) {
+        this[POINTEREVENTS.move[this.mode]](e);
+    };
+    Canvas.prototype.onPointerEnd = function (e) {
+        this[POINTEREVENTS.end[this.mode]](e);
+    };
     Canvas.prototype.onWheel = function (e) {
-        this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_4__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)));
+        if (this.zoomable) {
+            var pointer = this.getPointer(e);
+            var size = this.getSize();
+            this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_4__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)));
+        }
     };
     return Canvas;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.ElementCollection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
