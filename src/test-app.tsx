@@ -173,19 +173,21 @@ const TestApp = () => {
 	return (
 		<CanvasProvider>
 			<Wrapper>
-				<TestCanvas>
+				<Canvas
+					width={1200}
+					height={800} >
 					<Defs />
 					<Circle
-						left={550}
-						top={350}
+						left={600}
+						top={400}
 						r={50}
 						angle={45}
 						stroke='#000'
 						strokeWidth={2}
 						fill={lg1} />
 					<Rect
-						left={650}
-						top={450}
+						left={0}
+						top={0}
 						width={100}
 						height={100}
 						angle={45}
@@ -197,6 +199,7 @@ const TestApp = () => {
 						fill={lg2}
 						left={450}
 						top={250} />
+					{/*}
 					<Path
 						d='M 0 315 L 40 315 A 30 50 0 0 1 160 160 L 160 100 H 400 V 200'
 						stroke='green'
@@ -204,6 +207,7 @@ const TestApp = () => {
 						fill='none'
 						left={450}
 						top={250} />
+					{*/}
 					<Polygon
 						points='120 70 170 170 70 170'
 						fill={lg1}
@@ -217,7 +221,7 @@ const TestApp = () => {
 						href='img.jpg'
 						left={300}
 						top={600} />
-				</TestCanvas>
+				</Canvas>
 				<Interactive>
 					<Selector />
 				</Interactive>

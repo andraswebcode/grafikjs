@@ -96,7 +96,14 @@ const isEqual = (value1: any, value2: any, visited = new Set()) : boolean => {
 
 }
 
-
+const parsePath = (string: string) : string[][]|number[][] => {
+	return (string.match(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g) || []).map((curve, i, array) => {
+		curve = curve.trim();
+		const command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
+		const values = (curve.match(/[\-\.\d]+/g) || []).map(n => toFixed(n));
+		return [command, ...values];
+	});
+};
 
 export {
 	clamp,
@@ -105,5 +112,6 @@ export {
 	rad2Deg,
 	randInt,
 	uniqueId,
-	isEqual
+	isEqual,
+	parsePath
 };

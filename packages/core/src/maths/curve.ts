@@ -7,6 +7,10 @@ import {
 import {
 	toFixed
 } from './../utils';
+import {
+	ParsedPath,
+	ParsedCurve
+} from './../types';
 
 const _point = new Point();
 
@@ -42,28 +46,27 @@ class Curve {
 		return this._bBox;
 	}
 
-	public fromString(string: string, prevString = '') : Curve {
+	public fromArray(curve: ParsedCurve, index: number, path: ParsedPath) : Curve {
 
-		const prevValues = (prevString.match(/[\-\.\d]+/g) || []).map(n => toFixed(n));
-		const values = (string.match(/[\-\.\d]+/g) || []).map(n => toFixed(n));
-		const prevLength = prevValues.length;
-		const length = values.length;
-		let point;
+		const prevCurve = path[index - 1] || [];
+		const prevLength = prevCurve.length;
+		const length = curve.length;
+		let point, i, p;
 
 		// @ts-ignore
 		if (this.p0){
 			if (this.command === 'M'){
 				// @ts-ignore
-				this.p0.set(values[0], values[1]);
+				this.p0.set(curve[1], curve[2]);
 			} else {
 				// @ts-ignore
-				this.p0.set(prevValues[prevLength - 2], prevValues[prevLength - 1]);
+				this.p0.set(prevCurve[prevLength - 2], prevCurve[prevLength - 1]);
 			}
 		}
 
-		for (let i = 0, p = 1; i < length - 1; i += 2, p++){
+		for (i = 0, p = 1; i < length - 1; i += 2, p++){
 			if (point = this['p' + p]){
-				point.set(values[i], values[i + 1]);
+				point.set(curve[i + 1], curve[i + 2]);
 			}
 		}
 

@@ -17,7 +17,8 @@ import {
 	ArcCurve
 } from './curves';
 import {
-	toFixed
+	toFixed,
+	parsePath
 } from './../utils';
 
 const CURVES = {
@@ -161,12 +162,10 @@ class CurvePath {
 
 	public fromString(string: string) : CurvePath {
 
-		const regex = /([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g;
-		const curves = (string.match(regex) || []).map((curve, i, array) => {
-			curve = curve.trim();
-			const command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
+		const curves = parsePath(string).map((curve, i, array) => {
+			const command = curve[0];
 			const Curve = CURVES[command];
-			return new Curve().fromString(curve, array[i - 1]);
+			return new Curve().fromArray(curve, i, array);
 		});
 
 		return this.set(curves);

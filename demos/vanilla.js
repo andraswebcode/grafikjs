@@ -898,12 +898,12 @@ var Canvas = /** @class */ (function (_super) {
         // First we have to set viewport to update shapes world matrix.
         var size = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(this.width, this.height);
         var zoomSize = size.clone().multiplyScalar(zoom);
-        var translate = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point().subtractPoints(zoomSize, size).divideScalar(2).add(pan);
+        var translate = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point().subtractPoints(zoomSize, size).divideScalar(2).multiplyScalar(-1).add(pan);
         this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;
-        this.set('viewBox', [tx / a, ty / d, width / a, height / d]);
+        this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
         // Update cache values too.
         this._zoom = zoom;
         this._pan.copy(pan);
@@ -1561,6 +1561,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.isEqual),
+/* harmony export */   parsePath: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.randInt),
 /* harmony export */   toFixed: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.toFixed),
@@ -3186,12 +3187,10 @@ var CurvePath = /** @class */ (function () {
         return this.add(curve);
     };
     CurvePath.prototype.fromString = function (string) {
-        var regex = /([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g;
-        var curves = (string.match(regex) || []).map(function (curve, i, array) {
-            curve = curve.trim();
-            var command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
+        var curves = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.parsePath)(string).map(function (curve, i, array) {
+            var command = curve[0];
             var Curve = CURVES[command];
-            return new Curve().fromString(curve, array[i - 1]);
+            return new Curve().fromArray(curve, i, array);
         });
         return this.set(curves);
     };
@@ -3317,8 +3316,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./point */ "./packages/core/src/maths/point.ts");
 /* harmony import */ var _bbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bbox */ "./packages/core/src/maths/bbox.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
-
 
 
 var _point = new _point__WEBPACK_IMPORTED_MODULE_0__.Point();
@@ -3347,27 +3344,25 @@ var Curve = /** @class */ (function () {
     Curve.prototype.getBBox = function () {
         return this._bBox;
     };
-    Curve.prototype.fromString = function (string, prevString) {
-        if (prevString === void 0) { prevString = ''; }
-        var prevValues = (prevString.match(/[\-\.\d]+/g) || []).map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(n); });
-        var values = (string.match(/[\-\.\d]+/g) || []).map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(n); });
-        var prevLength = prevValues.length;
-        var length = values.length;
-        var point;
+    Curve.prototype.fromArray = function (curve, index, path) {
+        var prevCurve = path[index - 1] || [];
+        var prevLength = prevCurve.length;
+        var length = curve.length;
+        var point, i, p;
         // @ts-ignore
         if (this.p0) {
             if (this.command === 'M') {
                 // @ts-ignore
-                this.p0.set(values[0], values[1]);
+                this.p0.set(curve[1], curve[2]);
             }
             else {
                 // @ts-ignore
-                this.p0.set(prevValues[prevLength - 2], prevValues[prevLength - 1]);
+                this.p0.set(prevCurve[prevLength - 2], prevCurve[prevLength - 1]);
             }
         }
-        for (var i = 0, p = 1; i < length - 1; i += 2, p++) {
+        for (i = 0, p = 1; i < length - 1; i += 2, p++) {
             if (point = this['p' + p]) {
-                point.set(values[i], values[i + 1]);
+                point.set(curve[i + 1], curve[i + 2]);
             }
         }
         return this;
@@ -3408,7 +3403,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   ArcCurve: () => (/* binding */ ArcCurve)
 /* harmony export */ });
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../ */ "./packages/core/src/maths/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -3424,7 +3418,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-
 
 var ArcCurve = /** @class */ (function (_super) {
     __extends(ArcCurve, _super);
@@ -3450,18 +3443,18 @@ var ArcCurve = /** @class */ (function (_super) {
     ArcCurve.prototype.getPoint = function (t) {
         return new ___WEBPACK_IMPORTED_MODULE_0__.Point();
     };
-    ArcCurve.prototype.fromString = function (string, prevString) {
-        if (prevString === void 0) { prevString = ''; }
-        var prevValues = (prevString.match(/[\-\.\d]+/g) || []).map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)(n); });
-        var values = (string.match(/[\-\.\d]+/g) || []).map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)(n); });
-        var prevLength = prevValues.length;
-        this.p0.set(prevValues[prevLength - 2], prevValues[prevLength - 1]);
-        this.rx = values[0];
-        this.ry = values[1];
-        this.xAxisRotation = values[2];
-        this.largeArcFlag = values[3];
-        this.sweepFlag = values[4];
-        this.p1.set(values[5], values[6]);
+    ArcCurve.prototype.fromArray = function (curve, index, path) {
+        var prevCurve = path[index - 1] || [];
+        var prevLength = prevCurve.length;
+        var length = curve.length;
+        // @ts-ignore
+        this.p0.set(prevCurve[prevLength - 2], prevCurve[prevLength - 1]);
+        this.rx = curve[1];
+        this.ry = curve[2];
+        this.xAxisRotation = curve[3];
+        this.largeArcFlag = curve[4];
+        this.sweepFlag = curve[5];
+        this.p1.set(curve[6], curve[7]);
         return this;
     };
     ArcCurve.prototype.toString = function () {
@@ -3587,7 +3580,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   HorizontalLineCurve: () => (/* binding */ HorizontalLineCurve)
 /* harmony export */ });
 /* harmony import */ var _line_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./line-curve */ "./packages/core/src/maths/curves/line-curve.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -3604,7 +3596,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
-
 var HorizontalLineCurve = /** @class */ (function (_super) {
     __extends(HorizontalLineCurve, _super);
     function HorizontalLineCurve() {
@@ -3612,19 +3603,21 @@ var HorizontalLineCurve = /** @class */ (function (_super) {
         _this.command = 'H';
         return _this;
     }
-    HorizontalLineCurve.prototype.fromString = function (string, prevString) {
-        if (prevString === void 0) { prevString = ''; }
-        var prevValues = (prevString.match(/[\-\.\d]+/g) || []).map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)(n); });
-        // @ts-ignore
-        var value = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)((string.match(/[\-\.\d]+/g) || [0])[0]);
-        var prevLength = prevValues.length;
+    HorizontalLineCurve.prototype.fromArray = function (curve, index, path) {
+        var prevCurve = path[index - 1] || [];
+        var prevLength = prevCurve.length;
+        var length = curve.length;
         // There is something wrong here, because if an other V, or H precedes this curve,
-        // the prevValues x, or y will be missing.
+        // the prevCurve x, or y will be missing.
         // It should be fixed, but in the meantime we put a fallback 0 value.
-        var x = prevValues[prevLength - 2] || 0;
-        var y = prevValues[prevLength - 1] || 0;
+        // @ts-ignore
+        var x = prevCurve[prevLength - 2] || 0;
+        // @ts-ignore
+        var y = prevCurve[prevLength - 1] || 0;
+        // @ts-ignore
         this.p0.set(x, y);
-        this.p1.set(value, y);
+        // @ts-ignore
+        this.p1.set(curve[1], y);
         return this;
     };
     HorizontalLineCurve.prototype.toString = function () {
@@ -3876,8 +3869,7 @@ var SmoothCubicBezierCurve = /** @class */ (function (_super) {
         _this.command = 'S';
         return _this;
     }
-    SmoothCubicBezierCurve.prototype.fromString = function (string, prevString) {
-        if (prevString === void 0) { prevString = ''; }
+    SmoothCubicBezierCurve.prototype.fromArray = function (curve, i, path) {
         return this;
     };
     SmoothCubicBezierCurve.prototype.toString = function () {
@@ -3924,8 +3916,7 @@ var SmoothQuadraticBezierCurve = /** @class */ (function (_super) {
         _this.command = 'T';
         return _this;
     }
-    SmoothQuadraticBezierCurve.prototype.fromString = function (string, prevString) {
-        if (prevString === void 0) { prevString = ''; }
+    SmoothQuadraticBezierCurve.prototype.fromArray = function (curve, i, path) {
         return this;
     };
     SmoothQuadraticBezierCurve.prototype.toString = function () {
@@ -3949,7 +3940,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   VerticalLineCurve: () => (/* binding */ VerticalLineCurve)
 /* harmony export */ });
 /* harmony import */ var _line_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./line-curve */ "./packages/core/src/maths/curves/line-curve.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -3966,7 +3956,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
-
 var VerticalLineCurve = /** @class */ (function (_super) {
     __extends(VerticalLineCurve, _super);
     function VerticalLineCurve() {
@@ -3974,19 +3963,21 @@ var VerticalLineCurve = /** @class */ (function (_super) {
         _this.command = 'V';
         return _this;
     }
-    VerticalLineCurve.prototype.fromString = function (string, prevString) {
-        if (prevString === void 0) { prevString = ''; }
-        var prevValues = (prevString.match(/[\-\.\d]+/g) || []).map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)(n); });
-        // @ts-ignore
-        var value = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)((string.match(/[\-\.\d]+/g) || [0])[0]);
-        var prevLength = prevValues.length;
+    VerticalLineCurve.prototype.fromArray = function (curve, index, path) {
+        var prevCurve = path[index - 1] || [];
+        var prevLength = prevCurve.length;
+        var length = curve.length;
         // There is something wrong here, because if an other V, or H precedes this curve,
-        // the prevValues x, or y will be missing.
+        // the prevCurve x, or y will be missing.
         // It should be fixed, but in the meantime we put a fallback 0 value.
-        var x = prevValues[prevLength - 2] || 0;
-        var y = prevValues[prevLength - 1] || 0;
+        // @ts-ignore
+        var x = prevCurve[prevLength - 2] || 0;
+        // @ts-ignore
+        var y = prevCurve[prevLength - 1] || 0;
+        // @ts-ignore
         this.p0.set(x, y);
-        this.p1.set(x, value);
+        // @ts-ignore
+        this.p1.set(x, curve[1]);
         return this;
     };
     VerticalLineCurve.prototype.toString = function () {
@@ -5760,12 +5751,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* binding */ clamp),
 /* harmony export */   deg2Rad: () => (/* binding */ deg2Rad),
 /* harmony export */   isEqual: () => (/* binding */ isEqual),
+/* harmony export */   parsePath: () => (/* binding */ parsePath),
 /* harmony export */   rad2Deg: () => (/* binding */ rad2Deg),
 /* harmony export */   randInt: () => (/* binding */ randInt),
 /* harmony export */   toFixed: () => (/* binding */ toFixed),
 /* harmony export */   uniqueId: () => (/* binding */ uniqueId)
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./packages/core/src/utils/constants.ts");
+var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 
 var clamp = function (value, min, max) { return Math.min(Math.max(value, min), max); };
 var toFixed = function (value, fractionDigits) {
@@ -5843,6 +5844,14 @@ var isEqual = function (value1, value2, visited) {
     // If values are of different types and not arrays or objects, they are not equal
     return false;
 };
+var parsePath = function (string) {
+    return (string.match(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g) || []).map(function (curve, i, array) {
+        curve = curve.trim();
+        var command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
+        var values = (curve.match(/[\-\.\d]+/g) || []).map(function (n) { return toFixed(n); });
+        return __spreadArray([command], values, true);
+    });
+};
 
 
 
@@ -5860,6 +5869,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.isEqual),
+/* harmony export */   parsePath: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.randInt),
 /* harmony export */   toFixed: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.toFixed),
@@ -5937,6 +5947,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.isEqual),
+/* harmony export */   parsePath: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.randInt),
 /* harmony export */   toFixed: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.toFixed),

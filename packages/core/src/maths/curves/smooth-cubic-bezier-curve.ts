@@ -1,15 +1,17 @@
 import {
 	CubicBezierCurve
 } from './cubic-bezier-curve';
+import {
+	ParsedCurve,
+	ParsedPath
+} from './../../types';
 
 class SmoothCubicBezierCurve extends CubicBezierCurve {
 
 	protected readonly command = 'S';
 
-	public fromString(string: string, prevString = ''){
-
+	public fromArray(curve: ParsedCurve, i: number, path: ParsedPath){
 		return this;
-
 	}
 
 	public toString() : string {

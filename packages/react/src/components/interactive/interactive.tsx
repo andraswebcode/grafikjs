@@ -23,12 +23,14 @@ const Interactive = ({
 		shapes,
 		onPointerStart,
 		onPointerMove,
-		onPointerEnd
+		onPointerEnd,
+		onWheel
 	} : any = useCanvas(canvas => ({
 		shapes:canvas.getSelectedShapes(),
 		onPointerStart:canvas.onPointerStart.bind(canvas),
 		onPointerMove:canvas.onPointerMove.bind(canvas),
 		onPointerEnd:canvas.onPointerEnd.bind(canvas),
+		onWheel:canvas.onWheel.bind(canvas)
 	}), 'shapes:selection:updated');
 
 	const onMouseDown = useCallback(e => {
@@ -41,8 +43,8 @@ const Interactive = ({
 	const onMouseUp = useCallback(e => {
 		onPointerEnd(e);
 	}, []);
-	const onWheel = useCallback(e => {
-		// canvas.onWheel(e);
+	const onMouseWheel = useCallback(e => {
+		onWheel(e);
 	}, []);
 
 	return (
@@ -52,7 +54,7 @@ const Interactive = ({
 			onMouseMove={onMouseMove}
 			onMouseUp={onMouseUp}
 			onMouseLeave={onMouseUp}
-			onWheel={onWheel} >
+			onWheel={onMouseWheel} >
 			{shapes.map((shape: any) => (
 				<Control
 					key={shape.id}

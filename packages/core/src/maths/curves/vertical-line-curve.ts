@@ -4,25 +4,32 @@ import {
 import {
 	toFixed
 } from './../../utils';
+import {
+	ParsedCurve,
+	ParsedPath
+} from './../../types';
 
 class VerticalLineCurve extends LineCurve {
 
 	protected readonly command = 'V';
 
-	public fromString(string: string, prevString = ''){
+	public fromArray(curve: ParsedCurve, index: number, path: ParsedPath){
 
-		const prevValues = (prevString.match(/[\-\.\d]+/g) || []).map(n => toFixed(n));
-		// @ts-ignore
-		const value = toFixed((string.match(/[\-\.\d]+/g) || [0])[0]);
-		const prevLength = prevValues.length;
+		const prevCurve = path[index - 1] || [];
+		const prevLength = prevCurve.length;
+		const length = curve.length;
 		// There is something wrong here, because if an other V, or H precedes this curve,
-		// the prevValues x, or y will be missing.
+		// the prevCurve x, or y will be missing.
 		// It should be fixed, but in the meantime we put a fallback 0 value.
-		const x = prevValues[prevLength - 2] || 0;
-		const y = prevValues[prevLength - 1] || 0;
+		// @ts-ignore
+		const x = prevCurve[prevLength - 2] || 0;
+		// @ts-ignore
+		const y = prevCurve[prevLength - 1] || 0;
 
+		// @ts-ignore
 		this.p0.set(x, y);
-		this.p1.set(x, value);
+		// @ts-ignore
+		this.p1.set(x, curve[1]);
 
 		return this;
 

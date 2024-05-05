@@ -20,6 +20,10 @@ interface ClipPathObject {}
 
 type FillStroke = AnyColor|GradientObject|PatternObject;
 
+type ParsedCurve = [string, number, number?, number?, number?, number?, number?, number?];
+
+type ParsedPath = ParsedCurve[];
+
 interface TransformObject {
 	left:number;
 	top:number;
@@ -54,6 +58,8 @@ export {
 	PatternObject,
 	ClipPathObject,
 	FillStroke,
+	ParsedCurve,
+	ParsedPath,
 	TransformObject,
 	CanvasObject,
 	ShapeObject

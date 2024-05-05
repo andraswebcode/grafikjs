@@ -6,6 +6,10 @@ import {
 	deg2Rad,
 	toFixed
 } from './../../utils';
+import {
+	ParsedCurve,
+	ParsedPath
+} from './../../types';
 
 class ArcCurve extends Curve {
 
@@ -34,19 +38,20 @@ class ArcCurve extends Curve {
 		return new Point();
 	}
 
-	public fromString(string: string, prevString = ''){
+	public fromArray(curve: ParsedCurve, index: number, path: ParsedPath){
 
-		const prevValues = (prevString.match(/[\-\.\d]+/g) || []).map(n => toFixed(n));
-		const values = (string.match(/[\-\.\d]+/g) || []).map(n => toFixed(n));
-		const prevLength = prevValues.length;
+		const prevCurve = path[index - 1] || [];
+		const prevLength = prevCurve.length;
+		const length = curve.length;
 
-		this.p0.set(prevValues[prevLength - 2], prevValues[prevLength - 1]);
-		this.rx = values[0];
-		this.ry = values[1];
-		this.xAxisRotation = values[2];
-		this.largeArcFlag = values[3];
-		this.sweepFlag = values[4];
-		this.p1.set(values[5], values[6]);
+		// @ts-ignore
+		this.p0.set(prevCurve[prevLength - 2], prevCurve[prevLength - 1]);
+		this.rx = curve[1];
+		this.ry = curve[2];
+		this.xAxisRotation = curve[3];
+		this.largeArcFlag = curve[4];
+		this.sweepFlag = curve[5];
+		this.p1.set(curve[6], curve[7]);
 
 		return this;
 

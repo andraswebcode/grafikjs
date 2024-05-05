@@ -193,14 +193,14 @@ class Canvas extends ElementCollection(Element) {
 		// First we have to set viewport to update shapes world matrix.
 		const size = new Point(this.width, this.height);
 		const zoomSize = size.clone().multiplyScalar(zoom);
-		const translate = new Point().subtractPoints(zoomSize, size).divideScalar(2).add(pan);
+		const translate = new Point().subtractPoints(zoomSize, size).divideScalar(2).multiplyScalar(-1).add(pan);
 		this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
 
 		// And we also need to calculate viewBox from viewport to update svg attribute.
 		const {a, d, tx, ty} = this.viewportMatrix;
 		const {width, height} = this;
 
-		this.set('viewBox', [tx / a, ty / d, width / a, height / d]);
+		this.set('viewBox', [- tx / a, - ty / d, width / a, height / d]);
 
 		// Update cache values too.
 		this._zoom = zoom;
