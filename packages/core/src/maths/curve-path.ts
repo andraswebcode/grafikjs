@@ -68,7 +68,9 @@ function _separate(points1: Point[], points2: Point[], axis: Point) : boolean {
 class CurvePath {
 
 	private _curves: object[] = [];
+	private _currentCommand = '';
 	private _currentPoint = new Point();
+	private _currentControlPoint = new Point();
 	private _bBox = new BBox();
 
 	public constructor(curves?: any|any[]){
@@ -118,6 +120,7 @@ class CurvePath {
 		const curve = new MoveCurve(new Point(x, y));
 
 		this._currentPoint.set(x, y);
+		this._currentCommand = 'M';
 
 		return this.add(curve);
 
@@ -128,6 +131,7 @@ class CurvePath {
 		const curve = new LineCurve(this._currentPoint.clone(), new Point(x, y));
 
 		this._currentPoint.set(x, y);
+		this._currentCommand = 'L';
 
 		return this.add(curve);
 
@@ -139,6 +143,7 @@ class CurvePath {
 		const curve = new HorizontalLineCurve(cp, new Point(x, cp.y));
 
 		this._currentPoint.setX(x);
+		this._currentCommand = 'H';
 
 		return this.add(curve);
 
@@ -150,6 +155,7 @@ class CurvePath {
 		const curve = new VerticalLineCurve(cp, new Point(cp.x, y));
 
 		this._currentPoint.setY(y);
+		this._currentCommand = 'V';
 
 		return this.add(curve);
 
@@ -164,6 +170,8 @@ class CurvePath {
 		);
 
 		this._currentPoint.set(x, y);
+		this._currentControlPoint.set(cx, cy);
+		this._currentCommand = 'Q';
 
 		return this.add(curve);
 
@@ -171,7 +179,22 @@ class CurvePath {
 
 	public smoothQuadraticCurveTo(x: number, y: number) : CurvePath {
 
-		return this;
+		if (this._currentCommand !== 'T' && this._currentCommand !== 'Q'){
+			console.warn('The previous method must be an other smoothQuadraticCurveTo(), or a quadraticCurveTo().');
+		}
+
+		const cPoint = this._currentPoint.clone().multiplyScalar(2).subtract(this._currentControlPoint);
+		const curve = new SmoothQuadraticBezierCurve(
+			this._currentPoint.clone(),
+			cPoint,
+			new Point(x, y)
+		);
+
+		this._currentPoint.set(x, y);
+		this._currentControlPoint.copy(cPoint);
+		this._currentCommand = 'T';
+
+		return this.add(curve);
 
 	}
 
@@ -185,12 +208,30 @@ class CurvePath {
 		);
 
 		this._currentPoint.set(x, y);
+		this._currentControlPoint.set(c2x, c2y);
+		this._currentCommand = 'C';
 
 		return this.add(curve);
 
 	}
 
 	public smoothCubicCurveTo(cx: number, cy: number, x: number, y: number) : CurvePath {
+
+		if (this._currentCommand !== 'S' && this._currentCommand !== 'C'){
+			console.warn('The previous method must be an other smoothCubicCurveTo(), or a cubicCurveTo().');
+		}
+
+		const cPoint = this._currentPoint.clone().multiplyScalar(2).subtract(this._currentControlPoint);
+		const curve = new SmoothCubicBezierCurve(
+			this._currentPoint.clone(),
+			cPoint,
+			new Point(cx, cy),
+			new Point(x, y)
+		);
+
+		this._currentPoint.set(x, y);
+		this._currentControlPoint.copy(cPoint);
+		this._currentCommand = 'S';
 
 		return this;
 
@@ -209,6 +250,7 @@ class CurvePath {
 		);
 
 		this._currentPoint.set(x, y);
+		this._currentCommand = 'A';
 
 		return this.add(curve);
 
@@ -217,6 +259,7 @@ class CurvePath {
 	public closePath() : CurvePath {
 
 		const curve = new CloseCurve();
+		this._currentCommand = 'Z';
 
 		return this.add(curve);
 

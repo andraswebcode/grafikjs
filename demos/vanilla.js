@@ -3201,7 +3201,9 @@ function _separate(points1, points2, axis) {
 var CurvePath = /** @class */ (function () {
     function CurvePath(curves) {
         this._curves = [];
+        this._currentCommand = '';
         this._currentPoint = new _point__WEBPACK_IMPORTED_MODULE_0__.Point();
+        this._currentControlPoint = new _point__WEBPACK_IMPORTED_MODULE_0__.Point();
         this._bBox = new _bbox__WEBPACK_IMPORTED_MODULE_1__.BBox();
         if (curves) {
             this.set(curves);
@@ -3236,48 +3238,74 @@ var CurvePath = /** @class */ (function () {
     CurvePath.prototype.moveTo = function (x, y) {
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.MoveCurve(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this._currentPoint.set(x, y);
+        this._currentCommand = 'M';
         return this.add(curve);
     };
     CurvePath.prototype.lineTo = function (x, y) {
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve(this._currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this._currentPoint.set(x, y);
+        this._currentCommand = 'L';
         return this.add(curve);
     };
     CurvePath.prototype.horizontalLineTo = function (x) {
         var cp = this._currentPoint.clone();
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.HorizontalLineCurve(cp, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, cp.y));
         this._currentPoint.setX(x);
+        this._currentCommand = 'H';
         return this.add(curve);
     };
     CurvePath.prototype.verticalLineTo = function (y) {
         var cp = this._currentPoint.clone();
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.VerticalLineCurve(cp, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(cp.x, y));
         this._currentPoint.setY(y);
+        this._currentCommand = 'V';
         return this.add(curve);
     };
     CurvePath.prototype.quadraticCurveTo = function (cx, cy, x, y) {
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.QuadraticBezierCurve(this._currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(cx, cy), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this._currentPoint.set(x, y);
+        this._currentControlPoint.set(cx, cy);
+        this._currentCommand = 'Q';
         return this.add(curve);
     };
     CurvePath.prototype.smoothQuadraticCurveTo = function (x, y) {
-        return this;
+        if (this._currentCommand !== 'T' && this._currentCommand !== 'Q') {
+            console.warn('The previous method must be an other smoothQuadraticCurveTo(), or a quadraticCurveTo().');
+        }
+        var cPoint = this._currentPoint.clone().multiplyScalar(2).subtract(this._currentControlPoint);
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothQuadraticBezierCurve(this._currentPoint.clone(), cPoint, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
+        this._currentPoint.set(x, y);
+        this._currentControlPoint.copy(cPoint);
+        this._currentCommand = 'T';
+        return this.add(curve);
     };
     CurvePath.prototype.cubicCurveTo = function (c1x, c1y, c2x, c2y, x, y) {
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.CubicBezierCurve(this._currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(c1x, c1y), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(c2x, c2y), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this._currentPoint.set(x, y);
+        this._currentControlPoint.set(c2x, c2y);
+        this._currentCommand = 'C';
         return this.add(curve);
     };
     CurvePath.prototype.smoothCubicCurveTo = function (cx, cy, x, y) {
+        if (this._currentCommand !== 'S' && this._currentCommand !== 'C') {
+            console.warn('The previous method must be an other smoothCubicCurveTo(), or a cubicCurveTo().');
+        }
+        var cPoint = this._currentPoint.clone().multiplyScalar(2).subtract(this._currentControlPoint);
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothCubicBezierCurve(this._currentPoint.clone(), cPoint, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(cx, cy), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
+        this._currentPoint.set(x, y);
+        this._currentControlPoint.copy(cPoint);
+        this._currentCommand = 'S';
         return this;
     };
     CurvePath.prototype.arcTo = function (rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y) {
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.ArcCurve(this._currentPoint.clone(), rx, ry, xAxisRotation, largeArcFlag, sweepFlag, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this._currentPoint.set(x, y);
+        this._currentCommand = 'A';
         return this.add(curve);
     };
     CurvePath.prototype.closePath = function () {
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.CloseCurve();
+        this._currentCommand = 'Z';
         return this.add(curve);
     };
     CurvePath.prototype.fromString = function (string) {
@@ -4017,7 +4045,7 @@ var SmoothCubicBezierCurve = /** @class */ (function (_super) {
         var prevCurve = path[index - 1] || [];
         var prevLength = prevCurve.length;
         var isRelative = (curve[0] === curve[0].toLowerCase());
-        var isCorSCurve = ['C', 'c', 'S', 's'].includes(curve[0]);
+        var isCorSCurve = ['C', 'c', 'S', 's'].includes(prevCurve[0]);
         var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
         // @ts-ignore
         prevCurve[prevLength - 2], 
@@ -4095,7 +4123,7 @@ var SmoothQuadraticBezierCurve = /** @class */ (function (_super) {
         var prevCurve = path[index - 1] || [];
         var prevLength = prevCurve.length;
         var isRelative = (curve[0] === curve[0].toLowerCase());
-        var isQorTCurve = ['Q', 'q', 'T', 't'].includes(curve[0]);
+        var isQorTCurve = ['Q', 'q', 'T', 't'].includes(prevCurve[0]);
         var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
         // @ts-ignore
         prevCurve[prevLength - 2], 

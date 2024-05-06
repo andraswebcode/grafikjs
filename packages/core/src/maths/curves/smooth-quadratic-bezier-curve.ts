@@ -18,7 +18,7 @@ class SmoothQuadraticBezierCurve extends QuadraticBezierCurve {
 		const prevCurve = path[index - 1] || [];
 		const prevLength = prevCurve.length;
 		const isRelative = (curve[0] === curve[0].toLowerCase());
-		const isQorTCurve = ['Q', 'q', 'T', 't'].includes(curve[0]);
+		const isQorTCurve = ['Q', 'q', 'T', 't'].includes(prevCurve[0]);
 		const prevCurveEndPoint = new Point(
 			// @ts-ignore
 			prevCurve[prevLength - 2],
