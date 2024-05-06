@@ -66,3 +66,7 @@ import {
 	</Canvas>
 </CanvasProvider>
 ```
+
+## Examples
+
+Check the collection of examples on [CodePen](https://codepen.io/collection/ExJELG).
