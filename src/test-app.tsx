@@ -207,7 +207,7 @@ const TestApp = () => {
 						left={450}
 						top={250} />
 					<Path
-						d='M 100 100 L 200 100 L 200 200 l 20 20'
+						d='M 0 0 C 0 100 100 100 100 0 s 100 -100 100 0'
 						stroke='blue'
 						strokeWidth={8}
 						fill='none'

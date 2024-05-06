@@ -3945,6 +3945,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   SmoothCubicBezierCurve: () => (/* binding */ SmoothCubicBezierCurve)
 /* harmony export */ });
 /* harmony import */ var _cubic_bezier_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cubic-bezier-curve */ "./packages/core/src/maths/curves/cubic-bezier-curve.ts");
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../point */ "./packages/core/src/maths/point.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -3961,6 +3962,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var SmoothCubicBezierCurve = /** @class */ (function (_super) {
     __extends(SmoothCubicBezierCurve, _super);
     function SmoothCubicBezierCurve() {
@@ -3968,11 +3970,40 @@ var SmoothCubicBezierCurve = /** @class */ (function (_super) {
         _this.command = 'S';
         return _this;
     }
-    SmoothCubicBezierCurve.prototype.fromArray = function (curve, i, path) {
+    SmoothCubicBezierCurve.prototype.fromArray = function (curve, index, path) {
+        var prevCurve = path[index - 1] || [];
+        var prevLength = prevCurve.length;
+        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var isCorSCurve = ['C', 'c', 'S', 's'].includes(curve[0]);
+        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 2], 
+        // @ts-ignore
+        prevCurve[prevLength - 1]);
+        var prevCurveControlPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 4], 
+        // @ts-ignore
+        prevCurve[prevLength - 3]);
+        this.p0.copy(prevCurveEndPoint);
+        if (isCorSCurve) {
+            this.p1.copy(prevCurveEndPoint).multiplyScalar(2).subtract(prevCurveControlPoint);
+        }
+        else {
+            console.warn('The previous command must be an other S, or C command.');
+            this.p1.copy(prevCurveEndPoint);
+        }
+        this.p2.set(curve[1], curve[2]);
+        this.p3.set(curve[3], curve[4]);
+        if (isRelative) {
+            for (var i = 0; i < 4; i++) {
+                this['p' + i].add(prevCurveEndPoint);
+            }
+        }
         return this;
     };
     SmoothCubicBezierCurve.prototype.toString = function () {
-        return '';
+        return this.command + ' ' + this.p2.toString() + ' ' + this.p3.toString();
     };
     return SmoothCubicBezierCurve;
 }(_cubic_bezier_curve__WEBPACK_IMPORTED_MODULE_0__.CubicBezierCurve));
@@ -3992,6 +4023,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   SmoothQuadraticBezierCurve: () => (/* binding */ SmoothQuadraticBezierCurve)
 /* harmony export */ });
 /* harmony import */ var _quadratic_bezier_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./quadratic-bezier-curve */ "./packages/core/src/maths/curves/quadratic-bezier-curve.ts");
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../point */ "./packages/core/src/maths/point.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -4008,6 +4040,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var SmoothQuadraticBezierCurve = /** @class */ (function (_super) {
     __extends(SmoothQuadraticBezierCurve, _super);
     function SmoothQuadraticBezierCurve() {
@@ -4015,11 +4048,39 @@ var SmoothQuadraticBezierCurve = /** @class */ (function (_super) {
         _this.command = 'T';
         return _this;
     }
-    SmoothQuadraticBezierCurve.prototype.fromArray = function (curve, i, path) {
+    SmoothQuadraticBezierCurve.prototype.fromArray = function (curve, index, path) {
+        var prevCurve = path[index - 1] || [];
+        var prevLength = prevCurve.length;
+        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var isQorTCurve = ['Q', 'q', 'T', 't'].includes(curve[0]);
+        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 2], 
+        // @ts-ignore
+        prevCurve[prevLength - 1]);
+        var prevCurveControlPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 4], 
+        // @ts-ignore
+        prevCurve[prevLength - 3]);
+        this.p0.copy(prevCurveEndPoint);
+        if (isQorTCurve) {
+            this.p1.copy(prevCurveEndPoint).multiplyScalar(2).subtract(prevCurveControlPoint);
+        }
+        else {
+            console.warn('The previous command must be an other T, or Q command.');
+            this.p1.copy(prevCurveEndPoint);
+        }
+        this.p2.set(curve[1], curve[2]);
+        if (isRelative) {
+            for (var i = 0; i < 4; i++) {
+                this['p' + i].add(prevCurveEndPoint);
+            }
+        }
         return this;
     };
     SmoothQuadraticBezierCurve.prototype.toString = function () {
-        return '';
+        return this.command + ' ' + this.p2.toString();
     };
     return SmoothQuadraticBezierCurve;
 }(_quadratic_bezier_curve__WEBPACK_IMPORTED_MODULE_0__.QuadraticBezierCurve));

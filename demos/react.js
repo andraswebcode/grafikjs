@@ -5316,6 +5316,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   SmoothCubicBezierCurve: () => (/* binding */ SmoothCubicBezierCurve)
 /* harmony export */ });
 /* harmony import */ var _cubic_bezier_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cubic-bezier-curve */ "./packages/core/src/maths/curves/cubic-bezier-curve.ts");
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../point */ "./packages/core/src/maths/point.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -5332,6 +5333,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var SmoothCubicBezierCurve = /** @class */ (function (_super) {
     __extends(SmoothCubicBezierCurve, _super);
     function SmoothCubicBezierCurve() {
@@ -5339,11 +5341,40 @@ var SmoothCubicBezierCurve = /** @class */ (function (_super) {
         _this.command = 'S';
         return _this;
     }
-    SmoothCubicBezierCurve.prototype.fromArray = function (curve, i, path) {
+    SmoothCubicBezierCurve.prototype.fromArray = function (curve, index, path) {
+        var prevCurve = path[index - 1] || [];
+        var prevLength = prevCurve.length;
+        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var isCorSCurve = ['C', 'c', 'S', 's'].includes(curve[0]);
+        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 2], 
+        // @ts-ignore
+        prevCurve[prevLength - 1]);
+        var prevCurveControlPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 4], 
+        // @ts-ignore
+        prevCurve[prevLength - 3]);
+        this.p0.copy(prevCurveEndPoint);
+        if (isCorSCurve) {
+            this.p1.copy(prevCurveEndPoint).multiplyScalar(2).subtract(prevCurveControlPoint);
+        }
+        else {
+            console.warn('The previous command must be an other S, or C command.');
+            this.p1.copy(prevCurveEndPoint);
+        }
+        this.p2.set(curve[1], curve[2]);
+        this.p3.set(curve[3], curve[4]);
+        if (isRelative) {
+            for (var i = 0; i < 4; i++) {
+                this['p' + i].add(prevCurveEndPoint);
+            }
+        }
         return this;
     };
     SmoothCubicBezierCurve.prototype.toString = function () {
-        return '';
+        return this.command + ' ' + this.p2.toString() + ' ' + this.p3.toString();
     };
     return SmoothCubicBezierCurve;
 }(_cubic_bezier_curve__WEBPACK_IMPORTED_MODULE_0__.CubicBezierCurve));
@@ -5363,6 +5394,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   SmoothQuadraticBezierCurve: () => (/* binding */ SmoothQuadraticBezierCurve)
 /* harmony export */ });
 /* harmony import */ var _quadratic_bezier_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./quadratic-bezier-curve */ "./packages/core/src/maths/curves/quadratic-bezier-curve.ts");
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../point */ "./packages/core/src/maths/point.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -5379,6 +5411,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var SmoothQuadraticBezierCurve = /** @class */ (function (_super) {
     __extends(SmoothQuadraticBezierCurve, _super);
     function SmoothQuadraticBezierCurve() {
@@ -5386,11 +5419,39 @@ var SmoothQuadraticBezierCurve = /** @class */ (function (_super) {
         _this.command = 'T';
         return _this;
     }
-    SmoothQuadraticBezierCurve.prototype.fromArray = function (curve, i, path) {
+    SmoothQuadraticBezierCurve.prototype.fromArray = function (curve, index, path) {
+        var prevCurve = path[index - 1] || [];
+        var prevLength = prevCurve.length;
+        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var isQorTCurve = ['Q', 'q', 'T', 't'].includes(curve[0]);
+        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 2], 
+        // @ts-ignore
+        prevCurve[prevLength - 1]);
+        var prevCurveControlPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 4], 
+        // @ts-ignore
+        prevCurve[prevLength - 3]);
+        this.p0.copy(prevCurveEndPoint);
+        if (isQorTCurve) {
+            this.p1.copy(prevCurveEndPoint).multiplyScalar(2).subtract(prevCurveControlPoint);
+        }
+        else {
+            console.warn('The previous command must be an other T, or Q command.');
+            this.p1.copy(prevCurveEndPoint);
+        }
+        this.p2.set(curve[1], curve[2]);
+        if (isRelative) {
+            for (var i = 0; i < 4; i++) {
+                this['p' + i].add(prevCurveEndPoint);
+            }
+        }
         return this;
     };
     SmoothQuadraticBezierCurve.prototype.toString = function () {
-        return '';
+        return this.command + ' ' + this.p2.toString();
     };
     return SmoothQuadraticBezierCurve;
 }(_quadratic_bezier_curve__WEBPACK_IMPORTED_MODULE_0__.QuadraticBezierCurve));
@@ -8546,7 +8607,7 @@ var TestApp = function () {
     var lg2 = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_2__.LinearGradient({
         colorStops: colorStops2
     });
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.CanvasProvider, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Canvas, { width: 1200, height: 800, mode: 'select', children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Circle, { left: 600, top: 400, r: 50, stroke: '#000', strokeWidth: 2, fill: lg1 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Rect, { left: 0, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25', fill: lg2, left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M 0 315 L 40 315 A 30 50 0 0 1 160 160 L 160 100 H 400 V 200', stroke: 'green', strokeWidth: 8, fill: 'none', left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M 100 100 L 200 100 L 200 200 l 20 20', stroke: 'blue', strokeWidth: 8, fill: 'none', left: 800, top: 500 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Polygon, { points: '120 70 170 170 70 170', fill: lg1, left: 350, top: 150 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Text, { text: 'Hello GrafikJS! :-)', left: 800, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Image, { href: 'img.jpg', left: 300, top: 600 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.CanvasProvider, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Canvas, { width: 1200, height: 800, mode: 'select', children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Circle, { left: 600, top: 400, r: 50, stroke: '#000', strokeWidth: 2, fill: lg1 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Rect, { left: 0, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25', fill: lg2, left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M 0 315 L 40 315 A 30 50 0 0 1 160 160 L 160 100 H 400 V 200', stroke: 'green', strokeWidth: 8, fill: 'none', left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M 0 0 C 0 100 100 100 100 0 s 100 -100 100 0', stroke: 'blue', strokeWidth: 8, fill: 'none', left: 800, top: 500 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Polygon, { points: '120 70 170 170 70 170', fill: lg1, left: 350, top: 150 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Text, { text: 'Hello GrafikJS! :-)', left: 800, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Image, { href: 'img.jpg', left: 300, top: 600 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
 };
 
 
