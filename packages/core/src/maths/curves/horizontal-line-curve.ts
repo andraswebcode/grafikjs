@@ -2,6 +2,9 @@ import {
 	LineCurve
 } from './line-curve';
 import {
+	Point
+} from './../point';
+import {
 	toFixed
 } from './../../utils';
 import {
@@ -15,6 +18,15 @@ class HorizontalLineCurve extends LineCurve {
 
 	public fromArray(curve: ParsedCurve, index: number, path: ParsedPath){
 
+		const prevCurve = path[index - 1] || [];
+		const prevLength = prevCurve.length;
+		const isRelative = (curve[0] === curve[0].toLowerCase());
+		const prevCurveEndPoint = new Point(
+			// @ts-ignore
+			prevCurve[prevLength - 2],
+			// @ts-ignore
+			prevCurve[prevLength - 1]
+		);
 		let x = 0;
 		let y = 0;
 		let xSet = false;
@@ -56,6 +68,11 @@ class HorizontalLineCurve extends LineCurve {
 
 		this.p0.set(x, y);
 		this.p1.set(curve[1], y);
+
+		if (isRelative){
+			this.p0.add(prevCurveEndPoint);
+			this.p1.add(prevCurveEndPoint);
+		}
 
 		return this;
 

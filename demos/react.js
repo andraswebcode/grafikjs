@@ -4594,6 +4594,12 @@ var CurvePath = /** @class */ (function () {
         (_a = this._curves).push.apply(_a, curves);
         return this;
     };
+    CurvePath.prototype.remove = function (curves) {
+        curves = Array.isArray(curves) ? curves : [curves];
+        this._curves = this._curves.filter(function (c) { return !curves.includes(c); });
+        ;
+        return this;
+    };
     CurvePath.prototype.set = function (curves) {
         this._curves = [];
         return this.add(curves);
@@ -4608,13 +4614,36 @@ var CurvePath = /** @class */ (function () {
         this._currentPoint.set(x, y);
         return this.add(curve);
     };
+    CurvePath.prototype.horizontalLineTo = function (x) {
+        var cp = this._currentPoint.clone();
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.HorizontalLineCurve(cp, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, cp.y));
+        this._currentPoint.setX(x);
+        return this.add(curve);
+    };
+    CurvePath.prototype.verticalLineTo = function (y) {
+        var cp = this._currentPoint.clone();
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.VerticalLineCurve(cp, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(cp.x, y));
+        this._currentPoint.setY(y);
+        return this.add(curve);
+    };
     CurvePath.prototype.quadraticCurveTo = function (cx, cy, x, y) {
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.QuadraticBezierCurve(this._currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(cx, cy), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this._currentPoint.set(x, y);
         return this.add(curve);
     };
+    CurvePath.prototype.smoothQuadraticCurveTo = function (x, y) {
+        return this;
+    };
     CurvePath.prototype.cubicCurveTo = function (c1x, c1y, c2x, c2y, x, y) {
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.CubicBezierCurve(this._currentPoint.clone(), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(c1x, c1y), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(c2x, c2y), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
+        this._currentPoint.set(x, y);
+        return this.add(curve);
+    };
+    CurvePath.prototype.smoothCubicCurveTo = function (cx, cy, x, y) {
+        return this;
+    };
+    CurvePath.prototype.arcTo = function (rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y) {
+        var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.ArcCurve(this._currentPoint.clone(), rx, ry, xAxisRotation, largeArcFlag, sweepFlag, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this._currentPoint.set(x, y);
         return this.add(curve);
     };
@@ -5025,6 +5054,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   HorizontalLineCurve: () => (/* binding */ HorizontalLineCurve)
 /* harmony export */ });
 /* harmony import */ var _line_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./line-curve */ "./packages/core/src/maths/curves/line-curve.ts");
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../point */ "./packages/core/src/maths/point.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -5041,6 +5071,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var HorizontalLineCurve = /** @class */ (function (_super) {
     __extends(HorizontalLineCurve, _super);
     function HorizontalLineCurve() {
@@ -5049,6 +5080,14 @@ var HorizontalLineCurve = /** @class */ (function (_super) {
         return _this;
     }
     HorizontalLineCurve.prototype.fromArray = function (curve, index, path) {
+        var prevCurve = path[index - 1] || [];
+        var prevLength = prevCurve.length;
+        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 2], 
+        // @ts-ignore
+        prevCurve[prevLength - 1]);
         var x = 0;
         var y = 0;
         var xSet = false;
@@ -5088,6 +5127,10 @@ var HorizontalLineCurve = /** @class */ (function (_super) {
         }
         this.p0.set(x, y);
         this.p1.set(curve[1], y);
+        if (isRelative) {
+            this.p0.add(prevCurveEndPoint);
+            this.p1.add(prevCurveEndPoint);
+        }
         return this;
     };
     HorizontalLineCurve.prototype.toString = function () {
@@ -5471,6 +5514,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   VerticalLineCurve: () => (/* binding */ VerticalLineCurve)
 /* harmony export */ });
 /* harmony import */ var _line_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./line-curve */ "./packages/core/src/maths/curves/line-curve.ts");
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../point */ "./packages/core/src/maths/point.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -5487,6 +5531,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var VerticalLineCurve = /** @class */ (function (_super) {
     __extends(VerticalLineCurve, _super);
     function VerticalLineCurve() {
@@ -5495,6 +5540,14 @@ var VerticalLineCurve = /** @class */ (function (_super) {
         return _this;
     }
     VerticalLineCurve.prototype.fromArray = function (curve, index, path) {
+        var prevCurve = path[index - 1] || [];
+        var prevLength = prevCurve.length;
+        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
+        // @ts-ignore
+        prevCurve[prevLength - 2], 
+        // @ts-ignore
+        prevCurve[prevLength - 1]);
         var x = 0;
         var y = 0;
         var xSet = false;
@@ -5534,6 +5587,10 @@ var VerticalLineCurve = /** @class */ (function (_super) {
         }
         this.p0.set(x, y);
         this.p1.set(x, curve[1]);
+        if (isRelative) {
+            this.p0.add(prevCurveEndPoint);
+            this.p1.add(prevCurveEndPoint);
+        }
         return this;
     };
     VerticalLineCurve.prototype.toString = function () {
@@ -5799,6 +5856,14 @@ var Point = /** @class */ (function () {
     }
     Point.prototype.set = function (x, y) {
         this.x = x;
+        this.y = y;
+        return this;
+    };
+    Point.prototype.setX = function (x) {
+        this.x = x;
+        return this;
+    };
+    Point.prototype.setY = function (y) {
         this.y = y;
         return this;
     };

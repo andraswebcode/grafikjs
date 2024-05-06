@@ -25,6 +25,16 @@ class Point {
 		return this;
 	}
 
+	public setX(x: number){
+		this.x = x;
+		return this;
+	}
+
+	public setY(y: number){
+		this.y = y;
+		return this;
+	}
+
 	public fromObject(object: PointObject) : Point {
 		this.x = object.x;
 		this.y = object.y;

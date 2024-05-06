@@ -85,7 +85,7 @@ class CurvePath {
 		return this._curves[index];
 	}
 
-	public add(curves: any|any[]){
+	public add(curves: any|any[]) : CurvePath {
 
 		curves = Array.isArray(curves) ? curves : [curves];
 
@@ -95,7 +95,17 @@ class CurvePath {
 
 	}
 
-	public set(curves: any|any[]){
+	public remove(curves: any|any[]) : CurvePath {
+
+		curves = Array.isArray(curves) ? curves : [curves];
+
+		this._curves = this._curves.filter(c => !curves.includes(c));;
+
+		return this;
+
+	}
+
+	public set(curves: any|any[]) : CurvePath {
 
 		this._curves = [];
 
@@ -123,6 +133,28 @@ class CurvePath {
 
 	}
 
+	public horizontalLineTo(x: number) : CurvePath {
+
+		const cp = this._currentPoint.clone();
+		const curve = new HorizontalLineCurve(cp, new Point(x, cp.y));
+
+		this._currentPoint.setX(x);
+
+		return this.add(curve);
+
+	}
+
+	public verticalLineTo(y: number) : CurvePath {
+
+		const cp = this._currentPoint.clone();
+		const curve = new VerticalLineCurve(cp, new Point(cp.x, y));
+
+		this._currentPoint.setY(y);
+
+		return this.add(curve);
+
+	}
+
 	public quadraticCurveTo(cx: number, cy: number, x: number, y: number) : CurvePath {
 
 		const curve = new QuadraticBezierCurve(
@@ -137,12 +169,42 @@ class CurvePath {
 
 	}
 
+	public smoothQuadraticCurveTo(x: number, y: number) : CurvePath {
+
+		return this;
+
+	}
+
 	public cubicCurveTo(c1x: number, c1y: number, c2x: number, c2y: number, x: number, y: number) : CurvePath {
 
 		const curve = new CubicBezierCurve(
 			this._currentPoint.clone(),
 			new Point(c1x, c1y),
 			new Point(c2x, c2y),
+			new Point(x, y)
+		);
+
+		this._currentPoint.set(x, y);
+
+		return this.add(curve);
+
+	}
+
+	public smoothCubicCurveTo(cx: number, cy: number, x: number, y: number) : CurvePath {
+
+		return this;
+
+	}
+
+	public arcTo(rx: number, ry: number, xAxisRotation: number, largeArcFlag: number, sweepFlag: number, x: number, y: number) : CurvePath {
+
+		const curve = new ArcCurve(
+			this._currentPoint.clone(),
+			rx,
+			ry,
+			xAxisRotation,
+			largeArcFlag,
+			sweepFlag,
 			new Point(x, y)
 		);
 
