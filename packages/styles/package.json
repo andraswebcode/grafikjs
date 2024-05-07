@@ -14,6 +14,7 @@
     "sass-loader":"*",
     "style-loader":"*",
     "css-loader":"*",
-    "webpack":"*"
+    "webpack":"*",
+    "mini-css-extract-plugin":"*"
   }
 }

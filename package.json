@@ -5,9 +5,13 @@
   "scripts": {
     "start": "webpack",
     "start:core": "npm start --prefix packages/core",
+    "build:core": "npm run build --prefix packages/core",
     "start:vanilla": "npm start --prefix packages/vanilla",
+    "build:vanilla": "npm run build --prefix packages/vanilla",
     "start:react": "npm start --prefix packages/react",
-    "start:styles": "npm start --prefix packages/styles"
+    "build:react": "npm run build --prefix packages/react",
+    "start:styles": "npm start --prefix packages/styles",
+    "build:styles": "npm run build --prefix packages/styles"
   },
   "keywords": [],
   "author": "Andras Tovishati",

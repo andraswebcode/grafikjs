@@ -16,9 +16,9 @@ module.exports = env => {
 		output:{
 			filename:`[name]${minSfx}.js`,
 			path:path.resolve(__dirname, 'dist'),
-			// library:'grafik',
-			// libraryTarget:'umd',
-			// globalObject:'window'
+			library:'grafik',
+			libraryTarget:'umd',
+			globalObject:'window'
 		},
 		devtool:false,
 		module:{
