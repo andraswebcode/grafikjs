@@ -4770,6 +4770,24 @@ function Collection(Base) {
         Collection.prototype.childByName = function (name) {
             return this.children.find(function (el) { return (el.name === name); });
         };
+        Collection.prototype.moveChildTo = function (child, index) {
+            var fromIndex = this.children.indexOf(child);
+            if (fromIndex !== -1) {
+                this.children.splice(fromIndex, 1);
+                this.children.splice(index, 0, child);
+                // @ts-ignore
+                this.trigger('sorted', child, this.children);
+            }
+            return this;
+        };
+        Collection.prototype.moveChildUp = function (child) {
+            var fromIndex = this.children.indexOf(child);
+            return this.moveChildTo(child, fromIndex + 1);
+        };
+        Collection.prototype.moveChildDown = function (child) {
+            var fromIndex = this.children.indexOf(child);
+            return this.moveChildTo(child, fromIndex - 1);
+        };
         return Collection;
     }(Base));
 }

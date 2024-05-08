@@ -6141,6 +6141,24 @@ function Collection(Base) {
         Collection.prototype.childByName = function (name) {
             return this.children.find(function (el) { return (el.name === name); });
         };
+        Collection.prototype.moveChildTo = function (child, index) {
+            var fromIndex = this.children.indexOf(child);
+            if (fromIndex !== -1) {
+                this.children.splice(fromIndex, 1);
+                this.children.splice(index, 0, child);
+                // @ts-ignore
+                this.trigger('sorted', child, this.children);
+            }
+            return this;
+        };
+        Collection.prototype.moveChildUp = function (child) {
+            var fromIndex = this.children.indexOf(child);
+            return this.moveChildTo(child, fromIndex + 1);
+        };
+        Collection.prototype.moveChildDown = function (child) {
+            var fromIndex = this.children.indexOf(child);
+            return this.moveChildTo(child, fromIndex - 1);
+        };
         return Collection;
     }(Base));
 }
@@ -8653,12 +8671,17 @@ var TestComponent = function () {
             width: canvas.get('width'),
             set: canvas.set.bind(canvas),
             left: (_a = canvas.getSelectedShapes()[0]) === null || _a === void 0 ? void 0 : _a.get('left'),
-            setShape: (_b = canvas.getSelectedShapes()[0]) === null || _b === void 0 ? void 0 : _b.set.bind(canvas.getSelectedShapes()[0])
+            setShape: (_b = canvas.getSelectedShapes()[0]) === null || _b === void 0 ? void 0 : _b.set.bind(canvas.getSelectedShapes()[0]),
+            shapes: canvas.getChildren()
         });
-    }, 'set shapes:set');
+    });
     // @ts-ignore
     window.c = obj.canvas;
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: obj.width, onChange: function (e) { return obj.set('width', parseInt(e.target.value)); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: obj.left, onChange: function (e) { return obj.setShape('left', parseInt(e.target.value)); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { children: (_a = obj.shapes) === null || _a === void 0 ? void 0 : _a.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { children: shape.tagName }) }, shape.id)); }) })] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: obj.width, onChange: function (e) { return obj.set('width', parseInt(e.target.value)); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: obj.left, onChange: function (e) { return obj.setShape('left', parseInt(e.target.value)); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { children: (_a = obj.shapes) === null || _a === void 0 ? void 0 : _a.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { onClick: function () {
+                            obj.canvas.releaseShapes().selectShapes(shape);
+                        }, children: shape.tagName }) }, shape.id)); }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { onClick: function () {
+                    obj.canvas.set('mode', obj.canvas.get('mode') === 'select' ? 'pan' : 'select');
+                }, children: obj.canvas.get('mode') === 'select' ? 'Switch to Pan Mode' : 'Switch to Select Mode' })] }));
 };
 var TestCanvas = function (_a) {
     var children = _a.children;

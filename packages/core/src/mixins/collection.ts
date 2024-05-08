@@ -75,6 +75,37 @@ function Collection<TBase extends Constructor>(Base: TBase){
 			return this.children.find(el => (el.name === name));
 		}
 
+		public moveChildTo(child: any, index: number) : Collection {
+
+			const fromIndex = this.children.indexOf(child);
+
+			if (fromIndex !== -1){
+				this.children.splice(fromIndex, 1);
+				this.children.splice(index, 0, child);
+				// @ts-ignore
+				this.trigger('sorted', child, this.children);
+			}
+
+			return this;
+
+		}
+
+		public moveChildUp(child: any) : Collection {
+
+			const fromIndex = this.children.indexOf(child);
+
+			return this.moveChildTo(child, fromIndex + 1);
+
+		}
+
+		public moveChildDown(child: any) : Collection {
+
+			const fromIndex = this.children.indexOf(child);
+
+			return this.moveChildTo(child, fromIndex - 1);
+
+		}
+
 	}
 
 }

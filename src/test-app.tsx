@@ -31,8 +31,9 @@ const TestComponent = () => {
 		width:canvas.get('width'),
 		set:canvas.set.bind(canvas),
 		left:canvas.getSelectedShapes()[0]?.get('left'),
-		setShape:canvas.getSelectedShapes()[0]?.set.bind(canvas.getSelectedShapes()[0])
-	}), 'set shapes:set');
+		setShape:canvas.getSelectedShapes()[0]?.set.bind(canvas.getSelectedShapes()[0]),
+		shapes:canvas.getChildren()
+	}));
 	// @ts-ignore
 	window.c = obj.canvas;
 
@@ -43,12 +44,21 @@ const TestComponent = () => {
 			<ul>
 				{obj.shapes?.map(shape => (
 					<li key={shape.id}>
-						<button>
+						<button
+							onClick={() => {
+								obj.canvas.releaseShapes().selectShapes(shape);
+							}} >
 							{shape.tagName}
 						</button>
 					</li>
 				))}
 			</ul>
+			<button
+				onClick={() => {
+					obj.canvas.set('mode', obj.canvas.get('mode') === 'select' ? 'pan' : 'select');
+				}} >
+				{obj.canvas.get('mode') === 'select' ? 'Switch to Pan Mode' : 'Switch to Select Mode'}
+			</button>
 		</>
 	);
 
