@@ -2,7 +2,9 @@ import {
 	useState
 } from 'react';
 import {
-	LinearGradient
+	LinearGradient,
+	RadialGradient,
+	Pattern
 } from '@grafikjs/core';
 import {
 	CanvasProvider,
@@ -129,7 +131,7 @@ const colorStops2 = [{
 	stopColor:'#F44'
 }];
 
-const TestApp1 = () => {
+const TestApp = () => {
 
 	return (
 		<CanvasProvider
@@ -193,13 +195,19 @@ const TestApp3 = () => {
 
 };
 
-const TestApp = () => {
+const TestApp1 = () => {
 
 	const lg1 = new LinearGradient({
 		colorStops:colorStops1
 	});
 	const lg2 = new LinearGradient({
 		colorStops:colorStops2
+	});
+	const lg3 = new RadialGradient({
+		colorStops:colorStops1
+	});
+	const pt = new Pattern({
+		//
 	});
 
 	return (
@@ -211,11 +219,18 @@ const TestApp = () => {
 					zoom={2}
 					mode='select' >
 					<Defs />
+					<Rect
+						selectable={false}
+						width={1200}
+						height={800}
+						left={600}
+						top={400}
+						fill={pt} />
 					<Circle
 						left={600}
 						top={400}
 						r={50}
-						fill={lg1} />
+						fill={lg3} />
 					<Rect
 						left={0}
 						top={0}
@@ -240,10 +255,11 @@ const TestApp = () => {
 						left={800}
 						top={250} />
 					<Image
-						selectable={false}
 						href='img.jpg'
 						left={300}
-						top={600} />
+						top={600}
+						scaleX={0.4}
+						scaleY={0.4} />
 				</Canvas>
 				<Interactive>
 					<Selector />

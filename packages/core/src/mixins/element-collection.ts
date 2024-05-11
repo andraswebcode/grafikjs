@@ -52,7 +52,7 @@ function ElementCollection<TBase extends Constructor>(Base: TBase){
 			return this;
 
 		}
-
+/*
 		public remove(children: any|any[], silent = false){
 
 			if (!silent){
@@ -63,7 +63,7 @@ function ElementCollection<TBase extends Constructor>(Base: TBase){
 			return this;
 
 		}
-
+*/
 		public findChildrenByPointer(pointer: Point) : any[] {
 
 			return this.mapChildren(child => {

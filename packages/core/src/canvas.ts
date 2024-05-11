@@ -48,7 +48,7 @@ class Canvas extends ElementCollection(Element) {
 
 	protected readonly tagName = 'svg';
 	protected readonly xmlns = 'http://www.w3.org/2000/svg';
-	protected preserveAspectRatio = 'xMidYMid slice';
+	protected preserveAspectRatio = 'xMinYMin slice';
 	protected className = 'grafik-canvas';
 
 	protected width = 0;
@@ -67,8 +67,6 @@ class Canvas extends ElementCollection(Element) {
 	private _pan = new Point();
 	private _isDragging = false;
 	private _startVector = new Point();
-	private _originalWidth: number;
-	private _originalHeight: number;
 
 	set zoom(value: number){
 		this._zoom = value;
@@ -211,18 +209,6 @@ class Canvas extends ElementCollection(Element) {
 	}
 
 	public setResponsiveSize(width: number, height: number){
-
-		if (!this._originalWidth){
-			this._originalWidth = this.width;
-		}
-		if (!this._originalHeight){
-			this._originalHeight = this.height;
-		}
-
-		this.set({
-			width:Math.min(width, this._originalWidth),
-			height:Math.min(height, this._originalHeight)
-		}).zoomTo();
 
 		return this;
 

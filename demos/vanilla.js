@@ -778,7 +778,7 @@ var Canvas = /** @class */ (function (_super) {
         _this.mode = 'select';
         _this.tagName = 'svg';
         _this.xmlns = 'http://www.w3.org/2000/svg';
-        _this.preserveAspectRatio = 'xMidYMid slice';
+        _this.preserveAspectRatio = 'xMinYMin slice';
         _this.className = 'grafik-canvas';
         _this.width = 0;
         _this.height = 0;
@@ -915,16 +915,6 @@ var Canvas = /** @class */ (function (_super) {
         return this._selector;
     };
     Canvas.prototype.setResponsiveSize = function (width, height) {
-        if (!this._originalWidth) {
-            this._originalWidth = this.width;
-        }
-        if (!this._originalHeight) {
-            this._originalHeight = this.height;
-        }
-        this.set({
-            width: Math.min(width, this._originalWidth),
-            height: Math.min(height, this._originalHeight)
-        }).zoomTo();
         return this;
     };
     Canvas.prototype.zoomTo = function (zoom, pan) {
@@ -4755,7 +4745,17 @@ function Collection(Base) {
             return this;
         };
         Collection.prototype.remove = function (children, silent) {
+            var _this = this;
             if (silent === void 0) { silent = false; }
+            children = Array.isArray(children) ? children : [children];
+            var index;
+            // Using splice, instead of filter to mutate, and keep the original array.
+            children.forEach(function (child) {
+                index = _this.children.indexOf(child);
+                if (index !== -1) {
+                    _this.children.splice(index, 1);
+                }
+            });
             if (!silent) {
                 // @ts-ignore
                 this.trigger('removed', children);
@@ -4875,14 +4875,18 @@ function ElementCollection(Base) {
             }
             return this;
         };
-        ElementCollection.prototype.remove = function (children, silent) {
-            if (silent === void 0) { silent = false; }
-            if (!silent) {
-                // @ts-ignore
-                this.trigger('removed', children);
-            }
-            return this;
-        };
+        /*
+                public remove(children: any|any[], silent = false){
+        
+                    if (!silent){
+                        // @ts-ignore
+                        this.trigger('removed', children);
+                    }
+        
+                    return this;
+        
+                }
+        */
         ElementCollection.prototype.findChildrenByPointer = function (pointer) {
             return this.mapChildren(function (child) {
                 var bBox = child.get('bBox');

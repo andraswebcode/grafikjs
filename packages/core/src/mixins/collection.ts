@@ -45,6 +45,17 @@ function Collection<TBase extends Constructor>(Base: TBase){
 
 		public remove(children: any|any[], silent = false) : Collection {
 
+			children = Array.isArray(children) ? children : [children];
+			let index;
+
+			// Using splice, instead of filter to mutate, and keep the original array.
+			children.forEach(child => {
+				index = this.children.indexOf(child);
+				if (index !== -1){
+					this.children.splice(index, 1);
+				}
+			});
+
 			if (!silent){
 				// @ts-ignore
 				this.trigger('removed', children);
