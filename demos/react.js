@@ -3332,7 +3332,8 @@ var OriginControlNode = /** @class */ (function (_super) {
         shape.set({
             left: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.x),
             top: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.y),
-            origin: origin
+            originX: origin.x,
+            originY: origin.y
         });
     };
     OriginControlNode.prototype.onPointerEnd = function (e) {
@@ -7067,6 +7068,7 @@ var Shape = /** @class */ (function (_super) {
         },
         set: function (value) {
             this.origin.x = value;
+            this.bBox.fromSizeAndOrigin(this.bBox.getSize(), this.origin);
         },
         enumerable: false,
         configurable: true
@@ -7077,6 +7079,7 @@ var Shape = /** @class */ (function (_super) {
         },
         set: function (value) {
             this.origin.y = value;
+            this.bBox.fromSizeAndOrigin(this.bBox.getSize(), this.origin);
         },
         enumerable: false,
         configurable: true

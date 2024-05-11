@@ -49,7 +49,8 @@ class OriginControlNode extends ControlNode {
 		shape.set({
 			left:toFixed(move.x),
 			top:toFixed(move.y),
-			origin
+			originX:origin.x,
+			originY:origin.y
 		});
 
 	}

@@ -94,10 +94,12 @@ class Shape extends Element {
 
 	set originX(value: number){
 		this.origin.x = value;
+		this.bBox.fromSizeAndOrigin(this.bBox.getSize(), this.origin);
 	}
 
 	set originY(value: number){
 		this.origin.y = value;
+		this.bBox.fromSizeAndOrigin(this.bBox.getSize(), this.origin);
 	}
 
 	get originX(){
