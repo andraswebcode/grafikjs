@@ -32,7 +32,7 @@ const Interactive = ({
 		onPointerEnd:canvas.onPointerEnd.bind(canvas),
 		onWheel:canvas.onWheel.bind(canvas)
 	}), 'shapes:selection:updated');
-	const ref = useRef();
+	const ref: any = useRef();
 	const onMouseDown = useCallback(e => {
 		e.preventDefault();
 		onPointerStart(e);
@@ -48,11 +48,15 @@ const Interactive = ({
 	}, []);
 
 	useEffect(() => {
-		// @ts-ignore
 		ref.current?.addEventListener('wheel', onMouseWheel);
+		ref.current?.addEventListener('touchstart', onMouseDown);
+		ref.current?.addEventListener('touchmove', onMouseMove);
+		ref.current?.addEventListener('touchend', onMouseUp);
 		return () => {
-			// @ts-ignore
 			ref.current?.removeEventListener('wheel', onMouseWheel);
+			ref.current?.removeEventListener('touchstart', onMouseDown);
+			ref.current?.removeEventListener('touchmove', onMouseMove);
+			ref.current?.removeEventListener('touchend', onMouseUp);
 		};
 	}, []);
 

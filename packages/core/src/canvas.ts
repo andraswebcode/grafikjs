@@ -259,7 +259,11 @@ class Canvas extends ElementCollection(Element) {
 			left,
 			top
 		} = e.currentTarget.getBoundingClientRect();
-		return new Point(e.clientX - left, e.clientY - top);
+		const {
+			clientX,
+			clientY
+		} = ('ontouchstart' in window) ? e.touches[0] : e;
+		return new Point(clientX - left, clientY - top);
 	}
 
 	private _onPointerStartInSelectMode(e){

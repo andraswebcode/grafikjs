@@ -945,7 +945,8 @@ var Canvas = /** @class */ (function (_super) {
     };
     Canvas.prototype.getPointer = function (e) {
         var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
-        return new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(e.clientX - left, e.clientY - top);
+        var _b = ('ontouchstart' in window) ? e.touches[0] : e, clientX = _b.clientX, clientY = _b.clientY;
+        return new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(clientX - left, clientY - top);
     };
     Canvas.prototype._onPointerStartInSelectMode = function (e) {
         var dataset = e.target.dataset;

@@ -2316,7 +2316,8 @@ var Canvas = /** @class */ (function (_super) {
     };
     Canvas.prototype.getPointer = function (e) {
         var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
-        return new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(e.clientX - left, e.clientY - top);
+        var _b = ('ontouchstart' in window) ? e.touches[0] : e, clientX = _b.clientX, clientY = _b.clientY;
+        return new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(clientX - left, clientY - top);
     };
     Canvas.prototype._onPointerStartInSelectMode = function (e) {
         var dataset = e.target.dataset;
@@ -8311,13 +8312,17 @@ var Interactive = function (_a) {
         onWheel(e);
     }, []);
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
-        var _a;
-        // @ts-ignore
+        var _a, _b, _c, _d;
         (_a = ref.current) === null || _a === void 0 ? void 0 : _a.addEventListener('wheel', onMouseWheel);
+        (_b = ref.current) === null || _b === void 0 ? void 0 : _b.addEventListener('touchstart', onMouseDown);
+        (_c = ref.current) === null || _c === void 0 ? void 0 : _c.addEventListener('touchmove', onMouseMove);
+        (_d = ref.current) === null || _d === void 0 ? void 0 : _d.addEventListener('touchend', onMouseUp);
         return function () {
-            var _a;
-            // @ts-ignore
+            var _a, _b, _c, _d;
             (_a = ref.current) === null || _a === void 0 ? void 0 : _a.removeEventListener('wheel', onMouseWheel);
+            (_b = ref.current) === null || _b === void 0 ? void 0 : _b.removeEventListener('touchstart', onMouseDown);
+            (_c = ref.current) === null || _c === void 0 ? void 0 : _c.removeEventListener('touchmove', onMouseMove);
+            (_d = ref.current) === null || _d === void 0 ? void 0 : _d.removeEventListener('touchend', onMouseUp);
         };
     }, []);
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { ref: ref, className: className, onMouseDown: onMouseDown, onMouseMove: onMouseMove, onMouseUp: onMouseUp, onMouseLeave: onMouseUp, children: [shapes.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(___WEBPACK_IMPORTED_MODULE_2__.Control, { control: shape.getControl() }, shape.id)); }), children] }));
