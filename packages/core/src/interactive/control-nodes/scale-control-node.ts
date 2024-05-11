@@ -15,7 +15,7 @@ class ScaleControlNode extends ControlNode {
 
 	protected _isDragging = false;
 	protected _startScale = new Point();
-	protected _startSize = new Point();
+	protected _startVector = new Point();
 	protected _startMatrix = new Matrix();
 
 	public constructor(params?){
@@ -26,11 +26,17 @@ class ScaleControlNode extends ControlNode {
 	public onPointerStart(e){
 
 		const shape = this.getShape();
+		const wMatrix = shape.getWorldMatrix();
+		const {left, top} = wMatrix.toOptions();
+		const {
+			scaleX,
+			scaleY
+		} = shape.get(['scaleX', 'scaleY']);
+		this._startScale.set(scaleX, scaleY);
+		this._startVector.copy(shape.getLocalPointer(e));
+		this._startMatrix.copy(wMatrix.invert());
 
 		this._isDragging = true;
-		this._startScale.set(shape.get('scaleX'), shape.get('scaleY'));
-		this._startSize.copy(this.getControlSize());
-		this._startMatrix.copy(shape.getWorldMatrix().invert());
 
 	}
 
@@ -41,10 +47,9 @@ class ScaleControlNode extends ControlNode {
 		}
 
 		const shape = this.getShape();
-		const lp = shape.getLocalPointer(e, this._startMatrix);
-		const origin = new Point(this.x + (1 - 2 * this.x) * shape.originX, this.y + (1 - 2 * this.y) * shape.originX);
-		const ratio = lp.divide(this._startSize.clone().multiply(origin).divide(this._startScale));
-		const scale = new Point().multiplyPoints(this._startScale, ratio).abs();
+		const {left, top} = shape.getWorldMatrix().toOptions();
+		const scale = shape.getLocalPointer(e, this._startMatrix).divide(this._startVector).multiply(this._startScale).abs();
+		const ratio = this._startScale.x / this._startScale.y;
 		const set: any = {};
 
 		if (this.axis === 'x'){
@@ -53,7 +58,7 @@ class ScaleControlNode extends ControlNode {
 			set.scaleY = toFixed(scale.y);
 		} else {
 			set.scaleX = toFixed(Math.max(scale.x, scale.y));
-			set.scaleY = toFixed(Math.max(scale.x, scale.y));
+			set.scaleY = toFixed(Math.max(scale.x, scale.y)) / ratio;
 		}
 
 		shape.set(set);

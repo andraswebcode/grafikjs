@@ -38,6 +38,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.grafik-wrapper {
   right: 0;
 }
 
+.grafik-interactive * {
+  box-sizing: border-box;
+}
+
 .grafik-selector {
   position: absolute;
   background: rgba(173, 216, 230, 0.4);
@@ -3379,27 +3383,29 @@ var ScaleControlNode = /** @class */ (function (_super) {
         _this.axis = '';
         _this._isDragging = false;
         _this._startScale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
-        _this._startSize = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
+        _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
         _this._startMatrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix();
         _this.init(params);
         return _this;
     }
     ScaleControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
+        var wMatrix = shape.getWorldMatrix();
+        var _a = wMatrix.toOptions(), left = _a.left, top = _a.top;
+        var _b = shape.get(['scaleX', 'scaleY']), scaleX = _b.scaleX, scaleY = _b.scaleY;
+        this._startScale.set(scaleX, scaleY);
+        this._startVector.copy(shape.getLocalPointer(e));
+        this._startMatrix.copy(wMatrix.invert());
         this._isDragging = true;
-        this._startScale.set(shape.get('scaleX'), shape.get('scaleY'));
-        this._startSize.copy(this.getControlSize());
-        this._startMatrix.copy(shape.getWorldMatrix().invert());
     };
     ScaleControlNode.prototype.onPointerMove = function (e) {
         if (!this._isDragging) {
             return;
         }
         var shape = this.getShape();
-        var lp = shape.getLocalPointer(e, this._startMatrix);
-        var origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(this.x + (1 - 2 * this.x) * shape.originX, this.y + (1 - 2 * this.y) * shape.originX);
-        var ratio = lp.divide(this._startSize.clone().multiply(origin).divide(this._startScale));
-        var scale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().multiplyPoints(this._startScale, ratio).abs();
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        var scale = shape.getLocalPointer(e, this._startMatrix).divide(this._startVector).multiply(this._startScale).abs();
+        var ratio = this._startScale.x / this._startScale.y;
         var set = {};
         if (this.axis === 'x') {
             set.scaleX = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(scale.x);
@@ -3409,7 +3415,7 @@ var ScaleControlNode = /** @class */ (function (_super) {
         }
         else {
             set.scaleX = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(Math.max(scale.x, scale.y));
-            set.scaleY = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(Math.max(scale.x, scale.y));
+            set.scaleY = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(Math.max(scale.x, scale.y)) / ratio;
         }
         shape.set(set);
     };
@@ -8668,25 +8674,26 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var TestComponent = function () {
-    var _a;
-    var obj = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.useCanvas)(function (canvas) {
-        var _a, _b;
+    var _a = (0,_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.useCanvas)(function (canvas) {
+        var _a;
         return ({
             canvas: canvas,
             width: canvas.get('width'),
+            zoom: canvas.get('zoom'),
             set: canvas.set.bind(canvas),
-            left: (_a = canvas.getSelectedShapes()[0]) === null || _a === void 0 ? void 0 : _a.get('left'),
-            setShape: (_b = canvas.getSelectedShapes()[0]) === null || _b === void 0 ? void 0 : _b.set.bind(canvas.getSelectedShapes()[0]),
+            setShape: (_a = canvas.getSelectedShapes()[0]) === null || _a === void 0 ? void 0 : _a.set.bind(canvas.getSelectedShapes()[0]),
             shapes: canvas.getChildren()
         });
-    });
+    }), canvas = _a.canvas, width = _a.width, zoom = _a.zoom, set = _a.set, setShape = _a.setShape, shapes = _a.shapes;
     // @ts-ignore
-    window.c = obj.canvas;
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: obj.width, onChange: function (e) { return obj.set('width', parseInt(e.target.value)); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: obj.left, onChange: function (e) { return obj.setShape('left', parseInt(e.target.value)); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { children: (_a = obj.shapes) === null || _a === void 0 ? void 0 : _a.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { onClick: function () {
-                            obj.canvas.releaseShapes().selectShapes(shape);
+    window.c = canvas;
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["ZOOM:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: zoom, onChange: function (e) { return set('zoom', parseFloat(e.target.value)); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", { children: ["WIDTH:", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'number', value: width, onChange: function (e) { return set('width', parseFloat(e.target.value)); } })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", { children: shapes === null || shapes === void 0 ? void 0 : shapes.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { style: {
+                            background: canvas.getSelectedShapes().includes(shape) ? '#0f0' : '#eee'
+                        }, onClick: function () {
+                            canvas.releaseShapes().selectShapes(shape);
                         }, children: shape.tagName }) }, shape.id)); }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { onClick: function () {
-                    obj.canvas.set('mode', obj.canvas.get('mode') === 'select' ? 'pan' : 'select');
-                }, children: obj.canvas.get('mode') === 'select' ? 'Switch to Pan Mode' : 'Switch to Select Mode' })] }));
+                    canvas.set('mode', canvas.get('mode') === 'select' ? 'pan' : 'select');
+                }, children: canvas.get('mode') === 'select' ? 'Switch to Pan Mode' : 'Switch to Select Mode' })] }));
 };
 var TestCanvas = function (_a) {
     var children = _a.children;
@@ -8728,7 +8735,7 @@ var TestApp = function () {
     var lg2 = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_2__.LinearGradient({
         colorStops: colorStops2
     });
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.CanvasProvider, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Canvas, { width: 1200, height: 800, mode: 'select', children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Circle, { left: 600, top: 400, r: 50, stroke: '#000', strokeWidth: 2, fill: lg1 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Rect, { left: 0, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25', fill: lg2, left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M 0 315 L 40 315 A 30 50 0 0 1 160 160 L 160 100 H 400 V 200', stroke: 'green', strokeWidth: 8, fill: 'none', left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M 0 0 C 0 100 100 100 100 0 s 100 -100 100 0', stroke: 'blue', strokeWidth: 8, fill: 'none', left: 800, top: 500 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Polygon, { points: '120 70 170 170 70 170', fill: lg1, left: 350, top: 150 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Text, { text: 'Hello GrafikJS! :-)', left: 800, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Image, { href: 'img.jpg', left: 300, top: 600 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.CanvasProvider, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Wrapper, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Canvas, { width: 1200, height: 800, zoom: 2, mode: 'select', children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Defs, {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Circle, { left: 600, top: 400, r: 50, fill: lg1 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Rect, { left: 0, top: 0, width: 100, height: 100, angle: 45, stroke: '#000', strokeWidth: 2, fill: 'none' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Path, { d: 'M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25', fill: lg2, left: 450, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Polygon, { points: '120 70 170 170 70 170', fill: lg1, left: 350, top: 150 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Text, { text: 'Hello GrafikJS! :-)', left: 800, top: 250 }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Image, { selectable: false, href: 'img.jpg', left: 300, top: 600 })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Interactive, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_grafikjs_react__WEBPACK_IMPORTED_MODULE_3__.Selector, {}) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(TestComponent, {})] }));
 };
 
 

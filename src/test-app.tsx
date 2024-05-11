@@ -26,27 +26,49 @@ import '@grafikjs/styles';
 
 const TestComponent = () => {
 
-	const obj : any = useCanvas(canvas => ({
+	const {
+		canvas,
+		width,
+		zoom,
+		set,
+		setShape,
+		shapes
+	} : any = useCanvas(canvas => ({
 		canvas,
 		width:canvas.get('width'),
+		zoom:canvas.get('zoom'),
 		set:canvas.set.bind(canvas),
-		left:canvas.getSelectedShapes()[0]?.get('left'),
 		setShape:canvas.getSelectedShapes()[0]?.set.bind(canvas.getSelectedShapes()[0]),
 		shapes:canvas.getChildren()
 	}));
 	// @ts-ignore
-	window.c = obj.canvas;
+	window.c = canvas;
 
 	return (
 		<>
-			<input type='number' value={obj.width} onChange={e => obj.set('width', parseInt(e.target.value))} />
-			<input type='number' value={obj.left} onChange={e => obj.setShape('left', parseInt(e.target.value))} />
+			<label>
+				ZOOM:
+				<input
+					type='number'
+					value={zoom}
+					onChange={e => set('zoom', parseFloat(e.target.value))} />
+			</label>
+			<label>
+				WIDTH:
+				<input
+					type='number'
+					value={width}
+					onChange={e => set('width', parseFloat(e.target.value))} />
+			</label>
 			<ul>
-				{obj.shapes?.map(shape => (
+				{shapes?.map(shape => (
 					<li key={shape.id}>
 						<button
+							style={{
+								background:canvas.getSelectedShapes().includes(shape) ? '#0f0' : '#eee'
+							}}
 							onClick={() => {
-								obj.canvas.releaseShapes().selectShapes(shape);
+								canvas.releaseShapes().selectShapes(shape);
 							}} >
 							{shape.tagName}
 						</button>
@@ -55,9 +77,9 @@ const TestComponent = () => {
 			</ul>
 			<button
 				onClick={() => {
-					obj.canvas.set('mode', obj.canvas.get('mode') === 'select' ? 'pan' : 'select');
+					canvas.set('mode', canvas.get('mode') === 'select' ? 'pan' : 'select');
 				}} >
-				{obj.canvas.get('mode') === 'select' ? 'Switch to Pan Mode' : 'Switch to Select Mode'}
+				{canvas.get('mode') === 'select' ? 'Switch to Pan Mode' : 'Switch to Select Mode'}
 			</button>
 		</>
 	);
@@ -186,14 +208,13 @@ const TestApp = () => {
 				<Canvas
 					width={1200}
 					height={800}
+					zoom={2}
 					mode='select' >
 					<Defs />
 					<Circle
 						left={600}
 						top={400}
 						r={50}
-						stroke='#000'
-						strokeWidth={2}
 						fill={lg1} />
 					<Rect
 						left={0}
@@ -209,20 +230,6 @@ const TestApp = () => {
 						fill={lg2}
 						left={450}
 						top={250} />
-					<Path
-						d='M 0 315 L 40 315 A 30 50 0 0 1 160 160 L 160 100 H 400 V 200'
-						stroke='green'
-						strokeWidth={8}
-						fill='none'
-						left={450}
-						top={250} />
-					<Path
-						d='M 0 0 C 0 100 100 100 100 0 s 100 -100 100 0'
-						stroke='blue'
-						strokeWidth={8}
-						fill='none'
-						left={800}
-						top={500} />
 					<Polygon
 						points='120 70 170 170 70 170'
 						fill={lg1}
@@ -233,6 +240,7 @@ const TestApp = () => {
 						left={800}
 						top={250} />
 					<Image
+						selectable={false}
 						href='img.jpg'
 						left={300}
 						top={600} />

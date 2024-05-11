@@ -38,6 +38,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.grafik-wrapper {
   right: 0;
 }
 
+.grafik-interactive * {
+  box-sizing: border-box;
+}
+
 .grafik-selector {
   position: absolute;
   background: rgba(173, 216, 230, 0.4);
@@ -2008,27 +2012,29 @@ var ScaleControlNode = /** @class */ (function (_super) {
         _this.axis = '';
         _this._isDragging = false;
         _this._startScale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
-        _this._startSize = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
+        _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
         _this._startMatrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix();
         _this.init(params);
         return _this;
     }
     ScaleControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
+        var wMatrix = shape.getWorldMatrix();
+        var _a = wMatrix.toOptions(), left = _a.left, top = _a.top;
+        var _b = shape.get(['scaleX', 'scaleY']), scaleX = _b.scaleX, scaleY = _b.scaleY;
+        this._startScale.set(scaleX, scaleY);
+        this._startVector.copy(shape.getLocalPointer(e));
+        this._startMatrix.copy(wMatrix.invert());
         this._isDragging = true;
-        this._startScale.set(shape.get('scaleX'), shape.get('scaleY'));
-        this._startSize.copy(this.getControlSize());
-        this._startMatrix.copy(shape.getWorldMatrix().invert());
     };
     ScaleControlNode.prototype.onPointerMove = function (e) {
         if (!this._isDragging) {
             return;
         }
         var shape = this.getShape();
-        var lp = shape.getLocalPointer(e, this._startMatrix);
-        var origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(this.x + (1 - 2 * this.x) * shape.originX, this.y + (1 - 2 * this.y) * shape.originX);
-        var ratio = lp.divide(this._startSize.clone().multiply(origin).divide(this._startScale));
-        var scale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().multiplyPoints(this._startScale, ratio).abs();
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        var scale = shape.getLocalPointer(e, this._startMatrix).divide(this._startVector).multiply(this._startScale).abs();
+        var ratio = this._startScale.x / this._startScale.y;
         var set = {};
         if (this.axis === 'x') {
             set.scaleX = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(scale.x);
@@ -2038,7 +2044,7 @@ var ScaleControlNode = /** @class */ (function (_super) {
         }
         else {
             set.scaleX = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(Math.max(scale.x, scale.y));
-            set.scaleY = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(Math.max(scale.x, scale.y));
+            set.scaleY = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(Math.max(scale.x, scale.y)) / ratio;
         }
         shape.set(set);
     };
