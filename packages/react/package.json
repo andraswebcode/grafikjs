@@ -27,7 +27,8 @@
   "homepage":"https://grafikjs.andrasweb.com/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andraswebcode/grafikjs/tree/main/packages/react"
+    "url": "https://github.com/andraswebcode/grafikjs/tree/main",
+    "directory": "packages/react"
   },
   "keywords": [
     "SVG",

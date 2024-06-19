@@ -262,7 +262,7 @@ var Canvas = /** @class */ (function (_super) {
         _this.mode = 'select';
         _this.tagName = 'svg';
         _this.xmlns = 'http://www.w3.org/2000/svg';
-        _this.preserveAspectRatio = 'xMidYMid slice';
+        _this.preserveAspectRatio = 'xMinYMin slice';
         _this.className = 'grafik-canvas';
         _this.width = 0;
         _this.height = 0;
@@ -399,16 +399,6 @@ var Canvas = /** @class */ (function (_super) {
         return this._selector;
     };
     Canvas.prototype.setResponsiveSize = function (width, height) {
-        if (!this._originalWidth) {
-            this._originalWidth = this.width;
-        }
-        if (!this._originalHeight) {
-            this._originalHeight = this.height;
-        }
-        this.set({
-            width: Math.min(width, this._originalWidth),
-            height: Math.min(height, this._originalHeight)
-        }).zoomTo();
         return this;
     };
     Canvas.prototype.zoomTo = function (zoom, pan) {
@@ -433,7 +423,8 @@ var Canvas = /** @class */ (function (_super) {
     };
     Canvas.prototype.getPointer = function (e) {
         var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
-        return new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(e.clientX - left, e.clientY - top);
+        var _b = ('ontouchstart' in window) ? e.touches[0] : e, clientX = _b.clientX, clientY = _b.clientY;
+        return new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(clientX - left, clientY - top);
     };
     Canvas.prototype._onPointerStartInSelectMode = function (e) {
         var dataset = e.target.dataset;
@@ -1343,7 +1334,8 @@ var OriginControlNode = /** @class */ (function (_super) {
         shape.set({
             left: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.x),
             top: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.y),
-            origin: origin
+            originX: origin.x,
+            originY: origin.y
         });
     };
     OriginControlNode.prototype.onPointerEnd = function (e) {
@@ -1394,27 +1386,29 @@ var ScaleControlNode = /** @class */ (function (_super) {
         _this.axis = '';
         _this._isDragging = false;
         _this._startScale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
-        _this._startSize = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
+        _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point();
         _this._startMatrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix();
         _this.init(params);
         return _this;
     }
     ScaleControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
+        var wMatrix = shape.getWorldMatrix();
+        var _a = wMatrix.toOptions(), left = _a.left, top = _a.top;
+        var _b = shape.get(['scaleX', 'scaleY']), scaleX = _b.scaleX, scaleY = _b.scaleY;
+        this._startScale.set(scaleX, scaleY);
+        this._startVector.copy(shape.getLocalPointer(e));
+        this._startMatrix.copy(wMatrix.invert());
         this._isDragging = true;
-        this._startScale.set(shape.get('scaleX'), shape.get('scaleY'));
-        this._startSize.copy(this.getControlSize());
-        this._startMatrix.copy(shape.getWorldMatrix().invert());
     };
     ScaleControlNode.prototype.onPointerMove = function (e) {
         if (!this._isDragging) {
             return;
         }
         var shape = this.getShape();
-        var lp = shape.getLocalPointer(e, this._startMatrix);
-        var origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(this.x + (1 - 2 * this.x) * shape.originX, this.y + (1 - 2 * this.y) * shape.originX);
-        var ratio = lp.divide(this._startSize.clone().multiply(origin).divide(this._startScale));
-        var scale = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point().multiplyPoints(this._startScale, ratio).abs();
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        var scale = shape.getLocalPointer(e, this._startMatrix).divide(this._startVector).multiply(this._startScale).abs();
+        var ratio = this._startScale.x / this._startScale.y;
         var set = {};
         if (this.axis === 'x') {
             set.scaleX = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(scale.x);
@@ -1424,7 +1418,7 @@ var ScaleControlNode = /** @class */ (function (_super) {
         }
         else {
             set.scaleX = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(Math.max(scale.x, scale.y));
-            set.scaleY = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(Math.max(scale.x, scale.y));
+            set.scaleY = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(Math.max(scale.x, scale.y)) / ratio;
         }
         shape.set(set);
     };
@@ -4134,7 +4128,17 @@ function Collection(Base) {
             return this;
         };
         Collection.prototype.remove = function (children, silent) {
+            var _this = this;
             if (silent === void 0) { silent = false; }
+            children = Array.isArray(children) ? children : [children];
+            var index;
+            // Using splice, instead of filter to mutate, and keep the original array.
+            children.forEach(function (child) {
+                index = _this.children.indexOf(child);
+                if (index !== -1) {
+                    _this.children.splice(index, 1);
+                }
+            });
             if (!silent) {
                 // @ts-ignore
                 this.trigger('removed', children);
@@ -4156,6 +4160,24 @@ function Collection(Base) {
         };
         Collection.prototype.childByName = function (name) {
             return this.children.find(function (el) { return (el.name === name); });
+        };
+        Collection.prototype.moveChildTo = function (child, index) {
+            var fromIndex = this.children.indexOf(child);
+            if (fromIndex !== -1) {
+                this.children.splice(fromIndex, 1);
+                this.children.splice(index, 0, child);
+                // @ts-ignore
+                this.trigger('sorted', child, this.children);
+            }
+            return this;
+        };
+        Collection.prototype.moveChildUp = function (child) {
+            var fromIndex = this.children.indexOf(child);
+            return this.moveChildTo(child, fromIndex + 1);
+        };
+        Collection.prototype.moveChildDown = function (child) {
+            var fromIndex = this.children.indexOf(child);
+            return this.moveChildTo(child, fromIndex - 1);
         };
         return Collection;
     }(Base));
@@ -4236,14 +4258,18 @@ function ElementCollection(Base) {
             }
             return this;
         };
-        ElementCollection.prototype.remove = function (children, silent) {
-            if (silent === void 0) { silent = false; }
-            if (!silent) {
-                // @ts-ignore
-                this.trigger('removed', children);
-            }
-            return this;
-        };
+        /*
+                public remove(children: any|any[], silent = false){
+        
+                    if (!silent){
+                        // @ts-ignore
+                        this.trigger('removed', children);
+                    }
+        
+                    return this;
+        
+                }
+        */
         ElementCollection.prototype.findChildrenByPointer = function (pointer) {
             return this.mapChildren(function (child) {
                 var bBox = child.get('bBox');
@@ -5058,6 +5084,7 @@ var Shape = /** @class */ (function (_super) {
         },
         set: function (value) {
             this.origin.x = value;
+            this.bBox.fromSizeAndOrigin(this.bBox.getSize(), this.origin);
         },
         enumerable: false,
         configurable: true
@@ -5068,6 +5095,7 @@ var Shape = /** @class */ (function (_super) {
         },
         set: function (value) {
             this.origin.y = value;
+            this.bBox.fromSizeAndOrigin(this.bBox.getSize(), this.origin);
         },
         enumerable: false,
         configurable: true

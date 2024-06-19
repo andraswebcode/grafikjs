@@ -4,14 +4,31 @@
   "main": "./src/index.ts",
   "types":"./src/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "webpack",
+    "build": "webpack --env production"
   },
-  "keywords": [],
   "author": "Andras Tovishati",
   "license": "MIT",
-  "description": "",
+  "description": "A lightweight React library for creating interactive SVG on the web.",
   "dependencies": {
-    "@grafikjs/core":"*"
+    "@grafikjs/core":"*",
+	"vue":"*"
   },
-  "devDependencies": {}
+  "devDependencies": {
+	"vue-tsc":"*",
+	"vue-loader": "*"
+  },
+  "keywords": [
+	"SVG",
+    "interactive",
+    "graphic",
+    "graphics",
+    "drag",
+    "scale",
+    "move",
+    "rotate",
+    "vue",
+    "object",
+    "model"
+  ]
 }

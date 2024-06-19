@@ -1,6 +1,7 @@
 {
   "name": "grafikjs",
   "version": "0.0.1",
+  "private": true,
   "main": "./src/index.js",
   "scripts": {
     "start": "webpack",
@@ -10,6 +11,8 @@
     "build:vanilla": "npm run build --prefix packages/vanilla",
     "start:react": "npm start --prefix packages/react",
     "build:react": "npm run build --prefix packages/react",
+    "start:vue": "npm start --prefix packages/vue",
+    "build:vue": "npm run build --prefix packages/vue",
     "start:styles": "npm start --prefix packages/styles",
     "build:styles": "npm run build --prefix packages/styles"
   },
@@ -31,7 +34,8 @@
     "@grafikjs/react": "*",
     "@grafikjs/styles": "*",
     "react": "*",
-    "react-dom": "*"
+    "react-dom": "*",
+	"vue": "*"
   },
   "devDependencies": {
     "webpack": "*",
@@ -41,6 +45,8 @@
     "@types/node": "*",
     "@types/react": "*",
     "@types/react-dom": "*",
+	"vue-loader": "*",
+	"vue-tsc": "*",
     "sass": "*",
     "sass-loader": "*",
     "style-loader": "*",
