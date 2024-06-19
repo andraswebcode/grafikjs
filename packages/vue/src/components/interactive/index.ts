@@ -3,9 +3,4 @@ import Wrapper from './Wrapper';
 import Interactive from './Interactive';
 import Selector from './Selector';
 
-export {
-	Control,
-	Wrapper,
-	Interactive,
-	Selector
-};
+export { Control, Wrapper, Interactive, Selector };

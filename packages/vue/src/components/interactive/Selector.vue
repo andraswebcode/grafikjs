@@ -1,11 +1,7 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
 	<div class="grafik-selector" />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

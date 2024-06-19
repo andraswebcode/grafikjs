@@ -1,18 +1,7 @@
-<script setup lang="ts">
-import { Canvas, CanvasObject } from '@grafikjs/core';
-import { computed, inject } from 'vue';
-const canvas: Canvas = inject('canvas');
-const attributes = computed(() => {
-	return canvas.getAttributes();
-});
-const props = defineProps<Partial<CanvasObject>>();
-
-</script>
+<script setup lang="ts"></script>
 
 <template>
-	<svg v-bind="attributes"></svg>
+	<svg></svg>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
