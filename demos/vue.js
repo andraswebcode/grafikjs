@@ -18279,9 +18279,12 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Canvas: () => (/* reexport safe */ _Canvas__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   Canvas: () => (/* reexport safe */ _Canvas__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   ShapeTree: () => (/* reexport safe */ _ShapeTree__WEBPACK_IMPORTED_MODULE_1__["default"])
 /* harmony export */ });
 /* harmony import */ var _Canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Canvas */ "./packages/vue/src/components/elements/Canvas.vue");
+/* harmony import */ var _ShapeTree__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ShapeTree */ "./packages/vue/src/components/elements/ShapeTree.vue");
+
 
 
 
@@ -18300,6 +18303,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Control: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_1__.Control),
 /* harmony export */   Interactive: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_1__.Interactive),
 /* harmony export */   Selector: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_1__.Selector),
+/* harmony export */   ShapeTree: () => (/* reexport safe */ _elements__WEBPACK_IMPORTED_MODULE_0__.ShapeTree),
 /* harmony export */   Wrapper: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_1__.Wrapper)
 /* harmony export */ });
 /* harmony import */ var _elements__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./elements */ "./packages/vue/src/components/elements/index.ts");
@@ -18348,6 +18352,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Control: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_1__.Control),
 /* harmony export */   Interactive: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_1__.Interactive),
 /* harmony export */   Selector: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_1__.Selector),
+/* harmony export */   ShapeTree: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_1__.ShapeTree),
 /* harmony export */   Wrapper: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_1__.Wrapper),
 /* harmony export */   createGrafik: () => (/* reexport safe */ _plugin__WEBPACK_IMPORTED_MODULE_0__.createGrafik)
 /* harmony export */ });
@@ -18422,6 +18427,31 @@ __webpack_require__.r(__webpack_exports__);
 
 ;
 const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_Canvas_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Canvas_vue_vue_type_template_id_4037770f_ts_true__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"packages/vue/src/components/elements/Canvas.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "./packages/vue/src/components/elements/ShapeTree.vue":
+/*!************************************************************!*\
+  !*** ./packages/vue/src/components/elements/ShapeTree.vue ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _ShapeTree_vue_vue_type_template_id_77382678__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ShapeTree.vue?vue&type=template&id=77382678 */ "./packages/vue/src/components/elements/ShapeTree.vue?vue&type=template&id=77382678");
+/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+const script = {}
+
+;
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_1__["default"])(script, [['render',_ShapeTree_vue_vue_type_template_id_77382678__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"packages/vue/src/components/elements/ShapeTree.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -18579,8 +18609,9 @@ __webpack_require__.r(__webpack_exports__);
 
 const width = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(1280);
 const height = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(720);
+const json = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
 
-const __returned__ = { width, height, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, get Canvas() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Canvas }, get Wrapper() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Wrapper }, get Interactive() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Interactive }, get Selector() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Selector } }
+const __returned__ = { width, height, json, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, get Canvas() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Canvas }, get ShapeTree() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.ShapeTree }, get Wrapper() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Wrapper }, get Interactive() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Interactive }, get Selector() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Selector } }
 Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
 return __returned__
 }
@@ -18631,6 +18662,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_dist_index_js_ruleSet_1_rules_6_use_0_example_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./example.vue?vue&type=script&setup=true&lang=js */ "./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/example.vue?vue&type=script&setup=true&lang=js");
  
+
+/***/ }),
+
+/***/ "./packages/vue/src/components/elements/ShapeTree.vue?vue&type=template&id=77382678":
+/*!******************************************************************************************!*\
+  !*** ./packages/vue/src/components/elements/ShapeTree.vue?vue&type=template&id=77382678 ***!
+  \******************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_6_use_0_ShapeTree_vue_vue_type_template_id_77382678__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_6_use_0_ShapeTree_vue_vue_type_template_id_77382678__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./ShapeTree.vue?vue&type=template&id=77382678 */ "./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./packages/vue/src/components/elements/ShapeTree.vue?vue&type=template&id=77382678");
+
 
 /***/ }),
 
@@ -18706,6 +18752,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_6_use_0_example_vue_vue_type_template_id_4408a6be__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./example.vue?vue&type=template&id=4408a6be */ "./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/example.vue?vue&type=template&id=4408a6be");
 
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./packages/vue/src/components/elements/ShapeTree.vue?vue&type=template&id=77382678":
+/*!************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./packages/vue/src/components/elements/ShapeTree.vue?vue&type=template&id=77382678 ***!
+  \************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+
+function render(_ctx, _cache) {
+  return null
+}
 
 /***/ }),
 
@@ -18812,7 +18875,15 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Wrapper"], null, {
       default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Canvas"]),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Canvas"], {
+          width: $setup.width,
+          height: $setup.height
+        }, {
+          default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
+            (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["ShapeTree"], { json: $setup.json }, null, 8 /* PROPS */, ["json"])
+          ]),
+          _: 1 /* STABLE */
+        }, 8 /* PROPS */, ["width", "height"]),
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Interactive"], null, {
           default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
             (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Selector"])

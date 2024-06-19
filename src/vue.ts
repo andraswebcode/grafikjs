@@ -1,10 +1,6 @@
-import {
-	createApp
-} from 'vue';
+import { createApp } from 'vue';
 import App from './example.vue';
-import {
-	createGrafik
-} from '@grafikjs/vue';
+import { createGrafik } from '@grafikjs/vue';
 import '@grafikjs/styles';
 
 const grafik = createGrafik();
