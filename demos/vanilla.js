@@ -728,8 +728,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./element */ "./packages/core/src/element.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mixins */ "./packages/core/src/mixins/index.ts");
 /* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./interactive */ "./packages/core/src/interactive/index.ts");
-/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./maths */ "./packages/core/src/maths/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _grafikjs_vanilla__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @grafikjs/vanilla */ "./packages/vanilla/src/index.ts");
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./maths */ "./packages/core/src/maths/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -750,21 +751,22 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var POINTEREVENTS = {
-    'start': {
-        'select': '_onPointerStartInSelectMode',
-        'pan': '_onPointerStartInPanMode',
-        'draw': '_onPointerStartInDrawMode'
+    start: {
+        select: '_onPointerStartInSelectMode',
+        pan: '_onPointerStartInPanMode',
+        draw: '_onPointerStartInDrawMode'
     },
-    'move': {
-        'select': '_onPointerMoveInSelectMode',
-        'pan': '_onPointerMoveInPanMode',
-        'draw': '_onPointerMoveInDrawMode'
+    move: {
+        select: '_onPointerMoveInSelectMode',
+        pan: '_onPointerMoveInPanMode',
+        draw: '_onPointerMoveInDrawMode'
     },
-    'end': {
-        'select': '_onPointerEndInSelectMode',
-        'pan': '_onPointerEndInPanMode',
-        'draw': '_onPointerEndInDrawMode'
+    end: {
+        select: '_onPointerEndInSelectMode',
+        pan: '_onPointerEndInPanMode',
+        draw: '_onPointerEndInDrawMode'
     }
 };
 var Canvas = /** @class */ (function (_super) {
@@ -782,15 +784,16 @@ var Canvas = /** @class */ (function (_super) {
         _this.className = 'grafik-canvas';
         _this.width = 0;
         _this.height = 0;
-        _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_3__.Matrix();
+        _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
         _this._defs = [];
+        _this._animation = new _grafikjs_vanilla__WEBPACK_IMPORTED_MODULE_3__.Timeline();
         _this._selectedShapes = [];
         _this._selector = new _interactive__WEBPACK_IMPORTED_MODULE_2__.Selector();
         _this._selection = false;
         _this._zoom = 1;
-        _this._pan = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point();
+        _this._pan = new _maths__WEBPACK_IMPORTED_MODULE_4__.Point();
         _this._isDragging = false;
-        _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point();
+        _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_4__.Point();
         _this.set(params, true);
         _this.trigger('init', _this);
         return _this;
@@ -829,13 +832,8 @@ var Canvas = /** @class */ (function (_super) {
         configurable: true
     });
     Canvas.prototype.getAttrMap = function () {
-        return _super.prototype.getAttrMap.call(this).concat([
-            'xmlns',
-            'width',
-            'height',
-            'viewBox',
-            'preserveAspectRatio'
-        ]);
+        return _super.prototype.getAttrMap.call(this)
+            .concat(['xmlns', 'width', 'height', 'viewBox', 'preserveAspectRatio']);
     };
     Canvas.prototype.selectShapes = function (shapes, silent) {
         var _this = this;
@@ -862,7 +860,8 @@ var Canvas = /** @class */ (function (_super) {
         if (shapes === null || shapes === void 0 ? void 0 : shapes[0]) {
             this._selectedShapes = this._selectedShapes.filter(function (shape) { return !shapes.includes(shape); });
         }
-        else { // If shapes are empty, we remove all shapes from selection.
+        else {
+            // If shapes are empty, we remove all shapes from selection.
             this._selectedShapes = [];
         }
         if (!silent || prevShapesLength !== this._selectedShapes.length) {
@@ -919,11 +918,15 @@ var Canvas = /** @class */ (function (_super) {
     };
     Canvas.prototype.zoomTo = function (zoom, pan) {
         if (zoom === void 0) { zoom = 1; }
-        if (pan === void 0) { pan = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(); }
+        if (pan === void 0) { pan = new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(); }
         // First we have to set viewport to update shapes world matrix.
         var size = this.getSize();
         var zoomSize = size.clone().multiplyScalar(zoom);
-        var translate = new _maths__WEBPACK_IMPORTED_MODULE_3__.Point().subtractPoints(zoomSize, size).divideScalar(2).multiplyScalar(-1).add(pan);
+        var translate = new _maths__WEBPACK_IMPORTED_MODULE_4__.Point()
+            .subtractPoints(zoomSize, size)
+            .divideScalar(2)
+            .multiplyScalar(-1)
+            .add(pan);
         this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
@@ -935,17 +938,17 @@ var Canvas = /** @class */ (function (_super) {
         return this;
     };
     Canvas.prototype.getSize = function () {
-        return new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(this.width, this.height);
+        return new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.width, this.height);
     };
     Canvas.prototype.getPointer = function (e) {
         var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
-        var _b = ('ontouchstart' in window) ? e.touches[0] : e, clientX = _b.clientX, clientY = _b.clientY;
-        return new _maths__WEBPACK_IMPORTED_MODULE_3__.Point(clientX - left, clientY - top);
+        var _b = 'ontouchstart' in window ? e.touches[0] : e, clientX = _b.clientX, clientY = _b.clientY;
+        return new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(clientX - left, clientY - top);
     };
     Canvas.prototype._onPointerStartInSelectMode = function (e) {
         var dataset = e.target.dataset;
         var shape = dataset.shape;
-        var isNode = ('controlNode' in dataset);
+        var isNode = 'controlNode' in dataset;
         var pointer = this.getPointer(e);
         var founded = this.findLastChildByPointer(pointer);
         if (this.getSelectedShapes().includes(founded) && founded.isCollection) {
@@ -1005,7 +1008,9 @@ var Canvas = /** @class */ (function (_super) {
             var selectedShapes = this.mapChildren(function (shape) {
                 var selectorPolygon = _this._selector.bBox.toPolygon();
                 var shapePolygon = shape.bBox.toPolygon(shape.getWorldMatrix());
-                return (!_this._selector.bBox.isEmpty() && selectorPolygon.intersects(shapePolygon) && shape);
+                return (!_this._selector.bBox.isEmpty() &&
+                    selectorPolygon.intersects(shapePolygon) &&
+                    shape);
             }).filter(function (shape) { return !!shape; });
             this.selectShapes(selectedShapes);
             this._selector.bBox.reset();
@@ -1044,7 +1049,7 @@ var Canvas = /** @class */ (function (_super) {
             e.preventDefault();
             var pointer = this.getPointer(e);
             var size = this.getSize();
-            this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_4__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)));
+            this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_5__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)));
         }
     };
     return Canvas;
@@ -1528,7 +1533,7 @@ var Element = /** @class */ (function (_super) {
             classNames[_i] = arguments[_i];
         }
         var currentClasses = this.className.split(' ').filter(function (cn) { return cn; });
-        var newClasses = classNames.filter(function (cn) { return (cn && !currentClasses.includes(cn)); });
+        var newClasses = classNames.filter(function (cn) { return cn && !currentClasses.includes(cn); });
         this.set('className', currentClasses.concat(newClasses).join(' '));
         return this;
     };
@@ -1621,6 +1626,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.isEqual),
+/* harmony export */   omitBy: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.omitBy),
 /* harmony export */   parsePath: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.randInt),
@@ -4773,10 +4779,10 @@ function Collection(Base) {
             return this.children[index];
         };
         Collection.prototype.childById = function (id) {
-            return this.children.find(function (el) { return (el.id === id); });
+            return this.children.find(function (el) { return el.id === id; });
         };
         Collection.prototype.childByName = function (name) {
-            return this.children.find(function (el) { return (el.name === name); });
+            return this.children.find(function (el) { return el.name === name; });
         };
         Collection.prototype.moveChildTo = function (child, index) {
             var fromIndex = this.children.indexOf(child);
@@ -4876,17 +4882,17 @@ function ElementCollection(Base) {
             return this;
         };
         /*
-                public remove(children: any|any[], silent = false){
-        
-                    if (!silent){
-                        // @ts-ignore
-                        this.trigger('removed', children);
-                    }
-        
-                    return this;
-        
-                }
-        */
+        public remove(children: any|any[], silent = false){
+
+            if (!silent){
+                // @ts-ignore
+                this.trigger('removed', children);
+            }
+
+            return this;
+
+        }
+*/
         ElementCollection.prototype.findChildrenByPointer = function (pointer) {
             return this.mapChildren(function (child) {
                 var bBox = child.get('bBox');
@@ -4894,7 +4900,7 @@ function ElementCollection(Base) {
                     return false;
                 }
                 var polygon = bBox.toPolygon(child.getWorldMatrix());
-                return (polygon.containsPoint(pointer, 1) && child);
+                return polygon.containsPoint(pointer, 1) && child;
             }).filter(function (child) { return child === null || child === void 0 ? void 0 : child.selectable; });
         };
         ElementCollection.prototype.findLastChildByPointer = function (pointer) {
@@ -5059,11 +5065,7 @@ var Circle = /** @class */ (function (_super) {
         return _this;
     }
     Circle.prototype.getAttrMap = function () {
-        return _super.prototype.getAttrMap.call(this).concat([
-            'r',
-            'cx',
-            'cy'
-        ]);
+        return _super.prototype.getAttrMap.call(this).concat(['r', 'cx', 'cy']);
     };
     Circle.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('r')) {
@@ -5126,12 +5128,7 @@ var Ellipse = /** @class */ (function (_super) {
         return _this;
     }
     Ellipse.prototype.getAttrMap = function () {
-        return _super.prototype.getAttrMap.call(this).concat([
-            'rx',
-            'ry',
-            'cx',
-            'cy'
-        ]);
+        return _super.prototype.getAttrMap.call(this).concat(['rx', 'ry', 'cx', 'cy']);
     };
     Ellipse.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('rx') || keys.includes('ry')) {
@@ -5270,9 +5267,7 @@ var Image = /** @class */ (function (_super) {
         return this;
     };
     Image.prototype.getAttrMap = function () {
-        return _super.prototype.getAttrMap.call(this).concat([
-            'href'
-        ]);
+        return _super.prototype.getAttrMap.call(this).concat(['href']);
     };
     return Image;
 }(_rect__WEBPACK_IMPORTED_MODULE_0__.Rect));
@@ -5556,10 +5551,7 @@ var Rect = /** @class */ (function (_super) {
         return _this;
     }
     Rect.prototype.getAttrMap = function () {
-        return _super.prototype.getAttrMap.call(this).concat([
-            'width',
-            'height'
-        ]);
+        return _super.prototype.getAttrMap.call(this).concat(['width', 'height']);
     };
     Rect.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('width') || keys.includes('height')) {
@@ -5591,6 +5583,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./packages/core/src/element.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
 /* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../interactive */ "./packages/core/src/interactive/index.ts");
+/* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../animation */ "./packages/core/src/animation/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -5620,6 +5613,7 @@ var __assign = (undefined && undefined.__assign) || function () {
 
 
 
+
 var Shape = /** @class */ (function (_super) {
     __extends(Shape, _super);
     function Shape() {
@@ -5630,6 +5624,7 @@ var Shape = /** @class */ (function (_super) {
         _this.bBox = new _maths__WEBPACK_IMPORTED_MODULE_1__.BBox();
         _this.origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(0.5, 0.5);
         _this._controls = {};
+        _this._animation = new _animation__WEBPACK_IMPORTED_MODULE_3__.Animation();
         _this.transformProps = [
             'left',
             'top',
@@ -5748,7 +5743,8 @@ var Shape = /** @class */ (function (_super) {
                 }
             }
         }
-        else { // Check props if key is an object.
+        else {
+            // Check props if key is an object.
             var i = void 0, prop = void 0;
             for (i = 0; i < props.length; i++) {
                 prop = props[i];
@@ -5769,11 +5765,7 @@ var Shape = /** @class */ (function (_super) {
         return this;
     };
     Shape.prototype.getAttrMap = function () {
-        return [
-            'fill',
-            'stroke',
-            'strokeWidth'
-        ];
+        return ['fill', 'stroke', 'strokeWidth'];
     };
     Shape.prototype.updateOthersWithKeys = function (keys) {
         return this;
@@ -5824,11 +5816,16 @@ var Shape = /** @class */ (function (_super) {
     };
     Shape.prototype.getWorldMatrix = function () {
         var _a = this.parent, viewportMatrix = _a.viewportMatrix, isCanvas = _a.isCanvas;
-        return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix()).multiply(this.matrix);
+        return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix()
+            .copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix())
+            .multiply(this.matrix);
     };
     Shape.prototype.getLocalPointer = function (e, matrix) {
         var pointer = this.canvas.getPointer(e);
         return pointer.transform(matrix || this.getWorldMatrix().invert());
+    };
+    Shape.prototype.animate = function () {
+        return this._animation;
     };
     Shape.prototype.toJSON = function () {
         var _this = this;
@@ -5949,12 +5946,7 @@ var Text = /** @class */ (function (_super) {
         return _this;
     }
     Text.prototype.getAttrMap = function () {
-        return _super.prototype.getAttrMap.call(this).concat([
-            'x',
-            'y',
-            'fontFamily',
-            'fontSize'
-        ]);
+        return _super.prototype.getAttrMap.call(this).concat(['x', 'y', 'fontFamily', 'fontSize']);
     };
     Text.prototype.updateOthersWithKeys = function (keys) {
         if (keys.includes('text') || keys.includes('fontFamily') || keys.includes('fontSize')) {
@@ -5981,6 +5973,18 @@ var Text = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ "./packages/core/src/types/animation.ts":
+/*!**********************************************!*\
+  !*** ./packages/core/src/types/animation.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+
+
+
+/***/ }),
+
 /***/ "./packages/core/src/types/index.ts":
 /*!******************************************!*\
   !*** ./packages/core/src/types/index.ts ***!
@@ -5988,9 +5992,11 @@ var Text = /** @class */ (function (_super) {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./math */ "./packages/core/src/types/math.ts");
-/* harmony import */ var _mixin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mixin */ "./packages/core/src/types/mixin.ts");
-/* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./object */ "./packages/core/src/types/object.ts");
+/* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation */ "./packages/core/src/types/animation.ts");
+/* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./math */ "./packages/core/src/types/math.ts");
+/* harmony import */ var _mixin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mixin */ "./packages/core/src/types/mixin.ts");
+/* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./object */ "./packages/core/src/types/object.ts");
+
 
 
 
@@ -6061,6 +6067,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* binding */ clamp),
 /* harmony export */   deg2Rad: () => (/* binding */ deg2Rad),
 /* harmony export */   isEqual: () => (/* binding */ isEqual),
+/* harmony export */   omitBy: () => (/* binding */ omitBy),
 /* harmony export */   parsePath: () => (/* binding */ parsePath),
 /* harmony export */   rad2Deg: () => (/* binding */ rad2Deg),
 /* harmony export */   randInt: () => (/* binding */ randInt),
@@ -6078,14 +6085,18 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 
-var clamp = function (value, min, max) { return Math.min(Math.max(value, min), max); };
+var clamp = function (value, min, max) {
+    return Math.min(Math.max(value, min), max);
+};
 var toFixed = function (value, fractionDigits) {
     if (fractionDigits === void 0) { fractionDigits = 2; }
-    return ((Math.round(value * (Math.pow(10, fractionDigits))) / (Math.pow(10, fractionDigits))) || 0);
+    return Math.round(value * Math.pow(10, fractionDigits)) / Math.pow(10, fractionDigits) || 0;
 };
-var deg2Rad = function (degree) { return (degree * _constants__WEBPACK_IMPORTED_MODULE_0__.PIBY180); };
-var rad2Deg = function (degree) { return (degree / _constants__WEBPACK_IMPORTED_MODULE_0__.PIBY180); };
-var randInt = function (min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; };
+var deg2Rad = function (degree) { return degree * _constants__WEBPACK_IMPORTED_MODULE_0__.PIBY180; };
+var rad2Deg = function (degree) { return degree / _constants__WEBPACK_IMPORTED_MODULE_0__.PIBY180; };
+var randInt = function (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
 var uniqueId = function (prefix) {
     var pf = prefix ? prefix + '-' : '';
     var charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -6154,27 +6165,36 @@ var isEqual = function (value1, value2, visited) {
     // If values are of different types and not arrays or objects, they are not equal
     return false;
 };
+var omitBy = function (obj, callback) {
+    var newObj = {};
+    for (var key in obj) {
+        if (!callback(obj[key], key, obj)) {
+            newObj[key] = obj[key];
+        }
+    }
+    return newObj;
+};
 var CURVE_VALUES_LENGTHS = {
-    'M': 2,
-    'm': 2,
-    'L': 2,
-    'l': 2,
-    'H': 1,
-    'h': 1,
-    'V': 1,
-    'v': 1,
-    'C': 6,
-    'c': 6,
-    'S': 4,
-    's': 4,
-    'Q': 4,
-    'q': 4,
-    'T': 2,
-    't': 2,
-    'A': 7,
-    'a': 7,
-    'Z': 0,
-    'z': 0
+    M: 2,
+    m: 2,
+    L: 2,
+    l: 2,
+    H: 1,
+    h: 1,
+    V: 1,
+    v: 1,
+    C: 6,
+    c: 6,
+    S: 4,
+    s: 4,
+    Q: 4,
+    q: 4,
+    T: 2,
+    t: 2,
+    A: 7,
+    a: 7,
+    Z: 0,
+    z: 0
 };
 var _groupArray = function (array, size) {
     var grouped = [];
@@ -6218,6 +6238,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.isEqual),
+/* harmony export */   omitBy: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.omitBy),
 /* harmony export */   parsePath: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.randInt),
@@ -6296,6 +6317,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.isEqual),
+/* harmony export */   omitBy: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.omitBy),
 /* harmony export */   parsePath: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.randInt),

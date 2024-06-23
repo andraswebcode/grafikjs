@@ -1,46 +1,32 @@
-import {
-	Element
-} from './element';
-import {
-	ElementCollection
-} from './mixins';
-import {
-	Selector
-} from './interactive';
-import {
-	Matrix,
-	Point
-} from './maths';
-import {
-	toFixed
-} from './utils';
-import {
-	ViewBoxArray,
-	FillStroke
-} from './types';
+import { Element } from './element';
+import { ElementCollection } from './mixins';
+import { Selector } from './interactive';
+import { Timeline } from '@grafikjs/vanilla';
+import { Matrix, Point } from './maths';
+import { toFixed } from './utils';
+import { ViewBoxArray } from './types';
 
 const POINTEREVENTS = {
-	'start':{
-		'select':'_onPointerStartInSelectMode',
-		'pan':'_onPointerStartInPanMode',
-		'draw':'_onPointerStartInDrawMode'
+	start: {
+		select: '_onPointerStartInSelectMode',
+		pan: '_onPointerStartInPanMode',
+		draw: '_onPointerStartInDrawMode'
 	},
-	'move':{
-		'select':'_onPointerMoveInSelectMode',
-		'pan':'_onPointerMoveInPanMode',
-		'draw':'_onPointerMoveInDrawMode'
+	move: {
+		select: '_onPointerMoveInSelectMode',
+		pan: '_onPointerMoveInPanMode',
+		draw: '_onPointerMoveInDrawMode'
 	},
-	'end':{
-		'select':'_onPointerEndInSelectMode',
-		'pan':'_onPointerEndInPanMode',
-		'draw':'_onPointerEndInDrawMode'
+	end: {
+		select: '_onPointerEndInSelectMode',
+		pan: '_onPointerEndInPanMode',
+		draw: '_onPointerEndInDrawMode'
 	}
 };
 
-type ModeType = 'select'|'pan'|'draw';
+type ModeType = 'select' | 'pan' | 'draw';
 
 class Canvas extends ElementCollection(Element) {
-
 	public readonly isCanvas = true;
 	public multiselection = true;
 	public zoomable = true;
@@ -58,6 +44,9 @@ class Canvas extends ElementCollection(Element) {
 	protected viewportMatrix = new Matrix();
 
 	private _defs = [];
+
+	private _animation = new Timeline();
+
 	private _selectedShapes = [];
 	private _currentNodeId: string;
 	private _selector = new Selector();
@@ -68,220 +57,200 @@ class Canvas extends ElementCollection(Element) {
 	private _isDragging = false;
 	private _startVector = new Point();
 
-	set zoom(value: number){
+	set zoom(value: number) {
 		this._zoom = value;
 		this.zoomTo(this._zoom, this._pan);
 	}
 
-	set panX(value: number){
+	set panX(value: number) {
 		this._pan.x = value;
 		this.zoomTo(this._zoom, this._pan);
 	}
 
-	set panY(value: number){
+	set panY(value: number) {
 		this._pan.y = value;
 		this.zoomTo(this._zoom, this._pan);
 	}
 
-	get zoom(){
+	get zoom() {
 		return this._zoom;
 	}
 
-	get panX(){
+	get panX() {
 		return this._pan.x;
 	}
 
-	get panY(){
+	get panY() {
 		return this._pan.y;
 	}
 
-	public constructor(params = {}){
+	public constructor(params = {}) {
 		super();
 		this.set(params, true);
 		this.trigger('init', this);
 	}
 
-	protected getAttrMap() : string[] {
-		return super.getAttrMap().concat([
-			'xmlns',
-			'width',
-			'height',
-			'viewBox',
-			'preserveAspectRatio'
-		]);
+	protected getAttrMap(): string[] {
+		return super
+			.getAttrMap()
+			.concat(['xmlns', 'width', 'height', 'viewBox', 'preserveAspectRatio']);
 	}
 
-	public selectShapes(shapes: any|any[], silent = false){
-
+	public selectShapes(shapes: any | any[], silent = false) {
 		shapes = Array.isArray(shapes) ? shapes : [shapes];
 
 		const prevShapesLength = this._selectedShapes.length;
 
-		shapes.forEach(shape => {
+		shapes.forEach((shape) => {
 			// @ts-ignore
-			if (!this._selectedShapes.includes(shape) && shape.selectable){
+			if (!this._selectedShapes.includes(shape) && shape.selectable) {
 				// @ts-ignore
 				this._selectedShapes.push(shape);
 			}
 		});
 
-		if (!silent || prevShapesLength !== this._selectedShapes.length){
+		if (!silent || prevShapesLength !== this._selectedShapes.length) {
 			this.trigger('shapes:selected', shapes);
 			this.trigger('shapes:selection:updated', shapes);
 		}
 
 		return this;
-
 	}
 
-	public releaseShapes(shapes?: any|any[], silent = false){
-
+	public releaseShapes(shapes?: any | any[], silent = false) {
 		shapes = Array.isArray(shapes) ? shapes : [shapes];
 
 		const prevShapesLength = this._selectedShapes.length;
 
-		if (shapes?.[0]){
-			this._selectedShapes = this._selectedShapes.filter(shape => !shapes.includes(shape));
-		} else { // If shapes are empty, we remove all shapes from selection.
+		if (shapes?.[0]) {
+			this._selectedShapes = this._selectedShapes.filter((shape) => !shapes.includes(shape));
+		} else {
+			// If shapes are empty, we remove all shapes from selection.
 			this._selectedShapes = [];
 		}
 
-		if (!silent || prevShapesLength !== this._selectedShapes.length){
+		if (!silent || prevShapesLength !== this._selectedShapes.length) {
 			this.trigger('shapes:released', shapes);
 			this.trigger('shapes:selection:updated', shapes);
 		}
 
 		return this;
-
 	}
 
-	public getSelectedShapes() : any[] {
+	public getSelectedShapes(): any[] {
 		return this._selectedShapes;
 	}
 
-	public eachSelectedShape(callback: (v: any, i: number, a: any[]) => void){
+	public eachSelectedShape(callback: (v: any, i: number, a: any[]) => void) {
 		this._selectedShapes.forEach(callback);
 		return this;
 	}
 
-	public mapSelectedShapes(callback) : any[] {
+	public mapSelectedShapes(callback): any[] {
 		return this._selectedShapes.map(callback);
 	}
 
-	public addDefs(defs: any|any[], silent = false){
-
+	public addDefs(defs: any | any[], silent = false) {
 		defs = Array.isArray(defs) ? defs : [defs];
 
-		defs.forEach(def => {
+		defs.forEach((def) => {
 			// @ts-ignore
-			if (!this._defs.includes(def)){
+			if (!this._defs.includes(def)) {
 				// @ts-ignore
 				this._defs.push(def);
 			}
 		});
-		if (!silent){
+		if (!silent) {
 			this.trigger('defs:added', defs);
 		}
 
 		return this;
-
 	}
 
-	public removeDefs(defs: any|any[], silent = false){
+	public removeDefs(defs: any | any[], silent = false) {
 		return this;
 	}
 
-	public getDefs(){
+	public getDefs() {
 		return this._defs;
 	}
 
-	public eachDef(callback: (v: any, i: number, a: any[]) => void){
+	public eachDef(callback: (v: any, i: number, a: any[]) => void) {
 		this._defs.forEach(callback);
 		return this;
 	}
 
-	public mapDefs(callback) : any[] {
+	public mapDefs(callback): any[] {
 		return this._defs.map(callback);
 	}
 
-	public getSelector() : Selector {
+	public getSelector(): Selector {
 		return this._selector;
 	}
 
-	public setResponsiveSize(width: number, height: number){
-
+	public setResponsiveSize(width: number, height: number) {
 		return this;
-
 	}
 
-	public zoomTo(zoom = 1, pan = new Point()){
-
+	public zoomTo(zoom = 1, pan = new Point()) {
 		// First we have to set viewport to update shapes world matrix.
 		const size = this.getSize();
 		const zoomSize = size.clone().multiplyScalar(zoom);
-		const translate = new Point().subtractPoints(zoomSize, size).divideScalar(2).multiplyScalar(-1).add(pan);
+		const translate = new Point()
+			.subtractPoints(zoomSize, size)
+			.divideScalar(2)
+			.multiplyScalar(-1)
+			.add(pan);
 		this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
 
 		// And we also need to calculate viewBox from viewport to update svg attribute.
-		const {a, d, tx, ty} = this.viewportMatrix;
-		const {width, height} = this;
+		const { a, d, tx, ty } = this.viewportMatrix;
+		const { width, height } = this;
 
-		this.set('viewBox', [- tx / a, - ty / d, width / a, height / d]);
+		this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
 
 		// Update cache values too.
 		this._zoom = zoom;
 		this._pan.copy(pan);
 
 		return this;
-
 	}
 
-	public getSize(){
+	public getSize() {
 		return new Point(this.width, this.height);
 	}
 
-	public getPointer(e) : Point {
-		const {
-			left,
-			top
-		} = e.currentTarget.getBoundingClientRect();
-		const {
-			clientX,
-			clientY
-		} = ('ontouchstart' in window) ? e.touches[0] : e;
+	public getPointer(e): Point {
+		const { left, top } = e.currentTarget.getBoundingClientRect();
+		const { clientX, clientY } = 'ontouchstart' in window ? e.touches[0] : e;
 		return new Point(clientX - left, clientY - top);
 	}
 
-	private _onPointerStartInSelectMode(e){
-
-		const {
-			dataset
-		} = e.target;
-		let {
-			shape
-		} = dataset;
-		const isNode = ('controlNode' in dataset);
+	private _onPointerStartInSelectMode(e) {
+		const { dataset } = e.target;
+		let { shape } = dataset;
+		const isNode = 'controlNode' in dataset;
 		const pointer = this.getPointer(e);
 		let founded = this.findLastChildByPointer(pointer);
 
-		if (this.getSelectedShapes().includes(founded) && founded.isCollection){
+		if (this.getSelectedShapes().includes(founded) && founded.isCollection) {
 			founded = founded.findLastChildByPointer(pointer);
 			if (founded) shape = ''; // To create recursive selection.
 		}
 
-		if (isNode){
+		if (isNode) {
 			this._currentNodeId = dataset.id;
-			this.eachSelectedShape(shape => {
+			this.eachSelectedShape((shape) => {
 				shape.getControl()?.childById(dataset.id)?.onPointerStart(e);
 			});
 		} else {
-			if (!shape){
-				if (founded){
+			if (!shape) {
+				if (founded) {
 					this.releaseShapes();
 					this.selectShapes(founded);
 				} else {
 					this.releaseShapes();
-					if (this.multiselection){
+					if (this.multiselection) {
 						this._selector.bBox.reset().min.copy(pointer);
 						this._selector.bBox.max.copy(pointer);
 						this.trigger('selector:updated');
@@ -289,101 +258,95 @@ class Canvas extends ElementCollection(Element) {
 					}
 				}
 			}
-			this.eachSelectedShape(shape => {
+			this.eachSelectedShape((shape) => {
 				shape.getControl().onPointerStart(e);
 			});
 		}
-
 	}
 
-	private _onPointerMoveInSelectMode(e){
-
-		this.eachSelectedShape(shape => {
+	private _onPointerMoveInSelectMode(e) {
+		this.eachSelectedShape((shape) => {
 			shape.getControl().onPointerMove(e);
 			shape.getControl()?.childById(this._currentNodeId)?.onPointerMove(e);
 		});
 
-		if (this._selection){
+		if (this._selection) {
 			this._selector.bBox.max.copy(this.getPointer(e));
 			this.trigger('selector:updated');
 		}
-
 	}
 
-	private _onPointerEndInSelectMode(e){
-
-		this.eachSelectedShape(shape => {
+	private _onPointerEndInSelectMode(e) {
+		this.eachSelectedShape((shape) => {
 			shape.getControl().onPointerEnd(e);
 			shape.getControl()?.childById(this._currentNodeId)?.onPointerEnd(e);
 		});
 
 		this._currentNodeId = '';
 
-		if (this._selection){
-			const selectedShapes = this.mapChildren(shape => {
+		if (this._selection) {
+			const selectedShapes = this.mapChildren((shape) => {
 				const selectorPolygon = this._selector.bBox.toPolygon();
 				const shapePolygon = shape.bBox.toPolygon(shape.getWorldMatrix());
-				return (!this._selector.bBox.isEmpty() && selectorPolygon.intersects(shapePolygon) && shape);
-			}).filter(shape => !!shape);
+				return (
+					!this._selector.bBox.isEmpty() &&
+					selectorPolygon.intersects(shapePolygon) &&
+					shape
+				);
+			}).filter((shape) => !!shape);
 			this.selectShapes(selectedShapes);
 			this._selector.bBox.reset();
 			this.trigger('selector:updated');
 		}
 
 		this._selection = false;
-
 	}
 
-	private _onPointerStartInPanMode(e){
+	private _onPointerStartInPanMode(e) {
 		this._isDragging = true;
 		this._startVector.subtractPoints(this.getPointer(e), this._pan);
 	}
 
-	private _onPointerMoveInPanMode(e){
-
-		if (!this._isDragging){
+	private _onPointerMoveInPanMode(e) {
+		if (!this._isDragging) {
 			return;
 		}
 
 		const pan = this.getPointer(e).subtract(this._startVector);
 
 		this.zoomTo(this._zoom, pan);
-
 	}
 
-	private _onPointerEndInPanMode(e){
+	private _onPointerEndInPanMode(e) {
 		this._isDragging = false;
 	}
 
-	private _onPointerStartInDrawMode(e){}
+	private _onPointerStartInDrawMode(e) {}
 
-	private _onPointerMoveInDrawMode(e){}
+	private _onPointerMoveInDrawMode(e) {}
 
-	private _onPointerEndInDrawMode(e){}
+	private _onPointerEndInDrawMode(e) {}
 
-	public onPointerStart(e){
+	public onPointerStart(e) {
 		this[POINTEREVENTS.start[this.mode]](e);
 	}
 
-	public onPointerMove(e){
+	public onPointerMove(e) {
 		this[POINTEREVENTS.move[this.mode]](e);
 	}
 
-	public onPointerEnd(e){
+	public onPointerEnd(e) {
 		this[POINTEREVENTS.end[this.mode]](e);
 	}
 
-	public onWheel(e){
-		if (this.zoomable){
+	public onWheel(e) {
+		if (this.zoomable) {
 			e.preventDefault();
 			const pointer = this.getPointer(e);
 			const size = this.getSize();
 			this.zoomTo(toFixed(this.zoom * 0.999 ** e.deltaY));
 		}
 	}
-
 }
 
-export {
-	Canvas
-};
+export { Canvas };

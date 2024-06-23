@@ -1,34 +1,33 @@
-import {
-	PIBY180
-} from './constants';
+import { PIBY180 } from './constants';
 
-const clamp = (value: number, min: number, max: number) : number => Math.min(Math.max(value, min), max);
+const clamp = (value: number, min: number, max: number): number =>
+	Math.min(Math.max(value, min), max);
 
-const toFixed = (value: number, fractionDigits = 2) : number => ((Math.round(value * (10 ** fractionDigits)) / (10 ** fractionDigits)) || 0);
+const toFixed = (value: number, fractionDigits = 2): number =>
+	Math.round(value * 10 ** fractionDigits) / 10 ** fractionDigits || 0;
 
-const deg2Rad = (degree: number) : number => (degree * PIBY180);
+const deg2Rad = (degree: number): number => degree * PIBY180;
 
-const rad2Deg = (degree: number) : number => (degree / PIBY180);
+const rad2Deg = (degree: number): number => degree / PIBY180;
 
-const randInt = (min: number, max: number) : number => Math.floor(Math.random() * (max - min + 1)) + min;
+const randInt = (min: number, max: number): number =>
+	Math.floor(Math.random() * (max - min + 1)) + min;
 
-const uniqueId = (prefix?: string) : string => {
-
+const uniqueId = (prefix?: string): string => {
 	const pf = prefix ? prefix + '-' : '';
 	const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	let str = '', i;
+	let str = '',
+		i;
 
-	for (i = 0; i < 12; i++){
+	for (i = 0; i < 12; i++) {
 		str += charset[randInt(0, charset.length - 1)];
 	}
 
 	return pf + str;
-
 };
 
 // Thanks ChatGPT! :-)
-const isEqual = (value1: any, value2: any, visited = new Set()) : boolean => {
-
+const isEqual = (value1: any, value2: any, visited = new Set()): boolean => {
 	// Check if both values are of the same type
 	if (typeof value1 !== typeof value2) {
 		return false;
@@ -93,73 +92,73 @@ const isEqual = (value1: any, value2: any, visited = new Set()) : boolean => {
 
 	// If values are of different types and not arrays or objects, they are not equal
 	return false;
+};
 
-}
+const omitBy = (obj: any, callback: (value: any, key: string, object: any) => boolean) => {
+	const newObj = {};
+
+	for (let key in obj) {
+		if (!callback(obj[key], key, obj)) {
+			newObj[key] = obj[key];
+		}
+	}
+
+	return newObj;
+};
 
 const CURVE_VALUES_LENGTHS = {
-	'M':2,
-	'm':2,
-	'L':2,
-	'l':2,
-	'H':1,
-	'h':1,
-	'V':1,
-	'v':1,
-	'C':6,
-	'c':6,
-	'S':4,
-	's':4,
-	'Q':4,
-	'q':4,
-	'T':2,
-	't':2,
-	'A':7,
-	'a':7,
-	'Z':0,
-	'z':0
+	M: 2,
+	m: 2,
+	L: 2,
+	l: 2,
+	H: 1,
+	h: 1,
+	V: 1,
+	v: 1,
+	C: 6,
+	c: 6,
+	S: 4,
+	s: 4,
+	Q: 4,
+	q: 4,
+	T: 2,
+	t: 2,
+	A: 7,
+	a: 7,
+	Z: 0,
+	z: 0
 };
 
 const _groupArray = (array, size) => {
-
 	const grouped = [];
 
-	for (let i = 0; i < array.length; i += size){
+	for (let i = 0; i < array.length; i += size) {
 		grouped.push(array.slice(i, i + size));
 	}
 
 	return grouped;
-
 };
 
-const parsePath = (string: string) : string[][]|number[][] => {
-
+const parsePath = (string: string): string[][] | number[][] => {
 	const parsed = [];
 
-	(string.match(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g) || []).forEach((curve, i, array) => {
-		curve = curve.trim();
-		const command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
-		const values = (curve.match(/[\-\.\d]+/g) || []).map(n => toFixed(n));
-		const commandLength = CURVE_VALUES_LENGTHS[command];
-		if (values.length === commandLength){
-			parsed.push([command, ...values]);
-		} else {
-			_groupArray(values, commandLength).forEach(values => {
+	(string.match(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g) || []).forEach(
+		(curve, i, array) => {
+			curve = curve.trim();
+			const command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
+			const values = (curve.match(/[\-\.\d]+/g) || []).map((n) => toFixed(n));
+			const commandLength = CURVE_VALUES_LENGTHS[command];
+			if (values.length === commandLength) {
 				parsed.push([command, ...values]);
-			});
+			} else {
+				_groupArray(values, commandLength).forEach((values) => {
+					parsed.push([command, ...values]);
+				});
+			}
 		}
-	});
+	);
 
 	return parsed;
-
 };
 
-export {
-	clamp,
-	toFixed,
-	deg2Rad,
-	rad2Deg,
-	randInt,
-	uniqueId,
-	isEqual,
-	parsePath
-};
+export { clamp, toFixed, deg2Rad, rad2Deg, randInt, uniqueId, isEqual, omitBy, parsePath };

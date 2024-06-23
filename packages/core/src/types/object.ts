@@ -1,55 +1,54 @@
-import type {
-	AnyColor
-} from './math';
+import type { AnyColor } from './math';
 
 type ColorStopObject = {
-	color:AnyColor
+	color: AnyColor;
 };
 
 interface ElementObject {
-	id?:string;
+	id?: string;
 }
 
 interface GradientObject extends ElementObject {
-	colorStops:ColorStopObject[]
+	colorStops: ColorStopObject[];
 }
 
 interface PatternObject extends ElementObject {}
 
 interface ClipPathObject {}
 
-type FillStroke = AnyColor|GradientObject|PatternObject;
+type FillStroke = AnyColor | GradientObject | PatternObject;
 
 type ParsedCurve = [string, number, number?, number?, number?, number?, number?, number?];
 
 type ParsedPath = ParsedCurve[];
 
 interface TransformObject {
-	left:number;
-	top:number;
-	angle:number;
-	scaleX:number;
-	scaleY:number;
-	skewX:number;
-	skewY:number;
+	left: number;
+	top: number;
+	angle: number;
+	scaleX: number;
+	scaleY: number;
+	skewX: number;
+	skewY: number;
 }
 
 interface CanvasObject {
-	width:number;
-	height:number;
+	width: number;
+	height: number;
 }
 
 interface ShapeObject extends TransformObject {
-	fill:FillStroke;
-	stroke:FillStroke;
-	strokeWidth:number;
-	width?:number;
-	height?:number;
-	r?:number;
-	rx?:number;
-	ry?:number;
-	d?:string;
-	points?:string;
+	tagName: string;
+	fill: FillStroke;
+	stroke: FillStroke;
+	strokeWidth: number;
+	width?: number;
+	height?: number;
+	r?: number;
+	rx?: number;
+	ry?: number;
+	d?: string;
+	points?: string;
 }
 
 export {

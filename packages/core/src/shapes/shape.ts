@@ -1,22 +1,9 @@
-import {
-	Element
-} from './../element';
-import {
-	Color,
-	Matrix,
-	BBox,
-	Point
-} from './../maths';
-import {
-	TransformControl
-} from './../interactive';
-import {
-	FillStroke,
-	TransformObject
-} from './../types';
+import { Element } from './../element';
+import { Color, Matrix, BBox, Point } from './../maths';
+import { TransformControl } from './../interactive';
+import { Animation } from './../animation';
 
 class Shape extends Element {
-
 	public readonly isShape = true;
 	public selectable = true;
 
@@ -28,6 +15,8 @@ class Shape extends Element {
 
 	protected _controls = {};
 	protected _activeControl: string;
+
+	protected _animation = new Animation();
 
 	protected transformProps: string[] = [
 		'left',
@@ -54,15 +43,15 @@ class Shape extends Element {
 	protected strokeWidth: number;
 	protected opacity: number;
 
-	get fill(){
+	get fill() {
 		return this._fill;
 	}
 
-	set fill(value: any){
-		if (this._defs.fill){
+	set fill(value: any) {
+		if (this._defs.fill) {
 			this.canvas?.removeDefs(this._defs.fill);
 		}
-		if (Color.isColor(value)){
+		if (Color.isColor(value)) {
 			this._fill = value;
 			this._defs.fill = null;
 		} else {
@@ -73,15 +62,15 @@ class Shape extends Element {
 		}
 	}
 
-	get stroke(){
+	get stroke() {
 		return this._stroke;
 	}
 
-	set stroke(value: any){
-		if (this._defs.stroke){
+	set stroke(value: any) {
+		if (this._defs.stroke) {
 			this.canvas?.removeDefs(this._defs.stroke);
 		}
-		if (Color.isColor(value)){
+		if (Color.isColor(value)) {
 			this._stroke = value;
 			this._defs.stroke = null;
 		} else {
@@ -92,164 +81,164 @@ class Shape extends Element {
 		}
 	}
 
-	set originX(value: number){
+	set originX(value: number) {
 		this.origin.x = value;
 		this.bBox.fromSizeAndOrigin(this.bBox.getSize(), this.origin);
 	}
 
-	set originY(value: number){
+	set originY(value: number) {
 		this.origin.y = value;
 		this.bBox.fromSizeAndOrigin(this.bBox.getSize(), this.origin);
 	}
 
-	get originX(){
+	get originX() {
 		return this.origin.x;
 	}
 
-	get originY(){
+	get originY() {
 		return this.origin.y;
 	}
 
-	public init(params){
+	public init(params) {
 		this.set(params, true);
 		this.createId(this.tagName);
-		this.addControl('transform', new TransformControl({
-			shape:this
-		})).setControl('transform');
+		this.addControl(
+			'transform',
+			new TransformControl({
+				shape: this
+			})
+		).setControl('transform');
 		this.updateMatrix();
 		this.updateBBox();
 		this.trigger('init', this);
 	}
 
-	public set(key, value?, silent = false){
-
+	public set(key, value?, silent = false) {
 		super.set(key, value, true);
 
-		if (!key){
+		if (!key) {
 			return this;
 		}
 
 		const props = this.transformProps;
 
 		// Check props if key is a string.
-		if (typeof key === 'string'){
-			if (props.includes(key)){
+		if (typeof key === 'string') {
+			if (props.includes(key)) {
 				this.updateMatrix();
 			}
 			this.updateOthersWithKeys([key]);
-			if (!silent){
-				this.trigger('set', {[key]:value}, this);
-				if (this.canvas){
-					this.canvas.trigger('shapes:set', {[key]:value}, this);
+			if (!silent) {
+				this.trigger('set', { [key]: value }, this);
+				if (this.canvas) {
+					this.canvas.trigger('shapes:set', { [key]: value }, this);
 				}
 			}
-		} else { // Check props if key is an object.
+		} else {
+			// Check props if key is an object.
 			let i, prop;
-			for (i = 0; i < props.length; i++){
+			for (i = 0; i < props.length; i++) {
 				prop = props[i];
-				if (prop in key){
+				if (prop in key) {
 					this.updateMatrix();
 					break;
 				}
 			}
 			this.updateOthersWithKeys(Object.keys(key));
 			// If key is an object, the 'value' represents the 'silent'.
-			if (!value){
+			if (!value) {
 				this.trigger('set', key, this);
-				if (this.canvas){
+				if (this.canvas) {
 					this.canvas.trigger('shapes:set', key, this);
 				}
 			}
 		}
 
 		return this;
-
 	}
 
-	protected getAttrMap() : string[] {
-		return [
-			'fill',
-			'stroke',
-			'strokeWidth'
-		];
+	protected getAttrMap(): string[] {
+		return ['fill', 'stroke', 'strokeWidth'];
 	}
 
-	protected updateOthersWithKeys(keys: string[]){
+	protected updateOthersWithKeys(keys: string[]) {
 		return this;
 	}
 
-	public getAttributes() : object {
+	public getAttributes(): object {
 		const defaultAttributes = super.getAttributes();
 		// @ts-ignore
-		if (this.isCollection){
+		if (this.isCollection) {
 			return defaultAttributes;
 		}
 		const translate = this.bBox.getSize().multiply(this.origin).multiplyScalar(-1).toString();
 		return {
 			...defaultAttributes,
-			transform:`translate(${translate})`
+			transform: `translate(${translate})`
 		};
 	}
 
-	public getWrapperAttributes() : object {
+	public getWrapperAttributes(): object {
 		const attrs: any = {
-			id:this.id,
-			transform:this.matrix.toCSS()
+			id: this.id,
+			transform: this.matrix.toCSS()
 		};
-		if (this.className){
+		if (this.className) {
 			attrs.className = this.className;
 		}
 		return attrs;
 	}
 
-	public addControl(name: string, control: any){
-		if (name){
+	public addControl(name: string, control: any) {
+		if (name) {
 			this._controls[name] = control;
 		}
 		return this;
 	}
 
-	public getControl(name?: string){
+	public getControl(name?: string) {
 		return this._controls[name || this._activeControl];
 	}
 
-	public setControl(name: string){
+	public setControl(name: string) {
 		this._activeControl = name;
 		this.trigger('control:switched', this.getControl(), this);
-		if (this.canvas){
+		if (this.canvas) {
 			this.canvas.trigger('shapes:control:switched', this.getControl(), this);
 		}
 		return this;
 	}
 
-	public updateMatrix(){
+	public updateMatrix() {
 		this.matrix.fromOptions(this.get(this.transformProps));
 		return this;
 	}
 
-	protected updateBBox(){
+	protected updateBBox() {
 		console.warn('updateBBox() must be implemented by subclass.');
 		return this;
 	}
 
-	public getWorldMatrix() : Matrix {
-		const {
-			viewportMatrix,
-			isCanvas
-		} = this.parent;
-		return new Matrix().copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix()).multiply(this.matrix);
+	public getWorldMatrix(): Matrix {
+		const { viewportMatrix, isCanvas } = this.parent;
+		return new Matrix()
+			.copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix())
+			.multiply(this.matrix);
 	}
 
-	public getLocalPointer(e, matrix?: Matrix) : Point {
+	public getLocalPointer(e, matrix?: Matrix): Point {
 		const pointer = this.canvas.getPointer(e);
 		return pointer.transform(matrix || this.getWorldMatrix().invert());
 	}
 
-	public toJSON() : object {
+	public animate() {
+		return this._animation;
+	}
 
+	public toJSON(): object {
 		const json: any = super.toJSON();
 		const transform = this.transformProps.reduce((memo, prop) => {
-			if (typeof this[prop] !== 'undefined'){
+			if (typeof this[prop] !== 'undefined') {
 				memo[prop] = this[prop];
 			}
 			return memo;
@@ -257,7 +246,7 @@ class Shape extends Element {
 		const defs = {};
 		let key, def;
 
-		for (key in this._defs){
+		for (key in this._defs) {
 			def = this._defs[key];
 			if (def) {
 				defs[key] = def.toJSON();
@@ -271,11 +260,7 @@ class Shape extends Element {
 			...transform,
 			...defs
 		};
-
 	}
-
 }
 
-export {
-	Shape
-};
+export { Shape };

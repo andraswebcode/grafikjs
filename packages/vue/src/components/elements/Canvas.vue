@@ -1,11 +1,34 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue';
-const canvas: any = inject('canvas');
-const attributes = computed(() => canvas.getAttributes());
+import { ref, watch, inject, onMounted, onUnmounted, provide } from 'vue';
+import { CanvasObject, Canvas } from '@grafikjs/core';
+
+const props = defineProps<CanvasObject>();
+const canvas: Canvas = inject('canvas');
+global.c = canvas;
+const attrs = ref(canvas.getAttributes());
+const onSet = () => {
+	attrs.value = canvas.getAttributes();
+};
+
+onMounted(() => {
+	canvas.on('set', onSet).set(props);
+});
+
+onUnmounted(() => {
+	canvas.off('set', onSet);
+});
+
+watch(props, (props) => {
+	canvas.set(props);
+});
+
+provide('collection', canvas);
 </script>
 
 <template>
-	<svg v-bind="attributes"></svg>
+	<svg v-bind="attrs">
+		<slot />
+	</svg>
 </template>
 
 <style scoped></style>

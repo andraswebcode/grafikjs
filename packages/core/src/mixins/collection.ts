@@ -1,96 +1,83 @@
-import {
-	Constructor
-} from './../types/mixin';
-import {
-	Point
-} from './../maths';
+import { Constructor } from './../types/mixin';
+import { Point } from './../maths';
 
-function Collection<TBase extends Constructor>(Base: TBase){
-
+function Collection<TBase extends Constructor>(Base: TBase) {
 	return class Collection extends Base {
-
 		public readonly isCollection = true;
 		protected children: any[] = [];
 
-		public setChildren(children: any|any[], silent = false) : Collection {
-
+		public setChildren(children: any | any[], silent = false): Collection {
 			this.children = [];
 
 			this.add(children, silent);
 
 			return this;
-
 		}
 
-		public getChildren(){
+		public getChildren() {
 			return this.children;
 		}
 
-		public add(children: any|any[], silent = false) : Collection {
-
+		public add(children: any | any[], silent = false): Collection {
 			children = Array.isArray(children) ? children : [children];
 
-			children.forEach(child => {
+			children.forEach((child) => {
 				this.children.push(child);
 			});
 
-			if (!silent){
+			if (!silent) {
 				// @ts-ignore
 				this.trigger('added', children);
 			}
 
 			return this;
-
 		}
 
-		public remove(children: any|any[], silent = false) : Collection {
-
+		public remove(children: any | any[], silent = false): Collection {
 			children = Array.isArray(children) ? children : [children];
 			let index;
 
 			// Using splice, instead of filter to mutate, and keep the original array.
-			children.forEach(child => {
+			children.forEach((child) => {
 				index = this.children.indexOf(child);
-				if (index !== -1){
+				if (index !== -1) {
 					this.children.splice(index, 1);
 				}
 			});
 
-			if (!silent){
+			if (!silent) {
 				// @ts-ignore
 				this.trigger('removed', children);
 			}
 
 			return this;
-
 		}
 
-		public eachChild(callback: (v: any, i: number, a: any[]) => void) : Collection {
+		public eachChild(callback: (v: any, i: number, a: any[]) => void): Collection {
 			this.children.forEach(callback);
 			return this;
 		}
 
-		public mapChildren(callback) : any[] {
+		public mapChildren(callback): any[] {
 			return this.children.map(callback);
 		}
 
-		public childAt(index: number){
+		public childAt(index: number) {
 			return this.children[index];
 		}
 
-		public childById(id: string){
-			return this.children.find(el => (el.id === id));
+		public childById(id: string) {
+			return this.children.find((el) => el.id === id);
 		}
 
-		public childByName(name: string){
-			return this.children.find(el => (el.name === name));
+		public childByName(name: string) {
+			return this.children.find((el) => el.name === name);
 		}
 
-		public moveChildTo(child: any, index: number) : Collection {
-
+		public moveChildTo(child: any, index: number): Collection {
 			const fromIndex = this.children.indexOf(child);
 
-			if (fromIndex !== -1){
+			if (fromIndex !== -1) {
 				this.children.splice(fromIndex, 1);
 				this.children.splice(index, 0, child);
 				// @ts-ignore
@@ -98,29 +85,20 @@ function Collection<TBase extends Constructor>(Base: TBase){
 			}
 
 			return this;
-
 		}
 
-		public moveChildUp(child: any) : Collection {
-
+		public moveChildUp(child: any): Collection {
 			const fromIndex = this.children.indexOf(child);
 
 			return this.moveChildTo(child, fromIndex + 1);
-
 		}
 
-		public moveChildDown(child: any) : Collection {
-
+		public moveChildDown(child: any): Collection {
 			const fromIndex = this.children.indexOf(child);
 
 			return this.moveChildTo(child, fromIndex - 1);
-
 		}
-
-	}
-
+	};
 }
 
-export {
-	Collection
-};
+export { Collection };
