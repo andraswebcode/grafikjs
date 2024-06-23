@@ -19420,7 +19420,7 @@ const json = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([
 	}
 ]);
 
-const __returned__ = { width, height, rotate, json, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, get Canvas() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Canvas }, get Group() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Group }, get Rect() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Rect }, get Wrapper() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Wrapper }, get Interactive() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Interactive }, get Selector() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Selector } }
+const __returned__ = { width, height, rotate, json, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, get Canvas() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Canvas }, get Group() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Group }, get Rect() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Rect }, get ShapeTree() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.ShapeTree }, get Wrapper() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Wrapper }, get Interactive() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Interactive }, get Selector() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Selector } }
 Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
 return __returned__
 }
@@ -19778,7 +19778,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                 })
               ]),
               _: 1 /* STABLE */
-            })
+            }),
+            (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["ShapeTree"], { json: $setup.json }, null, 8 /* PROPS */, ["json"])
           ]),
           _: 1 /* STABLE */
         }, 8 /* PROPS */, ["width", "height"]),

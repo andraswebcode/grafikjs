@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { Canvas, Group, Rect, Wrapper, Interactive, Selector } from '@grafikjs/vue';
+import { Canvas, Group, Rect, ShapeTree, Wrapper, Interactive, Selector } from '@grafikjs/vue';
 const width = ref(1280);
 const height = ref(720);
 const rotate = ref(45);
@@ -245,6 +245,7 @@ const json = ref([
 					<Rect :width="200" :height="200" :left="100" :top="100" fill="green" />
 					<Rect :width="200" :height="200" :left="-100" :top="-100" fill="green" />
 				</Group>
+				<ShapeTree :json="json" />
 			</Canvas>
 			<Interactive>
 				<Selector />
