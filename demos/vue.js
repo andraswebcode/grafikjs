@@ -12527,19 +12527,12 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
     __name: 'Canvas',
-    props: {
-        width: { type: Number, required: false },
-        height: { type: Number, required: false }
-    },
     setup: function (__props, _a) {
         var __expose = _a.expose;
         __expose();
         var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
-        var attributes = (0,vue__WEBPACK_IMPORTED_MODULE_0__.computed)(function () {
-            return canvas.getAttributes();
-        });
-        var props = __props;
-        var __returned__ = { canvas: canvas, attributes: attributes, props: props };
+        var attributes = (0,vue__WEBPACK_IMPORTED_MODULE_0__.computed)(function () { return canvas.getAttributes(); });
+        var __returned__ = { canvas: canvas, attributes: attributes };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
     }
@@ -18279,11 +18272,11 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Canvas: () => (/* reexport safe */ _Canvas__WEBPACK_IMPORTED_MODULE_0__["default"]),
-/* harmony export */   ShapeTree: () => (/* reexport safe */ _ShapeTree__WEBPACK_IMPORTED_MODULE_1__["default"])
+/* harmony export */   Canvas: () => (/* reexport safe */ _Canvas_vue__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   ShapeTree: () => (/* reexport safe */ _ShapeTree_vue__WEBPACK_IMPORTED_MODULE_1__["default"])
 /* harmony export */ });
-/* harmony import */ var _Canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Canvas */ "./packages/vue/src/components/elements/Canvas.vue");
-/* harmony import */ var _ShapeTree__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ShapeTree */ "./packages/vue/src/components/elements/ShapeTree.vue");
+/* harmony import */ var _Canvas_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Canvas.vue */ "./packages/vue/src/components/elements/Canvas.vue");
+/* harmony import */ var _ShapeTree_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ShapeTree.vue */ "./packages/vue/src/components/elements/ShapeTree.vue");
 
 
 
@@ -18322,15 +18315,15 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Control: () => (/* reexport safe */ _Control__WEBPACK_IMPORTED_MODULE_0__["default"]),
-/* harmony export */   Interactive: () => (/* reexport safe */ _Interactive__WEBPACK_IMPORTED_MODULE_2__["default"]),
-/* harmony export */   Selector: () => (/* reexport safe */ _Selector__WEBPACK_IMPORTED_MODULE_3__["default"]),
-/* harmony export */   Wrapper: () => (/* reexport safe */ _Wrapper__WEBPACK_IMPORTED_MODULE_1__["default"])
+/* harmony export */   Control: () => (/* reexport safe */ _Control_vue__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   Interactive: () => (/* reexport safe */ _Interactive_vue__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   Selector: () => (/* reexport safe */ _Selector_vue__WEBPACK_IMPORTED_MODULE_3__["default"]),
+/* harmony export */   Wrapper: () => (/* reexport safe */ _Wrapper_vue__WEBPACK_IMPORTED_MODULE_1__["default"])
 /* harmony export */ });
-/* harmony import */ var _Control__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Control */ "./packages/vue/src/components/interactive/Control.vue");
-/* harmony import */ var _Wrapper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Wrapper */ "./packages/vue/src/components/interactive/Wrapper.vue");
-/* harmony import */ var _Interactive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Interactive */ "./packages/vue/src/components/interactive/Interactive.vue");
-/* harmony import */ var _Selector__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Selector */ "./packages/vue/src/components/interactive/Selector.vue");
+/* harmony import */ var _Control_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Control.vue */ "./packages/vue/src/components/interactive/Control.vue");
+/* harmony import */ var _Wrapper_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Wrapper.vue */ "./packages/vue/src/components/interactive/Wrapper.vue");
+/* harmony import */ var _Interactive_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Interactive.vue */ "./packages/vue/src/components/interactive/Interactive.vue");
+/* harmony import */ var _Selector_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Selector.vue */ "./packages/vue/src/components/interactive/Selector.vue");
 
 
 
@@ -18376,8 +18369,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @grafikjs/core */ "./packages/core/src/index.ts");
 
-var createGrafik = function () { return ({
+var createGrafik = function (opt) { return ({
     install: function (app, options) {
+        if (options === void 0) { options = opt; }
         var canvas = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Canvas(options);
         app.provide('canvas', canvas);
     }
@@ -18875,15 +18869,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Wrapper"], null, {
       default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Canvas"], {
-          width: $setup.width,
-          height: $setup.height
-        }, {
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Canvas"], null, {
           default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
             (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["ShapeTree"], { json: $setup.json }, null, 8 /* PROPS */, ["json"])
           ]),
           _: 1 /* STABLE */
-        }, 8 /* PROPS */, ["width", "height"]),
+        }),
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Interactive"], null, {
           default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
             (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Selector"])

@@ -8040,12 +8040,12 @@ var __rest = (undefined && undefined.__rest) || function (s, e) {
 
 var Shape = function (_a) {
     var tagName = _a.tagName, children = _a.children, props = __rest(_a, ["tagName", "children"]);
-    var Component = (tagName === 'g') ? _group__WEBPACK_IMPORTED_MODULE_2__.Group : (0,_hocs__WEBPACK_IMPORTED_MODULE_3__.withCollectionContext)(_shape_base__WEBPACK_IMPORTED_MODULE_1__.ShapeBase, tagName);
+    var Component = tagName === 'g' ? _group__WEBPACK_IMPORTED_MODULE_2__.Group : (0,_hocs__WEBPACK_IMPORTED_MODULE_3__.withCollectionContext)(_shape_base__WEBPACK_IMPORTED_MODULE_1__.ShapeBase, tagName);
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(Component, __assign({}, props, { children: children === null || children === void 0 ? void 0 : children.map(function (child) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(Shape, __assign({}, child), child.id)); }) })));
 };
 var ShapeTree = function (_a) {
     var _b = _a.json, json = _b === void 0 ? [] : _b;
-    return json.map(function (shape) { return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(Shape, __assign({}, shape), shape.id)); });
+    return json.map(function (shape) { return (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(Shape, __assign({}, shape), shape.id); });
 };
 
 

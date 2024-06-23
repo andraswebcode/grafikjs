@@ -1,26 +1,19 @@
 {
 	"compilerOptions": {
-		"target": "ES2020",
-		"useDefineForClassFields": true,
-		"module": "ESNext",
-		"lib": ["ES2020", "DOM", "DOM.Iterable"],
-		"skipLibCheck": true,
-		"noImplicitAny": false,
+		"outDir": "./dist/",
+		"module": "es6",
+		"target": "es5",
 		"allowJs": true,
-
-		/* Bundler mode */
-		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": true,
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"noEmit": true,
-		"jsx": "preserve",
-
-		/* Linting */
-		"strict": true
-		// "noUnusedLocals": true,
-		// "noUnusedParameters": true,
-		// "noFallthroughCasesInSwitch": true
+		"allowSyntheticDefaultImports": true,
+		"moduleResolution": "Node",
+		// "strict": true,
+		// "strictPropertyInitialization":false,
+		"noImplicitAny": false,
+		"baseUrl": ".",
+		"paths": {
+			"*": ["src/*"],
+			"@/*": ["./*"]
+		}
 	},
-	"include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
+	"include": ["./src/**/*.ts", "./src/**/*.vue"]
 }

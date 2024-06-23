@@ -1,14 +1,10 @@
-import {
-	Canvas
-} from '@grafikjs/core';
+import { Canvas } from '@grafikjs/core';
 
-const createGrafik = () => ({
-	install(app, options){
+const createGrafik = (opt?) => ({
+	install(app, options = opt) {
 		const canvas = new Canvas(options);
 		app.provide('canvas', canvas);
 	}
 });
 
-export {
-	createGrafik
-};
+export { createGrafik };

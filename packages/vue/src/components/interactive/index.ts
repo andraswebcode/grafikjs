@@ -1,6 +1,6 @@
-import Control from './Control';
-import Wrapper from './Wrapper';
-import Interactive from './Interactive';
-import Selector from './Selector';
+import Control from './Control.vue';
+import Wrapper from './Wrapper.vue';
+import Interactive from './Interactive.vue';
+import Selector from './Selector.vue';
 
 export { Control, Wrapper, Interactive, Selector };

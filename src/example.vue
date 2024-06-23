@@ -9,7 +9,7 @@ const json = ref([]);
 <template>
 	<div>
 		<Wrapper>
-			<Canvas :width="width" :height="height">
+			<Canvas>
 				<ShapeTree :json="json" />
 			</Canvas>
 			<Interactive>
