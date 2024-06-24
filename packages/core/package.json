@@ -1,38 +1,38 @@
 {
-  "name": "@grafikjs/core",
-  "version": "0.0.51",
-  "main": "./src/index.ts",
-  "types":"./src/index.d.ts",
-  "scripts": {
-    "start": "webpack",
-    "build": "webpack --env production"
-  },
-  "author": "Andras Tovishati",
-  "license": "MIT",
-  "description": "A lightweight JavaScript library for creating interactive SVG on the web.",
-  "dependencies": {},
-  "devDependencies": {
-    "webpack":"*",
-    "webpack-cli":"*",
-    "typescript":"*",
-    "ts-loader":"*"
-  },
-  "homepage":"https://grafikjs.andrasweb.com/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/andraswebcode/grafikjs/tree/main",
-    "directory": "packages/core"
-  },
-  "keywords": [
-    "SVG",
-    "interactive",
-    "graphic",
-    "graphics",
-    "drag",
-    "scale",
-    "move",
-    "rotate",
-    "object",
-    "model"
-  ]
+	"name": "@grafikjs/core",
+	"version": "0.0.52",
+	"main": "./src/index.ts",
+	"types": "./src/index.d.ts",
+	"scripts": {
+		"start": "webpack",
+		"build": "webpack --env production"
+	},
+	"author": "Andras Tovishati",
+	"license": "MIT",
+	"description": "A lightweight JavaScript library for creating interactive SVG on the web.",
+	"dependencies": {},
+	"devDependencies": {
+		"webpack": "*",
+		"webpack-cli": "*",
+		"typescript": "*",
+		"ts-loader": "*"
+	},
+	"homepage": "https://grafikjs.andrasweb.com/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/andraswebcode/grafikjs/tree/main",
+		"directory": "packages/core"
+	},
+	"keywords": [
+		"SVG",
+		"interactive",
+		"graphic",
+		"graphics",
+		"drag",
+		"scale",
+		"move",
+		"rotate",
+		"object",
+		"model"
+	]
 }
