@@ -3400,8 +3400,12 @@ var ScaleControlNode = /** @class */ (function (_super) {
             return;
         }
         var shape = this.getShape();
-        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
-        var scale = shape.getLocalPointer(e, this._startMatrix).divide(this._startVector).multiply(this._startScale).abs();
+        // const {left, top} = shape.getWorldMatrix().toOptions();
+        var scale = shape
+            .getLocalPointer(e, this._startMatrix)
+            .divide(this._startVector)
+            .multiply(this._startScale)
+            .abs();
         var ratio = this._startScale.x / this._startScale.y;
         var set = {};
         if (this.axis === 'x') {

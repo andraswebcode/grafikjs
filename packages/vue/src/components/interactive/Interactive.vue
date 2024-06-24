@@ -27,9 +27,10 @@ onUnmounted(() => {
 		@mousedown.prevent="mousedown"
 		@mousemove="mousemove"
 		@mouseup="mouseup"
+		@mouseleave="mouseup"
 		@wheel="wheel"
 	>
-		<Control v-for="shape in shapes" :control="shape.getControl()" />
+		<Control v-for="shape in shapes" :key="shape.id" :control="shape.getControl()" />
 		<slot />
 	</div>
 </template>

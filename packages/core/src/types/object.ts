@@ -51,6 +51,10 @@ interface ShapeObject extends TransformObject {
 	points?: string;
 }
 
+interface GroupObject extends ShapeObject {
+	children: any[];
+}
+
 export {
 	ColorStopObject,
 	GradientObject,
@@ -61,5 +65,6 @@ export {
 	ParsedPath,
 	TransformObject,
 	CanvasObject,
-	ShapeObject
+	ShapeObject,
+	GroupObject
 };

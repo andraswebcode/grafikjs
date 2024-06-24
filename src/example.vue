@@ -1,25 +1,19 @@
 <script setup>
 import { ref } from 'vue';
-import { Canvas, Group, Rect, ShapeTree, Wrapper, Interactive, Selector } from '@grafikjs/vue';
+import {
+	Canvas,
+	Group,
+	Rect,
+	Path,
+	ShapeTree,
+	Wrapper,
+	Interactive,
+	Selector
+} from '@grafikjs/vue';
 const width = ref(1280);
 const height = ref(720);
 const rotate = ref(45);
 const json = ref([
-	{
-		id: 'rect-Yta5Pdq4y2je',
-		name: '',
-		tagName: 'rect',
-		fill: { id: 'pattern-aIQ65qznRkSV', name: '', tagName: 'pattern', children: [] },
-		width: 1200,
-		height: 800,
-		left: 600,
-		top: 400,
-		angle: 0,
-		scaleX: 1,
-		scaleY: 1,
-		skewX: 0,
-		skewY: 0
-	},
 	{
 		id: 'g-M7NEAs01Icl1',
 		name: '',
@@ -72,29 +66,6 @@ const json = ref([
 		id: 'circle-NjxlXyZCpbKh',
 		name: '',
 		tagName: 'circle',
-		fill: {
-			id: 'radialGradient-hnDPTtTNeRlo',
-			name: '',
-			tagName: 'radialGradient',
-			children: [
-				{
-					id: 'stop-joPLt0LglRvO',
-					name: '',
-					tagName: 'stop',
-					offset: 0,
-					stopColor: 'red',
-					stopOpacity: 1
-				},
-				{
-					id: 'stop-U1ROJ5u0XNQn',
-					name: '',
-					tagName: 'stop',
-					offset: 1,
-					stopColor: 'blue',
-					stopOpacity: 1
-				}
-			]
-		},
 		r: 50,
 		cx: 50,
 		cy: 50,
@@ -127,29 +98,6 @@ const json = ref([
 		id: 'path-kGa1gK1SYKhr',
 		name: '',
 		tagName: 'path',
-		fill: {
-			id: 'linearGradient-7UoNA93OaDg8',
-			name: '',
-			tagName: 'linearGradient',
-			children: [
-				{
-					id: 'stop-todvI6PKpDEJ',
-					name: '',
-					tagName: 'stop',
-					offset: 0,
-					stopColor: 'red',
-					stopOpacity: 1
-				},
-				{
-					id: 'stop-1HuymXTDy3CM',
-					name: '',
-					tagName: 'stop',
-					offset: 1,
-					stopColor: '#F44',
-					stopOpacity: 1
-				}
-			]
-		},
 		d: 'M 41.376 11.025000000000002 C 26.375999999999998 -13.974999999999998 -22.624000000000002 11.025000000000002 11.376 46.025000000000006 L 41.376 76.025 L 71.376 46.025000000000006 C 105.376 6.025000000000002 56.376 -13.974999999999998 41.376 11.025000000000002',
 		left: 450,
 		top: 250,
@@ -163,29 +111,6 @@ const json = ref([
 		id: 'polyline-C4eoMzQX67qY',
 		name: '',
 		tagName: 'polygon',
-		fill: {
-			id: 'linearGradient-FEf53VpA0ZMX',
-			name: '',
-			tagName: 'linearGradient',
-			children: [
-				{
-					id: 'stop-R29LzAzEtWhq',
-					name: '',
-					tagName: 'stop',
-					offset: 0,
-					stopColor: 'red',
-					stopOpacity: 1
-				},
-				{
-					id: 'stop-Ey3n54yJKfrq',
-					name: '',
-					tagName: 'stop',
-					offset: 1,
-					stopColor: 'blue',
-					stopOpacity: 1
-				}
-			]
-		},
 		points: '50 0 100 100 0 100',
 		left: 350,
 		top: 150,
@@ -210,21 +135,6 @@ const json = ref([
 		scaleY: 1,
 		skewX: 0,
 		skewY: 0
-	},
-	{
-		id: 'rect-XUcgrfmJZuEc',
-		name: '',
-		tagName: 'image',
-		width: 512,
-		height: 342,
-		href: 'img.jpg',
-		left: 300,
-		top: 600,
-		angle: 0,
-		scaleX: 0.4,
-		scaleY: 0.4,
-		skewX: 0,
-		skewY: 0
 	}
 ]);
 </script>
@@ -240,6 +150,13 @@ const json = ref([
 					:top="400"
 					:angle="rotate"
 					fill="lightblue"
+				/>
+				<Path
+					d="M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25"
+					fill="red"
+					:angle="330"
+					:left="800"
+					:top="200"
 				/>
 				<Group :left="200" :top="200" fill="lightgreen">
 					<Rect :width="200" :height="200" :left="100" :top="100" />
