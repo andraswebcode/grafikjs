@@ -24,7 +24,7 @@ onUnmounted(() => {
 <template>
 	<div
 		class="grafik-interactive"
-		@mousedown="mousedown"
+		@mousedown.prevent="mousedown"
 		@mousemove="mousemove"
 		@mouseup="mouseup"
 		@wheel="wheel"

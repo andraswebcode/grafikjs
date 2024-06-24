@@ -239,11 +239,11 @@ const json = ref([
 					:left="400"
 					:top="400"
 					:angle="rotate"
-					fill="green"
+					fill="lightblue"
 				/>
-				<Group :left="200" :top="200">
-					<Rect :width="200" :height="200" :left="100" :top="100" fill="green" />
-					<Rect :width="200" :height="200" :left="-100" :top="-100" fill="green" />
+				<Group :left="200" :top="200" fill="lightgreen">
+					<Rect :width="200" :height="200" :left="100" :top="100" />
+					<Rect :width="200" :height="200" :left="-100" :top="-100" />
 				</Group>
 				<ShapeTree :json="json" />
 			</Canvas>

@@ -1262,8 +1262,8 @@ var ControlNode = /** @class */ (function (_super) {
     ControlNode.prototype.getStyle = function () {
         var _a = this.getPosition(), x = _a.x, y = _a.y;
         return {
-            left: x,
-            top: y
+            left: x + 'px',
+            top: y + 'px'
         };
     };
     ControlNode.prototype.getAttributes = function () {
@@ -1608,10 +1608,10 @@ var Control = /** @class */ (function (_super) {
         var size = this.getSize();
         var _b = this.shape.origin.clone().multiplyScalar(100), x = _b.x, y = _b.y;
         return {
-            width: Math.abs(size.x),
-            height: Math.abs(size.y),
-            left: left,
-            top: top,
+            width: Math.abs(size.x) + 'px',
+            height: Math.abs(size.y) + 'px',
+            left: left + 'px',
+            top: top + 'px',
             transform: "translate(".concat(-x, "%, ").concat(-y, "%) rotate(").concat(angle, "deg)"),
             transformOrigin: "".concat(x, "% ").concat(y, "%")
         };
@@ -2021,10 +2021,10 @@ var Selector = /** @class */ (function (_super) {
         _max.maxPoints(min, max);
         _size.subtractPoints(_max, _min);
         return {
-            left: _min.x,
-            top: _min.y,
-            width: _size.x,
-            height: _size.y
+            left: _min.x + 'px',
+            top: _min.y + 'px',
+            width: _size.x + 'px',
+            height: _size.y + 'px'
         };
     };
     return Selector;

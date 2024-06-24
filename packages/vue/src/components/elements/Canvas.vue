@@ -3,8 +3,8 @@ import { ref, watch, inject, onMounted, onUnmounted, provide } from 'vue';
 import { CanvasObject, Canvas } from '@grafikjs/core';
 
 const props = defineProps<CanvasObject>();
-const canvas: Canvas = inject('canvas');
-const attrs = ref(canvas.getAttributes());
+const canvas: Canvas = inject('canvas') as Canvas;
+const attrs = ref<Record<string, any>>(canvas.getAttributes());
 const onSet = () => {
 	attrs.value = canvas.getAttributes();
 };

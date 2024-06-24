@@ -19365,11 +19365,11 @@ const onSelect = () => {
 };
 
 (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(() => {
-	canvas.on('shapes:selection:updated', onSelect);
+	canvas.on('selector:updated', onSelect);
 });
 
 (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(() => {
-	canvas.off('shapes:selection:updated', onSelect);
+	canvas.off('selector:updated', onSelect);
 });
 
 const __returned__ = { canvas, attrs, style, onSelect, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, inject: vue__WEBPACK_IMPORTED_MODULE_0__.inject, onMounted: vue__WEBPACK_IMPORTED_MODULE_0__.onMounted, onUnmounted: vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted }
@@ -19992,7 +19992,7 @@ __webpack_require__.r(__webpack_exports__);
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
     class: "grafik-interactive",
-    onMousedown: _cache[0] || (_cache[0] = (...args) => ($setup.mousedown && $setup.mousedown(...args))),
+    onMousedown: _cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)((...args) => ($setup.mousedown && $setup.mousedown(...args)), ["prevent"])),
     onMousemove: _cache[1] || (_cache[1] = (...args) => ($setup.mousemove && $setup.mousemove(...args))),
     onMouseup: _cache[2] || (_cache[2] = (...args) => ($setup.mouseup && $setup.mouseup(...args))),
     onWheel: _cache[3] || (_cache[3] = (...args) => ($setup.wheel && $setup.wheel(...args)))
@@ -20078,26 +20078,25 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
               left: 400,
               top: 400,
               angle: $setup.rotate,
-              fill: "green"
+              fill: "lightblue"
             }, null, 8 /* PROPS */, ["angle"]),
             (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Group"], {
               left: 200,
-              top: 200
+              top: 200,
+              fill: "lightgreen"
             }, {
               default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
                 (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Rect"], {
                   width: 200,
                   height: 200,
                   left: 100,
-                  top: 100,
-                  fill: "green"
+                  top: 100
                 }),
                 (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Rect"], {
                   width: 200,
                   height: 200,
                   left: -100,
-                  top: -100,
-                  fill: "green"
+                  top: -100
                 })
               ]),
               _: 1 /* STABLE */

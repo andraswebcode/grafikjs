@@ -10,11 +10,11 @@ const onSelect = () => {
 };
 
 onMounted(() => {
-	canvas.on('shapes:selection:updated', onSelect);
+	canvas.on('selector:updated', onSelect);
 });
 
 onUnmounted(() => {
-	canvas.off('shapes:selection:updated', onSelect);
+	canvas.off('selector:updated', onSelect);
 });
 </script>
 
