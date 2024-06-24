@@ -1,9 +1,10 @@
+import { ParsedCurve, ParsedPath } from './../types';
 import { PIBY180 } from './constants';
 
 const clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max);
 
-const toFixed = (value: number, fractionDigits = 2): number =>
+const toFixed = (value: any, fractionDigits = 2): number =>
 	Math.round(value * 10 ** fractionDigits) / 10 ** fractionDigits || 0;
 
 const deg2Rad = (degree: number): number => degree * PIBY180;
@@ -129,8 +130,8 @@ const CURVE_VALUES_LENGTHS = {
 	z: 0
 };
 
-const _groupArray = (array, size) => {
-	const grouped = [];
+const _groupArray = (array: any[], size) => {
+	const grouped: any[] = [];
 
 	for (let i = 0; i < array.length; i += size) {
 		grouped.push(array.slice(i, i + size));
@@ -139,19 +140,21 @@ const _groupArray = (array, size) => {
 	return grouped;
 };
 
-const parsePath = (string: string): string[][] | number[][] => {
-	const parsed = [];
+const parsePath = (string: string): ParsedPath => {
+	const parsed: ParsedCurve[] = [];
 
 	(string.match(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g) || []).forEach(
 		(curve, i, array) => {
 			curve = curve.trim();
 			const command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
-			const values = (curve.match(/[\-\.\d]+/g) || []).map((n) => toFixed(n));
+			const values = (curve.match(/[\-\.\d]+/g) || []).map((n: string) => toFixed(n));
 			const commandLength = CURVE_VALUES_LENGTHS[command];
 			if (values.length === commandLength) {
+				// @ts-ignore
 				parsed.push([command, ...values]);
 			} else {
 				_groupArray(values, commandLength).forEach((values) => {
+					//@ts-ignore
 					parsed.push([command, ...values]);
 				});
 			}

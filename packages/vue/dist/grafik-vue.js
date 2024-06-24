@@ -11996,290 +11996,237 @@ const stringifySymbol = (v, i = "") => {
 
 /***/ }),
 
-/***/ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=script&setup=true&lang=ts":
-/*!*********************************************************************************************************************************************************************************************!*\
-  !*** ../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=script&setup=true&lang=ts ***!
-  \*********************************************************************************************************************************************************************************************/
+/***/ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=script&setup=true&lang=ts":
+/*!**************************************************************************************************************************************************************************************************************!*\
+  !*** ../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=script&setup=true&lang=ts ***!
+  \**************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './observable'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './element'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas */ "./src/components/elements/canvas.vue");
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './shapes'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './defs'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './interactive'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './maths'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './animation'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './utils'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './types'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-// Core
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
 
 
-
-// Shapes
-
-// Definitions
-
-// Interactive
-
-// Maths
-
-// Animation
-
-// Utils
-
-// Types
-
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
+    __name: 'Canvas',
+    props: {
+        width: { type: Number, required: true },
+        height: { type: Number, required: true }
+    },
+    setup: function (__props, _a) {
+        var __expose = _a.expose;
+        __expose();
+        var props = __props;
+        var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
+        var attrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getAttributes());
+        var onSet = function () {
+            attrs.value = canvas.getAttributes();
+        };
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
+            canvas.on('set', onSet).set(props);
+        });
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
+            canvas.off('set', onSet);
+        });
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)(props, function (props) {
+            canvas.set(props);
+        });
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.provide)('collection', canvas);
+        var __returned__ = { props: props, canvas: canvas, attrs: attrs, onSet: onSet };
+        Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
+        return __returned__;
+    }
+}));
 
 
 /***/ }),
 
-/***/ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=script&setup=true&lang=ts":
-/*!************************************************************************************************************************************************************************************************!*\
-  !*** ../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=script&setup=true&lang=ts ***!
-  \************************************************************************************************************************************************************************************************/
+/***/ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=script&setup=true&lang=ts":
+/*!*************************************************************************************************************************************************************************************************************!*\
+  !*** ../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=script&setup=true&lang=ts ***!
+  \*************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './observable'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './element'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas */ "./src/components/elements/canvas.vue");
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './shapes'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './defs'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './interactive'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './maths'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './animation'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './utils'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './types'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-// Core
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
+/* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafikjs/core */ "../core/src/index.ts");
+/* harmony import */ var _ShapeBase_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ShapeBase.vue */ "./src/components/elements/ShapeBase.vue");
 
 
 
-// Shapes
 
-// Definitions
-
-// Interactive
-
-// Maths
-
-// Animation
-
-// Utils
-
-// Types
-
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
+    __name: 'Group',
+    props: {
+        tagName: { type: String, required: false },
+        fill: { type: [String, Array, Object], required: false },
+        stroke: { type: [String, Array, Object], required: false },
+        strokeWidth: { type: Number, required: false },
+        width: { type: Number, required: false },
+        height: { type: Number, required: false },
+        r: { type: Number, required: false },
+        rx: { type: Number, required: false },
+        ry: { type: Number, required: false },
+        d: { type: String, required: false },
+        points: { type: String, required: false },
+        left: { type: Number, required: false },
+        top: { type: Number, required: false },
+        angle: { type: Number, required: false },
+        scaleX: { type: Number, required: false },
+        scaleY: { type: Number, required: false },
+        skewX: { type: Number, required: false },
+        skewY: { type: Number, required: false }
+    },
+    setup: function (__props, _a) {
+        var __expose = _a.expose;
+        __expose();
+        var props = __props;
+        var collection = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('collection');
+        var group = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.Group((0,_grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.omitBy)(props, function (value) { return typeof value === 'undefined'; }));
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.provide)('collection', group);
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
+            collection.add(group);
+        });
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
+            collection.remove(group);
+        });
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)(props, function (props) {
+            group.set(props);
+        });
+        var __returned__ = { props: props, collection: collection, group: group, ShapeBase: _ShapeBase_vue__WEBPACK_IMPORTED_MODULE_2__["default"] };
+        Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
+        return __returned__;
+    }
+}));
 
 
 /***/ }),
 
-/***/ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/canvas.vue?vue&type=script&setup=true&lang=ts":
-/*!*********************************************************************************************************************************************************************************************!*\
-  !*** ../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/canvas.vue?vue&type=script&setup=true&lang=ts ***!
-  \*********************************************************************************************************************************************************************************************/
+/***/ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=script&setup=true&lang=ts":
+/*!*****************************************************************************************************************************************************************************************************************!*\
+  !*** ../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=script&setup=true&lang=ts ***!
+  \*****************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './observable'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './element'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas */ "./src/components/elements/canvas.vue");
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './shapes'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './defs'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './interactive'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './maths'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './animation'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './utils'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './types'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-// Core
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
 
 
-
-// Shapes
-
-// Definitions
-
-// Interactive
-
-// Maths
-
-// Animation
-
-// Utils
-
-// Types
-
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
+    __name: 'ShapeBase',
+    props: {
+        tagName: { type: String, required: true },
+        shape: { type: null, required: true },
+        props: { type: Object, required: true }
+    },
+    setup: function (__props, _a) {
+        var __expose = _a.expose;
+        __expose();
+        var props = __props;
+        var shape = props.shape, tagName = props.tagName;
+        var wAttrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(shape.getWrapperAttributes());
+        var attrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(shape.getAttributes());
+        var onSet = function () {
+            wAttrs.value = shape.getWrapperAttributes();
+            attrs.value = shape.getAttributes();
+        };
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
+            shape.on('set', onSet);
+        });
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
+            shape.off('set', onSet);
+        });
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)(props.props, function (props) {
+            shape.set(props);
+        });
+        var __returned__ = { props: props, shape: shape, tagName: tagName, wAttrs: wAttrs, attrs: attrs, onSet: onSet };
+        Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
+        return __returned__;
+    }
+}));
 
 
 /***/ }),
 
-/***/ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=template&id=6e07f0a0&ts=true":
-/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=template&id=6e07f0a0&ts=true ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=template&id=6e07f0a0&ts=true":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=template&id=6e07f0a0&ts=true ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './observable'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './element'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas */ "./src/components/elements/canvas.vue");
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './shapes'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './defs'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './interactive'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './maths'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './animation'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './utils'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './types'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-// Core
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
 
-
-
-// Shapes
-
-// Definitions
-
-// Interactive
-
-// Maths
-
-// Animation
-
-// Utils
-
-// Types
-
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+    return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.guardReactiveProps)($setup.attrs)), [
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "default")
+    ], 16 /* FULL_PROPS */));
+}
 
 
 /***/ }),
 
-/***/ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=template&id=df10f02c&ts=true":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=template&id=df10f02c&ts=true ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=template&id=7806e452&ts=true":
+/*!******************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=template&id=7806e452&ts=true ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './observable'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './element'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas */ "./src/components/elements/canvas.vue");
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './shapes'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './defs'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './interactive'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './maths'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './animation'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './utils'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './types'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-// Core
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
 
-
-
-// Shapes
-
-// Definitions
-
-// Interactive
-
-// Maths
-
-// Animation
-
-// Utils
-
-// Types
-
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+    return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["ShapeBase"], {
+        tagName: "g",
+        shape: $setup.group,
+        props: $setup.props
+    }, {
+        default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () { return [
+            (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "default")
+        ]; }),
+        _: 3 /* FORWARDED */
+    }, 8 /* PROPS */, ["shape", "props"]));
+}
 
 
 /***/ }),
 
-/***/ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/canvas.vue?vue&type=template&id=522a2b90&ts=true":
-/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/canvas.vue?vue&type=template&id=522a2b90&ts=true ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=template&id=df10f02c&ts=true":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=template&id=df10f02c&ts=true ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-/* empty/unused harmony star reexport */
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './observable'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './element'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas */ "./src/components/elements/canvas.vue");
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './shapes'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './defs'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './interactive'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './maths'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './animation'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './utils'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './types'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-// Core
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
 
-
-
-// Shapes
-
-// Definitions
-
-// Interactive
-
-// Maths
-
-// Animation
-
-// Utils
-
-// Types
-
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+    return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("g", (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.guardReactiveProps)($setup.wAttrs)), [
+        ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)((0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveDynamicComponent)($setup.tagName), (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.guardReactiveProps)($setup.attrs)), {
+            default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () { return [
+                (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "default")
+            ]; }),
+            _: 3 /* FORWARDED */
+        }, 16 /* FULL_PROPS */))
+    ], 16 /* FULL_PROPS */));
+}
 
 
 /***/ }),
@@ -13382,6 +13329,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.isEqual),
+/* harmony export */   omitBy: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.omitBy),
 /* harmony export */   parsePath: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.randInt),
@@ -14928,16 +14876,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var CURVES = {
-    'M': _curves__WEBPACK_IMPORTED_MODULE_2__.MoveCurve,
-    'L': _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve,
-    'V': _curves__WEBPACK_IMPORTED_MODULE_2__.VerticalLineCurve,
-    'H': _curves__WEBPACK_IMPORTED_MODULE_2__.HorizontalLineCurve,
-    'Q': _curves__WEBPACK_IMPORTED_MODULE_2__.QuadraticBezierCurve,
-    'C': _curves__WEBPACK_IMPORTED_MODULE_2__.CubicBezierCurve,
-    'T': _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothQuadraticBezierCurve,
-    'S': _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothCubicBezierCurve,
-    'A': _curves__WEBPACK_IMPORTED_MODULE_2__.ArcCurve,
-    'Z': _curves__WEBPACK_IMPORTED_MODULE_2__.CloseCurve
+    M: _curves__WEBPACK_IMPORTED_MODULE_2__.MoveCurve,
+    L: _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve,
+    V: _curves__WEBPACK_IMPORTED_MODULE_2__.VerticalLineCurve,
+    H: _curves__WEBPACK_IMPORTED_MODULE_2__.HorizontalLineCurve,
+    Q: _curves__WEBPACK_IMPORTED_MODULE_2__.QuadraticBezierCurve,
+    C: _curves__WEBPACK_IMPORTED_MODULE_2__.CubicBezierCurve,
+    T: _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothQuadraticBezierCurve,
+    S: _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothCubicBezierCurve,
+    A: _curves__WEBPACK_IMPORTED_MODULE_2__.ArcCurve,
+    Z: _curves__WEBPACK_IMPORTED_MODULE_2__.CloseCurve
 };
 var _axis = new _point__WEBPACK_IMPORTED_MODULE_0__.Point();
 // Function to project a polygon onto an axis. Thanks ChatGPT! :-)
@@ -14955,7 +14903,7 @@ function _project(points, axis) {
 function _separate(points1, points2, axis) {
     var project1 = _project(points1, axis);
     var project2 = _project(points2, axis);
-    return (project1.max < project2.min) || (project2.max < project1.min);
+    return project1.max < project2.min || project2.max < project1.min;
 }
 var CurvePath = /** @class */ (function () {
     function CurvePath(curves) {
@@ -14987,7 +14935,6 @@ var CurvePath = /** @class */ (function () {
     CurvePath.prototype.remove = function (curves) {
         curves = Array.isArray(curves) ? curves : [curves];
         this._curves = this._curves.filter(function (c) { return !curves.includes(c); });
-        ;
         return this;
     };
     CurvePath.prototype.set = function (curves) {
@@ -15031,7 +14978,10 @@ var CurvePath = /** @class */ (function () {
         if (this._currentCommand !== 'T' && this._currentCommand !== 'Q') {
             console.warn('The previous method must be an other smoothQuadraticCurveTo(), or a quadraticCurveTo().');
         }
-        var cPoint = this._currentPoint.clone().multiplyScalar(2).subtract(this._currentControlPoint);
+        var cPoint = this._currentPoint
+            .clone()
+            .multiplyScalar(2)
+            .subtract(this._currentControlPoint);
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothQuadraticBezierCurve(this._currentPoint.clone(), cPoint, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this._currentPoint.set(x, y);
         this._currentControlPoint.copy(cPoint);
@@ -15049,7 +14999,10 @@ var CurvePath = /** @class */ (function () {
         if (this._currentCommand !== 'S' && this._currentCommand !== 'C') {
             console.warn('The previous method must be an other smoothCubicCurveTo(), or a cubicCurveTo().');
         }
-        var cPoint = this._currentPoint.clone().multiplyScalar(2).subtract(this._currentControlPoint);
+        var cPoint = this._currentPoint
+            .clone()
+            .multiplyScalar(2)
+            .subtract(this._currentControlPoint);
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothCubicBezierCurve(this._currentPoint.clone(), cPoint, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(cx, cy), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this._currentPoint.set(x, y);
         this._currentControlPoint.copy(cPoint);
@@ -15082,7 +15035,10 @@ var CurvePath = /** @class */ (function () {
     // Parses points attribute of polyline, or polygon.
     CurvePath.prototype.fromNumbers = function (numbers) {
         // @ts-ignore
-        var nums = numbers.replace(/\,\s?/g, ' ').split(' ').map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_3__.toFixed)(n); });
+        var nums = numbers
+            .replace(/\,\s?/g, ' ')
+            .split(' ')
+            .map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_3__.toFixed)(n); });
         var curves = [];
         var i, prevPoint;
         for (i = 0; i < nums.length; i += 2) {
@@ -15096,11 +15052,15 @@ var CurvePath = /** @class */ (function () {
             if (curve instanceof _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve) {
                 return curve.p0.toString();
             }
-        }).filter(function (str) { return !!str; }).join(' ');
+        })
+            .filter(function (str) { return !!str; })
+            .join(' ');
     };
     CurvePath.prototype.toPoints = function (divisions) {
         var pp; // Previous point.
-        return this.mapCurves(function (curve) { return curve.getPoints(divisions); }).flat().filter(function (p, i, array) {
+        return this.mapCurves(function (curve) { return curve.getPoints(divisions); })
+            .flat()
+            .filter(function (p, i, array) {
             pp = array[i - 1];
             if (!pp) {
                 return true;
@@ -15135,7 +15095,7 @@ var CurvePath = /** @class */ (function () {
             yi = polygon[i].y;
             xj = polygon[j].x;
             yj = polygon[j].y;
-            intersects = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            intersects = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
             if (intersects) {
                 contains = !contains;
             }
@@ -15340,11 +15300,11 @@ var ArcCurve = /** @class */ (function (_super) {
         // @ts-ignore
         this.p0.set(prevCurve[prevLength - 2], prevCurve[prevLength - 1]);
         this.rx = curve[1];
-        this.ry = curve[2];
-        this.xAxisRotation = curve[3];
-        this.largeArcFlag = curve[4];
-        this.sweepFlag = curve[5];
-        this.p1.set(curve[6], curve[7]);
+        this.ry = curve[2] || 0;
+        this.xAxisRotation = curve[3] || 0;
+        this.largeArcFlag = curve[4] || 0;
+        this.sweepFlag = curve[5] || 0;
+        this.p1.set(curve[6] || 0, curve[7] || 0);
         return this;
     };
     ArcCurve.prototype.toString = function () {
@@ -15803,7 +15763,7 @@ var SmoothCubicBezierCurve = /** @class */ (function (_super) {
     SmoothCubicBezierCurve.prototype.fromArray = function (curve, index, path) {
         var prevCurve = path[index - 1] || [];
         var prevLength = prevCurve.length;
-        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var isRelative = curve[0] === curve[0].toLowerCase();
         var isCorSCurve = ['C', 'c', 'S', 's'].includes(prevCurve[0]);
         var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
         // @ts-ignore
@@ -15823,8 +15783,8 @@ var SmoothCubicBezierCurve = /** @class */ (function (_super) {
             console.warn('The previous command must be an other S, or C command.');
             this.p1.copy(prevCurveEndPoint);
         }
-        this.p2.set(curve[1], curve[2]);
-        this.p3.set(curve[3], curve[4]);
+        this.p2.set(curve[1] || 0, curve[2] || 0);
+        this.p3.set(curve[3] || 0, curve[4] || 0);
         if (isRelative) {
             for (var i = 0; i < 4; i++) {
                 this['p' + i].add(prevCurveEndPoint);
@@ -15881,7 +15841,7 @@ var SmoothQuadraticBezierCurve = /** @class */ (function (_super) {
     SmoothQuadraticBezierCurve.prototype.fromArray = function (curve, index, path) {
         var prevCurve = path[index - 1] || [];
         var prevLength = prevCurve.length;
-        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var isRelative = curve[0] === curve[0].toLowerCase();
         var isQorTCurve = ['Q', 'q', 'T', 't'].includes(prevCurve[0]);
         var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
         // @ts-ignore
@@ -15901,7 +15861,7 @@ var SmoothQuadraticBezierCurve = /** @class */ (function (_super) {
             console.warn('The previous command must be an other T, or Q command.');
             this.p1.copy(prevCurveEndPoint);
         }
-        this.p2.set(curve[1], curve[2]);
+        this.p2.set(curve[1] || 0, curve[2] || 0);
         if (isRelative) {
             for (var i = 0; i < 4; i++) {
                 this['p' + i].add(prevCurveEndPoint);
@@ -17717,7 +17677,9 @@ var Text = /** @class */ (function (_super) {
         return this;
     };
     Text.prototype.getTextSize = function () {
+        // @ts-ignore
         CANVASCONTEXT.font = "".concat(this.fontSize, "px ").concat(this.fontFamily);
+        // @ts-ignore
         var _a = CANVASCONTEXT.measureText(this.text), width = _a.width, fontBoundingBoxAscent = _a.fontBoundingBoxAscent, fontBoundingBoxDescent = _a.fontBoundingBoxDescent;
         return new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(width, fontBoundingBoxAscent + fontBoundingBoxDescent);
     };
@@ -17822,6 +17784,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* binding */ clamp),
 /* harmony export */   deg2Rad: () => (/* binding */ deg2Rad),
 /* harmony export */   isEqual: () => (/* binding */ isEqual),
+/* harmony export */   omitBy: () => (/* binding */ omitBy),
 /* harmony export */   parsePath: () => (/* binding */ parsePath),
 /* harmony export */   rad2Deg: () => (/* binding */ rad2Deg),
 /* harmony export */   randInt: () => (/* binding */ randInt),
@@ -17919,6 +17882,15 @@ var isEqual = function (value1, value2, visited) {
     // If values are of different types and not arrays or objects, they are not equal
     return false;
 };
+var omitBy = function (obj, callback) {
+    var newObj = {};
+    for (var key in obj) {
+        if (!callback(obj[key], key, obj)) {
+            newObj[key] = obj[key];
+        }
+    }
+    return newObj;
+};
 var CURVE_VALUES_LENGTHS = {
     M: 2,
     m: 2,
@@ -17956,10 +17928,12 @@ var parsePath = function (string) {
         var values = (curve.match(/[\-\.\d]+/g) || []).map(function (n) { return toFixed(n); });
         var commandLength = CURVE_VALUES_LENGTHS[command];
         if (values.length === commandLength) {
+            // @ts-ignore
             parsed.push(__spreadArray([command], values, true));
         }
         else {
             _groupArray(values, commandLength).forEach(function (values) {
+                //@ts-ignore
                 parsed.push(__spreadArray([command], values, true));
             });
         }
@@ -17983,6 +17957,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.isEqual),
+/* harmony export */   omitBy: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.omitBy),
 /* harmony export */   parsePath: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.randInt),
@@ -18061,6 +18036,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.isEqual),
+/* harmony export */   omitBy: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.omitBy),
 /* harmony export */   parsePath: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.randInt),
@@ -18278,16 +18254,32 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   withTagName: () => (/* binding */ withTagName)
+/* harmony export */   withCollectionContext: () => (/* binding */ withCollectionContext)
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
 
-var withTagName = function (Component, tagName) {
+
+var withCollectionContext = function (Component, tagName) {
+    var Shape = _utils__WEBPACK_IMPORTED_MODULE_1__.CLASSES[tagName];
     return {
-        render: function () {
-            return (0,vue__WEBPACK_IMPORTED_MODULE_0__.h)(Component, {
-                tagName: tagName
+        props: new Shape().toJSON(), // Define default props.
+        setup: function (props) {
+            var collection = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('collection');
+            var shape = new Shape(props);
+            (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
+                collection.add(shape);
             });
+            (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
+                collection.remove(shape);
+            });
+            return function () {
+                return (0,vue__WEBPACK_IMPORTED_MODULE_0__.h)(Component, {
+                    tagName: tagName,
+                    shape: shape,
+                    props: props
+                });
+            };
         }
     };
 };
@@ -18328,13 +18320,68 @@ var createGrafik = function (opt) { return ({
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Circle: () => (/* binding */ Circle),
+/* harmony export */   Path: () => (/* binding */ Path),
 /* harmony export */   Rect: () => (/* binding */ Rect)
 /* harmony export */ });
 /* harmony import */ var _hocs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hocs */ "./src/hocs.ts");
 /* harmony import */ var _components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/elements/ShapeBase.vue */ "./src/components/elements/ShapeBase.vue");
 
 
-var Rect = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withTagName)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'rect');
+var Rect = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'rect');
+var Circle = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'circle');
+var Path = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'path');
+
+
+
+/***/ }),
+
+/***/ "./src/utils/constants.ts":
+/*!********************************!*\
+  !*** ./src/utils/constants.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CLASSES: () => (/* binding */ CLASSES),
+/* harmony export */   DEFCLASSES: () => (/* binding */ DEFCLASSES)
+/* harmony export */ });
+/* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @grafikjs/core */ "../core/src/index.ts");
+
+var CLASSES = {
+    'svg': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Canvas,
+    'g': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Group,
+    'rect': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Rect,
+    'circle': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Circle,
+    'ellipse': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Ellipse,
+    'path': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Path,
+    'polygon': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Polygon,
+    'polyline': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Polyline,
+    'image': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Image,
+    'text': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Text,
+    'text-path': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.TextPath
+};
+var DEFCLASSES = {
+    'linearGradient': _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.LinearGradient
+};
+
+
+
+/***/ }),
+
+/***/ "./src/utils/index.ts":
+/*!****************************!*\
+  !*** ./src/utils/index.ts ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CLASSES: () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.CLASSES),
+/* harmony export */   DEFCLASSES: () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.DEFCLASSES)
+/* harmony export */ });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./src/utils/constants.ts");
 
 
 
@@ -18398,52 +18445,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _Group_vue_vue_type_template_id_7806e452__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Group.vue?vue&type=template&id=7806e452 */ "./src/components/elements/Group.vue?vue&type=template&id=7806e452");
-/* harmony import */ var _Group_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Group.vue?vue&type=script&setup=true&lang=js */ "./src/components/elements/Group.vue?vue&type=script&setup=true&lang=js");
+/* harmony import */ var _Group_vue_vue_type_template_id_7806e452_ts_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Group.vue?vue&type=template&id=7806e452&ts=true */ "./src/components/elements/Group.vue?vue&type=template&id=7806e452&ts=true");
+/* harmony import */ var _Group_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Group.vue?vue&type=script&setup=true&lang=ts */ "./src/components/elements/Group.vue?vue&type=script&setup=true&lang=ts");
 /* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/dist/exportHelper.js */ "../../node_modules/vue-loader/dist/exportHelper.js");
 
 
 
 
 ;
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_Group_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Group_vue_vue_type_template_id_7806e452__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"src/components/elements/Group.vue"]])
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_Group_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Group_vue_vue_type_template_id_7806e452_ts_true__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"src/components/elements/Group.vue"]])
 /* hot reload */
 if (false) {}
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
-
-/***/ }),
-
-/***/ "../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=script&setup=true&lang=js":
-/*!******************************************************************************************************************************************************!*\
-  !*** ../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=script&setup=true&lang=js ***!
-  \******************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @grafikjs/core */ "../core/src/index.ts");
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  __name: 'Group',
-  setup(__props, { expose: __expose }) {
-  __expose();
-
-const group = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Group();
-(0,vue__WEBPACK_IMPORTED_MODULE_1__.provide)('collection', group);
-
-const __returned__ = { group, get Group() { return _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Group }, provide: vue__WEBPACK_IMPORTED_MODULE_1__.provide }
-Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
-return __returned__
-}
-
-});
 
 /***/ }),
 
@@ -18491,33 +18506,6 @@ const script = {}
 
 ;
 const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_1__["default"])(script, [['render',_ShapeTree_vue_vue_type_template_id_49b2c637__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"src/components/elements/ShapeTree.vue"]])
-/* hot reload */
-if (false) {}
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
-
-/***/ }),
-
-/***/ "./src/components/elements/canvas.vue":
-/*!********************************************!*\
-  !*** ./src/components/elements/canvas.vue ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _canvas_vue_vue_type_template_id_522a2b90_ts_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./canvas.vue?vue&type=template&id=522a2b90&ts=true */ "./src/components/elements/canvas.vue?vue&type=template&id=522a2b90&ts=true");
-/* harmony import */ var _canvas_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas.vue?vue&type=script&setup=true&lang=ts */ "./src/components/elements/canvas.vue?vue&type=script&setup=true&lang=ts");
-/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/dist/exportHelper.js */ "../../node_modules/vue-loader/dist/exportHelper.js");
-
-
-
-
-;
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_canvas_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_canvas_vue_vue_type_template_id_522a2b90_ts_true__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"src/components/elements/canvas.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -18634,9 +18622,24 @@ if (false) {}
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_ts_loader_index_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Canvas_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Canvas_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _node_modules_ts_loader_index_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Canvas_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Canvas.vue?vue&type=script&setup=true&lang=ts */ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=script&setup=true&lang=ts");
+/* harmony import */ var _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Canvas_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Canvas.vue?vue&type=script&setup=true&lang=ts */ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=script&setup=true&lang=ts");
+ 
+
+/***/ }),
+
+/***/ "./src/components/elements/Group.vue?vue&type=script&setup=true&lang=ts":
+/*!******************************************************************************!*\
+  !*** ./src/components/elements/Group.vue?vue&type=script&setup=true&lang=ts ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Group_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Group_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Group.vue?vue&type=script&setup=true&lang=ts */ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=script&setup=true&lang=ts");
  
 
 /***/ }),
@@ -18649,24 +18652,9 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_ts_loader_index_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ShapeBase_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ShapeBase_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _node_modules_ts_loader_index_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ShapeBase_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ShapeBase.vue?vue&type=script&setup=true&lang=ts */ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=script&setup=true&lang=ts");
- 
-
-/***/ }),
-
-/***/ "./src/components/elements/canvas.vue?vue&type=script&setup=true&lang=ts":
-/*!*******************************************************************************!*\
-  !*** ./src/components/elements/canvas.vue?vue&type=script&setup=true&lang=ts ***!
-  \*******************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_ts_loader_index_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_canvas_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__["default"])
-/* harmony export */ });
-/* harmony import */ var _node_modules_ts_loader_index_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_canvas_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./canvas.vue?vue&type=script&setup=true&lang=ts */ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/canvas.vue?vue&type=script&setup=true&lang=ts");
+/* harmony import */ var _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ShapeBase_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ShapeBase.vue?vue&type=script&setup=true&lang=ts */ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=script&setup=true&lang=ts");
  
 
 /***/ }),
@@ -18678,7 +18666,25 @@ __webpack_require__.r(__webpack_exports__);
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_ts_loader_index_js_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Canvas_vue_vue_type_template_id_6e07f0a0_ts_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Canvas.vue?vue&type=template&id=6e07f0a0&ts=true */ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=template&id=6e07f0a0&ts=true");
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Canvas_vue_vue_type_template_id_6e07f0a0_ts_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Canvas_vue_vue_type_template_id_6e07f0a0_ts_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Canvas.vue?vue&type=template&id=6e07f0a0&ts=true */ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=template&id=6e07f0a0&ts=true");
+
+
+/***/ }),
+
+/***/ "./src/components/elements/Group.vue?vue&type=template&id=7806e452&ts=true":
+/*!*********************************************************************************!*\
+  !*** ./src/components/elements/Group.vue?vue&type=template&id=7806e452&ts=true ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Group_vue_vue_type_template_id_7806e452_ts_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Group_vue_vue_type_template_id_7806e452_ts_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Group.vue?vue&type=template&id=7806e452&ts=true */ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=template&id=7806e452&ts=true");
 
 
 /***/ }),
@@ -18690,49 +18696,10 @@ __webpack_require__.r(__webpack_exports__);
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_ts_loader_index_js_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ShapeBase_vue_vue_type_template_id_df10f02c_ts_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ShapeBase.vue?vue&type=template&id=df10f02c&ts=true */ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=template&id=df10f02c&ts=true");
-
-
-/***/ }),
-
-/***/ "./src/components/elements/canvas.vue?vue&type=template&id=522a2b90&ts=true":
-/*!**********************************************************************************!*\
-  !*** ./src/components/elements/canvas.vue?vue&type=template&id=522a2b90&ts=true ***!
-  \**********************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_ts_loader_index_js_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_canvas_vue_vue_type_template_id_522a2b90_ts_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./canvas.vue?vue&type=template&id=522a2b90&ts=true */ "../../node_modules/ts-loader/index.js!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/canvas.vue?vue&type=template&id=522a2b90&ts=true");
-
-
-/***/ }),
-
-/***/ "./src/components/elements/Group.vue?vue&type=script&setup=true&lang=js":
-/*!******************************************************************************!*\
-  !*** ./src/components/elements/Group.vue?vue&type=script&setup=true&lang=js ***!
-  \******************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Group_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ShapeBase_vue_vue_type_template_id_df10f02c_ts_true__WEBPACK_IMPORTED_MODULE_0__.render)
 /* harmony export */ });
-/* harmony import */ var _node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Group_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Group.vue?vue&type=script&setup=true&lang=js */ "../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=script&setup=true&lang=js");
- 
-
-/***/ }),
-
-/***/ "./src/components/elements/Group.vue?vue&type=template&id=7806e452":
-/*!*************************************************************************!*\
-  !*** ./src/components/elements/Group.vue?vue&type=template&id=7806e452 ***!
-  \*************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Group_vue_vue_type_template_id_7806e452__WEBPACK_IMPORTED_MODULE_0__.render)
-/* harmony export */ });
-/* harmony import */ var _node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Group_vue_vue_type_template_id_7806e452__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Group.vue?vue&type=template&id=7806e452 */ "../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=template&id=7806e452");
+/* harmony import */ var _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ShapeBase_vue_vue_type_template_id_df10f02c_ts_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ShapeBase.vue?vue&type=template&id=df10f02c&ts=true */ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/ShapeBase.vue?vue&type=template&id=df10f02c&ts=true");
 
 
 /***/ }),
@@ -18809,23 +18776,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Wrapper_vue_vue_type_template_id_6e541166__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Wrapper.vue?vue&type=template&id=6e541166 */ "../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/interactive/Wrapper.vue?vue&type=template&id=6e541166");
 
-
-/***/ }),
-
-/***/ "../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=template&id=7806e452":
-/*!***************************************************************************************************************************************************************************************************************************!*\
-  !*** ../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Group.vue?vue&type=template&id=7806e452 ***!
-  \***************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* binding */ render)
-/* harmony export */ });
-
-function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return null
-}
 
 /***/ }),
 
@@ -19209,9 +19159,11 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Canvas: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_1__.Canvas),
+/* harmony export */   Circle: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Circle),
 /* harmony export */   Control: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_1__.Control),
 /* harmony export */   Group: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_1__.Group),
 /* harmony export */   Interactive: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_1__.Interactive),
+/* harmony export */   Path: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Path),
 /* harmony export */   Rect: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_2__.Rect),
 /* harmony export */   Selector: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_1__.Selector),
 /* harmony export */   ShapeBase: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_1__.ShapeBase),

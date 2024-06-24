@@ -1,16 +1,8 @@
-import {
-	Element
-} from './../element';
-import {
-	ElementCollection
-} from './../mixins';
-import {
-	Point,
-	Matrix
-} from './../maths';
+import { Element } from './../element';
+import { ElementCollection } from './../mixins';
+import { Point, Matrix } from './../maths';
 
 class ControlNode extends ElementCollection(Element) {
-
 	protected readonly tagName = 'div';
 	protected className = 'grafik-control-node';
 	protected name = '';
@@ -19,13 +11,13 @@ class ControlNode extends ElementCollection(Element) {
 	private parent;
 	private connectedWith: ControlNode;
 
-	public init(params?){
+	public init(params?) {
 		this.set(params);
 		this.createId('node');
-		if (this.name){
+		if (this.name) {
 			this.addClass('grafik-control-node__' + this.name);
 		}
-		if (params.getPosition){
+		if (params.getPosition) {
 			this.getPosition = params.getPosition.bind(this);
 		}
 		this.onPointerStart = this.onPointerStart.bind(this);
@@ -33,86 +25,79 @@ class ControlNode extends ElementCollection(Element) {
 		this.onPointerEnd = this.onPointerEnd.bind(this);
 	}
 
-	set x(value: number){
+	set x(value: number) {
 		this.offset.x = value;
 	}
 
-	set y(value: number){
+	set y(value: number) {
 		this.offset.y = value;
 	}
 
-	get x(){
+	get x() {
 		return this.offset.x;
 	}
 
-	get y(){
+	get y() {
 		return this.offset.y;
 	}
 
-	public getPosition() : Point {
-
+	public getPosition(): Point {
 		const size = this.getControlSize();
-		const {x, y} = this.offset;
+		const { x, y } = this.offset;
 
 		return new Point(size.x * x, size.y * y);
-
 	}
 
-	public connectTo(node: ControlNode){
+	public connectTo(node: ControlNode) {
 		this.connectedWith = node;
 		return node;
 	}
 
-	public getLineMatrix() : Matrix {
-
-		if (!this.connectedWith){
+	public getLineMatrix(): Matrix {
+		if (!this.connectedWith) {
 			return new Matrix();
 		}
 
 		const p1 = this.getPosition();
 		const p2 = this.connectedWith.getPosition();
 		const m = new Matrix();
-		const a = - p1.angleTo(p2);
+		const a = -p1.angleTo(p2);
 
 		return m.rotate(a);
-
 	}
 
-	public getShape(){
+	public getShape() {
 		return this.parent.shape;
 	}
 
-	public getControlSize() : Point {
+	public getControlSize(): Point {
 		return this.parent.getSize();
 	}
 
-	public getStyle(){
-		const {x, y} = this.getPosition();
+	public getStyle() {
+		const { x, y } = this.getPosition();
 		return {
-			left:x,
-			top:y
+			left: x + 'px',
+			top: y + 'px'
 		};
 	}
 
-	public getAttributes() : object {
+	public getAttributes(): object {
 		const defaultAttributes = super.getAttributes();
 		return {
 			...defaultAttributes,
-			'data-control-node':true,
-			'data-id':this.id,
-			'data-name':this.name,
-			'data-shape':this.getShape().get('id')
+			'data-control-node': true,
+			'data-id': this.id,
+			'data-name': this.name,
+			'data-shape': this.getShape().get('id')
 		};
 	}
 
-	public onPointerStart(e){}
+	public onPointerStart(e) {}
 
-	public onPointerMove(e){}
+	public onPointerMove(e) {}
 
-	public onPointerEnd(e){}
-
+	public onPointerEnd(e) {}
 }
 
-export {
-	ControlNode
-};
+export { ControlNode };

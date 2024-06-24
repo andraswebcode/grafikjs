@@ -3149,8 +3149,8 @@ var ControlNode = /** @class */ (function (_super) {
     ControlNode.prototype.getStyle = function () {
         var _a = this.getPosition(), x = _a.x, y = _a.y;
         return {
-            left: x,
-            top: y
+            left: x + 'px',
+            top: y + 'px'
         };
     };
     ControlNode.prototype.getAttributes = function () {
@@ -3495,10 +3495,10 @@ var Control = /** @class */ (function (_super) {
         var size = this.getSize();
         var _b = this.shape.origin.clone().multiplyScalar(100), x = _b.x, y = _b.y;
         return {
-            width: Math.abs(size.x),
-            height: Math.abs(size.y),
-            left: left,
-            top: top,
+            width: Math.abs(size.x) + 'px',
+            height: Math.abs(size.y) + 'px',
+            left: left + 'px',
+            top: top + 'px',
             transform: "translate(".concat(-x, "%, ").concat(-y, "%) rotate(").concat(angle, "deg)"),
             transformOrigin: "".concat(x, "% ").concat(y, "%")
         };
@@ -3908,10 +3908,10 @@ var Selector = /** @class */ (function (_super) {
         _max.maxPoints(min, max);
         _size.subtractPoints(_max, _min);
         return {
-            left: _min.x,
-            top: _min.y,
-            width: _size.x,
-            height: _size.y
+            left: _min.x + 'px',
+            top: _min.y + 'px',
+            width: _size.x + 'px',
+            height: _size.y + 'px'
         };
     };
     return Selector;
@@ -4544,16 +4544,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var CURVES = {
-    'M': _curves__WEBPACK_IMPORTED_MODULE_2__.MoveCurve,
-    'L': _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve,
-    'V': _curves__WEBPACK_IMPORTED_MODULE_2__.VerticalLineCurve,
-    'H': _curves__WEBPACK_IMPORTED_MODULE_2__.HorizontalLineCurve,
-    'Q': _curves__WEBPACK_IMPORTED_MODULE_2__.QuadraticBezierCurve,
-    'C': _curves__WEBPACK_IMPORTED_MODULE_2__.CubicBezierCurve,
-    'T': _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothQuadraticBezierCurve,
-    'S': _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothCubicBezierCurve,
-    'A': _curves__WEBPACK_IMPORTED_MODULE_2__.ArcCurve,
-    'Z': _curves__WEBPACK_IMPORTED_MODULE_2__.CloseCurve
+    M: _curves__WEBPACK_IMPORTED_MODULE_2__.MoveCurve,
+    L: _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve,
+    V: _curves__WEBPACK_IMPORTED_MODULE_2__.VerticalLineCurve,
+    H: _curves__WEBPACK_IMPORTED_MODULE_2__.HorizontalLineCurve,
+    Q: _curves__WEBPACK_IMPORTED_MODULE_2__.QuadraticBezierCurve,
+    C: _curves__WEBPACK_IMPORTED_MODULE_2__.CubicBezierCurve,
+    T: _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothQuadraticBezierCurve,
+    S: _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothCubicBezierCurve,
+    A: _curves__WEBPACK_IMPORTED_MODULE_2__.ArcCurve,
+    Z: _curves__WEBPACK_IMPORTED_MODULE_2__.CloseCurve
 };
 var _axis = new _point__WEBPACK_IMPORTED_MODULE_0__.Point();
 // Function to project a polygon onto an axis. Thanks ChatGPT! :-)
@@ -4571,7 +4571,7 @@ function _project(points, axis) {
 function _separate(points1, points2, axis) {
     var project1 = _project(points1, axis);
     var project2 = _project(points2, axis);
-    return (project1.max < project2.min) || (project2.max < project1.min);
+    return project1.max < project2.min || project2.max < project1.min;
 }
 var CurvePath = /** @class */ (function () {
     function CurvePath(curves) {
@@ -4603,7 +4603,6 @@ var CurvePath = /** @class */ (function () {
     CurvePath.prototype.remove = function (curves) {
         curves = Array.isArray(curves) ? curves : [curves];
         this._curves = this._curves.filter(function (c) { return !curves.includes(c); });
-        ;
         return this;
     };
     CurvePath.prototype.set = function (curves) {
@@ -4647,7 +4646,10 @@ var CurvePath = /** @class */ (function () {
         if (this._currentCommand !== 'T' && this._currentCommand !== 'Q') {
             console.warn('The previous method must be an other smoothQuadraticCurveTo(), or a quadraticCurveTo().');
         }
-        var cPoint = this._currentPoint.clone().multiplyScalar(2).subtract(this._currentControlPoint);
+        var cPoint = this._currentPoint
+            .clone()
+            .multiplyScalar(2)
+            .subtract(this._currentControlPoint);
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothQuadraticBezierCurve(this._currentPoint.clone(), cPoint, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this._currentPoint.set(x, y);
         this._currentControlPoint.copy(cPoint);
@@ -4665,7 +4667,10 @@ var CurvePath = /** @class */ (function () {
         if (this._currentCommand !== 'S' && this._currentCommand !== 'C') {
             console.warn('The previous method must be an other smoothCubicCurveTo(), or a cubicCurveTo().');
         }
-        var cPoint = this._currentPoint.clone().multiplyScalar(2).subtract(this._currentControlPoint);
+        var cPoint = this._currentPoint
+            .clone()
+            .multiplyScalar(2)
+            .subtract(this._currentControlPoint);
         var curve = new _curves__WEBPACK_IMPORTED_MODULE_2__.SmoothCubicBezierCurve(this._currentPoint.clone(), cPoint, new _point__WEBPACK_IMPORTED_MODULE_0__.Point(cx, cy), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y));
         this._currentPoint.set(x, y);
         this._currentControlPoint.copy(cPoint);
@@ -4698,7 +4703,10 @@ var CurvePath = /** @class */ (function () {
     // Parses points attribute of polyline, or polygon.
     CurvePath.prototype.fromNumbers = function (numbers) {
         // @ts-ignore
-        var nums = numbers.replace(/\,\s?/g, ' ').split(' ').map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_3__.toFixed)(n); });
+        var nums = numbers
+            .replace(/\,\s?/g, ' ')
+            .split(' ')
+            .map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_3__.toFixed)(n); });
         var curves = [];
         var i, prevPoint;
         for (i = 0; i < nums.length; i += 2) {
@@ -4712,11 +4720,15 @@ var CurvePath = /** @class */ (function () {
             if (curve instanceof _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve) {
                 return curve.p0.toString();
             }
-        }).filter(function (str) { return !!str; }).join(' ');
+        })
+            .filter(function (str) { return !!str; })
+            .join(' ');
     };
     CurvePath.prototype.toPoints = function (divisions) {
         var pp; // Previous point.
-        return this.mapCurves(function (curve) { return curve.getPoints(divisions); }).flat().filter(function (p, i, array) {
+        return this.mapCurves(function (curve) { return curve.getPoints(divisions); })
+            .flat()
+            .filter(function (p, i, array) {
             pp = array[i - 1];
             if (!pp) {
                 return true;
@@ -4751,7 +4763,7 @@ var CurvePath = /** @class */ (function () {
             yi = polygon[i].y;
             xj = polygon[j].x;
             yj = polygon[j].y;
-            intersects = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            intersects = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
             if (intersects) {
                 contains = !contains;
             }
@@ -4956,11 +4968,11 @@ var ArcCurve = /** @class */ (function (_super) {
         // @ts-ignore
         this.p0.set(prevCurve[prevLength - 2], prevCurve[prevLength - 1]);
         this.rx = curve[1];
-        this.ry = curve[2];
-        this.xAxisRotation = curve[3];
-        this.largeArcFlag = curve[4];
-        this.sweepFlag = curve[5];
-        this.p1.set(curve[6], curve[7]);
+        this.ry = curve[2] || 0;
+        this.xAxisRotation = curve[3] || 0;
+        this.largeArcFlag = curve[4] || 0;
+        this.sweepFlag = curve[5] || 0;
+        this.p1.set(curve[6] || 0, curve[7] || 0);
         return this;
     };
     ArcCurve.prototype.toString = function () {
@@ -5419,7 +5431,7 @@ var SmoothCubicBezierCurve = /** @class */ (function (_super) {
     SmoothCubicBezierCurve.prototype.fromArray = function (curve, index, path) {
         var prevCurve = path[index - 1] || [];
         var prevLength = prevCurve.length;
-        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var isRelative = curve[0] === curve[0].toLowerCase();
         var isCorSCurve = ['C', 'c', 'S', 's'].includes(prevCurve[0]);
         var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
         // @ts-ignore
@@ -5439,8 +5451,8 @@ var SmoothCubicBezierCurve = /** @class */ (function (_super) {
             console.warn('The previous command must be an other S, or C command.');
             this.p1.copy(prevCurveEndPoint);
         }
-        this.p2.set(curve[1], curve[2]);
-        this.p3.set(curve[3], curve[4]);
+        this.p2.set(curve[1] || 0, curve[2] || 0);
+        this.p3.set(curve[3] || 0, curve[4] || 0);
         if (isRelative) {
             for (var i = 0; i < 4; i++) {
                 this['p' + i].add(prevCurveEndPoint);
@@ -5497,7 +5509,7 @@ var SmoothQuadraticBezierCurve = /** @class */ (function (_super) {
     SmoothQuadraticBezierCurve.prototype.fromArray = function (curve, index, path) {
         var prevCurve = path[index - 1] || [];
         var prevLength = prevCurve.length;
-        var isRelative = (curve[0] === curve[0].toLowerCase());
+        var isRelative = curve[0] === curve[0].toLowerCase();
         var isQorTCurve = ['Q', 'q', 'T', 't'].includes(prevCurve[0]);
         var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
         // @ts-ignore
@@ -5517,7 +5529,7 @@ var SmoothQuadraticBezierCurve = /** @class */ (function (_super) {
             console.warn('The previous command must be an other T, or Q command.');
             this.p1.copy(prevCurveEndPoint);
         }
-        this.p2.set(curve[1], curve[2]);
+        this.p2.set(curve[1] || 0, curve[2] || 0);
         if (isRelative) {
             for (var i = 0; i < 4; i++) {
                 this['p' + i].add(prevCurveEndPoint);
@@ -7333,7 +7345,9 @@ var Text = /** @class */ (function (_super) {
         return this;
     };
     Text.prototype.getTextSize = function () {
+        // @ts-ignore
         CANVASCONTEXT.font = "".concat(this.fontSize, "px ").concat(this.fontFamily);
+        // @ts-ignore
         var _a = CANVASCONTEXT.measureText(this.text), width = _a.width, fontBoundingBoxAscent = _a.fontBoundingBoxAscent, fontBoundingBoxDescent = _a.fontBoundingBoxDescent;
         return new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(width, fontBoundingBoxAscent + fontBoundingBoxDescent);
     };
@@ -7582,10 +7596,12 @@ var parsePath = function (string) {
         var values = (curve.match(/[\-\.\d]+/g) || []).map(function (n) { return toFixed(n); });
         var commandLength = CURVE_VALUES_LENGTHS[command];
         if (values.length === commandLength) {
+            // @ts-ignore
             parsed.push(__spreadArray([command], values, true));
         }
         else {
             _groupArray(values, commandLength).forEach(function (values) {
+                //@ts-ignore
                 parsed.push(__spreadArray([command], values, true));
             });
         }

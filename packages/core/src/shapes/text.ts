@@ -46,7 +46,9 @@ class Text extends Shape {
 	}
 
 	public getTextSize(): Point {
+		// @ts-ignore
 		CANVASCONTEXT.font = `${this.fontSize}px ${this.fontFamily}`;
+		// @ts-ignore
 		const { width, fontBoundingBoxAscent, fontBoundingBoxDescent } = CANVASCONTEXT.measureText(
 			this.text
 		);

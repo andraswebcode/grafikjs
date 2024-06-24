@@ -1,21 +1,14 @@
-import {
-	Element
-} from './../element';
-import {
-	ElementCollection
-} from './../mixins';
-import {
-	Point
-} from './../maths';
+import { Element } from './../element';
+import { ElementCollection } from './../mixins';
+import { Point } from './../maths';
 
 class Control extends ElementCollection(Element) {
-
 	protected readonly tagName = 'div';
 	protected className = 'grafik-control';
 
 	protected shape: any;
 
-	public init(params?){
+	public init(params?) {
 		this.set(params);
 		this.setNodes();
 		this.onPointerStart = this.onPointerStart.bind(this);
@@ -23,53 +16,43 @@ class Control extends ElementCollection(Element) {
 		this.onPointerEnd = this.onPointerEnd.bind(this);
 	}
 
-	public setNodes(){
+	public setNodes() {
 		return this;
 	}
 
-	public getSize() : Point {
-		const {
-			scaleX,
-			scaleY
-		} = this.shape.getWorldMatrix().toOptions();
+	public getSize(): Point {
+		const { scaleX, scaleY } = this.shape.getWorldMatrix().toOptions();
 		return this.shape.bBox.getSize().multiply(new Point(scaleX, scaleY));
 	}
 
-	public getStyle() : object {
-		const {
-			left,
-			top,
-			angle
-		} = this.shape.getWorldMatrix().toOptions();
+	public getStyle(): object {
+		const { left, top, angle } = this.shape.getWorldMatrix().toOptions();
 		const size = this.getSize();
-		const {x, y} = this.shape.origin.clone().multiplyScalar(100);
+		const { x, y } = this.shape.origin.clone().multiplyScalar(100);
 		return {
-			width:Math.abs(size.x),
-			height:Math.abs(size.y),
-			left,
-			top,
-			transform:`translate(${-x}%, ${-y}%) rotate(${angle}deg)`,
-			transformOrigin:`${x}% ${y}%`
+			width: Math.abs(size.x) + 'px',
+			height: Math.abs(size.y) + 'px',
+			left: left + 'px',
+			top: top + 'px',
+			transform: `translate(${-x}%, ${-y}%) rotate(${angle}deg)`,
+			transformOrigin: `${x}% ${y}%`
 		};
 	}
 
-	public getAttributes() : object {
+	public getAttributes(): object {
 		const defaultAttributes = super.getAttributes();
 		return {
 			...defaultAttributes,
-			'data-control':true,
-			'data-shape':this.shape.get('id')
+			'data-control': true,
+			'data-shape': this.shape.get('id')
 		};
 	}
 
-	public onPointerStart(e){}
+	public onPointerStart(e) {}
 
-	public onPointerMove(e){}
+	public onPointerMove(e) {}
 
-	public onPointerEnd(e){}
-
+	public onPointerEnd(e) {}
 }
 
-export {
-	Control
-};
+export { Control };

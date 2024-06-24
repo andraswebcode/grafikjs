@@ -4,7 +4,6 @@ import { CanvasObject, Canvas } from '@grafikjs/core';
 
 const props = defineProps<CanvasObject>();
 const canvas: Canvas = inject('canvas');
-global.c = canvas;
 const attrs = ref(canvas.getAttributes());
 const onSet = () => {
 	attrs.value = canvas.getAttributes();
