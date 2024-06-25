@@ -18,6 +18,12 @@
 		"vue-tsc": "*",
 		"vue-loader": "*"
 	},
+	"homepage": "https://grafikjs.andrasweb.com/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/andraswebcode/grafikjs/tree/main",
+		"directory": "packages/vue"
+	},
 	"keywords": [
 		"SVG",
 		"interactive",

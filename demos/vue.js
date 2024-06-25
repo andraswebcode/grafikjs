@@ -19062,13 +19062,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   withCollectionContext: () => (/* binding */ withCollectionContext)
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm-bundler.js");
-/* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafikjs/core */ "./packages/core/src/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "./packages/vue/src/utils/index.ts");
-
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./packages/vue/src/utils/index.ts");
 
 
 var withCollectionContext = function (Component, tagName) {
-    var Shape = _utils__WEBPACK_IMPORTED_MODULE_2__.CLASSES[tagName];
+    var Shape = _utils__WEBPACK_IMPORTED_MODULE_1__.CLASSES[tagName];
     if (!Shape) {
         return {
             setup: function () {
@@ -19080,7 +19078,7 @@ var withCollectionContext = function (Component, tagName) {
         props: new Shape().toJSON(), // Define default props.
         setup: function (props) {
             var collection = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('collection');
-            var shape = new Shape((0,_grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.omitBy)(props, function (value) { return typeof value === 'undefined'; }));
+            var shape = new Shape(props);
             (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
                 collection.add(shape);
             });
