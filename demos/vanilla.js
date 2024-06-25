@@ -1490,7 +1490,7 @@ var Element = /** @class */ (function (_super) {
         return this;
     };
     Element.prototype._set = function (key, value) {
-        if (typeof this[key] !== 'function') {
+        if (typeof this[key] !== 'function' && typeof value !== 'undefined') {
             this[key] = value;
         }
     };
@@ -4799,6 +4799,36 @@ function Collection(Base) {
         };
         Collection.prototype.childByName = function (name) {
             return this.children.find(function (el) { return el.name === name; });
+        };
+        Collection.prototype.childByIdDeep = function (id) {
+            var child = this.childById(id);
+            if (child) {
+                return child;
+            }
+            this.eachChild(function (item) {
+                if (item.isCollection) {
+                    var _child = item.childByIdDeep(item);
+                    if (_child) {
+                        child = _child;
+                    }
+                }
+            });
+            return child;
+        };
+        Collection.prototype.childByNameDeep = function (name) {
+            var child = this.childByName(name);
+            if (child) {
+                return child;
+            }
+            this.eachChild(function (item) {
+                if (item.isCollection) {
+                    var _child = item.childByNameDeep(item);
+                    if (_child) {
+                        child = _child;
+                    }
+                }
+            });
+            return child;
         };
         Collection.prototype.moveChildTo = function (child, index) {
             var fromIndex = this.children.indexOf(child);

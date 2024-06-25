@@ -31,7 +31,7 @@ class Element extends Observable {
 	}
 
 	protected _set(key: string, value: string | number) {
-		if (typeof this[key] !== 'function') {
+		if (typeof this[key] !== 'function' && typeof value !== 'undefined') {
 			this[key] = value;
 		}
 	}

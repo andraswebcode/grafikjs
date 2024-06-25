@@ -1,7 +1,7 @@
 import { Element } from './element';
 import { ElementCollection } from './mixins';
 import { Selector } from './interactive';
-import { Timeline } from '@grafikjs/vanilla';
+import { Timeline } from './animation';
 import { Matrix, Point } from './maths';
 import { toFixed } from './utils';
 import { ViewBoxArray } from './types';
