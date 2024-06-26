@@ -3,7 +3,7 @@ import { ref, inject, onMounted, onUnmounted } from 'vue';
 import { Canvas } from '@grafikjs/core';
 
 const props = defineProps<{ node: any }>();
-const canvas: Canvas = inject('canvas');
+const canvas: Canvas = inject('canvas') as Canvas;
 const attrs = ref(props.node.getAttributes());
 const style = ref(props.node.getStyle());
 const onSet = () => {

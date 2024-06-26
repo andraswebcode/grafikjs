@@ -4,7 +4,7 @@ import { Canvas } from '@grafikjs/core';
 import ControlNode from './ControlNode.vue';
 
 const props = defineProps<{ control: any }>();
-const canvas: Canvas = inject('canvas');
+const canvas: Canvas = inject('canvas') as Canvas;
 const nodes = props.control.getChildren();
 const attrs = ref(props.control.getAttributes());
 const style = ref(props.control.getStyle());

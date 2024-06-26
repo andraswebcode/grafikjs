@@ -264,13 +264,16 @@ var Canvas = /** @class */ (function (_super) {
         _this.mode = 'select';
         _this.tagName = 'svg';
         _this.xmlns = 'http://www.w3.org/2000/svg';
-        _this.preserveAspectRatio = 'xMinYMin slice';
+        _this.preserveAspectRatio = 'xMidYMid slice';
         _this.className = 'grafik-canvas';
         _this.width = 0;
         _this.height = 0;
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
         _this.hasDrawingArea = false;
+        _this.showGrid = false;
         _this.autoSize = false;
+        _this.gridColor = '#EEEEEE';
+        _this.gridSize = 10;
         _this.drawingWidth = 0;
         _this.drawingHeight = 0;
         _this._defs = [];
@@ -319,16 +322,50 @@ var Canvas = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Canvas.prototype, "pan", {
+        get: function () {
+            return this._pan;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Canvas.prototype.getAttrMap = function () {
         return _super.prototype.getAttrMap.call(this)
             .concat(['xmlns', 'width', 'height', 'viewBox', 'preserveAspectRatio']);
     };
-    Canvas.prototype.getClipPathAttributes = function () {
+    Canvas.prototype.getDrawingAreaAttributes = function () {
+        if (!this.hasDrawingArea) {
+            return {};
+        }
         return {
-            x: 0,
-            y: 0,
+            x: this.width / 2 - this.drawingWidth / 2,
+            y: this.height / 2 - this.drawingHeight / 2,
             width: this.drawingWidth,
             height: this.drawingHeight
+        };
+    };
+    Canvas.prototype.getGridPatternAttributes = function () {
+        if (!this.showGrid) {
+            return {};
+        }
+        return {
+            id: 'grafik-grid',
+            width: this.gridSize * 2,
+            height: this.gridSize * 2,
+            patternUnits: 'userSpaceOnUse'
+        };
+    };
+    Canvas.prototype.getGridPatternPathAttributes = function () {
+        if (!this.showGrid) {
+            return {};
+        }
+        var s = this.gridSize;
+        var s2 = s * 2;
+        return {
+            d: "M 0 0 L ".concat(s, " 0 ").concat(s, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s, " 0 ").concat(s, " Z"),
+            fill: this.gridColor,
+            stroke: 'none',
+            strokeWidth: 0
         };
     };
     Canvas.prototype.selectShapes = function (shapes, silent) {
@@ -398,6 +435,9 @@ var Canvas = /** @class */ (function (_super) {
     };
     Canvas.prototype.getDefs = function () {
         return this._defs;
+    };
+    Canvas.prototype.hasDefs = function () {
+        return this.hasDrawingArea || this.showGrid || this._defs.length;
     };
     Canvas.prototype.eachDef = function (callback) {
         this._defs.forEach(callback);
