@@ -34,7 +34,7 @@ class Canvas extends ElementCollection(Element) {
 
 	protected readonly tagName = 'svg';
 	protected readonly xmlns = 'http://www.w3.org/2000/svg';
-	protected preserveAspectRatio = 'xMinYMin slice';
+	protected preserveAspectRatio = 'xMidYMid slice';
 	protected className = 'grafik-canvas';
 
 	protected width = 0;
@@ -42,6 +42,14 @@ class Canvas extends ElementCollection(Element) {
 
 	protected viewBox: ViewBoxArray;
 	protected viewportMatrix = new Matrix();
+
+	public hasDrawingArea = false;
+	public showGrid = false;
+	public autoSize = false;
+	public gridColor = '#EEEEEE';
+	public gridSize = 10;
+	protected drawingWidth = 0;
+	protected drawingHeight = 0;
 
 	private _defs = [];
 
@@ -76,6 +84,10 @@ class Canvas extends ElementCollection(Element) {
 		return this._zoom;
 	}
 
+	get pan() {
+		return this._pan;
+	}
+
 	get panX() {
 		return this._pan.x;
 	}
@@ -94,6 +106,48 @@ class Canvas extends ElementCollection(Element) {
 		return super
 			.getAttrMap()
 			.concat(['xmlns', 'width', 'height', 'viewBox', 'preserveAspectRatio']);
+	}
+
+	public getDrawingAreaAttributes(): object {
+		if (!this.hasDrawingArea) {
+			return {};
+		}
+
+		return {
+			x: this.width / 2 - this.drawingWidth / 2,
+			y: this.height / 2 - this.drawingHeight / 2,
+			width: this.drawingWidth,
+			height: this.drawingHeight
+		};
+	}
+
+	public getGridPatternAttributes(): object {
+		if (!this.showGrid) {
+			return {};
+		}
+
+		return {
+			id: 'grafik-grid',
+			width: this.gridSize * 2,
+			height: this.gridSize * 2,
+			patternUnits: 'userSpaceOnUse'
+		};
+	}
+
+	public getGridPatternPathAttributes(): object {
+		if (!this.showGrid) {
+			return {};
+		}
+
+		const s = this.gridSize;
+		const s2 = s * 2;
+
+		return {
+			d: `M 0 0 L ${s} 0 ${s} ${s2} ${s2} ${s2} ${s2} ${s} 0 ${s} Z`,
+			fill: this.gridColor,
+			stroke: 'none',
+			strokeWidth: 0
+		};
 	}
 
 	public selectShapes(shapes: any | any[], silent = false) {
@@ -175,6 +229,10 @@ class Canvas extends ElementCollection(Element) {
 		return this._defs;
 	}
 
+	public hasDefs() {
+		return true;
+	}
+
 	public eachDef(callback: (v: any, i: number, a: any[]) => void) {
 		this._defs.forEach(callback);
 		return this;
@@ -186,10 +244,6 @@ class Canvas extends ElementCollection(Element) {
 
 	public getSelector(): Selector {
 		return this._selector;
-	}
-
-	public setResponsiveSize(width: number, height: number) {
-		return this;
 	}
 
 	public zoomTo(zoom = 1, pan = new Point()) {

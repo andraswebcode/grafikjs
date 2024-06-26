@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import {
 	Canvas,
+	Defs,
 	Group,
 	Rect,
 	Path,
@@ -10,8 +11,10 @@ import {
 	Interactive,
 	Selector
 } from '@grafikjs/vue';
-const width = ref(1280);
-const height = ref(720);
+const width = ref(1200);
+const height = ref(800);
+const dWidth = ref(400);
+const dHeight = ref(400);
 const rotate = ref(45);
 const json = ref([
 	{
@@ -142,7 +145,10 @@ const json = ref([
 <template>
 	<div>
 		<Wrapper>
-			<Canvas :width="width" :height="height">
+			<Canvas :width="width" :height="height" :drawingWidth="dWidth" :drawingHeight="dHeight">
+				<template v-slot:defs>
+					<Defs />
+				</template>
 				<Rect
 					:width="200"
 					:height="200"
@@ -175,6 +181,14 @@ const json = ref([
 		<label>
 			Height:
 			<input type="number" v-model="height" />
+		</label>
+		<label>
+			Drawing Width:
+			<input type="number" v-model="dWidth" />
+		</label>
+		<label>
+			Drawing Height:
+			<input type="number" v-model="dHeight" />
 		</label>
 		<label>
 			Rotate:
