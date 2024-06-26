@@ -13581,7 +13581,7 @@ var Canvas = /** @class */ (function (_super) {
         return this._defs;
     };
     Canvas.prototype.hasDefs = function () {
-        return true;
+        return this.hasDrawingArea || this.showGrid || this._defs.length;
     };
     Canvas.prototype.eachDef = function (callback) {
         this._defs.forEach(callback);
@@ -20711,7 +20711,7 @@ var grafik = (0,_grafikjs_vue__WEBPACK_IMPORTED_MODULE_2__.createGrafik)({
     hasDrawingArea: true,
     autoSize: true,
     showGrid: true,
-    gridSize: 10
+    gridSize: 50
 });
 (0,vue__WEBPACK_IMPORTED_MODULE_0__.createApp)(_example_vue__WEBPACK_IMPORTED_MODULE_1__["default"]).use(grafik).mount('#wrap');
 

@@ -230,7 +230,7 @@ class Canvas extends ElementCollection(Element) {
 	}
 
 	public hasDefs() {
-		return true;
+		return this.hasDrawingArea || this.showGrid || this._defs.length;
 	}
 
 	public eachDef(callback: (v: any, i: number, a: any[]) => void) {

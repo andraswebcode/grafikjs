@@ -7,7 +7,7 @@ const grafik = createGrafik({
 	hasDrawingArea: true,
 	autoSize: true,
 	showGrid: true,
-	gridSize: 10
+	gridSize: 50
 });
 
 createApp(App).use(grafik).mount('#wrap');

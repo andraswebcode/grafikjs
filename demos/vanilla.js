@@ -953,7 +953,7 @@ var Canvas = /** @class */ (function (_super) {
         return this._defs;
     };
     Canvas.prototype.hasDefs = function () {
-        return true;
+        return this.hasDrawingArea || this.showGrid || this._defs.length;
     };
     Canvas.prototype.eachDef = function (callback) {
         this._defs.forEach(callback);
