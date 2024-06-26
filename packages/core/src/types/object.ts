@@ -33,8 +33,8 @@ interface TransformObject {
 }
 
 interface CanvasObject {
-	width: number;
-	height: number;
+	width?: number;
+	height?: number;
 	drawingWidth?: number;
 	drawingHeight?: number;
 }

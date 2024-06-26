@@ -12,13 +12,16 @@ const onSet = () => {
 	gAttrs.value = canvas.getDrawingAreaAttributes();
 };
 const onResize = () => {
-	const { clientWidth = 0, clientHeight = 0 } = canvasRef.value?.parentElement || {};
-	if (canvas.autoSize) {
-		canvas
-			.set({ width: clientWidth, height: clientHeight })
-			// just updating the viewBox.
-			.zoomTo(canvas.zoom, canvas.pan);
+	if (!canvas.autoSize || !canvasRef.value) {
+		return;
 	}
+	canvasRef.value.style.display = 'none';
+	const { clientWidth = 0, clientHeight = 0 } = canvasRef.value.parentElement || {};
+	canvasRef.value.style.display = '';
+	canvas
+		.set({ width: clientWidth, height: clientHeight })
+		// just updating the viewBox.
+		.zoomTo(canvas.zoom, canvas.pan);
 };
 
 onMounted(() => {
