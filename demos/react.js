@@ -2156,6 +2156,7 @@ var Canvas = /** @class */ (function (_super) {
         _this.width = 0;
         _this.height = 0;
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
+        _this.drawingAreaMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
         _this.hasDrawingArea = false;
         _this.showGrid = false;
         _this.autoSize = false;
@@ -2324,7 +2325,7 @@ var Canvas = /** @class */ (function (_super) {
         return this._defs;
     };
     Canvas.prototype.hasDefs = function () {
-        return this.hasDrawingArea || this.showGrid || this._defs.length;
+        return this.hasDrawingArea || this.showGrid || !!this._defs.length;
     };
     Canvas.prototype.eachDef = function (callback) {
         this._defs.forEach(callback);
@@ -2348,6 +2349,12 @@ var Canvas = /** @class */ (function (_super) {
             .multiplyScalar(-1)
             .add(pan);
         this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
+        // Second we also have to set drawing area matrix, if it is enabled.
+        if (this.hasDrawingArea) {
+            var daTx = this.width / 2 - this.drawingWidth / 2;
+            var daTy = this.height / 2 - this.drawingHeight / 2;
+            this.drawingAreaMatrix.fromArray([1, 0, 0, 1, daTx, daTy]);
+        }
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;

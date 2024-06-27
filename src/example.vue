@@ -15,6 +15,9 @@ const width = ref(1200);
 const height = ref(800);
 const dWidth = ref(400);
 const dHeight = ref(400);
+const zoom = ref(1);
+const left = ref(200);
+const top = ref(200);
 const rotate = ref(45);
 const json = ref([
 	{
@@ -145,30 +148,24 @@ const json = ref([
 <template>
 	<div>
 		<Wrapper>
-			<Canvas :width="width" :height="height" :drawingWidth="dWidth" :drawingHeight="dHeight">
+			<Canvas
+				:width="width"
+				:height="height"
+				:drawingWidth="dWidth"
+				:drawingHeight="dHeight"
+				:zoom="zoom"
+			>
 				<template v-slot:defs>
 					<Defs />
 				</template>
 				<Rect
 					:width="200"
 					:height="200"
-					:left="400"
-					:top="400"
+					:left="left"
+					:top="top"
 					:angle="rotate"
 					fill="lightblue"
 				/>
-				<Path
-					d="M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25"
-					fill="red"
-					:angle="330"
-					:left="800"
-					:top="200"
-				/>
-				<Group :left="200" :top="200" fill="lightgreen">
-					<Rect :width="200" :height="200" :left="100" :top="100" />
-					<Rect :width="200" :height="200" :left="-100" :top="-100" />
-				</Group>
-				<ShapeTree :json="json" />
 			</Canvas>
 			<Interactive>
 				<Selector />
@@ -189,6 +186,18 @@ const json = ref([
 		<label>
 			Drawing Height:
 			<input type="number" v-model="dHeight" />
+		</label>
+		<label>
+			Zoom:
+			<input type="number" v-model="zoom" step="0.1" />
+		</label>
+		<label>
+			Left:
+			<input type="number" v-model="left" />
+		</label>
+		<label>
+			Top:
+			<input type="number" v-model="top" />
 		</label>
 		<label>
 			Rotate:

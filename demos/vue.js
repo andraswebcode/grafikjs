@@ -12539,10 +12539,11 @@ var __assign = (undefined && undefined.__assign) || function () {
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
     __name: 'Canvas',
     props: {
-        width: { type: Number, required: true },
-        height: { type: Number, required: true },
+        width: { type: Number, required: false },
+        height: { type: Number, required: false },
         drawingWidth: { type: Number, required: false },
-        drawingHeight: { type: Number, required: false }
+        drawingHeight: { type: Number, required: false },
+        zoom: { type: Number, required: false }
     },
     setup: function (__props, _a) {
         var __expose = _a.expose;
@@ -12557,14 +12558,16 @@ var __assign = (undefined && undefined.__assign) || function () {
             gAttrs.value = canvas.getDrawingAreaAttributes();
         };
         var onResize = function () {
-            var _a;
-            var _b = ((_a = canvasRef.value) === null || _a === void 0 ? void 0 : _a.parentElement) || {}, _c = _b.clientWidth, clientWidth = _c === void 0 ? 0 : _c, _d = _b.clientHeight, clientHeight = _d === void 0 ? 0 : _d;
-            if (canvas.autoSize) {
-                canvas
-                    .set({ width: clientWidth, height: clientHeight })
-                    // just updating the viewBox.
-                    .zoomTo(canvas.zoom, canvas.pan);
+            if (!canvas.autoSize || !canvasRef.value) {
+                return;
             }
+            canvasRef.value.style.display = 'none';
+            var _a = canvasRef.value.parentElement || {}, _b = _a.clientWidth, clientWidth = _b === void 0 ? 0 : _b, _c = _a.clientHeight, clientHeight = _c === void 0 ? 0 : _c;
+            canvasRef.value.style.display = '';
+            canvas
+                .set({ width: clientWidth, height: clientHeight })
+                // just updating the viewBox.
+                .zoomTo(canvas.zoom, canvas.pan);
         };
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
             var _a;
@@ -13413,6 +13416,7 @@ var Canvas = /** @class */ (function (_super) {
         _this.width = 0;
         _this.height = 0;
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
+        _this.drawingAreaMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
         _this.hasDrawingArea = false;
         _this.showGrid = false;
         _this.autoSize = false;
@@ -13581,7 +13585,7 @@ var Canvas = /** @class */ (function (_super) {
         return this._defs;
     };
     Canvas.prototype.hasDefs = function () {
-        return this.hasDrawingArea || this.showGrid || this._defs.length;
+        return this.hasDrawingArea || this.showGrid || !!this._defs.length;
     };
     Canvas.prototype.eachDef = function (callback) {
         this._defs.forEach(callback);
@@ -13605,6 +13609,12 @@ var Canvas = /** @class */ (function (_super) {
             .multiplyScalar(-1)
             .add(pan);
         this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
+        // Second we also have to set drawing area matrix, if it is enabled.
+        if (this.hasDrawingArea) {
+            var daTx = this.width / 2 - this.drawingWidth / 2;
+            var daTy = this.height / 2 - this.drawingHeight / 2;
+            this.drawingAreaMatrix.fromArray([1, 0, 0, 1, daTx, daTy]);
+        }
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;
@@ -19712,6 +19722,9 @@ const width = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(1200);
 const height = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(800);
 const dWidth = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(400);
 const dHeight = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(400);
+const zoom = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(1);
+const left = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(200);
+const top = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(200);
 const rotate = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(45);
 const json = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([
 	{
@@ -19838,7 +19851,7 @@ const json = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([
 	}
 ]);
 
-const __returned__ = { width, height, dWidth, dHeight, rotate, json, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, get Canvas() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Canvas }, get Defs() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Defs }, get Group() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Group }, get Rect() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Rect }, get Path() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Path }, get ShapeTree() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.ShapeTree }, get Wrapper() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Wrapper }, get Interactive() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Interactive }, get Selector() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Selector } }
+const __returned__ = { width, height, dWidth, dHeight, zoom, left, top, rotate, json, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, get Canvas() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Canvas }, get Defs() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Defs }, get Group() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Group }, get Rect() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Rect }, get Path() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Path }, get ShapeTree() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.ShapeTree }, get Wrapper() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Wrapper }, get Interactive() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Interactive }, get Selector() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Selector } }
 Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
 return __returned__
 }
@@ -20289,7 +20302,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           width: $setup.width,
           height: $setup.height,
           drawingWidth: $setup.dWidth,
-          drawingHeight: $setup.dHeight
+          drawingHeight: $setup.dHeight,
+          zoom: $setup.zoom
         }, {
           defs: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
             (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Defs"])
@@ -20298,43 +20312,14 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
             (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Rect"], {
               width: 200,
               height: 200,
-              left: 400,
-              top: 400,
+              left: $setup.left,
+              top: $setup.top,
               angle: $setup.rotate,
               fill: "lightblue"
-            }, null, 8 /* PROPS */, ["angle"]),
-            (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Path"], {
-              d: "M50,25C35,0,-14,25,20,60L50,90L80,60C114,20,65,0,50,25",
-              fill: "red",
-              angle: 330,
-              left: 800,
-              top: 200
-            }),
-            (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Group"], {
-              left: 200,
-              top: 200,
-              fill: "lightgreen"
-            }, {
-              default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
-                (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Rect"], {
-                  width: 200,
-                  height: 200,
-                  left: 100,
-                  top: 100
-                }),
-                (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Rect"], {
-                  width: 200,
-                  height: 200,
-                  left: -100,
-                  top: -100
-                })
-              ]),
-              _: 1 /* STABLE */
-            }),
-            (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["ShapeTree"], { json: $setup.json }, null, 8 /* PROPS */, ["json"])
+            }, null, 8 /* PROPS */, ["left", "top", "angle"])
           ]),
           _: 1 /* STABLE */
-        }, 8 /* PROPS */, ["width", "height", "drawingWidth", "drawingHeight"]),
+        }, 8 /* PROPS */, ["width", "height", "drawingWidth", "drawingHeight", "zoom"]),
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Interactive"], null, {
           default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
             (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Selector"])
@@ -20381,10 +20366,38 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       ])
     ]),
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [
+      (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Zoom: "),
+      (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+        type: "number",
+        "onUpdate:modelValue": _cache[4] || (_cache[4] = $event => (($setup.zoom) = $event)),
+        step: "0.1"
+      }, null, 512 /* NEED_PATCH */), [
+        [vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.zoom]
+      ])
+    ]),
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [
+      (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Left: "),
+      (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+        type: "number",
+        "onUpdate:modelValue": _cache[5] || (_cache[5] = $event => (($setup.left) = $event))
+      }, null, 512 /* NEED_PATCH */), [
+        [vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.left]
+      ])
+    ]),
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [
+      (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Top: "),
+      (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+        type: "number",
+        "onUpdate:modelValue": _cache[6] || (_cache[6] = $event => (($setup.top) = $event))
+      }, null, 512 /* NEED_PATCH */), [
+        [vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.top]
+      ])
+    ]),
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [
       (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Rotate: "),
       (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
         type: "number",
-        "onUpdate:modelValue": _cache[4] || (_cache[4] = $event => (($setup.rotate) = $event))
+        "onUpdate:modelValue": _cache[7] || (_cache[7] = $event => (($setup.rotate) = $event))
       }, null, 512 /* NEED_PATCH */), [
         [vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.rotate]
       ])

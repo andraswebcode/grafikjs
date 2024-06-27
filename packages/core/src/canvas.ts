@@ -42,6 +42,7 @@ class Canvas extends ElementCollection(Element) {
 
 	protected viewBox: ViewBoxArray;
 	protected viewportMatrix = new Matrix();
+	protected drawingAreaMatrix = new Matrix();
 
 	public hasDrawingArea = false;
 	public showGrid = false;
@@ -256,6 +257,13 @@ class Canvas extends ElementCollection(Element) {
 			.multiplyScalar(-1)
 			.add(pan);
 		this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
+
+		// Second we also have to set drawing area matrix, if it is enabled.
+		if (this.hasDrawingArea) {
+			const daTx = this.width / 2 - this.drawingWidth / 2;
+			const daTy = this.height / 2 - this.drawingHeight / 2;
+			this.drawingAreaMatrix.fromArray([1, 0, 0, 1, daTx, daTy]);
+		}
 
 		// And we also need to calculate viewBox from viewport to update svg attribute.
 		const { a, d, tx, ty } = this.viewportMatrix;

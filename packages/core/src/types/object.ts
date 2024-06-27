@@ -37,6 +37,7 @@ interface CanvasObject {
 	height?: number;
 	drawingWidth?: number;
 	drawingHeight?: number;
+	zoom?: number;
 }
 
 interface ShapeObject extends TransformObject {
