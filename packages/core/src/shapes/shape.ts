@@ -179,9 +179,17 @@ class Shape extends Element {
 	}
 
 	public getWrapperAttributes(): object {
+		let transform = this.matrix.toCSS();
+		if (this.parent?.isCanvas && this.canvas?.hasDrawingArea) {
+			const daMatrix = this.canvas.drawingAreaMatrix;
+			transform = this.matrix
+				.clone()
+				.translate(this.matrix.tx + daMatrix.tx, this.matrix.ty + daMatrix.ty)
+				.toCSS();
+		}
 		const attrs: any = {
 			id: this.id,
-			transform: this.matrix.toCSS()
+			transform
 		};
 		if (this.className) {
 			attrs.className = this.className;
@@ -219,11 +227,19 @@ class Shape extends Element {
 		return this;
 	}
 
-	public getWorldMatrix(): Matrix {
-		const { viewportMatrix, isCanvas } = this.parent;
-		return new Matrix()
-			.copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix())
-			.multiply(this.matrix);
+	public getWorldMatrix(withDrawingArea = true): Matrix {
+		const { viewportMatrix, drawingAreaMatrix, isCanvas, hasDrawingArea } = this.parent;
+		let matrix: Matrix;
+		if (isCanvas) {
+			if (withDrawingArea && hasDrawingArea) {
+				matrix = viewportMatrix.clone().multiply(drawingAreaMatrix);
+			} else {
+				matrix = viewportMatrix;
+			}
+		} else {
+			matrix = this.parent.getWorldMatrix();
+		}
+		return new Matrix().copy(matrix).multiply(this.matrix);
 	}
 
 	public getLocalPointer(e, matrix?: Matrix): Point {

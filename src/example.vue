@@ -166,6 +166,22 @@ const json = ref([
 					:angle="rotate"
 					fill="lightblue"
 				/>
+				<Group :left="200" :top="200" fill="lightgreen">
+					<Rect
+						:width="100"
+						:height="100"
+						:left="-50"
+						:top="-50"
+						:angle="rotate"
+					/>
+					<Rect
+						:width="100"
+						:height="100"
+						:left="50"
+						:top="50"
+						:angle="rotate"
+					/>
+				</Group>
 			</Canvas>
 			<Interactive>
 				<Selector />

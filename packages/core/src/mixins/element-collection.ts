@@ -11,6 +11,9 @@ function ElementCollection<TBase extends Constructor>(Base: TBase) {
 				// Set up child.
 				this.children.push(child);
 				child.set('parent', this, true);
+				if (!silent) {
+					child.trigger('addedto', this);
+				}
 				// @ts-ignore
 				if (this.isCanvas) {
 					const setCanvas = (child) => child.set('canvas', this, true);

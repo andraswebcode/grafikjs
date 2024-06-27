@@ -12733,10 +12733,10 @@ __webpack_require__.r(__webpack_exports__);
             attrs.value = shape.getAttributes();
         };
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-            shape.on('set', onSet);
+            shape.on('set addedto', onSet);
         });
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
-            shape.off('set', onSet);
+            shape.off('set addedto', onSet);
         });
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)(props.props, function (props) {
             shape.set(props);
@@ -14625,7 +14625,7 @@ var OriginControlNode = /** @class */ (function (_super) {
     OriginControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
         var canvas = shape.get('canvas');
-        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix(false).toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.copy(canvas.getPointer(e));
         this._startPosition.set(left, top);
@@ -14637,10 +14637,20 @@ var OriginControlNode = /** @class */ (function (_super) {
         }
         var shape = this.getShape();
         var canvas = shape.get('canvas');
-        var vpt = shape.parent.isCanvas ? canvas.get('viewportMatrix').clone() : shape.parent.getWorldMatrix();
-        var move = canvas.getPointer(e).subtract(this._startVector.clone().subtract(this._startPosition)).transform(vpt.clone().invert());
+        var vpt = shape.parent.isCanvas
+            ? canvas.get('viewportMatrix').clone()
+            : shape.parent.getWorldMatrix();
+        var move = canvas
+            .getPointer(e)
+            .subtract(this._startVector.clone().subtract(this._startPosition))
+            .transform(vpt.clone().invert());
         var dimMatrix = shape.getWorldMatrix().invert().translate(0, 0);
-        var origin = canvas.getPointer(e).subtract(this._startVector).divide(shape.bBox.getSize()).transform(dimMatrix).add(this._startOrigin);
+        var origin = canvas
+            .getPointer(e)
+            .subtract(this._startVector)
+            .divide(shape.bBox.getSize())
+            .transform(dimMatrix)
+            .add(this._startOrigin);
         shape.set({
             left: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.x),
             top: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.y),
@@ -15106,7 +15116,7 @@ var TransformControl = /** @class */ (function (_super) {
     TransformControl.prototype.onPointerStart = function (e) {
         var shape = this.shape;
         var canvas = shape.get('canvas');
-        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix(false).toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.subtractPoints(canvas.getPointer(e), new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(left, top));
     };
@@ -15116,7 +15126,9 @@ var TransformControl = /** @class */ (function (_super) {
         }
         var shape = this.shape;
         var canvas = shape.get('canvas');
-        var vpt = shape.parent.isCanvas ? canvas.get('viewportMatrix').clone() : shape.parent.getWorldMatrix();
+        var vpt = shape.parent.isCanvas
+            ? canvas.get('viewportMatrix').clone()
+            : shape.parent.getWorldMatrix();
         var move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
         shape.set({
             left: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.x),
@@ -17585,6 +17597,9 @@ function ElementCollection(Base) {
                 // Set up child.
                 _this.children.push(child);
                 child.set('parent', _this, true);
+                if (!silent) {
+                    child.trigger('addedto', _this);
+                }
                 // @ts-ignore
                 if (_this.isCanvas) {
                     var setCanvas = function (child) { return child.set('canvas', _this, true); };
@@ -18513,9 +18528,18 @@ var Shape = /** @class */ (function (_super) {
         return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
     };
     Shape.prototype.getWrapperAttributes = function () {
+        var _a, _b;
+        var transform = this.matrix.toCSS();
+        if (((_a = this.parent) === null || _a === void 0 ? void 0 : _a.isCanvas) && ((_b = this.canvas) === null || _b === void 0 ? void 0 : _b.hasDrawingArea)) {
+            var daMatrix = this.canvas.drawingAreaMatrix;
+            transform = this.matrix
+                .clone()
+                .translate(this.matrix.tx + daMatrix.tx, this.matrix.ty + daMatrix.ty)
+                .toCSS();
+        }
         var attrs = {
             id: this.id,
-            transform: this.matrix.toCSS()
+            transform: transform
         };
         if (this.className) {
             attrs.className = this.className;
@@ -18547,11 +18571,22 @@ var Shape = /** @class */ (function (_super) {
         console.warn('updateBBox() must be implemented by subclass.');
         return this;
     };
-    Shape.prototype.getWorldMatrix = function () {
-        var _a = this.parent, viewportMatrix = _a.viewportMatrix, isCanvas = _a.isCanvas;
-        return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix()
-            .copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix())
-            .multiply(this.matrix);
+    Shape.prototype.getWorldMatrix = function (withDrawingArea) {
+        if (withDrawingArea === void 0) { withDrawingArea = true; }
+        var _a = this.parent, viewportMatrix = _a.viewportMatrix, drawingAreaMatrix = _a.drawingAreaMatrix, isCanvas = _a.isCanvas, hasDrawingArea = _a.hasDrawingArea;
+        var matrix;
+        if (isCanvas) {
+            if (withDrawingArea && hasDrawingArea) {
+                matrix = viewportMatrix.clone().multiply(drawingAreaMatrix);
+            }
+            else {
+                matrix = viewportMatrix;
+            }
+        }
+        else {
+            matrix = this.parent.getWorldMatrix();
+        }
+        return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().copy(matrix).multiply(this.matrix);
     };
     Shape.prototype.getLocalPointer = function (e, matrix) {
         var pointer = this.canvas.getPointer(e);
@@ -20316,7 +20351,30 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
               top: $setup.top,
               angle: $setup.rotate,
               fill: "lightblue"
-            }, null, 8 /* PROPS */, ["left", "top", "angle"])
+            }, null, 8 /* PROPS */, ["left", "top", "angle"]),
+            (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Group"], {
+              left: 200,
+              top: 200,
+              fill: "lightgreen"
+            }, {
+              default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
+                (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Rect"], {
+                  width: 100,
+                  height: 100,
+                  left: -50,
+                  top: -50,
+                  angle: $setup.rotate
+                }, null, 8 /* PROPS */, ["angle"]),
+                (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Rect"], {
+                  width: 100,
+                  height: 100,
+                  left: 50,
+                  top: 50,
+                  angle: $setup.rotate
+                }, null, 8 /* PROPS */, ["angle"])
+              ]),
+              _: 1 /* STABLE */
+            })
           ]),
           _: 1 /* STABLE */
         }, 8 /* PROPS */, ["width", "height", "drawingWidth", "drawingHeight", "zoom"]),

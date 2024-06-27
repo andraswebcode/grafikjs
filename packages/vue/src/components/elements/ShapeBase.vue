@@ -16,11 +16,11 @@ const onSet = () => {
 };
 
 onMounted(() => {
-	shape.on('set', onSet);
+	shape.on('set addedto', onSet);
 });
 
 onUnmounted(() => {
-	shape.off('set', onSet);
+	shape.off('set addedto', onSet);
 });
 
 watch(props.props, (props) => {
