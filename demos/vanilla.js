@@ -4966,9 +4966,6 @@ function ElementCollection(Base) {
                 // Set up child.
                 _this.children.push(child);
                 child.set('parent', _this, true);
-                if (!silent) {
-                    child.trigger('addedto', _this);
-                }
                 // @ts-ignore
                 if (_this.isCanvas) {
                     var setCanvas = function (child) { return child.set('canvas', _this, true); };
@@ -4990,6 +4987,9 @@ function ElementCollection(Base) {
                 if (def2Add.length) {
                     // @ts-ignore
                     (_a = child.get('canvas')) === null || _a === void 0 ? void 0 : _a.addDefs(def2Add);
+                }
+                if (!silent) {
+                    child.trigger('addedto', _this);
                 }
             });
             if (!silent) {

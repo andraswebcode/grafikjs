@@ -12726,6 +12726,7 @@ __webpack_require__.r(__webpack_exports__);
         __expose();
         var props = __props;
         var shape = props.shape, tagName = props.tagName;
+        var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
         var wAttrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(shape.getWrapperAttributes());
         var attrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(shape.getAttributes());
         var onSet = function () {
@@ -12733,15 +12734,17 @@ __webpack_require__.r(__webpack_exports__);
             attrs.value = shape.getAttributes();
         };
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-            shape.on('set addedto', onSet);
+            shape.on('set', onSet);
+            canvas.on('set', onSet);
         });
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
-            shape.off('set addedto', onSet);
+            shape.off('set', onSet);
+            canvas.off('set', onSet);
         });
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)(props.props, function (props) {
             shape.set(props);
         });
-        var __returned__ = { props: props, shape: shape, tagName: tagName, wAttrs: wAttrs, attrs: attrs, onSet: onSet };
+        var __returned__ = { props: props, shape: shape, tagName: tagName, canvas: canvas, wAttrs: wAttrs, attrs: attrs, onSet: onSet };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
     }
@@ -17597,9 +17600,6 @@ function ElementCollection(Base) {
                 // Set up child.
                 _this.children.push(child);
                 child.set('parent', _this, true);
-                if (!silent) {
-                    child.trigger('addedto', _this);
-                }
                 // @ts-ignore
                 if (_this.isCanvas) {
                     var setCanvas = function (child) { return child.set('canvas', _this, true); };
@@ -17621,6 +17621,9 @@ function ElementCollection(Base) {
                 if (def2Add.length) {
                     // @ts-ignore
                     (_a = child.get('canvas')) === null || _a === void 0 ? void 0 : _a.addDefs(def2Add);
+                }
+                if (!silent) {
+                    child.trigger('addedto', _this);
                 }
             });
             if (!silent) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ShapeObject } from '@grafikjs/core';
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ShapeObject, Canvas } from '@grafikjs/core';
+import { ref, watch, inject, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps<{
 	tagName: string;
@@ -8,6 +8,7 @@ const props = defineProps<{
 	props: Partial<ShapeObject>;
 }>();
 const { shape, tagName } = props;
+const canvas: Canvas = inject('canvas') as Canvas;
 const wAttrs = ref(shape.getWrapperAttributes());
 const attrs = ref(shape.getAttributes());
 const onSet = () => {
@@ -16,11 +17,13 @@ const onSet = () => {
 };
 
 onMounted(() => {
-	shape.on('set addedto', onSet);
+	shape.on('set', onSet);
+	canvas.on('set', onSet);
 });
 
 onUnmounted(() => {
-	shape.off('set addedto', onSet);
+	shape.off('set', onSet);
+	canvas.off('set', onSet);
 });
 
 watch(props.props, (props) => {
