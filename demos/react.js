@@ -2160,7 +2160,8 @@ var Canvas = /** @class */ (function (_super) {
         _this.hasDrawingArea = false;
         _this.showGrid = false;
         _this.autoSize = false;
-        _this.gridColor = '#EEEEEE';
+        _this.gridColorDark = '#EEEEEE';
+        _this.gridColorLight = '#FFFFFF';
         _this.gridSize = 10;
         _this.drawingWidth = 0;
         _this.drawingHeight = 0;
@@ -2243,18 +2244,26 @@ var Canvas = /** @class */ (function (_super) {
             patternUnits: 'userSpaceOnUse'
         };
     };
-    Canvas.prototype.getGridPatternPathAttributes = function () {
+    Canvas.prototype.getGridPatternPaths = function () {
         if (!this.showGrid) {
-            return {};
+            return [];
         }
         var s = this.gridSize;
         var s2 = s * 2;
-        return {
-            d: "M 0 0 L ".concat(s, " 0 ").concat(s, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s, " 0 ").concat(s, " Z"),
-            fill: this.gridColor,
-            stroke: 'none',
-            strokeWidth: 0
-        };
+        return [
+            {
+                d: "M 0 0 L ".concat(s, " 0 ").concat(s, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s, " 0 ").concat(s, " Z"),
+                fill: this.gridColorDark,
+                stroke: 'none',
+                strokeWidth: 0
+            },
+            {
+                d: "M ".concat(s, " 0 L ").concat(s2, " 0 ").concat(s2, " ").concat(s, " 0 ").concat(s, " 0 ").concat(s2, " ").concat(s, " ").concat(s2, " Z"),
+                fill: this.gridColorLight,
+                stroke: 'none',
+                strokeWidth: 0
+            }
+        ];
     };
     Canvas.prototype.selectShapes = function (shapes, silent) {
         var _this = this;

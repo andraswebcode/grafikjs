@@ -47,7 +47,8 @@ class Canvas extends ElementCollection(Element) {
 	public hasDrawingArea = false;
 	public showGrid = false;
 	public autoSize = false;
-	public gridColor = '#EEEEEE';
+	public gridColorDark = '#EEEEEE';
+	public gridColorLight = '#FFFFFF';
 	public gridSize = 10;
 	protected drawingWidth = 0;
 	protected drawingHeight = 0;
@@ -135,20 +136,28 @@ class Canvas extends ElementCollection(Element) {
 		};
 	}
 
-	public getGridPatternPathAttributes(): object {
+	public getGridPatternPaths(): object[] {
 		if (!this.showGrid) {
-			return {};
+			return [];
 		}
 
 		const s = this.gridSize;
 		const s2 = s * 2;
 
-		return {
-			d: `M 0 0 L ${s} 0 ${s} ${s2} ${s2} ${s2} ${s2} ${s} 0 ${s} Z`,
-			fill: this.gridColor,
-			stroke: 'none',
-			strokeWidth: 0
-		};
+		return [
+			{
+				d: `M 0 0 L ${s} 0 ${s} ${s2} ${s2} ${s2} ${s2} ${s} 0 ${s} Z`,
+				fill: this.gridColorDark,
+				stroke: 'none',
+				strokeWidth: 0
+			},
+			{
+				d: `M ${s} 0 L ${s2} 0 ${s2} ${s} 0 ${s} 0 ${s2} ${s} ${s2} Z`,
+				fill: this.gridColorLight,
+				stroke: 'none',
+				strokeWidth: 0
+			}
+		];
 	}
 
 	public selectShapes(shapes: any | any[], silent = false) {

@@ -12616,11 +12616,11 @@ __webpack_require__.r(__webpack_exports__);
         var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
         var daAttrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getDrawingAreaAttributes());
         var pAttrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getGridPatternAttributes());
-        var ppAttrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getGridPatternPathAttributes());
+        var pPaths = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getGridPatternPaths());
         var onSet = function () {
             daAttrs.value = canvas.getDrawingAreaAttributes();
             pAttrs.value = canvas.getGridPatternAttributes();
-            ppAttrs.value = canvas.getGridPatternPathAttributes();
+            pPaths.value = canvas.getGridPatternPaths();
         };
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
             canvas.on('set', onSet);
@@ -12628,7 +12628,7 @@ __webpack_require__.r(__webpack_exports__);
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
             canvas.off('set', onSet);
         });
-        var __returned__ = { canvas: canvas, daAttrs: daAttrs, pAttrs: pAttrs, ppAttrs: ppAttrs, onSet: onSet };
+        var __returned__ = { canvas: canvas, daAttrs: daAttrs, pAttrs: pAttrs, pPaths: pPaths, onSet: onSet };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
     }
@@ -12994,7 +12994,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                 : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true),
             ($setup.canvas.showGrid)
                 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("pattern", (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)({ key: 1 }, $setup.pAttrs)), [
-                    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.guardReactiveProps)($setup.ppAttrs)), null, 16 /* FULL_PROPS */)
+                    ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.pPaths, function (path) {
+                        return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("path", (0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)({ ref_for: true }, path), null, 16 /* FULL_PROPS */));
+                    }), 256 /* UNKEYED_FRAGMENT */))
                 ], 16 /* FULL_PROPS */))
                 : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)
         ]))
@@ -13423,7 +13425,8 @@ var Canvas = /** @class */ (function (_super) {
         _this.hasDrawingArea = false;
         _this.showGrid = false;
         _this.autoSize = false;
-        _this.gridColor = '#EEEEEE';
+        _this.gridColorDark = '#EEEEEE';
+        _this.gridColorLight = '#FFFFFF';
         _this.gridSize = 10;
         _this.drawingWidth = 0;
         _this.drawingHeight = 0;
@@ -13506,18 +13509,26 @@ var Canvas = /** @class */ (function (_super) {
             patternUnits: 'userSpaceOnUse'
         };
     };
-    Canvas.prototype.getGridPatternPathAttributes = function () {
+    Canvas.prototype.getGridPatternPaths = function () {
         if (!this.showGrid) {
-            return {};
+            return [];
         }
         var s = this.gridSize;
         var s2 = s * 2;
-        return {
-            d: "M 0 0 L ".concat(s, " 0 ").concat(s, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s, " 0 ").concat(s, " Z"),
-            fill: this.gridColor,
-            stroke: 'none',
-            strokeWidth: 0
-        };
+        return [
+            {
+                d: "M 0 0 L ".concat(s, " 0 ").concat(s, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s, " 0 ").concat(s, " Z"),
+                fill: this.gridColorDark,
+                stroke: 'none',
+                strokeWidth: 0
+            },
+            {
+                d: "M ".concat(s, " 0 L ").concat(s2, " 0 ").concat(s2, " ").concat(s, " 0 ").concat(s, " 0 ").concat(s2, " ").concat(s, " ").concat(s2, " Z"),
+                fill: this.gridColorLight,
+                stroke: 'none',
+                strokeWidth: 0
+            }
+        ];
     };
     Canvas.prototype.selectShapes = function (shapes, silent) {
         var _this = this;
