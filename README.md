@@ -66,7 +66,7 @@ import { CanvasProvider, Canvas, Rect, Wrapper, Interactive, Selector } from '@g
 </CanvasProvider>;
 ```
 
-### React JS
+### Vue JS
 
 ```js
 import { createApp } from 'vue';
