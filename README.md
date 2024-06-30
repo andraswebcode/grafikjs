@@ -70,11 +70,11 @@ import { CanvasProvider, Canvas, Rect, Wrapper, Interactive, Selector } from '@g
 
 ```js
 import { createApp } from 'vue';
-import App from './example.vue';
+import App from './App.vue';
 import { createGrafik } from '@grafikjs/vue';
 import '@grafikjs/styles';
 
-const grafik = createGrafik({});
+const grafik = createGrafik();
 
 createApp(App).use(grafik).mount('#wrap');
 ```
