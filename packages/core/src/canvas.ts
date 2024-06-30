@@ -110,7 +110,7 @@ class Canvas extends ElementCollection(Element) {
 			.concat(['xmlns', 'width', 'height', 'viewBox', 'preserveAspectRatio']);
 	}
 
-	public getDrawingAreaAttributes(): object {
+	public getDrawingAreaAttributes(): any {
 		if (!this.hasDrawingArea) {
 			return {};
 		}
@@ -123,7 +123,7 @@ class Canvas extends ElementCollection(Element) {
 		};
 	}
 
-	public getGridPatternAttributes(): object {
+	public getGridPatternAttributes(): any {
 		if (!this.showGrid) {
 			return {};
 		}
@@ -136,7 +136,7 @@ class Canvas extends ElementCollection(Element) {
 		};
 	}
 
-	public getGridPatternPaths(): object[] {
+	public getGridPatternPaths(): any[] {
 		if (!this.showGrid) {
 			return [];
 		}
