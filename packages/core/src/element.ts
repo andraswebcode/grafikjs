@@ -1,5 +1,5 @@
 import { Observable } from './observable';
-import { uniqueId } from './utils';
+import { uniqueId, kebabize } from './utils';
 
 class Element extends Observable {
 	protected readonly tagName: string;
@@ -47,14 +47,14 @@ class Element extends Observable {
 		}
 	}
 
-	public getAttributes(): object {
+	public getAttributes(makeKebabeCase = false): object {
 		const attrMap = this.getAttrMap();
 		let value;
 		return attrMap.reduce((memo: object, key: string): object => {
 			if (typeof this[key] !== 'undefined') {
 				value = this[key];
 				value = Array.isArray(value) ? value.join(' ') : value;
-				memo[key] = value;
+				memo[makeKebabeCase ? kebabize(key) : key] = value;
 			}
 			return memo;
 		}, {});

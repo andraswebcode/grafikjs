@@ -27,6 +27,10 @@ const uniqueId = (prefix?: string): string => {
 	return pf + str;
 };
 
+const kebabize = (name: string) => name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+
+const camelize = (name: string) => name.replace(/-([a-z])/g, (_m, letter) => letter.toUpperCase());
+
 // Thanks ChatGPT! :-)
 const isEqual = (value1: any, value2: any, visited = new Set()): boolean => {
 	// Check if both values are of the same type
@@ -164,4 +168,16 @@ const parsePath = (string: string): ParsedPath => {
 	return parsed;
 };
 
-export { clamp, toFixed, deg2Rad, rad2Deg, randInt, uniqueId, isEqual, omitBy, parsePath };
+export {
+	clamp,
+	toFixed,
+	deg2Rad,
+	rad2Deg,
+	randInt,
+	uniqueId,
+	isEqual,
+	kebabize,
+	camelize,
+	omitBy,
+	parsePath
+};

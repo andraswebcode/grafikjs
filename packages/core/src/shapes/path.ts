@@ -20,8 +20,8 @@ class Path extends Shape {
 		);
 	}
 
-	public getAttributes(): object {
-		const defaultAttributes = super.getAttributes();
+	public getAttributes(makeKebabeCase?: boolean): object {
+		const defaultAttributes = super.getAttributes(makeKebabeCase);
 		return {
 			...defaultAttributes,
 			d: this.path.toString()

@@ -10,10 +10,10 @@ const props = defineProps<{
 const { shape, tagName } = props;
 const canvas: Canvas = inject('canvas') as Canvas;
 const wAttrs = ref(shape.getWrapperAttributes());
-const attrs = ref(shape.getAttributes());
+const attrs = ref(shape.getAttributes(true));
 const onSet = () => {
 	wAttrs.value = shape.getWrapperAttributes();
-	attrs.value = shape.getAttributes();
+	attrs.value = shape.getAttributes(true);
 };
 
 onMounted(() => {

@@ -269,10 +269,12 @@ var Canvas = /** @class */ (function (_super) {
         _this.width = 0;
         _this.height = 0;
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
+        _this.drawingAreaMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
         _this.hasDrawingArea = false;
         _this.showGrid = false;
         _this.autoSize = false;
-        _this.gridColor = '#EEEEEE';
+        _this.gridColorDark = '#EEEEEE';
+        _this.gridColorLight = '#FFFFFF';
         _this.gridSize = 10;
         _this.drawingWidth = 0;
         _this.drawingHeight = 0;
@@ -355,18 +357,26 @@ var Canvas = /** @class */ (function (_super) {
             patternUnits: 'userSpaceOnUse'
         };
     };
-    Canvas.prototype.getGridPatternPathAttributes = function () {
+    Canvas.prototype.getGridPatternPaths = function () {
         if (!this.showGrid) {
-            return {};
+            return [];
         }
         var s = this.gridSize;
         var s2 = s * 2;
-        return {
-            d: "M 0 0 L ".concat(s, " 0 ").concat(s, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s, " 0 ").concat(s, " Z"),
-            fill: this.gridColor,
-            stroke: 'none',
-            strokeWidth: 0
-        };
+        return [
+            {
+                d: "M 0 0 L ".concat(s, " 0 ").concat(s, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s, " 0 ").concat(s, " Z"),
+                fill: this.gridColorDark,
+                stroke: 'none',
+                strokeWidth: 0
+            },
+            {
+                d: "M ".concat(s, " 0 L ").concat(s2, " 0 ").concat(s2, " ").concat(s, " 0 ").concat(s, " 0 ").concat(s2, " ").concat(s, " ").concat(s2, " Z"),
+                fill: this.gridColorLight,
+                stroke: 'none',
+                strokeWidth: 0
+            }
+        ];
     };
     Canvas.prototype.selectShapes = function (shapes, silent) {
         var _this = this;
@@ -437,7 +447,7 @@ var Canvas = /** @class */ (function (_super) {
         return this._defs;
     };
     Canvas.prototype.hasDefs = function () {
-        return this.hasDrawingArea || this.showGrid || this._defs.length;
+        return this.hasDrawingArea || this.showGrid || !!this._defs.length;
     };
     Canvas.prototype.eachDef = function (callback) {
         this._defs.forEach(callback);
@@ -461,6 +471,12 @@ var Canvas = /** @class */ (function (_super) {
             .multiplyScalar(-1)
             .add(pan);
         this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
+        // Second we also have to set drawing area matrix, if it is enabled.
+        if (this.hasDrawingArea) {
+            var daTx = this.width / 2 - this.drawingWidth / 2;
+            var daTy = this.height / 2 - this.drawingHeight / 2;
+            this.drawingAreaMatrix.fromArray([1, 0, 0, 1, daTx, daTy]);
+        }
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;
@@ -1039,15 +1055,16 @@ var Element = /** @class */ (function (_super) {
             return this[key];
         }
     };
-    Element.prototype.getAttributes = function () {
+    Element.prototype.getAttributes = function (makeKebabeCase) {
         var _this = this;
+        if (makeKebabeCase === void 0) { makeKebabeCase = false; }
         var attrMap = this.getAttrMap();
         var value;
         return attrMap.reduce(function (memo, key) {
             if (typeof _this[key] !== 'undefined') {
                 value = _this[key];
                 value = Array.isArray(value) ? value.join(' ') : value;
-                memo[key] = value;
+                memo[makeKebabeCase ? (0,_utils__WEBPACK_IMPORTED_MODULE_1__.kebabize)(key) : key] = value;
             }
             return memo;
         }, {});
@@ -1369,7 +1386,7 @@ var OriginControlNode = /** @class */ (function (_super) {
     OriginControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
         var canvas = shape.get('canvas');
-        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix(false).toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.copy(canvas.getPointer(e));
         this._startPosition.set(left, top);
@@ -1381,10 +1398,20 @@ var OriginControlNode = /** @class */ (function (_super) {
         }
         var shape = this.getShape();
         var canvas = shape.get('canvas');
-        var vpt = shape.parent.isCanvas ? canvas.get('viewportMatrix').clone() : shape.parent.getWorldMatrix();
-        var move = canvas.getPointer(e).subtract(this._startVector.clone().subtract(this._startPosition)).transform(vpt.clone().invert());
+        var vpt = shape.parent.isCanvas
+            ? canvas.get('viewportMatrix').clone()
+            : shape.parent.getWorldMatrix();
+        var move = canvas
+            .getPointer(e)
+            .subtract(this._startVector.clone().subtract(this._startPosition))
+            .transform(vpt.clone().invert());
         var dimMatrix = shape.getWorldMatrix().invert().translate(0, 0);
-        var origin = canvas.getPointer(e).subtract(this._startVector).divide(shape.bBox.getSize()).transform(dimMatrix).add(this._startOrigin);
+        var origin = canvas
+            .getPointer(e)
+            .subtract(this._startVector)
+            .divide(shape.bBox.getSize())
+            .transform(dimMatrix)
+            .add(this._startOrigin);
         shape.set({
             left: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.x),
             top: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.y),
@@ -1850,7 +1877,7 @@ var TransformControl = /** @class */ (function (_super) {
     TransformControl.prototype.onPointerStart = function (e) {
         var shape = this.shape;
         var canvas = shape.get('canvas');
-        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix(false).toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.subtractPoints(canvas.getPointer(e), new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(left, top));
     };
@@ -1860,7 +1887,9 @@ var TransformControl = /** @class */ (function (_super) {
         }
         var shape = this.shape;
         var canvas = shape.get('canvas');
-        var vpt = shape.parent.isCanvas ? canvas.get('viewportMatrix').clone() : shape.parent.getWorldMatrix();
+        var vpt = shape.parent.isCanvas
+            ? canvas.get('viewportMatrix').clone()
+            : shape.parent.getWorldMatrix();
         var move = canvas.getPointer(e).subtract(this._startVector).transform(vpt.invert());
         shape.set({
             left: (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(move.x),
@@ -4351,6 +4380,9 @@ function ElementCollection(Base) {
                     // @ts-ignore
                     (_a = child.get('canvas')) === null || _a === void 0 ? void 0 : _a.addDefs(def2Add);
                 }
+                if (!silent) {
+                    child.trigger('addedto', _this);
+                }
             });
             if (!silent) {
                 // @ts-ignore
@@ -5118,7 +5150,11 @@ var Shape = /** @class */ (function (_super) {
         _this.scaleY = 1;
         _this.skewX = 0;
         _this.skewY = 0;
+        _this._fill = 'black';
+        _this._stroke = 'black';
         _this._defs = {};
+        _this.strokeWidth = 0;
+        _this.opacity = 1;
         return _this;
     }
     Object.defineProperty(Shape.prototype, "fill", {
@@ -5247,8 +5283,9 @@ var Shape = /** @class */ (function (_super) {
     Shape.prototype.updateOthersWithKeys = function (keys) {
         return this;
     };
-    Shape.prototype.getAttributes = function () {
-        var defaultAttributes = _super.prototype.getAttributes.call(this);
+    Shape.prototype.getAttributes = function (makeKebabeCase) {
+        if (makeKebabeCase === void 0) { makeKebabeCase = false; }
+        var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
         // @ts-ignore
         if (this.isCollection) {
             return defaultAttributes;
@@ -5257,9 +5294,18 @@ var Shape = /** @class */ (function (_super) {
         return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
     };
     Shape.prototype.getWrapperAttributes = function () {
+        var _a, _b;
+        var transform = this.matrix.toCSS();
+        if (((_a = this.parent) === null || _a === void 0 ? void 0 : _a.isCanvas) && ((_b = this.canvas) === null || _b === void 0 ? void 0 : _b.hasDrawingArea)) {
+            var daMatrix = this.canvas.drawingAreaMatrix;
+            transform = this.matrix
+                .clone()
+                .translate(this.matrix.tx + daMatrix.tx, this.matrix.ty + daMatrix.ty)
+                .toCSS();
+        }
         var attrs = {
             id: this.id,
-            transform: this.matrix.toCSS()
+            transform: transform
         };
         if (this.className) {
             attrs.className = this.className;
@@ -5291,11 +5337,22 @@ var Shape = /** @class */ (function (_super) {
         console.warn('updateBBox() must be implemented by subclass.');
         return this;
     };
-    Shape.prototype.getWorldMatrix = function () {
-        var _a = this.parent, viewportMatrix = _a.viewportMatrix, isCanvas = _a.isCanvas;
-        return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix()
-            .copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix())
-            .multiply(this.matrix);
+    Shape.prototype.getWorldMatrix = function (withDrawingArea) {
+        if (withDrawingArea === void 0) { withDrawingArea = true; }
+        var _a = this.parent, viewportMatrix = _a.viewportMatrix, drawingAreaMatrix = _a.drawingAreaMatrix, isCanvas = _a.isCanvas, hasDrawingArea = _a.hasDrawingArea;
+        var matrix;
+        if (isCanvas) {
+            if (withDrawingArea && hasDrawingArea) {
+                matrix = viewportMatrix.clone().multiply(drawingAreaMatrix);
+            }
+            else {
+                matrix = viewportMatrix;
+            }
+        }
+        else {
+            matrix = this.parent.getWorldMatrix();
+        }
+        return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().copy(matrix).multiply(this.matrix);
     };
     Shape.prototype.getLocalPointer = function (e, matrix) {
         var pointer = this.canvas.getPointer(e);
@@ -5546,6 +5603,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* binding */ clamp),
 /* harmony export */   deg2Rad: () => (/* binding */ deg2Rad),
 /* harmony export */   isEqual: () => (/* binding */ isEqual),
+/* harmony export */   kebabize: () => (/* binding */ kebabize),
 /* harmony export */   omitBy: () => (/* binding */ omitBy),
 /* harmony export */   parsePath: () => (/* binding */ parsePath),
 /* harmony export */   rad2Deg: () => (/* binding */ rad2Deg),
@@ -5585,6 +5643,7 @@ var uniqueId = function (prefix) {
     }
     return pf + str;
 };
+var kebabize = function (name) { return name.replace(/[A-Z]/g, function (letter) { return "-".concat(letter.toLowerCase()); }); };
 // Thanks ChatGPT! :-)
 var isEqual = function (value1, value2, visited) {
     if (visited === void 0) { visited = new Set(); }
@@ -5719,6 +5778,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.isEqual),
+/* harmony export */   kebabize: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.kebabize),
 /* harmony export */   omitBy: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.omitBy),
 /* harmony export */   parsePath: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.rad2Deg),
@@ -5853,6 +5913,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.isEqual),
+/* harmony export */   kebabize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.kebabize),
 /* harmony export */   omitBy: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.omitBy),
 /* harmony export */   parsePath: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.rad2Deg),

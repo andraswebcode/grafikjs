@@ -36,12 +36,12 @@ class Shape extends Element {
 	protected skewX = 0;
 	protected skewY = 0;
 
-	private _fill: string;
-	private _stroke: string;
+	private _fill = 'black';
+	private _stroke = 'black';
 	private _defs: any = {};
 
-	protected strokeWidth: number;
-	protected opacity: number;
+	protected strokeWidth = 0;
+	protected opacity = 1;
 
 	get fill() {
 		return this._fill;
@@ -165,8 +165,8 @@ class Shape extends Element {
 		return this;
 	}
 
-	public getAttributes(): object {
-		const defaultAttributes = super.getAttributes();
+	public getAttributes(makeKebabeCase?: boolean): object {
+		const defaultAttributes = super.getAttributes(makeKebabeCase);
 		// @ts-ignore
 		if (this.isCollection) {
 			return defaultAttributes;

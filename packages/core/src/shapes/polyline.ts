@@ -12,8 +12,8 @@ class Polyline extends Shape {
 		this.init(params);
 	}
 
-	public getAttributes(): object {
-		const defaultAttributes = super.getAttributes();
+	public getAttributes(makeKebabeCase?: boolean): object {
+		const defaultAttributes = super.getAttributes(makeKebabeCase);
 		return {
 			...defaultAttributes,
 			points: this.path.toNumbers()

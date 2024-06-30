@@ -146,7 +146,7 @@ class Canvas extends ElementCollection(Element) {
 
 		return [
 			{
-				d: `M 0 0 L ${s} 0 ${s} ${s2} ${s2} ${s2} ${s2} ${s} 0 ${s} Z`,
+				d: `M 0 0 L ${s2} 0 ${s2} ${s2} 0 ${s2} Z`,
 				fill: this.gridColorDark,
 				stroke: 'none',
 				strokeWidth: 0

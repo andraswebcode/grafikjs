@@ -12728,10 +12728,10 @@ __webpack_require__.r(__webpack_exports__);
         var shape = props.shape, tagName = props.tagName;
         var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
         var wAttrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(shape.getWrapperAttributes());
-        var attrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(shape.getAttributes());
+        var attrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(shape.getAttributes(true));
         var onSet = function () {
             wAttrs.value = shape.getWrapperAttributes();
-            attrs.value = shape.getAttributes();
+            attrs.value = shape.getAttributes(true);
         };
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
             shape.on('set', onSet);
@@ -13517,7 +13517,7 @@ var Canvas = /** @class */ (function (_super) {
         var s2 = s * 2;
         return [
             {
-                d: "M 0 0 L ".concat(s, " 0 ").concat(s, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s, " 0 ").concat(s, " Z"),
+                d: "M 0 0 L ".concat(s2, " 0 ").concat(s2, " ").concat(s2, " 0 ").concat(s2, " Z"),
                 fill: this.gridColorDark,
                 stroke: 'none',
                 strokeWidth: 0
@@ -14207,15 +14207,16 @@ var Element = /** @class */ (function (_super) {
             return this[key];
         }
     };
-    Element.prototype.getAttributes = function () {
+    Element.prototype.getAttributes = function (makeKebabeCase) {
         var _this = this;
+        if (makeKebabeCase === void 0) { makeKebabeCase = false; }
         var attrMap = this.getAttrMap();
         var value;
         return attrMap.reduce(function (memo, key) {
             if (typeof _this[key] !== 'undefined') {
                 value = _this[key];
                 value = Array.isArray(value) ? value.join(' ') : value;
-                memo[key] = value;
+                memo[makeKebabeCase ? (0,_utils__WEBPACK_IMPORTED_MODULE_1__.kebabize)(key) : key] = value;
             }
             return memo;
         }, {});
@@ -14324,9 +14325,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Track: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.Track),
 /* harmony export */   TransformControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.TransformControl),
 /* harmony export */   VerticalLineCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.VerticalLineCurve),
+/* harmony export */   camelize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.camelize),
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.isEqual),
+/* harmony export */   kebabize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.kebabize),
 /* harmony export */   omitBy: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.omitBy),
 /* harmony export */   parsePath: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.rad2Deg),
@@ -18139,8 +18142,8 @@ var Path = /** @class */ (function (_super) {
         }));
         return _this;
     }
-    Path.prototype.getAttributes = function () {
-        var defaultAttributes = _super.prototype.getAttributes.call(this);
+    Path.prototype.getAttributes = function (makeKebabeCase) {
+        var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
         return __assign(__assign({}, defaultAttributes), { d: this.path.toString() });
     };
     Path.prototype.updateOthersWithKeys = function (keys) {
@@ -18251,8 +18254,8 @@ var Polyline = /** @class */ (function (_super) {
         _this.init(params);
         return _this;
     }
-    Polyline.prototype.getAttributes = function () {
-        var defaultAttributes = _super.prototype.getAttributes.call(this);
+    Polyline.prototype.getAttributes = function (makeKebabeCase) {
+        var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
         return __assign(__assign({}, defaultAttributes), { points: this.path.toNumbers() });
     };
     Polyline.prototype.updateOthersWithKeys = function (keys) {
@@ -18403,7 +18406,11 @@ var Shape = /** @class */ (function (_super) {
         _this.scaleY = 1;
         _this.skewX = 0;
         _this.skewY = 0;
+        _this._fill = 'black';
+        _this._stroke = 'black';
         _this._defs = {};
+        _this.strokeWidth = 0;
+        _this.opacity = 1;
         return _this;
     }
     Object.defineProperty(Shape.prototype, "fill", {
@@ -18532,8 +18539,8 @@ var Shape = /** @class */ (function (_super) {
     Shape.prototype.updateOthersWithKeys = function (keys) {
         return this;
     };
-    Shape.prototype.getAttributes = function () {
-        var defaultAttributes = _super.prototype.getAttributes.call(this);
+    Shape.prototype.getAttributes = function (makeKebabeCase) {
+        var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
         // @ts-ignore
         if (this.isCollection) {
             return defaultAttributes;
@@ -18848,9 +18855,11 @@ var PIBY180 = Math.PI / 180;
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   camelize: () => (/* binding */ camelize),
 /* harmony export */   clamp: () => (/* binding */ clamp),
 /* harmony export */   deg2Rad: () => (/* binding */ deg2Rad),
 /* harmony export */   isEqual: () => (/* binding */ isEqual),
+/* harmony export */   kebabize: () => (/* binding */ kebabize),
 /* harmony export */   omitBy: () => (/* binding */ omitBy),
 /* harmony export */   parsePath: () => (/* binding */ parsePath),
 /* harmony export */   rad2Deg: () => (/* binding */ rad2Deg),
@@ -18890,6 +18899,8 @@ var uniqueId = function (prefix) {
     }
     return pf + str;
 };
+var kebabize = function (name) { return name.replace(/[A-Z]/g, function (letter) { return "-".concat(letter.toLowerCase()); }); };
+var camelize = function (name) { return name.replace(/-([a-z])/g, function (_m, letter) { return letter.toUpperCase(); }); };
 // Thanks ChatGPT! :-)
 var isEqual = function (value1, value2, visited) {
     if (visited === void 0) { visited = new Set(); }
@@ -19021,9 +19032,11 @@ var parsePath = function (string) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   PIBY180: () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.PIBY180),
+/* harmony export */   camelize: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.camelize),
 /* harmony export */   clamp: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.isEqual),
+/* harmony export */   kebabize: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.kebabize),
 /* harmony export */   omitBy: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.omitBy),
 /* harmony export */   parsePath: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.parsePath),
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.rad2Deg),
@@ -19793,6 +19806,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   __name: 'example',
   setup(__props, { expose: __expose }) {
@@ -19803,135 +19817,116 @@ const height = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(800);
 const dWidth = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(400);
 const dHeight = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(400);
 const zoom = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(1);
-const left = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(200);
-const top = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(200);
-const rotate = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(45);
 const json = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([
 	{
-		id: 'g-M7NEAs01Icl1',
-		name: '',
+		id: 'g-4IP9Il7Xh24b',
+		name: 'Two Square',
 		tagName: 'g',
 		children: [
 			{
-				id: 'rect-Cj6aGLV9ZMI4',
+				id: 'rect-Mky72OJuTF1y',
 				name: '',
 				tagName: 'rect',
-				fill: 'none',
-				stroke: '#000',
-				strokeWidth: 2,
-				width: 100,
-				height: 100,
-				left: -100,
+				width: 20,
+				height: 20,
+				left: -10,
 				top: 0,
-				angle: 45,
-				scaleX: 1,
-				scaleY: 1,
-				skewX: 0,
-				skewY: 0
+				angle: 45
 			},
 			{
-				id: 'rect-kWdNZKVOn7lf',
+				id: 'rect-2jp5z8DLz7KK',
 				name: '',
 				tagName: 'rect',
-				fill: 'none',
-				stroke: '#000',
-				strokeWidth: 2,
-				width: 100,
-				height: 100,
-				left: 100,
+				width: 20,
+				height: 20,
+				left: 10,
 				top: 0,
-				angle: 45,
-				scaleX: 1,
-				scaleY: 1,
-				skewX: 0,
-				skewY: 0
+				angle: 45
 			}
 		],
-		left: 400,
-		top: 400,
-		angle: 0,
-		scaleX: 1,
-		scaleY: 1,
-		skewX: 0,
-		skewY: 0
+		left: 300,
+		top: 50,
+		angle: 45
 	},
 	{
-		id: 'circle-NjxlXyZCpbKh',
+		id: 'circle-pcRuqlIpl7Eg',
 		name: '',
 		tagName: 'circle',
-		r: 50,
-		cx: 50,
-		cy: 50,
-		left: 600,
-		top: 400,
-		angle: 0,
-		scaleX: 1,
-		scaleY: 1,
-		skewX: 0,
-		skewY: 0
+		fill: 'orange',
+		r: 10,
+		cx: 10,
+		cy: 10,
+		left: 200,
+		top: 200
 	},
 	{
-		id: 'rect-Rrjr8i7cvlLD',
+		id: 'rect-JfqKQuZtBPdw',
 		name: '',
 		tagName: 'rect',
-		fill: 'none',
-		stroke: '#000',
-		strokeWidth: 2,
-		width: 100,
-		height: 100,
-		left: 0,
-		top: 0,
-		angle: 45,
-		scaleX: 1,
-		scaleY: 1,
-		skewX: 0,
-		skewY: 0
+		fill: 'purple',
+		width: 25,
+		height: 25,
+		left: 40,
+		top: 40
 	},
 	{
-		id: 'path-kGa1gK1SYKhr',
-		name: '',
+		id: 'path-v6NkzMbA2OfZ',
+		name: 'Heart',
 		tagName: 'path',
-		d: 'M 41.376 11.025000000000002 C 26.375999999999998 -13.974999999999998 -22.624000000000002 11.025000000000002 11.376 46.025000000000006 L 41.376 76.025 L 71.376 46.025000000000006 C 105.376 6.025000000000002 56.376 -13.974999999999998 41.376 11.025000000000002',
-		left: 450,
-		top: 250,
-		angle: 0,
-		scaleX: 1,
-		scaleY: 1,
-		skewX: 0,
-		skewY: 0
+		d: 'M 41.38 11.03 C 26.38 -13.97 -22.62 11.03 11.38 46.03 L 41.38 76.03 L 71.38 46.03 C 105.38 6.03 56.38 -13.97 41.38 11.03',
+		fill: 'red',
+		left: 80,
+		top: 240,
+		angle: 20,
+		scaleX: 0.5,
+		scaleY: 0.5
 	},
 	{
-		id: 'polyline-C4eoMzQX67qY',
-		name: '',
+		id: 'polygon-Mf8vOjJKZxdb',
+		name: 'Triangle',
 		tagName: 'polygon',
 		points: '50 0 100 100 0 100',
-		left: 350,
-		top: 150,
-		angle: 0,
-		scaleX: 1,
-		scaleY: 1,
-		skewX: 0,
-		skewY: 0
+		fill: 'forestgreen',
+		left: 300,
+		top: 300,
+		angle: 340,
+		scaleX: 0.4,
+		scaleY: 0.4
 	},
 	{
-		id: 'text-crKouhcmBjUO',
+		id: 'g-VtPKQnon8KFi',
 		name: '',
-		tagName: 'text',
-		x: 0,
-		y: 40,
-		fontFamily: 'Arial',
-		fontSize: 40,
-		left: 800,
-		top: 250,
-		angle: 0,
-		scaleX: 1,
-		scaleY: 1,
-		skewX: 0,
-		skewY: 0
+		tagName: 'g',
+		fill: 'none',
+		strokeWidth: 4,
+		children: [
+			{
+				id: 'polygon-rnyVKf6qG20I',
+				name: 'Triangle',
+				tagName: 'polygon',
+				points: '50 0 100 100 0 100',
+				left: -45,
+				top: -5,
+				angle: 340,
+				stroke: 'green'
+			},
+			{
+				id: 'path-jFmcNvCHeasW',
+				name: 'Heart',
+				tagName: 'path',
+				d: 'M 41.38 11.03 C 26.38 -13.97 -22.62 11.03 11.38 46.03 L 41.38 76.03 L 71.38 46.03 C 105.38 6.03 56.38 -13.97 41.38 11.03',
+				left: 80,
+				top: 0,
+				angle: 45,
+				stroke: 'red'
+			}
+		],
+		left: 100,
+		top: 320
 	}
 ]);
 
-const __returned__ = { width, height, dWidth, dHeight, zoom, left, top, rotate, json, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, get Canvas() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Canvas }, get Defs() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Defs }, get Group() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Group }, get Rect() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Rect }, get Path() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Path }, get ShapeTree() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.ShapeTree }, get Wrapper() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Wrapper }, get Interactive() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Interactive }, get Selector() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Selector } }
+const __returned__ = { width, height, dWidth, dHeight, zoom, json, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, get Canvas() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Canvas }, get Defs() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Defs }, get Group() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Group }, get Rect() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Rect }, get Path() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Path }, get ShapeTree() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.ShapeTree }, get Wrapper() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Wrapper }, get Interactive() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Interactive }, get Selector() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Selector } }
 Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
 return __returned__
 }
@@ -20389,37 +20384,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
             (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Defs"])
           ]),
           default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
-            (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Rect"], {
-              width: 200,
-              height: 200,
-              left: $setup.left,
-              top: $setup.top,
-              angle: $setup.rotate,
-              fill: "lightblue"
-            }, null, 8 /* PROPS */, ["left", "top", "angle"]),
-            (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Group"], {
-              left: 200,
-              top: 200,
-              fill: "lightgreen"
-            }, {
-              default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [
-                (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Rect"], {
-                  width: 100,
-                  height: 100,
-                  left: -50,
-                  top: -50,
-                  angle: $setup.rotate
-                }, null, 8 /* PROPS */, ["angle"]),
-                (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Rect"], {
-                  width: 100,
-                  height: 100,
-                  left: 50,
-                  top: 50,
-                  angle: $setup.rotate
-                }, null, 8 /* PROPS */, ["angle"])
-              ]),
-              _: 1 /* STABLE */
-            })
+            (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["ShapeTree"], { json: $setup.json }, null, 8 /* PROPS */, ["json"])
           ]),
           _: 1 /* STABLE */
         }, 8 /* PROPS */, ["width", "height", "drawingWidth", "drawingHeight", "zoom"]),
@@ -20476,33 +20441,6 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         step: "0.1"
       }, null, 512 /* NEED_PATCH */), [
         [vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.zoom]
-      ])
-    ]),
-    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [
-      (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Left: "),
-      (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-        type: "number",
-        "onUpdate:modelValue": _cache[5] || (_cache[5] = $event => (($setup.left) = $event))
-      }, null, 512 /* NEED_PATCH */), [
-        [vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.left]
-      ])
-    ]),
-    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [
-      (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Top: "),
-      (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-        type: "number",
-        "onUpdate:modelValue": _cache[6] || (_cache[6] = $event => (($setup.top) = $event))
-      }, null, 512 /* NEED_PATCH */), [
-        [vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.top]
-      ])
-    ]),
-    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [
-      (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Rotate: "),
-      (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-        type: "number",
-        "onUpdate:modelValue": _cache[7] || (_cache[7] = $event => (($setup.rotate) = $event))
-      }, null, 512 /* NEED_PATCH */), [
-        [vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.rotate]
       ])
     ])
   ]))
