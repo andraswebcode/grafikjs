@@ -6,7 +6,10 @@ const useCanvas = (): Canvas | undefined => {
 
 	if (!canvas) {
 		console.error('No canvas provided.');
+		return;
 	}
 
 	return canvas;
 };
+
+export { useCanvas };

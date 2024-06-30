@@ -19176,15 +19176,20 @@ var withCollectionContext = function (Component, tagName) {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   useCanvas: () => (/* binding */ useCanvas)
+/* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm-bundler.js");
 
 var useCanvas = function () {
     var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
     if (!canvas) {
         console.error('No canvas provided.');
+        return;
     }
     return canvas;
 };
+
 
 
 /***/ }),
@@ -19214,6 +19219,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Text: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_4__.Text),
 /* harmony export */   Wrapper: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_3__.Wrapper),
 /* harmony export */   createGrafik: () => (/* reexport safe */ _plugin__WEBPACK_IMPORTED_MODULE_0__.createGrafik),
+/* harmony export */   useCanvas: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvas),
 /* harmony export */   withCollectionContext: () => (/* reexport safe */ _hocs__WEBPACK_IMPORTED_MODULE_1__.withCollectionContext)
 /* harmony export */ });
 /* harmony import */ var _plugin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./plugin */ "./packages/vue/src/plugin.ts");
