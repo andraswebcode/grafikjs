@@ -13001,7 +13001,7 @@ var Canvas = /** @class */ (function (_super) {
         var s2 = s * 2;
         return [
             {
-                d: "M 0 0 L ".concat(s, " 0 ").concat(s, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s2, " ").concat(s, " 0 ").concat(s, " Z"),
+                d: "M 0 0 L ".concat(s2, " 0 ").concat(s2, " ").concat(s2, " 0 ").concat(s2, " Z"),
                 fill: this.gridColorDark,
                 stroke: 'none',
                 strokeWidth: 0
@@ -13809,6 +13809,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Track: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.Track),
 /* harmony export */   TransformControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.TransformControl),
 /* harmony export */   VerticalLineCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.VerticalLineCurve),
+/* harmony export */   camelize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.camelize),
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.isEqual),
@@ -17625,8 +17626,8 @@ var Path = /** @class */ (function (_super) {
         }));
         return _this;
     }
-    Path.prototype.getAttributes = function () {
-        var defaultAttributes = _super.prototype.getAttributes.call(this);
+    Path.prototype.getAttributes = function (makeKebabeCase) {
+        var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
         return __assign(__assign({}, defaultAttributes), { d: this.path.toString() });
     };
     Path.prototype.updateOthersWithKeys = function (keys) {
@@ -17737,8 +17738,8 @@ var Polyline = /** @class */ (function (_super) {
         _this.init(params);
         return _this;
     }
-    Polyline.prototype.getAttributes = function () {
-        var defaultAttributes = _super.prototype.getAttributes.call(this);
+    Polyline.prototype.getAttributes = function (makeKebabeCase) {
+        var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
         return __assign(__assign({}, defaultAttributes), { points: this.path.toNumbers() });
     };
     Polyline.prototype.updateOthersWithKeys = function (keys) {
@@ -18023,7 +18024,6 @@ var Shape = /** @class */ (function (_super) {
         return this;
     };
     Shape.prototype.getAttributes = function (makeKebabeCase) {
-        if (makeKebabeCase === void 0) { makeKebabeCase = false; }
         var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
         // @ts-ignore
         if (this.isCollection) {
@@ -18339,6 +18339,7 @@ var PIBY180 = Math.PI / 180;
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   camelize: () => (/* binding */ camelize),
 /* harmony export */   clamp: () => (/* binding */ clamp),
 /* harmony export */   deg2Rad: () => (/* binding */ deg2Rad),
 /* harmony export */   isEqual: () => (/* binding */ isEqual),
@@ -18383,6 +18384,7 @@ var uniqueId = function (prefix) {
     return pf + str;
 };
 var kebabize = function (name) { return name.replace(/[A-Z]/g, function (letter) { return "-".concat(letter.toLowerCase()); }); };
+var camelize = function (name) { return name.replace(/-([a-z])/g, function (_m, letter) { return letter.toUpperCase(); }); };
 // Thanks ChatGPT! :-)
 var isEqual = function (value1, value2, visited) {
     if (visited === void 0) { visited = new Set(); }
@@ -18514,6 +18516,7 @@ var parsePath = function (string) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   PIBY180: () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.PIBY180),
+/* harmony export */   camelize: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.camelize),
 /* harmony export */   clamp: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.deg2Rad),
 /* harmony export */   isEqual: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.isEqual),
