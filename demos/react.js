@@ -1933,6 +1933,10 @@ var Animation = /** @class */ (function (_super) {
     function Animation() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    Animation.prototype.play = function () { };
+    Animation.prototype.pause = function () { };
+    Animation.prototype.seek = function (ms) { };
+    Animation.prototype._render = function (timeStamp) { };
     return Animation;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
@@ -1995,7 +1999,11 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var Keyframe = /** @class */ (function (_super) {
     __extends(Keyframe, _super);
     function Keyframe() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.duration = 0;
+        _this.delay = 0;
+        _this.easing = 'linear';
+        return _this;
     }
     return Keyframe;
 }(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
@@ -2077,7 +2085,10 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var Track = /** @class */ (function (_super) {
     __extends(Track, _super);
     function Track() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.property = '';
+        _this.duration = 0;
+        return _this;
     }
     return Track;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
@@ -2370,12 +2381,16 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype._onPointerStartInSelectMode = function (e) {
         // @ts-ignore
         var dataset = e.target.dataset;
-        var shape = dataset.shape;
+        var shape = dataset.shape, name = dataset.name;
         var isNode = 'controlNode' in dataset;
         var pointer = this.getPointer(e);
         var founded = this.findLastChildByPointer(pointer);
         if (isNode) {
-            //
+            this._currentNode = name;
+            this.eachSelectedShape(function (shape) {
+                var _a;
+                (_a = shape.getControl().childByName(name)) === null || _a === void 0 ? void 0 : _a.onPointerStart(e);
+            });
         }
         else {
             if (!shape) {
@@ -2398,12 +2413,17 @@ var Canvas = /** @class */ (function (_super) {
         }
     };
     Canvas.prototype._onPointerMoveInSelectMode = function (e) {
+        var _this = this;
         if (this._selection) {
             this._selector.bBox.max.copy(this.getPointer(e));
             this.trigger('selector:updated');
         }
         else {
-            this.eachSelectedShape(function (shape) { return shape.getControl().onPointerMove(e); });
+            this.eachSelectedShape(function (shape) {
+                var _a;
+                shape.getControl().onPointerMove(e);
+                (_a = shape.getControl().childByName(_this._currentNode)) === null || _a === void 0 ? void 0 : _a.onPointerMove(e);
+            });
         }
     };
     Canvas.prototype._onPointerEndInSelectMode = function (e) {
@@ -2422,7 +2442,12 @@ var Canvas = /** @class */ (function (_super) {
             this._selection = false;
         }
         else {
-            this.eachSelectedShape(function (shape) { return shape.getControl().onPointerEnd(e); });
+            this.eachSelectedShape(function (shape) {
+                var _a;
+                shape.getControl().onPointerEnd(e);
+                (_a = shape.getControl().childByName(_this._currentNode)) === null || _a === void 0 ? void 0 : _a.onPointerEnd(e);
+            });
+            this._currentNode = '';
         }
     };
     Canvas.prototype._onPointerStartInPanMode = function (e) {

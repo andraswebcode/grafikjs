@@ -2,8 +2,15 @@ interface TimelineObject {}
 
 interface AnimationObject {}
 
-interface TrackObject {}
+interface TrackObject {
+	property: string;
+	duration: number;
+}
 
-interface KeyframeObject {}
+interface KeyframeObject {
+	duration: number;
+	delay: number;
+	easing: string;
+}
 
 export { TimelineObject, AnimationObject, TrackObject, KeyframeObject };

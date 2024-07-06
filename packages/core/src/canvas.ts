@@ -41,7 +41,7 @@ class Canvas extends ElementCollection(Element) {
 	private _animation = new Timeline();
 
 	private _selectedShapes = [];
-	private _currentNodeId: string;
+	private _currentNode: string;
 	private _selector = new Selector();
 	private _selection = false;
 
@@ -286,13 +286,16 @@ class Canvas extends ElementCollection(Element) {
 	private _onPointerStartInSelectMode(e: MouseOrTouchEvent) {
 		// @ts-ignore
 		const { dataset } = e.target;
-		const { shape } = dataset;
+		const { shape, name } = dataset;
 		const isNode = 'controlNode' in dataset;
 		const pointer = this.getPointer(e);
 		const founded = this.findLastChildByPointer(pointer);
 
 		if (isNode) {
-			//
+			this._currentNode = name;
+			this.eachSelectedShape((shape) => {
+				shape.getControl().childByName(name)?.onPointerStart(e);
+			});
 		} else {
 			if (!shape) {
 				if (founded) {
@@ -318,7 +321,10 @@ class Canvas extends ElementCollection(Element) {
 			this._selector.bBox.max.copy(this.getPointer(e));
 			this.trigger('selector:updated');
 		} else {
-			this.eachSelectedShape((shape) => shape.getControl().onPointerMove(e));
+			this.eachSelectedShape((shape) => {
+				shape.getControl().onPointerMove(e);
+				shape.getControl().childByName(this._currentNode)?.onPointerMove(e);
+			});
 		}
 	}
 
@@ -338,7 +344,11 @@ class Canvas extends ElementCollection(Element) {
 			this.trigger('selector:updated');
 			this._selection = false;
 		} else {
-			this.eachSelectedShape((shape) => shape.getControl().onPointerEnd(e));
+			this.eachSelectedShape((shape) => {
+				shape.getControl().onPointerEnd(e);
+				shape.getControl().childByName(this._currentNode)?.onPointerEnd(e);
+			});
+			this._currentNode = '';
 		}
 	}
 
