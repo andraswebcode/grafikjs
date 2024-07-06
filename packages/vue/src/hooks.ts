@@ -1,15 +1,26 @@
-import { Canvas } from '@grafikjs/core';
+import { Canvas, Group } from '@grafikjs/core';
 import { inject } from 'vue';
 
-const useCanvas = (): Canvas | undefined => {
+const useCanvas = (): Canvas => {
 	const canvas = inject<Canvas>('canvas');
 
 	if (!canvas) {
 		console.error('No canvas provided.');
-		return;
+		return new Canvas();
 	}
 
 	return canvas;
 };
 
-export { useCanvas };
+const useCollection = (): any => {
+	const collection = inject<Group | Canvas>('collection');
+
+	if (!collection) {
+		console.error('No collection provided.');
+		return new Group();
+	}
+
+	return collection;
+};
+
+export { useCanvas, useCollection };

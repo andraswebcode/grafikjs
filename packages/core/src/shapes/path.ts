@@ -1,5 +1,5 @@
 import { Shape } from './shape';
-import { Point, CurvePath } from './../maths';
+import { CurvePath } from './../maths';
 import { PathControl } from './../interactive';
 
 class Path extends Shape {

@@ -119,6 +119,13 @@ class TransformControl extends Control {
 	}
 
 	public onPointerEnd(e) {
+		if (this._isDragging) {
+			const { left, top } = this.shape;
+			this.shape.trigger('updated', { left, top }, this.shape);
+			if (this.shape.canvas) {
+				this.shape.canvas.trigger('shapes:updated', { left, top }, this.shape);
+			}
+		}
 		this._isDragging = false;
 	}
 }

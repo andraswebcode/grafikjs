@@ -1,5 +1,6 @@
-import { h, inject, onMounted, onUnmounted } from 'vue';
+import { h, onMounted, onUnmounted } from 'vue';
 import { CLASSES } from './utils';
+import { useCollection } from './hooks';
 
 const withCollectionContext = (Component, tagName: string) => {
 	const Shape = CLASSES[tagName];
@@ -15,7 +16,7 @@ const withCollectionContext = (Component, tagName: string) => {
 	return {
 		props: new Shape().toJSON(), // Define default props.
 		setup(props) {
-			const collection: any = inject('collection');
+			const collection = useCollection();
 			const shape = new Shape(props);
 			onMounted(() => {
 				collection.add(shape);

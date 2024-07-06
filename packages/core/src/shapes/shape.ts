@@ -1,5 +1,5 @@
 import { Element } from './../element';
-import { Color, Matrix, BBox, Point } from './../maths';
+import { Color, Matrix, BBox, Point, CurvePath } from './../maths';
 import { TransformControl } from './../interactive';
 import { Animation } from './../animation';
 
@@ -249,6 +249,10 @@ class Shape extends Element {
 
 	public animate() {
 		return this._animation;
+	}
+
+	public toPolygon(): CurvePath {
+		return this.bBox.toPolygon(this.getWorldMatrix());
 	}
 
 	public toJSON(): object {

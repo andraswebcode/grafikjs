@@ -1,7 +1,9 @@
 <script setup>
-import { ref, inject, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import Control from './Control.vue';
-const canvas = inject('canvas');
+import { useCanvas } from './../../hooks';
+
+const canvas = useCanvas();
 const { onPointerStart, onPointerMove, onPointerEnd, onWheel } = canvas;
 const mousedown = onPointerStart.bind(canvas);
 const mousemove = onPointerMove.bind(canvas);
@@ -11,7 +13,7 @@ const shapes = ref(canvas.getSelectedShapes());
 const onSelect = () => {
 	shapes.value = [...canvas.getSelectedShapes()];
 };
-window.c = canvas;
+
 onMounted(() => {
 	canvas.on('shapes:selection:updated', onSelect);
 });

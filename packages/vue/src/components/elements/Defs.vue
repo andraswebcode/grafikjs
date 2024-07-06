@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { inject, ref, onMounted, onUnmounted } from 'vue';
-import { Canvas } from '@grafikjs/core';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useCanvas } from './../../hooks';
 
-const canvas: Canvas = inject('canvas') as Canvas;
+const canvas = useCanvas();
 const daAttrs = ref(canvas.getDrawingAreaAttributes());
 const pAttrs = ref(canvas.getGridPatternAttributes());
 const pPaths = ref(canvas.getGridPatternPaths());

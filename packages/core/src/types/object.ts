@@ -38,10 +38,14 @@ interface CanvasObject {
 	drawingWidth?: number;
 	drawingHeight?: number;
 	zoom?: number;
+	panX?: number;
+	panY?: number;
+	mode?: string;
 }
 
 interface ShapeObject extends TransformObject {
 	tagName: string;
+	id: string;
 	fill: FillStroke;
 	stroke: FillStroke;
 	strokeWidth: number;

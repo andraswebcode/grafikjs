@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, inject, onMounted, onUnmounted } from 'vue';
-import { Canvas } from '@grafikjs/core';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useCanvas } from './../../hooks';
 
 const props = defineProps<{ node: any }>();
-const canvas: Canvas = inject('canvas') as Canvas;
+const canvas = useCanvas();
 const attrs = ref(props.node.getAttributes());
 const style = ref(props.node.getStyle());
 const onSet = () => {

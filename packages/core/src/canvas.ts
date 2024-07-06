@@ -6,25 +6,8 @@ import { Matrix, Point } from './maths';
 import { toFixed } from './utils';
 import { ViewBoxArray } from './types';
 
-const POINTEREVENTS = {
-	start: {
-		select: '_onPointerStartInSelectMode',
-		pan: '_onPointerStartInPanMode',
-		draw: '_onPointerStartInDrawMode'
-	},
-	move: {
-		select: '_onPointerMoveInSelectMode',
-		pan: '_onPointerMoveInPanMode',
-		draw: '_onPointerMoveInDrawMode'
-	},
-	end: {
-		select: '_onPointerEndInSelectMode',
-		pan: '_onPointerEndInPanMode',
-		draw: '_onPointerEndInDrawMode'
-	}
-};
-
 type ModeType = 'select' | 'pan' | 'draw';
+type MouseOrTouchEvent = MouseEvent | TouchEvent;
 
 class Canvas extends ElementCollection(Element) {
 	public readonly isCanvas = true;
@@ -132,6 +115,8 @@ class Canvas extends ElementCollection(Element) {
 			id: 'grafik-grid',
 			width: this.gridSize * 2,
 			height: this.gridSize * 2,
+			x: this.width / 2 - this.drawingWidth / 2,
+			y: this.height / 2 - this.drawingHeight / 2,
 			patternUnits: 'userSpaceOnUse'
 		};
 	}
@@ -291,34 +276,27 @@ class Canvas extends ElementCollection(Element) {
 		return new Point(this.width, this.height);
 	}
 
-	public getPointer(e): Point {
-		const { left, top } = e.currentTarget.getBoundingClientRect();
-		const { clientX, clientY } = 'ontouchstart' in window ? e.touches[0] : e;
+	public getPointer(e: MouseOrTouchEvent): Point {
+		// @ts-ignore
+		const { clientX, clientY, currentTarget } = 'ontouchstart' in window ? e.touches[0] : e;
+		const { left, top } = currentTarget.getBoundingClientRect();
 		return new Point(clientX - left, clientY - top);
 	}
 
-	private _onPointerStartInSelectMode(e) {
+	private _onPointerStartInSelectMode(e: MouseOrTouchEvent) {
+		// @ts-ignore
 		const { dataset } = e.target;
-		let { shape } = dataset;
+		const { shape } = dataset;
 		const isNode = 'controlNode' in dataset;
 		const pointer = this.getPointer(e);
-		let founded = this.findLastChildByPointer(pointer);
-
-		if (this.getSelectedShapes().includes(founded) && founded.isCollection) {
-			founded = founded.findLastChildByPointer(pointer);
-			if (founded) shape = ''; // To create recursive selection.
-		}
+		const founded = this.findLastChildByPointer(pointer);
 
 		if (isNode) {
-			this._currentNodeId = dataset.id;
-			this.eachSelectedShape((shape) => {
-				shape.getControl()?.childById(dataset.id)?.onPointerStart(e);
-			});
+			//
 		} else {
 			if (!shape) {
 				if (founded) {
-					this.releaseShapes();
-					this.selectShapes(founded);
+					this.releaseShapes().selectShapes(founded);
 				} else {
 					this.releaseShapes();
 					if (this.multiselection) {
@@ -335,26 +313,16 @@ class Canvas extends ElementCollection(Element) {
 		}
 	}
 
-	private _onPointerMoveInSelectMode(e) {
-		this.eachSelectedShape((shape) => {
-			shape.getControl().onPointerMove(e);
-			shape.getControl()?.childById(this._currentNodeId)?.onPointerMove(e);
-		});
-
+	private _onPointerMoveInSelectMode(e: MouseOrTouchEvent) {
 		if (this._selection) {
 			this._selector.bBox.max.copy(this.getPointer(e));
 			this.trigger('selector:updated');
+		} else {
+			this.eachSelectedShape((shape) => shape.getControl().onPointerMove(e));
 		}
 	}
 
-	private _onPointerEndInSelectMode(e) {
-		this.eachSelectedShape((shape) => {
-			shape.getControl().onPointerEnd(e);
-			shape.getControl()?.childById(this._currentNodeId)?.onPointerEnd(e);
-		});
-
-		this._currentNodeId = '';
-
+	private _onPointerEndInSelectMode(e: MouseOrTouchEvent) {
 		if (this._selection) {
 			const selectedShapes = this.mapChildren((shape) => {
 				const selectorPolygon = this._selector.bBox.toPolygon();
@@ -368,17 +336,18 @@ class Canvas extends ElementCollection(Element) {
 			this.selectShapes(selectedShapes);
 			this._selector.bBox.reset();
 			this.trigger('selector:updated');
+			this._selection = false;
+		} else {
+			this.eachSelectedShape((shape) => shape.getControl().onPointerEnd(e));
 		}
-
-		this._selection = false;
 	}
 
-	private _onPointerStartInPanMode(e) {
+	private _onPointerStartInPanMode(e: MouseOrTouchEvent) {
 		this._isDragging = true;
 		this._startVector.subtractPoints(this.getPointer(e), this._pan);
 	}
 
-	private _onPointerMoveInPanMode(e) {
+	private _onPointerMoveInPanMode(e: MouseOrTouchEvent) {
 		if (!this._isDragging) {
 			return;
 		}
@@ -388,34 +357,70 @@ class Canvas extends ElementCollection(Element) {
 		this.zoomTo(this._zoom, pan);
 	}
 
-	private _onPointerEndInPanMode(e) {
+	private _onPointerEndInPanMode(e: MouseOrTouchEvent) {
 		this._isDragging = false;
 	}
 
-	private _onPointerStartInDrawMode(e) {}
+	private _onPointerStartInDrawMode(e: MouseOrTouchEvent) {}
 
-	private _onPointerMoveInDrawMode(e) {}
+	private _onPointerMoveInDrawMode(e: MouseOrTouchEvent) {}
 
-	private _onPointerEndInDrawMode(e) {}
+	private _onPointerEndInDrawMode(e: MouseOrTouchEvent) {}
 
-	public onPointerStart(e) {
-		this[POINTEREVENTS.start[this.mode]](e);
+	public onPointerStart(e: MouseOrTouchEvent) {
+		switch (this.mode) {
+			case 'select':
+				this._onPointerStartInSelectMode(e);
+				break;
+			case 'pan':
+				this._onPointerStartInPanMode(e);
+				break;
+			case 'draw':
+				this._onPointerStartInDrawMode(e);
+				break;
+			default:
+				break;
+		}
 	}
 
-	public onPointerMove(e) {
-		this[POINTEREVENTS.move[this.mode]](e);
+	public onPointerMove(e: MouseOrTouchEvent) {
+		switch (this.mode) {
+			case 'select':
+				this._onPointerMoveInSelectMode(e);
+				break;
+			case 'pan':
+				this._onPointerMoveInPanMode(e);
+				break;
+			case 'draw':
+				this._onPointerMoveInDrawMode(e);
+				break;
+			default:
+				break;
+		}
 	}
 
-	public onPointerEnd(e) {
-		this[POINTEREVENTS.end[this.mode]](e);
+	public onPointerEnd(e: MouseOrTouchEvent) {
+		switch (this.mode) {
+			case 'select':
+				this._onPointerEndInSelectMode(e);
+				break;
+			case 'pan':
+				this._onPointerEndInPanMode(e);
+				break;
+			case 'draw':
+				this._onPointerEndInDrawMode(e);
+				break;
+			default:
+				break;
+		}
 	}
 
-	public onWheel(e) {
+	public onWheel(e: WheelEvent) {
 		if (this.zoomable) {
 			e.preventDefault();
 			const pointer = this.getPointer(e);
 			const size = this.getSize();
-			this.zoomTo(toFixed(this.zoom * 0.999 ** e.deltaY));
+			this.zoomTo(toFixed(this.zoom * 0.999 ** e.deltaY), this._pan);
 		}
 	}
 }

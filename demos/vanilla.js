@@ -752,23 +752,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
-var POINTEREVENTS = {
-    start: {
-        select: '_onPointerStartInSelectMode',
-        pan: '_onPointerStartInPanMode',
-        draw: '_onPointerStartInDrawMode'
-    },
-    move: {
-        select: '_onPointerMoveInSelectMode',
-        pan: '_onPointerMoveInPanMode',
-        draw: '_onPointerMoveInDrawMode'
-    },
-    end: {
-        select: '_onPointerEndInSelectMode',
-        pan: '_onPointerEndInPanMode',
-        draw: '_onPointerEndInDrawMode'
-    }
-};
 var Canvas = /** @class */ (function (_super) {
     __extends(Canvas, _super);
     function Canvas(params) {
@@ -870,6 +853,8 @@ var Canvas = /** @class */ (function (_super) {
             id: 'grafik-grid',
             width: this.gridSize * 2,
             height: this.gridSize * 2,
+            x: this.width / 2 - this.drawingWidth / 2,
+            y: this.height / 2 - this.drawingHeight / 2,
             patternUnits: 'userSpaceOnUse'
         };
     };
@@ -1006,33 +991,25 @@ var Canvas = /** @class */ (function (_super) {
         return new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.width, this.height);
     };
     Canvas.prototype.getPointer = function (e) {
-        var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
-        var _b = 'ontouchstart' in window ? e.touches[0] : e, clientX = _b.clientX, clientY = _b.clientY;
+        // @ts-ignore
+        var _a = 'ontouchstart' in window ? e.touches[0] : e, clientX = _a.clientX, clientY = _a.clientY, currentTarget = _a.currentTarget;
+        var _b = currentTarget.getBoundingClientRect(), left = _b.left, top = _b.top;
         return new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(clientX - left, clientY - top);
     };
     Canvas.prototype._onPointerStartInSelectMode = function (e) {
+        // @ts-ignore
         var dataset = e.target.dataset;
         var shape = dataset.shape;
         var isNode = 'controlNode' in dataset;
         var pointer = this.getPointer(e);
         var founded = this.findLastChildByPointer(pointer);
-        if (this.getSelectedShapes().includes(founded) && founded.isCollection) {
-            founded = founded.findLastChildByPointer(pointer);
-            if (founded)
-                shape = ''; // To create recursive selection.
-        }
         if (isNode) {
-            this._currentNodeId = dataset.id;
-            this.eachSelectedShape(function (shape) {
-                var _a, _b;
-                (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(dataset.id)) === null || _b === void 0 ? void 0 : _b.onPointerStart(e);
-            });
+            //
         }
         else {
             if (!shape) {
                 if (founded) {
-                    this.releaseShapes();
-                    this.selectShapes(founded);
+                    this.releaseShapes().selectShapes(founded);
                 }
                 else {
                     this.releaseShapes();
@@ -1050,25 +1027,16 @@ var Canvas = /** @class */ (function (_super) {
         }
     };
     Canvas.prototype._onPointerMoveInSelectMode = function (e) {
-        var _this = this;
-        this.eachSelectedShape(function (shape) {
-            var _a, _b;
-            shape.getControl().onPointerMove(e);
-            (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(_this._currentNodeId)) === null || _b === void 0 ? void 0 : _b.onPointerMove(e);
-        });
         if (this._selection) {
             this._selector.bBox.max.copy(this.getPointer(e));
             this.trigger('selector:updated');
         }
+        else {
+            this.eachSelectedShape(function (shape) { return shape.getControl().onPointerMove(e); });
+        }
     };
     Canvas.prototype._onPointerEndInSelectMode = function (e) {
         var _this = this;
-        this.eachSelectedShape(function (shape) {
-            var _a, _b;
-            shape.getControl().onPointerEnd(e);
-            (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(_this._currentNodeId)) === null || _b === void 0 ? void 0 : _b.onPointerEnd(e);
-        });
-        this._currentNodeId = '';
         if (this._selection) {
             var selectedShapes = this.mapChildren(function (shape) {
                 var selectorPolygon = _this._selector.bBox.toPolygon();
@@ -1080,8 +1048,11 @@ var Canvas = /** @class */ (function (_super) {
             this.selectShapes(selectedShapes);
             this._selector.bBox.reset();
             this.trigger('selector:updated');
+            this._selection = false;
         }
-        this._selection = false;
+        else {
+            this.eachSelectedShape(function (shape) { return shape.getControl().onPointerEnd(e); });
+        }
     };
     Canvas.prototype._onPointerStartInPanMode = function (e) {
         this._isDragging = true;
@@ -1101,20 +1072,56 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype._onPointerMoveInDrawMode = function (e) { };
     Canvas.prototype._onPointerEndInDrawMode = function (e) { };
     Canvas.prototype.onPointerStart = function (e) {
-        this[POINTEREVENTS.start[this.mode]](e);
+        switch (this.mode) {
+            case 'select':
+                this._onPointerStartInSelectMode(e);
+                break;
+            case 'pan':
+                this._onPointerStartInPanMode(e);
+                break;
+            case 'draw':
+                this._onPointerStartInDrawMode(e);
+                break;
+            default:
+                break;
+        }
     };
     Canvas.prototype.onPointerMove = function (e) {
-        this[POINTEREVENTS.move[this.mode]](e);
+        switch (this.mode) {
+            case 'select':
+                this._onPointerMoveInSelectMode(e);
+                break;
+            case 'pan':
+                this._onPointerMoveInPanMode(e);
+                break;
+            case 'draw':
+                this._onPointerMoveInDrawMode(e);
+                break;
+            default:
+                break;
+        }
     };
     Canvas.prototype.onPointerEnd = function (e) {
-        this[POINTEREVENTS.end[this.mode]](e);
+        switch (this.mode) {
+            case 'select':
+                this._onPointerEndInSelectMode(e);
+                break;
+            case 'pan':
+                this._onPointerEndInPanMode(e);
+                break;
+            case 'draw':
+                this._onPointerEndInDrawMode(e);
+                break;
+            default:
+                break;
+        }
     };
     Canvas.prototype.onWheel = function (e) {
         if (this.zoomable) {
             e.preventDefault();
             var pointer = this.getPointer(e);
             var size = this.getSize();
-            this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_5__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)));
+            this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_5__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)), this._pan);
         }
     };
     return Canvas;
@@ -2107,7 +2114,6 @@ var ScaleControlNode = /** @class */ (function (_super) {
             return;
         }
         var shape = this.getShape();
-        // const {left, top} = shape.getWorldMatrix().toOptions();
         var scale = shape
             .getLocalPointer(e, this._startMatrix)
             .divide(this._startVector)
@@ -2517,6 +2523,13 @@ var TransformControl = /** @class */ (function (_super) {
         });
     };
     TransformControl.prototype.onPointerEnd = function (e) {
+        if (this._isDragging) {
+            var _a = this.shape, left = _a.left, top_1 = _a.top;
+            this.shape.trigger('updated', { left: left, top: top_1 }, this.shape);
+            if (this.shape.canvas) {
+                this.shape.canvas.trigger('shapes:updated', { left: left, top: top_1 }, this.shape);
+            }
+        }
         this._isDragging = false;
     };
     return TransformControl;
@@ -5010,26 +5023,10 @@ function ElementCollection(Base) {
             }
             return this;
         };
-        /*
-        public remove(children: any|any[], silent = false){
-
-            if (!silent){
-                // @ts-ignore
-                this.trigger('removed', children);
-            }
-
-            return this;
-
-        }
-*/
         ElementCollection.prototype.findChildrenByPointer = function (pointer) {
             return this.mapChildren(function (child) {
-                var bBox = child.get('bBox');
-                if (!bBox) {
-                    return false;
-                }
-                var polygon = bBox.toPolygon(child.getWorldMatrix());
-                return polygon.containsPoint(pointer, 1) && child;
+                var polygon = child.toPolygon();
+                return polygon.containsPoint(pointer) && child;
             }).filter(function (child) { return child === null || child === void 0 ? void 0 : child.selectable; });
         };
         ElementCollection.prototype.findLastChildByPointer = function (pointer) {
@@ -5333,6 +5330,7 @@ var Group = /** @class */ (function (_super) {
     Group.prototype.remove = function (children, silent) {
         var _this = this;
         _super.prototype.remove.call(this, children, silent);
+        children = Array.isArray(children) ? children : [children];
         children.forEach(function (child) { return child.off('set', _this.updateBBox); });
         this.updateBBox();
         return this;
@@ -5979,6 +5977,9 @@ var Shape = /** @class */ (function (_super) {
     };
     Shape.prototype.animate = function () {
         return this._animation;
+    };
+    Shape.prototype.toPolygon = function () {
+        return this.bBox.toPolygon(this.getWorldMatrix());
     };
     Shape.prototype.toJSON = function () {
         var _this = this;

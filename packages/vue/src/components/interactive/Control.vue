@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, inject, onMounted, onUnmounted } from 'vue';
-import { Canvas } from '@grafikjs/core';
+import { ref, onMounted, onUnmounted } from 'vue';
 import ControlNode from './ControlNode.vue';
+import { useCanvas } from './../../hooks';
 
 const props = defineProps<{ control: any }>();
-const canvas: Canvas = inject('canvas') as Canvas;
+const canvas = useCanvas();
 const nodes = props.control.getChildren();
 const attrs = ref(props.control.getAttributes());
 const style = ref(props.control.getStyle());

@@ -33,7 +33,6 @@ class ScaleControlNode extends ControlNode {
 		}
 
 		const shape = this.getShape();
-		// const {left, top} = shape.getWorldMatrix().toOptions();
 		const scale = shape
 			.getLocalPointer(e, this._startMatrix)
 			.divide(this._startVector)

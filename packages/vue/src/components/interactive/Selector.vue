@@ -1,7 +1,8 @@
 <script setup>
-import { ref, inject, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useCanvas } from './../../hooks';
 
-const canvas = inject('canvas');
+const canvas = useCanvas();
 const attrs = ref(canvas.getSelector().getAttributes());
 const style = ref(canvas.getSelector().getStyle());
 const onSelect = () => {

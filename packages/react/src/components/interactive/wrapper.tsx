@@ -1,33 +1,17 @@
-import {
-	useRef,
-	useState,
-	useEffect,
-	useCallback
-} from 'react';
-import {
-	useCanvas
-} from './../../hooks';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { useCanvas } from './../../hooks';
 
-const Wrapper = ({
-	className = 'grafik-wrapper',
-	children
-}: any) => {
-
-	const {
-		style,
-		setResponsiveSize
-	} : any = useCanvas(canvas => ({
-		style:canvas.get(['width', 'height']),
-		setResponsiveSize:canvas.setResponsiveSize.bind(canvas)
-	}), 'set');
+const Wrapper = ({ className = 'grafik-wrapper', children }: any) => {
+	const { style }: any = useCanvas(
+		(canvas) => ({
+			style: canvas.get(['width', 'height'])
+		}),
+		'set'
+	);
 	const ref = useRef(null);
 	const onResize = useCallback(() => {
-		if (ref?.current){
-			const {
-				clientWidth,
-				clientHeight
-			} = ref.current.parentElement;
-			setResponsiveSize(clientWidth, clientHeight);
+		if (ref?.current) {
+			const { clientWidth, clientHeight } = ref.current.parentElement;
 		}
 	}, []);
 
@@ -39,16 +23,10 @@ const Wrapper = ({
 	}, []);
 
 	return (
-		<div
-			ref={ref}
-			className={className}
-			style={style} >
+		<div ref={ref} className={className} style={style}>
 			{children}
 		</div>
 	);
-
 };
 
-export {
-	Wrapper
-};
+export { Wrapper };

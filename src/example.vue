@@ -17,6 +17,10 @@ const height = ref(800);
 const dWidth = ref(400);
 const dHeight = ref(400);
 const zoom = ref(1);
+const panX = ref(0);
+const panY = ref(0);
+const mode = ref('select');
+const show = ref(true);
 const json = ref([
 	{
 		id: 'g-4IP9Il7Xh24b',
@@ -129,23 +133,33 @@ const json = ref([
 
 <template>
 	<div>
-		<Wrapper>
-			<Canvas
-				:width="width"
-				:height="height"
-				:drawingWidth="dWidth"
-				:drawingHeight="dHeight"
-				:zoom="zoom"
-			>
-				<template v-slot:defs>
-					<Defs />
-				</template>
-				<ShapeTree :json="json" />
-			</Canvas>
-			<Interactive>
-				<Selector />
-			</Interactive>
-		</Wrapper>
+		<div v-if="show">
+			<Wrapper>
+				<Canvas
+					:width="width"
+					:height="height"
+					:drawingWidth="dWidth"
+					:drawingHeight="dHeight"
+					:zoom="zoom"
+					:panX="panX"
+					:panY="panY"
+					:mode="mode"
+					@change="
+						zoom = $event.zoom;
+						panX = $event.panX;
+						panY = $event.panY;
+					"
+				>
+					<template v-slot:defs>
+						<Defs />
+					</template>
+					<ShapeTree :json="json" @updated="console.log" />
+				</Canvas>
+				<Interactive>
+					<Selector />
+				</Interactive>
+			</Wrapper>
+		</div>
 		<label>
 			Width:
 			<input type="number" v-model="width" />
@@ -165,6 +179,26 @@ const json = ref([
 		<label>
 			Zoom:
 			<input type="number" v-model="zoom" step="0.1" />
+		</label>
+		<label>
+			Pan X:
+			<input type="number" v-model="panX" />
+		</label>
+		<label>
+			Pan Y:
+			<input type="number" v-model="panY" />
+		</label>
+		<label>
+			Show:
+			<input type="checkbox" v-model="show" />
+		</label>
+		<label>
+			Mode:
+			<select v-model="mode">
+				<option value="select">Select</option>
+				<option value="pan">Pan</option>
+				<option value="draw">Draw</option>
+			</select>
 		</label>
 	</div>
 </template>

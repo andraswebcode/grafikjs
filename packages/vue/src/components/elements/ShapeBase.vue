@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ShapeObject, Canvas } from '@grafikjs/core';
+import { ShapeObject } from '@grafikjs/core';
 import { ref, watch, inject, onMounted, onUnmounted } from 'vue';
+import { useCanvas } from './../../hooks';
 
 const props = defineProps<{
 	tagName: string;
@@ -8,7 +9,7 @@ const props = defineProps<{
 	props: Partial<ShapeObject>;
 }>();
 const { shape, tagName } = props;
-const canvas: Canvas = inject('canvas') as Canvas;
+const canvas = useCanvas();
 const wAttrs = ref(shape.getWrapperAttributes());
 const attrs = ref(shape.getAttributes(true));
 const onSet = () => {

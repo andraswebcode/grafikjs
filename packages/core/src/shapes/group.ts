@@ -27,6 +27,7 @@ class Group extends ElementCollection(Shape) {
 
 	public remove(children, silent?) {
 		super.remove(children, silent);
+		children = Array.isArray(children) ? children : [children];
 		children.forEach((child) => child.off('set', this.updateBBox));
 		this.updateBBox();
 		return this;

@@ -46,26 +46,11 @@ function ElementCollection<TBase extends Constructor>(Base: TBase) {
 
 			return this;
 		}
-		/*
-		public remove(children: any|any[], silent = false){
 
-			if (!silent){
-				// @ts-ignore
-				this.trigger('removed', children);
-			}
-
-			return this;
-
-		}
-*/
 		public findChildrenByPointer(pointer: Point): any[] {
 			return this.mapChildren((child) => {
-				const bBox = child.get('bBox');
-				if (!bBox) {
-					return false;
-				}
-				const polygon = bBox.toPolygon(child.getWorldMatrix());
-				return polygon.containsPoint(pointer, 1) && child;
+				const polygon = child.toPolygon();
+				return polygon.containsPoint(pointer) && child;
 			}).filter((child) => child?.selectable);
 		}
 

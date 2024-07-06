@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { ref, watch, inject, onMounted, onUnmounted, provide } from 'vue';
+import { ref, watch, onMounted, onUnmounted, provide } from 'vue';
 import { CanvasObject, Canvas } from '@grafikjs/core';
+import { useCanvas } from './../../hooks';
 
 const props = defineProps<CanvasObject>();
-const canvas: Canvas = inject('canvas') as Canvas;
+const emit = defineEmits(['change']);
+const canvas = useCanvas();
 const canvasRef = ref<SVGElement | null>(null);
 const attrs = ref<Record<string, any>>(canvas.getAttributes());
-const gAttrs = ref(canvas.getDrawingAreaAttributes());
+const daAttrs = ref(canvas.getDrawingAreaAttributes());
 const onSet = () => {
 	attrs.value = canvas.getAttributes();
-	gAttrs.value = canvas.getDrawingAreaAttributes();
+	daAttrs.value = canvas.getDrawingAreaAttributes();
+	emit('change', canvas);
 };
 const onResize = () => {
 	if (!canvas.autoSize || !canvasRef.value) {
@@ -19,7 +22,7 @@ const onResize = () => {
 	const { clientWidth = 0, clientHeight = 0 } = canvasRef.value.parentElement || {};
 	canvasRef.value.style.display = '';
 	canvas
-		.set({ width: clientWidth, height: clientHeight })
+		.set({ width: clientWidth, height: clientHeight }, true)
 		// just updating the viewBox.
 		.zoomTo(canvas.zoom, canvas.pan);
 };
@@ -35,7 +38,7 @@ onMounted(() => {
 		  }
 		: props;
 
-	canvas.on('set', onSet).set(set);
+	canvas.on('set', onSet).set(set, true);
 	window.addEventListener('resize', onResize);
 });
 
@@ -45,7 +48,7 @@ onUnmounted(() => {
 });
 
 watch(props, (props) => {
-	canvas.set(props);
+	canvas.set({ ...props }, true);
 });
 
 provide('collection', canvas);
@@ -54,7 +57,7 @@ provide('collection', canvas);
 <template>
 	<svg v-bind="attrs" ref="canvasRef">
 		<slot name="defs" />
-		<rect v-if="canvas.showGrid" v-bind="gAttrs" fill="url(#grafik-grid)" />
+		<rect v-if="canvas.showGrid" v-bind="daAttrs" fill="url(#grafik-grid)" />
 		<g v-if="canvas.hasDrawingArea" clip-path="url(#grafik-drawing-area)">
 			<slot />
 		</g>
