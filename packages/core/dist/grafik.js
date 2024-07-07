@@ -24,6 +24,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./src/observable.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./src/mixins/index.ts");
+/* harmony import */ var _track__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./track */ "./src/animation/track.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -41,6 +42,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
+
 var Animation = /** @class */ (function (_super) {
     __extends(Animation, _super);
     function Animation() {
@@ -50,6 +52,14 @@ var Animation = /** @class */ (function (_super) {
         _this._currentTime = 0;
         return _this;
     }
+    Object.defineProperty(Animation.prototype, "tracks", {
+        get: function () {
+            return this.getChildren();
+        },
+        set: function (value) { },
+        enumerable: false,
+        configurable: true
+    });
     Animation.prototype.play = function () {
         this._isPlaying = true;
         this._startTime = performance.now() - this._currentTime;
@@ -57,6 +67,7 @@ var Animation = /** @class */ (function (_super) {
     };
     Animation.prototype.pause = function () {
         this._isPlaying = false;
+        return this;
     };
     Animation.prototype.update = function () {
         var _this = this;
@@ -64,10 +75,12 @@ var Animation = /** @class */ (function (_super) {
             _this.shape.set(track.property, track.getValue(_this._currentTime));
         });
         this.trigger('updated', this.shape);
+        return this;
     };
     Animation.prototype.seek = function (ms) {
         this._currentTime = ms;
         this.update();
+        return this;
     };
     Animation.prototype._render = function (timeStamp) {
         if (!this._isPlaying)
@@ -75,6 +88,20 @@ var Animation = /** @class */ (function (_super) {
         this._currentTime = timeStamp - this._startTime;
         this.update();
         requestAnimationFrame(this._render.bind(this));
+    };
+    Animation.prototype.setTracks = function (objects) {
+        var _this = this;
+        var tracks = objects.map(function (obj) { return _this.addTrack(obj.property, obj.keyframes); });
+        console.log(tracks);
+        this.setChildren(tracks);
+        return this;
+    };
+    Animation.prototype.addTrack = function (property, keyframes) {
+        var track = new _track__WEBPACK_IMPORTED_MODULE_2__.Track(property);
+        keyframes.forEach(function (kf) {
+            track.addKeyframe();
+        });
+        return track;
     };
     return Animation;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
@@ -185,6 +212,14 @@ var Timeline = /** @class */ (function (_super) {
     function Timeline() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    Object.defineProperty(Timeline.prototype, "animations", {
+        get: function () {
+            return this.getChildren();
+        },
+        set: function (value) { },
+        enumerable: false,
+        configurable: true
+    });
     return Timeline;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
@@ -230,7 +265,16 @@ var Track = /** @class */ (function (_super) {
         _this.property = property;
         return _this;
     }
-    Track.prototype.getValue = function (time) { };
+    Object.defineProperty(Track.prototype, "keyframes", {
+        get: function () {
+            return this.getChildren();
+        },
+        set: function (value) { },
+        enumerable: false,
+        configurable: true
+    });
+    Track.prototype.addKeyframe = function () { };
+    Track.prototype.getValueAt = function (time) { };
     return Track;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
@@ -291,7 +335,7 @@ var Canvas = /** @class */ (function (_super) {
         _this.width = 0;
         _this.height = 0;
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
-        _this.drawingAreaMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
+        // protected drawingAreaMatrix = new Matrix();
         _this.hasDrawingArea = false;
         _this.showGrid = false;
         _this.autoSize = false;
@@ -357,13 +401,33 @@ var Canvas = /** @class */ (function (_super) {
         return _super.prototype.getAttrMap.call(this)
             .concat(['xmlns', 'width', 'height', 'viewBox', 'preserveAspectRatio']);
     };
+    Canvas.prototype.getDrawingAreaPosition = function () {
+        return this.hasDrawingArea
+            ? new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.width / 2 - this.drawingWidth / 2, this.height / 2 - this.drawingHeight / 2)
+            : new _maths__WEBPACK_IMPORTED_MODULE_4__.Point();
+    };
+    Canvas.prototype.getDrawingAreaSize = function () {
+        return this.hasDrawingArea
+            ? new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.drawingWidth, this.drawingHeight)
+            : new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.width, this.height);
+    };
+    Canvas.prototype.getShapesWrapperAttributes = function () {
+        if (!this.hasDrawingArea) {
+            return {};
+        }
+        var _a = this.getDrawingAreaPosition(), x = _a.x, y = _a.y;
+        return {
+            transform: "translate(".concat(x, ", ").concat(y, ")")
+        };
+    };
     Canvas.prototype.getDrawingAreaAttributes = function () {
         if (!this.hasDrawingArea) {
             return {};
         }
+        var _a = this.getDrawingAreaPosition(), x = _a.x, y = _a.y;
         return {
-            x: this.width / 2 - this.drawingWidth / 2,
-            y: this.height / 2 - this.drawingHeight / 2,
+            x: x,
+            y: y,
             width: this.drawingWidth,
             height: this.drawingHeight
         };
@@ -372,34 +436,39 @@ var Canvas = /** @class */ (function (_super) {
         if (!this.showGrid) {
             return {};
         }
+        var _a = this.getDrawingAreaPosition(), x = _a.x, y = _a.y;
         return {
             id: 'grafik-grid',
             width: this.gridSize * 2,
             height: this.gridSize * 2,
-            x: this.width / 2 - this.drawingWidth / 2,
-            y: this.height / 2 - this.drawingHeight / 2,
+            x: x,
+            y: y,
             patternUnits: 'userSpaceOnUse'
         };
     };
-    Canvas.prototype.getGridPatternPaths = function () {
+    Canvas.prototype.getGridPatternPaths = function (makeKebabeCase) {
+        var _a, _b;
+        if (makeKebabeCase === void 0) { makeKebabeCase = false; }
         if (!this.showGrid) {
             return [];
         }
         var s = this.gridSize;
         var s2 = s * 2;
         return [
-            {
-                d: "M 0 0 L ".concat(s2, " 0 ").concat(s2, " ").concat(s2, " 0 ").concat(s2, " Z"),
-                fill: this.gridColorDark,
-                stroke: 'none',
-                strokeWidth: 0
-            },
-            {
-                d: "M ".concat(s, " 0 L ").concat(s2, " 0 ").concat(s2, " ").concat(s, " 0 ").concat(s, " 0 ").concat(s2, " ").concat(s, " ").concat(s2, " Z"),
-                fill: this.gridColorLight,
-                stroke: 'none',
-                strokeWidth: 0
-            }
+            (_a = {
+                    d: "M 0 0 L ".concat(s2, " 0 ").concat(s2, " ").concat(s2, " 0 ").concat(s2, " Z"),
+                    fill: this.gridColorDark,
+                    stroke: 'none'
+                },
+                _a[makeKebabeCase ? 'stroke-width' : 'strokeWidth'] = 0,
+                _a),
+            (_b = {
+                    d: "M ".concat(s, " 0 L ").concat(s2, " 0 ").concat(s2, " ").concat(s, " 0 ").concat(s, " 0 ").concat(s2, " ").concat(s, " ").concat(s2, " Z"),
+                    fill: this.gridColorLight,
+                    stroke: 'none'
+                },
+                _b[makeKebabeCase ? 'stroke-width' : 'strokeWidth'] = 0,
+                _b)
         ];
     };
     Canvas.prototype.selectShapes = function (shapes, silent) {
@@ -483,6 +552,15 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype.getSelector = function () {
         return this._selector;
     };
+    Canvas.prototype.setResponsiveSize = function (element) {
+        if (!this.autoSize || !element) {
+            return;
+        }
+        element.style.display = 'none';
+        var _a = element.parentElement || {}, _b = _a.clientWidth, clientWidth = _b === void 0 ? 0 : _b, _c = _a.clientHeight, clientHeight = _c === void 0 ? 0 : _c;
+        element.style.display = '';
+        this.set({ width: clientWidth, height: clientHeight }).zoomTo();
+    };
     Canvas.prototype.zoomTo = function (zoom, pan) {
         if (zoom === void 0) { zoom = 1; }
         if (pan === void 0) { pan = new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(); }
@@ -495,12 +573,6 @@ var Canvas = /** @class */ (function (_super) {
             .multiplyScalar(-1)
             .add(pan);
         this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
-        // Second we also have to set drawing area matrix, if it is enabled.
-        if (this.hasDrawingArea) {
-            var daTx = this.width / 2 - this.drawingWidth / 2;
-            var daTy = this.height / 2 - this.drawingHeight / 2;
-            this.drawingAreaMatrix.fromArray([1, 0, 0, 1, daTx, daTy]);
-        }
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;
@@ -572,7 +644,7 @@ var Canvas = /** @class */ (function (_super) {
         if (this._selection) {
             var selectedShapes = this.mapChildren(function (shape) {
                 var selectorPolygon = _this._selector.bBox.toPolygon();
-                var shapePolygon = shape.bBox.toPolygon(shape.getWorldMatrix());
+                var shapePolygon = shape.toPolygon();
                 return (!_this._selector.bBox.isEmpty() &&
                     selectorPolygon.intersects(shapePolygon) &&
                     shape);
@@ -1347,7 +1419,7 @@ var AngleControlNode = /** @class */ (function (_super) {
     }
     AngleControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
-        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix(true).toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startAngle = shape.get('angle');
         // We do not want to get the whole world matrix, just want to get the translate matrix here.
@@ -1446,7 +1518,7 @@ var OriginControlNode = /** @class */ (function (_super) {
     OriginControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
         var canvas = shape.get('canvas');
-        var _a = shape.getWorldMatrix(false).toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.copy(canvas.getPointer(e));
         this._startPosition.set(left, top);
@@ -1534,7 +1606,7 @@ var ScaleControlNode = /** @class */ (function (_super) {
     }
     ScaleControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
-        var wMatrix = shape.getWorldMatrix();
+        var wMatrix = shape.getWorldMatrix(true);
         var _a = wMatrix.toOptions(), left = _a.left, top = _a.top;
         var _b = shape.get(['scaleX', 'scaleY']), scaleX = _b.scaleX, scaleY = _b.scaleY;
         this._startScale.set(scaleX, scaleY);
@@ -1641,9 +1713,10 @@ var Control = /** @class */ (function (_super) {
         return this.shape.bBox.getSize().multiply(new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(scaleX, scaleY));
     };
     Control.prototype.getStyle = function () {
-        var _a = this.shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top, angle = _a.angle;
+        var shape = this.shape;
+        var _a = shape.getWorldMatrix(true).toOptions(), left = _a.left, top = _a.top, angle = _a.angle;
         var size = this.getSize();
-        var _b = this.shape.origin.clone().multiplyScalar(100), x = _b.x, y = _b.y;
+        var _b = shape.origin.clone().multiplyScalar(100), x = _b.x, y = _b.y;
         return {
             width: Math.abs(size.x) + 'px',
             height: Math.abs(size.y) + 'px',
@@ -1936,7 +2009,7 @@ var TransformControl = /** @class */ (function (_super) {
     TransformControl.prototype.onPointerStart = function (e) {
         var shape = this.shape;
         var canvas = shape.get('canvas');
-        var _a = shape.getWorldMatrix(false).toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.subtractPoints(canvas.getPointer(e), new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(left, top));
     };
@@ -4426,7 +4499,11 @@ function ElementCollection(Base) {
                 child.set('parent', _this, true);
                 // @ts-ignore
                 if (_this.isCanvas) {
-                    var setCanvas = function (child) { return child.set('canvas', _this, true); };
+                    var setCanvas = function (child) {
+                        child.set('canvas', _this, true);
+                        // @ts-ignore
+                        _this.on('set', function (set) { return child.trigger('canvas:set', set); });
+                    };
                     setCanvas(child);
                     if (child.isCollection) {
                         child.eachChild(setCanvas);
@@ -5276,6 +5353,17 @@ var Shape = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Shape.prototype, "animation", {
+        get: function () {
+            return [];
+        },
+        set: function (value) {
+            console.log(value);
+            this._animation.setTracks(value);
+        },
+        enumerable: false,
+        configurable: true
+    });
     Shape.prototype.init = function (params) {
         this.set(params, true);
         this.createId(this.tagName);
@@ -5344,18 +5432,9 @@ var Shape = /** @class */ (function (_super) {
         return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
     };
     Shape.prototype.getWrapperAttributes = function () {
-        var _a, _b;
-        var transform = this.matrix.toCSS();
-        if (((_a = this.parent) === null || _a === void 0 ? void 0 : _a.isCanvas) && ((_b = this.canvas) === null || _b === void 0 ? void 0 : _b.hasDrawingArea)) {
-            var daMatrix = this.canvas.drawingAreaMatrix;
-            transform = this.matrix
-                .clone()
-                .translate(this.matrix.tx + daMatrix.tx, this.matrix.ty + daMatrix.ty)
-                .toCSS();
-        }
         var attrs = {
             id: this.id,
-            transform: transform
+            transform: this.matrix.toCSS()
         };
         if (this.className) {
             attrs.className = this.className;
@@ -5388,12 +5467,13 @@ var Shape = /** @class */ (function (_super) {
         return this;
     };
     Shape.prototype.getWorldMatrix = function (withDrawingArea) {
-        if (withDrawingArea === void 0) { withDrawingArea = true; }
-        var _a = this.parent, viewportMatrix = _a.viewportMatrix, drawingAreaMatrix = _a.drawingAreaMatrix, isCanvas = _a.isCanvas, hasDrawingArea = _a.hasDrawingArea;
+        var _a = this.parent, viewportMatrix = _a.viewportMatrix, isCanvas = _a.isCanvas, hasDrawingArea = _a.hasDrawingArea;
         var matrix;
         if (isCanvas) {
             if (withDrawingArea && hasDrawingArea) {
-                matrix = viewportMatrix.clone().multiply(drawingAreaMatrix);
+                var _b = this.parent.getDrawingAreaPosition(), x = _b.x, y = _b.y;
+                var daMatrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().fromArray([1, 0, 0, 1, x, y]);
+                matrix = viewportMatrix.clone().multiply(daMatrix);
             }
             else {
                 matrix = viewportMatrix;
@@ -5406,13 +5486,16 @@ var Shape = /** @class */ (function (_super) {
     };
     Shape.prototype.getLocalPointer = function (e, matrix) {
         var pointer = this.canvas.getPointer(e);
-        return pointer.transform(matrix || this.getWorldMatrix().invert());
+        return pointer.transform(matrix || this.getWorldMatrix(true).invert());
     };
-    Shape.prototype.animate = function () {
+    Shape.prototype.getAnimation = function () {
         return this._animation;
     };
+    Shape.prototype.animate = function (property, keyframes) {
+        return this._animation.addTrack(property, keyframes);
+    };
     Shape.prototype.toPolygon = function () {
-        return this.bBox.toPolygon(this.getWorldMatrix());
+        return this.bBox.toPolygon(this.getWorldMatrix(true));
     };
     Shape.prototype.toJSON = function () {
         var _this = this;

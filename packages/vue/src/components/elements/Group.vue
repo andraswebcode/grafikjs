@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { Group, ShapeObject, omitBy } from '@grafikjs/core';
+import { Group, GroupObject, omitBy } from '@grafikjs/core';
 import { useCollection } from './../../hooks';
 import { onMounted, onUnmounted, provide } from 'vue';
 import ShapeBase from './ShapeBase.vue';
 
-const props = defineProps<Partial<ShapeObject>>();
+const props = defineProps<Partial<GroupObject>>();
 const {
 	actions: { add, remove }
 } = useCollection(null, (collection) => ({
 	add: collection.add.bind(collection),
 	remove: collection.remove.bind(collection)
 }));
-const group = new Group(omitBy(props, (value) => typeof value === 'undefined'));
+const group = new Group(
+	omitBy(props, (value, key) => typeof value === 'undefined' || key === 'children')
+);
 
 onMounted(() => {
 	add(group);

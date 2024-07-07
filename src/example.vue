@@ -16,6 +16,7 @@ const json = ref([
 		id: 'g-4IP9Il7Xh24b',
 		name: 'Two Square',
 		tagName: 'g',
+		animation: {},
 		children: [
 			{
 				id: 'rect-Mky72OJuTF1y',
@@ -55,13 +56,14 @@ const json = ref([
 	},
 	{
 		id: 'rect-JfqKQuZtBPdw',
-		name: '',
+		name: 'Animated Rectangle',
 		tagName: 'rect',
 		fill: 'purple',
 		width: 25,
 		height: 25,
 		left: 40,
-		top: 40
+		top: 40,
+		animation: {}
 	},
 	{
 		id: 'path-v6NkzMbA2OfZ',
@@ -138,7 +140,36 @@ const json = ref([
 					<template v-slot:defs>
 						<Defs />
 					</template>
-					<ShapeTree :json="json" />
+					<Rect
+						:width="40"
+						:height="40"
+						:left="200"
+						:top="200"
+						:animation="{
+							tracks: [
+								{
+									property: 'top',
+									easing: 'bounceOut',
+									keyframes: [
+										{
+											to: 1000,
+											value: 0
+										}
+									]
+								},
+								{
+									property: 'scaleY',
+									easing: 'cubicOut',
+									keyframes: [
+										{
+											to: 1000,
+											value: 0
+										}
+									]
+								}
+							]
+						}"
+					/>
 				</Canvas>
 				<Interactive />
 			</Wrapper>

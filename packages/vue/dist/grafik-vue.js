@@ -12007,6 +12007,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../hooks */ "./src/hooks.ts");
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -12020,6 +12021,7 @@ var __assign = (undefined && undefined.__assign) || function () {
 };
 
 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
     __name: 'Canvas',
     props: {
@@ -12027,92 +12029,42 @@ var __assign = (undefined && undefined.__assign) || function () {
         height: { type: Number, required: false },
         drawingWidth: { type: Number, required: false },
         drawingHeight: { type: Number, required: false },
-        zoom: { type: Number, required: false }
+        zoom: { type: Number, required: false },
+        panX: { type: Number, required: false },
+        panY: { type: Number, required: false },
+        mode: { type: String, required: false }
     },
     setup: function (__props, _a) {
         var __expose = _a.expose;
         __expose();
         var props = __props;
-        var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
-        var canvasRef = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(null);
-        var attrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getAttributes());
-        var gAttrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getDrawingAreaAttributes());
-        var onSet = function () {
-            attrs.value = canvas.getAttributes();
-            gAttrs.value = canvas.getDrawingAreaAttributes();
-        };
-        var onResize = function () {
-            if (!canvas.autoSize || !canvasRef.value) {
-                return;
-            }
-            canvasRef.value.style.display = 'none';
-            var _a = canvasRef.value.parentElement || {}, _b = _a.clientWidth, clientWidth = _b === void 0 ? 0 : _b, _c = _a.clientHeight, clientHeight = _c === void 0 ? 0 : _c;
-            canvasRef.value.style.display = '';
-            canvas
-                .set({ width: clientWidth, height: clientHeight })
-                // just updating the viewBox.
-                .zoomTo(canvas.zoom, canvas.pan);
+        var svgRef = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(null);
+        var _b = (0,_hooks__WEBPACK_IMPORTED_MODULE_1__.useCanvas)(function (canvas) { return ({
+            attrs: canvas.getAttributes(),
+            shwAttrs: canvas.getShapesWrapperAttributes(),
+            daAttrs: canvas.getDrawingAreaAttributes(),
+            showGrid: canvas.showGrid,
+            hasDrawingArea: canvas.hasDrawingArea
+        }); }, function (canvas) { return ({
+            set: canvas.set.bind(canvas),
+            setSize: canvas.setResponsiveSize.bind(canvas)
+        }); }, 'set'), _c = _b.state, attrs = _c.attrs, daAttrs = _c.daAttrs, shwAttrs = _c.shwAttrs, showGrid = _c.showGrid, hasDrawingArea = _c.hasDrawingArea, _d = _b.actions, set = _d.set, setSize = _d.setSize, context = _b.context;
+        var resize = function () {
+            setSize(svgRef.value);
         };
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-            var _a;
-            var autoSize = canvas.autoSize;
-            var _b = ((_a = canvasRef.value) === null || _a === void 0 ? void 0 : _a.parentElement) || {}, _c = _b.clientWidth, clientWidth = _c === void 0 ? 0 : _c, _d = _b.clientHeight, clientHeight = _d === void 0 ? 0 : _d;
-            var set = autoSize
-                ? __assign(__assign({}, props), { width: clientWidth, height: clientHeight }) : props;
-            canvas.on('set', onSet).set(set);
-            window.addEventListener('resize', onResize);
+            window.addEventListener('resize', resize);
+            set(__assign({}, props), true);
+            // setSize(svgRef.value);
         });
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
-            canvas.off('set', onSet);
-            window.removeEventListener('resize', onResize);
+            window.removeEventListener('resize', resize);
         });
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)(props, function (props) {
-            canvas.set(props);
+            set(__assign({}, props), true);
         });
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.provide)('collection', canvas);
-        var __returned__ = { props: props, canvas: canvas, canvasRef: canvasRef, attrs: attrs, gAttrs: gAttrs, onSet: onSet, onResize: onResize };
-        Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
-        return __returned__;
-    }
-}));
-
-
-/***/ }),
-
-/***/ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=ts":
-/*!************************************************************************************************************************************************************************************************************!*\
-  !*** ../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=ts ***!
-  \************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
-    __name: 'Defs',
-    setup: function (__props, _a) {
-        var __expose = _a.expose;
-        __expose();
-        var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
-        var daAttrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getDrawingAreaAttributes());
-        var pAttrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getGridPatternAttributes());
-        var pPaths = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getGridPatternPaths());
-        var onSet = function () {
-            daAttrs.value = canvas.getDrawingAreaAttributes();
-            pAttrs.value = canvas.getGridPatternAttributes();
-            pPaths.value = canvas.getGridPatternPaths();
-        };
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-            canvas.on('set', onSet);
-        });
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
-            canvas.off('set', onSet);
-        });
-        var __returned__ = { canvas: canvas, daAttrs: daAttrs, pAttrs: pAttrs, pPaths: pPaths, onSet: onSet };
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.provide)('collection', context);
+        var __returned__ = { props: props, svgRef: svgRef, attrs: attrs, daAttrs: daAttrs, shwAttrs: shwAttrs, showGrid: showGrid, hasDrawingArea: hasDrawingArea, set: set, setSize: setSize, context: context, resize: resize };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
     }
@@ -12133,7 +12085,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
 /* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafikjs/core */ "../core/src/index.ts");
-/* harmony import */ var _ShapeBase_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ShapeBase.vue */ "./src/components/elements/ShapeBase.vue");
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../hooks */ "./src/hooks.ts");
+/* harmony import */ var _ShapeBase_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ShapeBase.vue */ "./src/components/elements/ShapeBase.vue");
+
 
 
 
@@ -12141,10 +12095,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
     __name: 'Group',
     props: {
+        children: { type: Array, required: false },
         tagName: { type: String, required: false },
+        id: { type: String, required: false },
+        name: { type: String, required: false },
         fill: { type: [String, Array, Object], required: false },
         stroke: { type: [String, Array, Object], required: false },
         strokeWidth: { type: Number, required: false },
+        animation: { type: Array, required: false },
         width: { type: Number, required: false },
         height: { type: Number, required: false },
         r: { type: Number, required: false },
@@ -12164,19 +12122,19 @@ __webpack_require__.r(__webpack_exports__);
         var __expose = _a.expose;
         __expose();
         var props = __props;
-        var collection = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('collection');
-        var group = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.Group((0,_grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.omitBy)(props, function (value) { return typeof value === 'undefined'; }));
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.provide)('collection', group);
+        var _b = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCollection)(null, function (collection) { return ({
+            add: collection.add.bind(collection),
+            remove: collection.remove.bind(collection)
+        }); }).actions, add = _b.add, remove = _b.remove;
+        var group = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.Group((0,_grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.omitBy)(props, function (value, key) { return typeof value === 'undefined' || key === 'children'; }));
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-            collection.add(group);
+            add(group);
         });
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
-            collection.remove(group);
+            remove(group);
         });
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)(props, function (props) {
-            group.set(props);
-        });
-        var __returned__ = { props: props, collection: collection, group: group, ShapeBase: _ShapeBase_vue__WEBPACK_IMPORTED_MODULE_2__["default"] };
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.provide)('collection', group);
+        var __returned__ = { props: props, add: add, remove: remove, group: group, ShapeBase: _ShapeBase_vue__WEBPACK_IMPORTED_MODULE_3__["default"] };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
     }
@@ -12196,6 +12154,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../hooks */ "./src/hooks.ts");
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
@@ -12210,25 +12169,11 @@ __webpack_require__.r(__webpack_exports__);
         __expose();
         var props = __props;
         var shape = props.shape, tagName = props.tagName;
-        var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
-        var wAttrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(shape.getWrapperAttributes());
-        var attrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(shape.getAttributes(true));
-        var onSet = function () {
-            wAttrs.value = shape.getWrapperAttributes();
-            attrs.value = shape.getAttributes(true);
-        };
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-            shape.on('set', onSet);
-            canvas.on('set', onSet);
-        });
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
-            shape.off('set', onSet);
-            canvas.off('set', onSet);
-        });
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)(props.props, function (props) {
-            shape.set(props);
-        });
-        var __returned__ = { props: props, shape: shape, tagName: tagName, canvas: canvas, wAttrs: wAttrs, attrs: attrs, onSet: onSet };
+        var _b = (0,_hooks__WEBPACK_IMPORTED_MODULE_1__.useObject)(shape, function (shape) { return ({
+            wAttrs: shape.getWrapperAttributes(),
+            attrs: shape.getAttributes(true)
+        }); }, null, 'set').state, wAttrs = _b.wAttrs, attrs = _b.attrs;
+        var __returned__ = { props: props, shape: shape, tagName: tagName, wAttrs: wAttrs, attrs: attrs };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
     }
@@ -12248,9 +12193,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
-/* harmony import */ var _Group_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Group.vue */ "./src/components/elements/Group.vue");
+/* harmony import */ var _hocs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../hocs */ "./src/hocs.ts");
 /* harmony import */ var _ShapeBase_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ShapeBase.vue */ "./src/components/elements/ShapeBase.vue");
-/* harmony import */ var _hocs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../hocs */ "./src/hocs.ts");
+/* harmony import */ var _Group_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Group.vue */ "./src/components/elements/Group.vue");
 
 
 
@@ -12260,9 +12205,12 @@ __webpack_require__.r(__webpack_exports__);
     props: {
         children: { type: Array, required: false },
         tagName: { type: String, required: false },
+        id: { type: String, required: false },
+        name: { type: String, required: false },
         fill: { type: [String, Array, Object], required: false },
         stroke: { type: [String, Array, Object], required: false },
         strokeWidth: { type: Number, required: false },
+        animation: { type: Array, required: false },
         width: { type: Number, required: false },
         height: { type: Number, required: false },
         r: { type: Number, required: false },
@@ -12282,7 +12230,7 @@ __webpack_require__.r(__webpack_exports__);
         var __expose = _a.expose;
         __expose();
         var props = __props;
-        var __returned__ = { props: props, Group: _Group_vue__WEBPACK_IMPORTED_MODULE_1__["default"], ShapeBase: _ShapeBase_vue__WEBPACK_IMPORTED_MODULE_2__["default"], get withCollectionContext() { return _hocs__WEBPACK_IMPORTED_MODULE_3__.withCollectionContext; } };
+        var __returned__ = { props: props, get withCollectionContext() { return _hocs__WEBPACK_IMPORTED_MODULE_1__.withCollectionContext; }, ShapeBase: _ShapeBase_vue__WEBPACK_IMPORTED_MODULE_2__["default"], Group: _Group_vue__WEBPACK_IMPORTED_MODULE_3__["default"] };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
     }
@@ -12334,36 +12282,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
-/* harmony import */ var _ControlNode_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ControlNode.vue */ "./src/components/interactive/ControlNode.vue");
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../hooks */ "./src/hooks.ts");
+/* harmony import */ var _ControlNode_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ControlNode.vue */ "./src/components/interactive/ControlNode.vue");
 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
     __name: 'Control',
     props: {
-        control: { type: null, required: true }
+        shape: { type: null, required: true }
     },
     setup: function (__props, _a) {
         var __expose = _a.expose;
         __expose();
         var props = __props;
-        var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
-        var nodes = props.control.getChildren();
-        var attrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(props.control.getAttributes());
-        var style = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(props.control.getStyle());
-        var onSet = function () {
-            attrs.value = props.control.getAttributes();
-            style.value = props.control.getStyle();
-        };
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-            canvas.on('set', onSet);
-            props.control.shape.on('set', onSet);
-        });
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
-            canvas.off('set', onSet);
-            props.control.shape.off('set', onSet);
-        });
-        var __returned__ = { props: props, canvas: canvas, nodes: nodes, attrs: attrs, style: style, onSet: onSet, ControlNode: _ControlNode_vue__WEBPACK_IMPORTED_MODULE_1__["default"] };
+        var _b = (0,_hooks__WEBPACK_IMPORTED_MODULE_1__.useObject)(props.shape, function (shape) { return ({
+            attrs: shape.getControl().getAttributes(),
+            style: shape.getControl().getStyle(),
+            nodes: shape.getControl().getChildren()
+        }); }, null, 'set canvas:set').state, attrs = _b.attrs, style = _b.style, nodes = _b.nodes;
+        var __returned__ = { props: props, attrs: attrs, style: style, nodes: nodes, ControlNode: _ControlNode_vue__WEBPACK_IMPORTED_MODULE_2__["default"] };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
     }
@@ -12383,33 +12321,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../hooks */ "./src/hooks.ts");
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
     __name: 'ControlNode',
     props: {
-        node: { type: null, required: true }
+        id: { type: String, required: true },
+        shape: { type: null, required: true }
     },
     setup: function (__props, _a) {
         var __expose = _a.expose;
         __expose();
         var props = __props;
-        var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
-        var attrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(props.node.getAttributes());
-        var style = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(props.node.getStyle());
-        var onSet = function () {
-            attrs.value = props.node.getAttributes();
-            style.value = props.node.getStyle();
-        };
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-            canvas.on('set', onSet);
-            props.node.parent.shape.on('set', onSet);
-        });
-        (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
-            canvas.off('set', onSet);
-            props.node.parent.shape.off('set', onSet);
-        });
-        var __returned__ = { props: props, canvas: canvas, attrs: attrs, style: style, onSet: onSet };
+        var _b = (0,_hooks__WEBPACK_IMPORTED_MODULE_1__.useObject)(props.shape, function (shape) { return ({
+            attrs: shape.getControl().childById(props.id).getAttributes(),
+            style: shape.getControl().childById(props.id).getStyle()
+        }); }, null, 'set canvas:set').state, attrs = _b.attrs, style = _b.style;
+        var __returned__ = { props: props, attrs: attrs, style: style };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
     }
@@ -12435,56 +12364,19 @@ var _hoisted_1 = {
     "clip-path": "url(#grafik-drawing-area)"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-    return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", (0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)($setup.attrs, { ref: "canvasRef" }), [
+    return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", (0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)({ ref: "svgRef" }, $setup.attrs), [
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "defs"),
-        ($setup.canvas.showGrid)
-            ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("rect", (0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)({ key: 0 }, $setup.gAttrs, { fill: "url(#grafik-grid)" }), null, 16 /* FULL_PROPS */))
+        ($setup.showGrid)
+            ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("rect", (0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)({ key: 0 }, $setup.daAttrs, { fill: "url(#grafik-grid)" }), null, 16 /* FULL_PROPS */))
             : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true),
-        ($setup.canvas.hasDrawingArea)
+        ($setup.hasDrawingArea)
             ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("g", _hoisted_1, [
-                (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "default")
+                (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("g", (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.guardReactiveProps)($setup.shwAttrs)), [
+                    (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "default")
+                ], 16 /* FULL_PROPS */)
             ]))
             : (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "default", { key: 2 })
     ], 16 /* FULL_PROPS */));
-}
-
-
-/***/ }),
-
-/***/ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=template&id=5179b466&ts=true":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=template&id=5179b466&ts=true ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* binding */ render)
-/* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
-
-var _hoisted_1 = { key: 0 };
-var _hoisted_2 = {
-    key: 0,
-    id: "grafik-drawing-area"
-};
-function render(_ctx, _cache, $props, $setup, $data, $options) {
-    return ($setup.canvas.hasDefs())
-        ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("defs", _hoisted_1, [
-            ($setup.canvas.hasDrawingArea)
-                ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("clipPath", _hoisted_2, [
-                    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("rect", (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.guardReactiveProps)($setup.daAttrs)), null, 16 /* FULL_PROPS */)
-                ]))
-                : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true),
-            ($setup.canvas.showGrid)
-                ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("pattern", (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)({ key: 1 }, $setup.pAttrs)), [
-                    ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.pPaths, function (path) {
-                        return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("path", (0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)({ ref_for: true }, path), null, 16 /* FULL_PROPS */));
-                    }), 256 /* UNKEYED_FRAGMENT */))
-                ], 16 /* FULL_PROPS */))
-                : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)
-        ]))
-        : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true);
 }
 
 
@@ -12558,7 +12450,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function render(_ctx, _cache, $props, $setup, $data, $options) {
     var _component_ShapeBranch = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("ShapeBranch", true);
-    return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)((0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveDynamicComponent)($setup.props.tagName === 'g' ? $setup.Group : $setup.withCollectionContext($setup.ShapeBase, $setup.props.tagName)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.guardReactiveProps)($setup.props)), {
+    return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)((0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveDynamicComponent)($setup.props.tagName === 'g' ? $setup.Group : $setup.withCollectionContext($setup.ShapeBase, $setup.props.tagName || '')), (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.guardReactiveProps)($setup.props)), {
         default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
             var _a;
             return [
@@ -12620,8 +12512,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.nodes, function (node) {
             return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["ControlNode"], {
                 key: node.id,
-                node: node
-            }, null, 8 /* PROPS */, ["node"]));
+                id: node.id,
+                shape: $props.shape
+            }, null, 8 /* PROPS */, ["id", "shape"]));
         }), 128 /* KEYED_FRAGMENT */))
     ], 16 /* FULL_PROPS */));
 }
@@ -12660,6 +12553,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "../core/src/observable.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "../core/src/mixins/index.ts");
+/* harmony import */ var _track__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./track */ "../core/src/animation/track.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -12677,11 +12571,67 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
+
 var Animation = /** @class */ (function (_super) {
     __extends(Animation, _super);
     function Animation() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._isPlaying = false;
+        _this._startTime = 0;
+        _this._currentTime = 0;
+        return _this;
     }
+    Object.defineProperty(Animation.prototype, "tracks", {
+        get: function () {
+            return this.getChildren();
+        },
+        set: function (value) { },
+        enumerable: false,
+        configurable: true
+    });
+    Animation.prototype.play = function () {
+        this._isPlaying = true;
+        this._startTime = performance.now() - this._currentTime;
+        requestAnimationFrame(this._render.bind(this));
+    };
+    Animation.prototype.pause = function () {
+        this._isPlaying = false;
+        return this;
+    };
+    Animation.prototype.update = function () {
+        var _this = this;
+        this.eachChild(function (track) {
+            _this.shape.set(track.property, track.getValue(_this._currentTime));
+        });
+        this.trigger('updated', this.shape);
+        return this;
+    };
+    Animation.prototype.seek = function (ms) {
+        this._currentTime = ms;
+        this.update();
+        return this;
+    };
+    Animation.prototype._render = function (timeStamp) {
+        if (!this._isPlaying)
+            return;
+        this._currentTime = timeStamp - this._startTime;
+        this.update();
+        requestAnimationFrame(this._render.bind(this));
+    };
+    Animation.prototype.setTracks = function (objects) {
+        var _this = this;
+        var tracks = objects.map(function (obj) { return _this.addTrack(obj.property, obj.keyframes); });
+        console.log(tracks);
+        this.setChildren(tracks);
+        return this;
+    };
+    Animation.prototype.addTrack = function (property, keyframes) {
+        var track = new _track__WEBPACK_IMPORTED_MODULE_2__.Track(property);
+        keyframes.forEach(function (kf) {
+            track.addKeyframe();
+        });
+        return track;
+    };
     return Animation;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
@@ -12744,7 +12694,11 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var Keyframe = /** @class */ (function (_super) {
     __extends(Keyframe, _super);
     function Keyframe() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.duration = 0;
+        _this.delay = 0;
+        _this.easing = 'linear';
+        return _this;
     }
     return Keyframe;
 }(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
@@ -12787,6 +12741,14 @@ var Timeline = /** @class */ (function (_super) {
     function Timeline() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    Object.defineProperty(Timeline.prototype, "animations", {
+        get: function () {
+            return this.getChildren();
+        },
+        set: function (value) { },
+        enumerable: false,
+        configurable: true
+    });
     return Timeline;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
@@ -12825,9 +12787,23 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var Track = /** @class */ (function (_super) {
     __extends(Track, _super);
-    function Track() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function Track(property) {
+        var _this = _super.call(this) || this;
+        _this.property = '';
+        _this.duration = 0;
+        _this.property = property;
+        return _this;
     }
+    Object.defineProperty(Track.prototype, "keyframes", {
+        get: function () {
+            return this.getChildren();
+        },
+        set: function (value) { },
+        enumerable: false,
+        configurable: true
+    });
+    Track.prototype.addKeyframe = function () { };
+    Track.prototype.getValueAt = function (time) { };
     return Track;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
@@ -12872,23 +12848,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
-var POINTEREVENTS = {
-    start: {
-        select: '_onPointerStartInSelectMode',
-        pan: '_onPointerStartInPanMode',
-        draw: '_onPointerStartInDrawMode'
-    },
-    move: {
-        select: '_onPointerMoveInSelectMode',
-        pan: '_onPointerMoveInPanMode',
-        draw: '_onPointerMoveInDrawMode'
-    },
-    end: {
-        select: '_onPointerEndInSelectMode',
-        pan: '_onPointerEndInPanMode',
-        draw: '_onPointerEndInDrawMode'
-    }
-};
 var Canvas = /** @class */ (function (_super) {
     __extends(Canvas, _super);
     function Canvas(params) {
@@ -12905,7 +12864,7 @@ var Canvas = /** @class */ (function (_super) {
         _this.width = 0;
         _this.height = 0;
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
-        _this.drawingAreaMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
+        // protected drawingAreaMatrix = new Matrix();
         _this.hasDrawingArea = false;
         _this.showGrid = false;
         _this.autoSize = false;
@@ -12971,13 +12930,33 @@ var Canvas = /** @class */ (function (_super) {
         return _super.prototype.getAttrMap.call(this)
             .concat(['xmlns', 'width', 'height', 'viewBox', 'preserveAspectRatio']);
     };
+    Canvas.prototype.getDrawingAreaPosition = function () {
+        return this.hasDrawingArea
+            ? new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.width / 2 - this.drawingWidth / 2, this.height / 2 - this.drawingHeight / 2)
+            : new _maths__WEBPACK_IMPORTED_MODULE_4__.Point();
+    };
+    Canvas.prototype.getDrawingAreaSize = function () {
+        return this.hasDrawingArea
+            ? new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.drawingWidth, this.drawingHeight)
+            : new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.width, this.height);
+    };
+    Canvas.prototype.getShapesWrapperAttributes = function () {
+        if (!this.hasDrawingArea) {
+            return {};
+        }
+        var _a = this.getDrawingAreaPosition(), x = _a.x, y = _a.y;
+        return {
+            transform: "translate(".concat(x, ", ").concat(y, ")")
+        };
+    };
     Canvas.prototype.getDrawingAreaAttributes = function () {
         if (!this.hasDrawingArea) {
             return {};
         }
+        var _a = this.getDrawingAreaPosition(), x = _a.x, y = _a.y;
         return {
-            x: this.width / 2 - this.drawingWidth / 2,
-            y: this.height / 2 - this.drawingHeight / 2,
+            x: x,
+            y: y,
             width: this.drawingWidth,
             height: this.drawingHeight
         };
@@ -12986,32 +12965,39 @@ var Canvas = /** @class */ (function (_super) {
         if (!this.showGrid) {
             return {};
         }
+        var _a = this.getDrawingAreaPosition(), x = _a.x, y = _a.y;
         return {
             id: 'grafik-grid',
             width: this.gridSize * 2,
             height: this.gridSize * 2,
+            x: x,
+            y: y,
             patternUnits: 'userSpaceOnUse'
         };
     };
-    Canvas.prototype.getGridPatternPaths = function () {
+    Canvas.prototype.getGridPatternPaths = function (makeKebabeCase) {
+        var _a, _b;
+        if (makeKebabeCase === void 0) { makeKebabeCase = false; }
         if (!this.showGrid) {
             return [];
         }
         var s = this.gridSize;
         var s2 = s * 2;
         return [
-            {
-                d: "M 0 0 L ".concat(s2, " 0 ").concat(s2, " ").concat(s2, " 0 ").concat(s2, " Z"),
-                fill: this.gridColorDark,
-                stroke: 'none',
-                strokeWidth: 0
-            },
-            {
-                d: "M ".concat(s, " 0 L ").concat(s2, " 0 ").concat(s2, " ").concat(s, " 0 ").concat(s, " 0 ").concat(s2, " ").concat(s, " ").concat(s2, " Z"),
-                fill: this.gridColorLight,
-                stroke: 'none',
-                strokeWidth: 0
-            }
+            (_a = {
+                    d: "M 0 0 L ".concat(s2, " 0 ").concat(s2, " ").concat(s2, " 0 ").concat(s2, " Z"),
+                    fill: this.gridColorDark,
+                    stroke: 'none'
+                },
+                _a[makeKebabeCase ? 'stroke-width' : 'strokeWidth'] = 0,
+                _a),
+            (_b = {
+                    d: "M ".concat(s, " 0 L ").concat(s2, " 0 ").concat(s2, " ").concat(s, " 0 ").concat(s, " 0 ").concat(s2, " ").concat(s, " ").concat(s2, " Z"),
+                    fill: this.gridColorLight,
+                    stroke: 'none'
+                },
+                _b[makeKebabeCase ? 'stroke-width' : 'strokeWidth'] = 0,
+                _b)
         ];
     };
     Canvas.prototype.selectShapes = function (shapes, silent) {
@@ -13095,6 +13081,15 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype.getSelector = function () {
         return this._selector;
     };
+    Canvas.prototype.setResponsiveSize = function (element) {
+        if (!this.autoSize || !element) {
+            return;
+        }
+        element.style.display = 'none';
+        var _a = element.parentElement || {}, _b = _a.clientWidth, clientWidth = _b === void 0 ? 0 : _b, _c = _a.clientHeight, clientHeight = _c === void 0 ? 0 : _c;
+        element.style.display = '';
+        this.set({ width: clientWidth, height: clientHeight }).zoomTo();
+    };
     Canvas.prototype.zoomTo = function (zoom, pan) {
         if (zoom === void 0) { zoom = 1; }
         if (pan === void 0) { pan = new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(); }
@@ -13107,12 +13102,6 @@ var Canvas = /** @class */ (function (_super) {
             .multiplyScalar(-1)
             .add(pan);
         this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
-        // Second we also have to set drawing area matrix, if it is enabled.
-        if (this.hasDrawingArea) {
-            var daTx = this.width / 2 - this.drawingWidth / 2;
-            var daTy = this.height / 2 - this.drawingHeight / 2;
-            this.drawingAreaMatrix.fromArray([1, 0, 0, 1, daTx, daTy]);
-        }
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;
@@ -13126,33 +13115,29 @@ var Canvas = /** @class */ (function (_super) {
         return new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.width, this.height);
     };
     Canvas.prototype.getPointer = function (e) {
-        var _a = e.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
-        var _b = 'ontouchstart' in window ? e.touches[0] : e, clientX = _b.clientX, clientY = _b.clientY;
+        // @ts-ignore
+        var _a = 'ontouchstart' in window ? e.touches[0] : e, clientX = _a.clientX, clientY = _a.clientY, currentTarget = _a.currentTarget;
+        var _b = currentTarget.getBoundingClientRect(), left = _b.left, top = _b.top;
         return new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(clientX - left, clientY - top);
     };
     Canvas.prototype._onPointerStartInSelectMode = function (e) {
+        // @ts-ignore
         var dataset = e.target.dataset;
-        var shape = dataset.shape;
+        var shape = dataset.shape, name = dataset.name;
         var isNode = 'controlNode' in dataset;
         var pointer = this.getPointer(e);
         var founded = this.findLastChildByPointer(pointer);
-        if (this.getSelectedShapes().includes(founded) && founded.isCollection) {
-            founded = founded.findLastChildByPointer(pointer);
-            if (founded)
-                shape = ''; // To create recursive selection.
-        }
         if (isNode) {
-            this._currentNodeId = dataset.id;
+            this._currentNode = name;
             this.eachSelectedShape(function (shape) {
-                var _a, _b;
-                (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(dataset.id)) === null || _b === void 0 ? void 0 : _b.onPointerStart(e);
+                var _a;
+                (_a = shape.getControl().childByName(name)) === null || _a === void 0 ? void 0 : _a.onPointerStart(e);
             });
         }
         else {
             if (!shape) {
                 if (founded) {
-                    this.releaseShapes();
-                    this.selectShapes(founded);
+                    this.releaseShapes().selectShapes(founded);
                 }
                 else {
                     this.releaseShapes();
@@ -13171,28 +13156,24 @@ var Canvas = /** @class */ (function (_super) {
     };
     Canvas.prototype._onPointerMoveInSelectMode = function (e) {
         var _this = this;
-        this.eachSelectedShape(function (shape) {
-            var _a, _b;
-            shape.getControl().onPointerMove(e);
-            (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(_this._currentNodeId)) === null || _b === void 0 ? void 0 : _b.onPointerMove(e);
-        });
         if (this._selection) {
             this._selector.bBox.max.copy(this.getPointer(e));
             this.trigger('selector:updated');
         }
+        else {
+            this.eachSelectedShape(function (shape) {
+                var _a;
+                shape.getControl().onPointerMove(e);
+                (_a = shape.getControl().childByName(_this._currentNode)) === null || _a === void 0 ? void 0 : _a.onPointerMove(e);
+            });
+        }
     };
     Canvas.prototype._onPointerEndInSelectMode = function (e) {
         var _this = this;
-        this.eachSelectedShape(function (shape) {
-            var _a, _b;
-            shape.getControl().onPointerEnd(e);
-            (_b = (_a = shape.getControl()) === null || _a === void 0 ? void 0 : _a.childById(_this._currentNodeId)) === null || _b === void 0 ? void 0 : _b.onPointerEnd(e);
-        });
-        this._currentNodeId = '';
         if (this._selection) {
             var selectedShapes = this.mapChildren(function (shape) {
                 var selectorPolygon = _this._selector.bBox.toPolygon();
-                var shapePolygon = shape.bBox.toPolygon(shape.getWorldMatrix());
+                var shapePolygon = shape.toPolygon();
                 return (!_this._selector.bBox.isEmpty() &&
                     selectorPolygon.intersects(shapePolygon) &&
                     shape);
@@ -13200,8 +13181,16 @@ var Canvas = /** @class */ (function (_super) {
             this.selectShapes(selectedShapes);
             this._selector.bBox.reset();
             this.trigger('selector:updated');
+            this._selection = false;
         }
-        this._selection = false;
+        else {
+            this.eachSelectedShape(function (shape) {
+                var _a;
+                shape.getControl().onPointerEnd(e);
+                (_a = shape.getControl().childByName(_this._currentNode)) === null || _a === void 0 ? void 0 : _a.onPointerEnd(e);
+            });
+            this._currentNode = '';
+        }
     };
     Canvas.prototype._onPointerStartInPanMode = function (e) {
         this._isDragging = true;
@@ -13221,20 +13210,56 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype._onPointerMoveInDrawMode = function (e) { };
     Canvas.prototype._onPointerEndInDrawMode = function (e) { };
     Canvas.prototype.onPointerStart = function (e) {
-        this[POINTEREVENTS.start[this.mode]](e);
+        switch (this.mode) {
+            case 'select':
+                this._onPointerStartInSelectMode(e);
+                break;
+            case 'pan':
+                this._onPointerStartInPanMode(e);
+                break;
+            case 'draw':
+                this._onPointerStartInDrawMode(e);
+                break;
+            default:
+                break;
+        }
     };
     Canvas.prototype.onPointerMove = function (e) {
-        this[POINTEREVENTS.move[this.mode]](e);
+        switch (this.mode) {
+            case 'select':
+                this._onPointerMoveInSelectMode(e);
+                break;
+            case 'pan':
+                this._onPointerMoveInPanMode(e);
+                break;
+            case 'draw':
+                this._onPointerMoveInDrawMode(e);
+                break;
+            default:
+                break;
+        }
     };
     Canvas.prototype.onPointerEnd = function (e) {
-        this[POINTEREVENTS.end[this.mode]](e);
+        switch (this.mode) {
+            case 'select':
+                this._onPointerEndInSelectMode(e);
+                break;
+            case 'pan':
+                this._onPointerEndInPanMode(e);
+                break;
+            case 'draw':
+                this._onPointerEndInDrawMode(e);
+                break;
+            default:
+                break;
+        }
     };
     Canvas.prototype.onWheel = function (e) {
         if (this.zoomable) {
             e.preventDefault();
             var pointer = this.getPointer(e);
             var size = this.getSize();
-            this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_5__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)));
+            this.zoomTo((0,_utils__WEBPACK_IMPORTED_MODULE_5__.toFixed)(this.zoom * Math.pow(0.999, e.deltaY)), this._pan);
         }
     };
     return Canvas;
@@ -14027,7 +14052,7 @@ var AngleControlNode = /** @class */ (function (_super) {
     }
     AngleControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
-        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix(true).toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startAngle = shape.get('angle');
         // We do not want to get the whole world matrix, just want to get the translate matrix here.
@@ -14126,7 +14151,7 @@ var OriginControlNode = /** @class */ (function (_super) {
     OriginControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
         var canvas = shape.get('canvas');
-        var _a = shape.getWorldMatrix(false).toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.copy(canvas.getPointer(e));
         this._startPosition.set(left, top);
@@ -14214,7 +14239,7 @@ var ScaleControlNode = /** @class */ (function (_super) {
     }
     ScaleControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
-        var wMatrix = shape.getWorldMatrix();
+        var wMatrix = shape.getWorldMatrix(true);
         var _a = wMatrix.toOptions(), left = _a.left, top = _a.top;
         var _b = shape.get(['scaleX', 'scaleY']), scaleX = _b.scaleX, scaleY = _b.scaleY;
         this._startScale.set(scaleX, scaleY);
@@ -14227,7 +14252,6 @@ var ScaleControlNode = /** @class */ (function (_super) {
             return;
         }
         var shape = this.getShape();
-        // const {left, top} = shape.getWorldMatrix().toOptions();
         var scale = shape
             .getLocalPointer(e, this._startMatrix)
             .divide(this._startVector)
@@ -14322,9 +14346,10 @@ var Control = /** @class */ (function (_super) {
         return this.shape.bBox.getSize().multiply(new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(scaleX, scaleY));
     };
     Control.prototype.getStyle = function () {
-        var _a = this.shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top, angle = _a.angle;
+        var shape = this.shape;
+        var _a = shape.getWorldMatrix(true).toOptions(), left = _a.left, top = _a.top, angle = _a.angle;
         var size = this.getSize();
-        var _b = this.shape.origin.clone().multiplyScalar(100), x = _b.x, y = _b.y;
+        var _b = shape.origin.clone().multiplyScalar(100), x = _b.x, y = _b.y;
         return {
             width: Math.abs(size.x) + 'px',
             height: Math.abs(size.y) + 'px',
@@ -14617,7 +14642,7 @@ var TransformControl = /** @class */ (function (_super) {
     TransformControl.prototype.onPointerStart = function (e) {
         var shape = this.shape;
         var canvas = shape.get('canvas');
-        var _a = shape.getWorldMatrix(false).toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.subtractPoints(canvas.getPointer(e), new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(left, top));
     };
@@ -14637,6 +14662,13 @@ var TransformControl = /** @class */ (function (_super) {
         });
     };
     TransformControl.prototype.onPointerEnd = function (e) {
+        if (this._isDragging) {
+            var _a = this.shape, left = _a.left, top_1 = _a.top;
+            this.shape.trigger('updated', { left: left, top: top_1 }, this.shape);
+            if (this.shape.canvas) {
+                this.shape.canvas.trigger('shapes:updated', { left: left, top: top_1 }, this.shape);
+            }
+        }
         this._isDragging = false;
     };
     return TransformControl;
@@ -17100,7 +17132,11 @@ function ElementCollection(Base) {
                 child.set('parent', _this, true);
                 // @ts-ignore
                 if (_this.isCanvas) {
-                    var setCanvas = function (child) { return child.set('canvas', _this, true); };
+                    var setCanvas = function (child) {
+                        child.set('canvas', _this, true);
+                        // @ts-ignore
+                        _this.on('set', function (set) { return child.trigger('canvas:set', set); });
+                    };
                     setCanvas(child);
                     if (child.isCollection) {
                         child.eachChild(setCanvas);
@@ -17130,26 +17166,10 @@ function ElementCollection(Base) {
             }
             return this;
         };
-        /*
-        public remove(children: any|any[], silent = false){
-
-            if (!silent){
-                // @ts-ignore
-                this.trigger('removed', children);
-            }
-
-            return this;
-
-        }
-*/
         ElementCollection.prototype.findChildrenByPointer = function (pointer) {
             return this.mapChildren(function (child) {
-                var bBox = child.get('bBox');
-                if (!bBox) {
-                    return false;
-                }
-                var polygon = bBox.toPolygon(child.getWorldMatrix());
-                return polygon.containsPoint(pointer, 1) && child;
+                var polygon = child.toPolygon();
+                return polygon.containsPoint(pointer) && child;
             }).filter(function (child) { return child === null || child === void 0 ? void 0 : child.selectable; });
         };
         ElementCollection.prototype.findLastChildByPointer = function (pointer) {
@@ -17453,6 +17473,7 @@ var Group = /** @class */ (function (_super) {
     Group.prototype.remove = function (children, silent) {
         var _this = this;
         _super.prototype.remove.call(this, children, silent);
+        children = Array.isArray(children) ? children : [children];
         children.forEach(function (child) { return child.off('set', _this.updateBBox); });
         this.updateBBox();
         return this;
@@ -17965,6 +17986,16 @@ var Shape = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Shape.prototype, "animation", {
+        get: function () {
+            return [];
+        },
+        set: function (value) {
+            this._animation.setTracks(value);
+        },
+        enumerable: false,
+        configurable: true
+    });
     Shape.prototype.init = function (params) {
         this.set(params, true);
         this.createId(this.tagName);
@@ -18033,18 +18064,9 @@ var Shape = /** @class */ (function (_super) {
         return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
     };
     Shape.prototype.getWrapperAttributes = function () {
-        var _a, _b;
-        var transform = this.matrix.toCSS();
-        if (((_a = this.parent) === null || _a === void 0 ? void 0 : _a.isCanvas) && ((_b = this.canvas) === null || _b === void 0 ? void 0 : _b.hasDrawingArea)) {
-            var daMatrix = this.canvas.drawingAreaMatrix;
-            transform = this.matrix
-                .clone()
-                .translate(this.matrix.tx + daMatrix.tx, this.matrix.ty + daMatrix.ty)
-                .toCSS();
-        }
         var attrs = {
             id: this.id,
-            transform: transform
+            transform: this.matrix.toCSS()
         };
         if (this.className) {
             attrs.className = this.className;
@@ -18077,12 +18099,13 @@ var Shape = /** @class */ (function (_super) {
         return this;
     };
     Shape.prototype.getWorldMatrix = function (withDrawingArea) {
-        if (withDrawingArea === void 0) { withDrawingArea = true; }
-        var _a = this.parent, viewportMatrix = _a.viewportMatrix, drawingAreaMatrix = _a.drawingAreaMatrix, isCanvas = _a.isCanvas, hasDrawingArea = _a.hasDrawingArea;
+        var _a = this.parent, viewportMatrix = _a.viewportMatrix, isCanvas = _a.isCanvas, hasDrawingArea = _a.hasDrawingArea;
         var matrix;
         if (isCanvas) {
             if (withDrawingArea && hasDrawingArea) {
-                matrix = viewportMatrix.clone().multiply(drawingAreaMatrix);
+                var _b = this.parent.getDrawingAreaPosition(), x = _b.x, y = _b.y;
+                var daMatrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().fromArray([1, 0, 0, 1, x, y]);
+                matrix = viewportMatrix.clone().multiply(daMatrix);
             }
             else {
                 matrix = viewportMatrix;
@@ -18095,10 +18118,16 @@ var Shape = /** @class */ (function (_super) {
     };
     Shape.prototype.getLocalPointer = function (e, matrix) {
         var pointer = this.canvas.getPointer(e);
-        return pointer.transform(matrix || this.getWorldMatrix().invert());
+        return pointer.transform(matrix || this.getWorldMatrix(true).invert());
     };
-    Shape.prototype.animate = function () {
+    Shape.prototype.getAnimation = function () {
         return this._animation;
+    };
+    Shape.prototype.animate = function (property, keyframes) {
+        return this._animation.addTrack(property, keyframes);
+    };
+    Shape.prototype.toPolygon = function () {
+        return this.bBox.toPolygon(this.getWorldMatrix(true));
     };
     Shape.prototype.toJSON = function () {
         var _this = this;
@@ -18629,6 +18658,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./hooks */ "./src/hooks.ts");
+
 
 
 var withCollectionContext = function (Component, tagName) {
@@ -18636,20 +18667,23 @@ var withCollectionContext = function (Component, tagName) {
     if (!Shape) {
         return {
             setup: function () {
-                return function () { return ''; };
+                return function () { return 'No class belongs to the provided tag name.'; };
             }
         };
     }
     return {
         props: new Shape().toJSON(), // Define default props.
         setup: function (props) {
-            var collection = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('collection');
+            var _a = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCollection)(null, function (collection) { return ({
+                add: collection.add.bind(collection),
+                remove: collection.remove.bind(collection)
+            }); }).actions, add = _a.add, remove = _a.remove;
             var shape = new Shape(props);
             (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-                collection.add(shape);
+                add(shape);
             });
             (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(function () {
-                collection.remove(shape);
+                remove(shape);
             });
             return function () {
                 return (0,vue__WEBPACK_IMPORTED_MODULE_0__.h)(Component, {
@@ -18674,17 +18708,67 @@ var withCollectionContext = function (Component, tagName) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   useCanvas: () => (/* binding */ useCanvas)
+/* harmony export */   useCanvas: () => (/* binding */ useCanvas),
+/* harmony export */   useCollection: () => (/* binding */ useCollection),
+/* harmony export */   useObject: () => (/* binding */ useObject)
 /* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
+/* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @grafikjs/core */ "../core/src/index.ts");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
 
-var useCanvas = function () {
-    var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
+
+var _useCollector = function (collector, actions, context, eventName) {
+    if (actions === void 0) { actions = null; }
+    if (eventName === void 0) { eventName = 'all'; }
+    var state = (0,vue__WEBPACK_IMPORTED_MODULE_1__.reactive)((collector === null || collector === void 0 ? void 0 : collector(context)) || {});
+    var collectedActions = (actions === null || actions === void 0 ? void 0 : actions(context)) || null;
+    var onEventEmited = function () {
+        var collected = (collector === null || collector === void 0 ? void 0 : collector(context)) || {};
+        Object.keys(collected).forEach(function (key) {
+            if (!(0,_grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.isEqual)(state[key], collected[key])) {
+                state[key] = collected[key];
+            }
+        });
+    };
+    (0,vue__WEBPACK_IMPORTED_MODULE_1__.onMounted)(function () {
+        context.on(eventName, onEventEmited);
+    });
+    (0,vue__WEBPACK_IMPORTED_MODULE_1__.onUnmounted)(function () {
+        context.off(eventName, onEventEmited);
+    });
+    return { state: (0,vue__WEBPACK_IMPORTED_MODULE_1__.toRefs)(state), actions: collectedActions, context: context };
+};
+var useCanvas = function (collector, actions, eventName) {
+    if (actions === void 0) { actions = null; }
+    if (eventName === void 0) { eventName = 'all'; }
+    var canvas = (0,vue__WEBPACK_IMPORTED_MODULE_1__.inject)('canvas');
     if (!canvas) {
-        console.error('No canvas provided.');
-        return;
+        console.warn('No canvas provided.');
+        return {
+            state: {},
+            actions: {},
+            context: new _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Canvas()
+        };
     }
-    return canvas;
+    return _useCollector(collector, actions, canvas, eventName);
+};
+var useCollection = function (collector, actions, eventName) {
+    if (actions === void 0) { actions = null; }
+    if (eventName === void 0) { eventName = 'all'; }
+    var collection = (0,vue__WEBPACK_IMPORTED_MODULE_1__.inject)('collection');
+    if (!collection) {
+        console.warn('No collection provided.');
+        return {
+            state: {},
+            actions: {},
+            context: {}
+        };
+    }
+    return _useCollector(collector, actions, collection, eventName);
+};
+var useObject = function (object, collector, actions, eventName) {
+    if (actions === void 0) { actions = null; }
+    if (eventName === void 0) { eventName = 'all'; }
+    return _useCollector(collector, actions, object, eventName);
 };
 
 
@@ -18708,6 +18792,10 @@ var createGrafik = function (opt) { return ({
         if (options === void 0) { options = opt; }
         var canvas = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.Canvas(options);
         app.provide('canvas', canvas);
+        if (true) {
+            // @ts-ignore
+            window.c = canvas;
+        }
     }
 }); };
 
@@ -18724,12 +18812,14 @@ var createGrafik = function (opt) { return ({
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Circle: () => (/* binding */ Circle),
+/* harmony export */   Ellipse: () => (/* binding */ Ellipse),
 /* harmony export */   Image: () => (/* binding */ Image),
 /* harmony export */   Path: () => (/* binding */ Path),
 /* harmony export */   Polygon: () => (/* binding */ Polygon),
 /* harmony export */   Polyline: () => (/* binding */ Polyline),
 /* harmony export */   Rect: () => (/* binding */ Rect),
-/* harmony export */   Text: () => (/* binding */ Text)
+/* harmony export */   Text: () => (/* binding */ Text),
+/* harmony export */   TextPath: () => (/* binding */ TextPath)
 /* harmony export */ });
 /* harmony import */ var _hocs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hocs */ "./src/hocs.ts");
 /* harmony import */ var _components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/elements/ShapeBase.vue */ "./src/components/elements/ShapeBase.vue");
@@ -18737,10 +18827,12 @@ __webpack_require__.r(__webpack_exports__);
 
 var Rect = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'rect');
 var Circle = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'circle');
+var Ellipse = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'ellipse');
 var Path = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'path');
 var Polygon = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'polygon');
 var Polyline = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'polyline');
 var Text = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'text');
+var TextPath = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'text-path');
 var Image = (0,_hocs__WEBPACK_IMPORTED_MODULE_0__.withCollectionContext)(_components_elements_ShapeBase_vue__WEBPACK_IMPORTED_MODULE_1__["default"], 'image');
 
 
@@ -18856,20 +18948,63 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _Defs_vue_vue_type_template_id_5179b466_ts_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Defs.vue?vue&type=template&id=5179b466&ts=true */ "./src/components/elements/Defs.vue?vue&type=template&id=5179b466&ts=true");
-/* harmony import */ var _Defs_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Defs.vue?vue&type=script&setup=true&lang=ts */ "./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=ts");
+/* harmony import */ var _Defs_vue_vue_type_template_id_5179b466__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Defs.vue?vue&type=template&id=5179b466 */ "./src/components/elements/Defs.vue?vue&type=template&id=5179b466");
+/* harmony import */ var _Defs_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Defs.vue?vue&type=script&setup=true&lang=js */ "./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=js");
 /* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/dist/exportHelper.js */ "../../node_modules/vue-loader/dist/exportHelper.js");
 
 
 
 
 ;
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_Defs_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Defs_vue_vue_type_template_id_5179b466_ts_true__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"src/components/elements/Defs.vue"]])
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_Defs_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Defs_vue_vue_type_template_id_5179b466__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"src/components/elements/Defs.vue"]])
 /* hot reload */
 if (false) {}
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=js":
+/*!*****************************************************************************************************************************************************!*\
+  !*** ../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=js ***!
+  \*****************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../../hooks */ "./src/hooks.ts");
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  __name: 'Defs',
+  setup(__props, { expose: __expose }) {
+  __expose();
+
+const {
+	state: { hasDefs, hasDrawingArea, showGrid, daAttrs, pAttrs, pPaths }
+} = (0,_hooks__WEBPACK_IMPORTED_MODULE_0__.useCanvas)(
+	(canvas) => ({
+		hasDefs: canvas.hasDefs(),
+		hasDrawingArea: canvas.hasDrawingArea,
+		showGrid: canvas.showGrid,
+		daAttrs: canvas.getDrawingAreaAttributes(),
+		pAttrs: canvas.getGridPatternAttributes(),
+		pPaths: canvas.getGridPatternPaths(true)
+	}),
+	null,
+	'set'
+);
+
+const __returned__ = { hasDefs, hasDrawingArea, showGrid, daAttrs, pAttrs, pPaths, get useCanvas() { return _hooks__WEBPACK_IMPORTED_MODULE_0__.useCanvas } }
+Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
+return __returned__
+}
+
+});
 
 /***/ }),
 
@@ -19072,8 +19207,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../../hooks */ "./src/hooks.ts");
 /* harmony import */ var _Control_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Control.vue */ "./src/components/interactive/Control.vue");
+/* harmony import */ var _Selector_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Selector.vue */ "./src/components/interactive/Selector.vue");
+
+
 
 
 
@@ -19082,26 +19220,24 @@ __webpack_require__.r(__webpack_exports__);
   setup(__props, { expose: __expose }) {
   __expose();
 
-const canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
-const { onPointerStart, onPointerMove, onPointerEnd, onWheel } = canvas;
-const mousedown = onPointerStart.bind(canvas);
-const mousemove = onPointerMove.bind(canvas);
-const mouseup = onPointerEnd.bind(canvas);
-const wheel = onWheel.bind(canvas);
-const shapes = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getSelectedShapes());
-const onSelect = () => {
-	shapes.value = [...canvas.getSelectedShapes()];
-};
-window.c = canvas;
-(0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(() => {
-	canvas.on('shapes:selection:updated', onSelect);
-});
+const {
+	state: { shapes, multiselection },
+	actions: { mousedown, mousemove, mouseup, wheel }
+} = (0,_hooks__WEBPACK_IMPORTED_MODULE_0__.useCanvas)(
+	(canvas) => ({
+		shapes: canvas.getSelectedShapes(),
+		multiselection: canvas.multiselection
+	}),
+	(canvas) => ({
+		mousedown: canvas.onPointerStart.bind(canvas),
+		mousemove: canvas.onPointerMove.bind(canvas),
+		mouseup: canvas.onPointerEnd.bind(canvas),
+		wheel: canvas.onWheel.bind(canvas)
+	}),
+	'shapes:selection:updated'
+);
 
-(0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(() => {
-	canvas.off('shapes:selection:updated', onSelect);
-});
-
-const __returned__ = { canvas, onPointerStart, onPointerMove, onPointerEnd, onWheel, mousedown, mousemove, mouseup, wheel, shapes, onSelect, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, inject: vue__WEBPACK_IMPORTED_MODULE_0__.inject, onMounted: vue__WEBPACK_IMPORTED_MODULE_0__.onMounted, onUnmounted: vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted, Control: _Control_vue__WEBPACK_IMPORTED_MODULE_1__["default"] }
+const __returned__ = { shapes, multiselection, mousedown, mousemove, mouseup, wheel, get useCanvas() { return _hooks__WEBPACK_IMPORTED_MODULE_0__.useCanvas }, Control: _Control_vue__WEBPACK_IMPORTED_MODULE_1__["default"], Selector: _Selector_vue__WEBPACK_IMPORTED_MODULE_2__["default"] }
 Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
 return __returned__
 }
@@ -19147,7 +19283,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../../hooks */ "./src/hooks.ts");
 
 
 
@@ -19156,23 +19292,14 @@ __webpack_require__.r(__webpack_exports__);
   setup(__props, { expose: __expose }) {
   __expose();
 
-const canvas = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('canvas');
-const attrs = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getSelector().getAttributes());
-const style = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(canvas.getSelector().getStyle());
-const onSelect = () => {
-	attrs.value = canvas.getSelector().getAttributes();
-	style.value = canvas.getSelector().getStyle();
-};
+const {
+	state: { attrs, style }
+} = (0,_hooks__WEBPACK_IMPORTED_MODULE_0__.useCanvas)((canvas) => ({
+	attrs: canvas.getSelector().getAttributes(),
+	style: canvas.getSelector().getStyle()
+}));
 
-(0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(() => {
-	canvas.on('selector:updated', onSelect);
-});
-
-(0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(() => {
-	canvas.off('selector:updated', onSelect);
-});
-
-const __returned__ = { canvas, attrs, style, onSelect, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, inject: vue__WEBPACK_IMPORTED_MODULE_0__.inject, onMounted: vue__WEBPACK_IMPORTED_MODULE_0__.onMounted, onUnmounted: vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted }
+const __returned__ = { attrs, style, get useCanvas() { return _hooks__WEBPACK_IMPORTED_MODULE_0__.useCanvas } }
 Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
 return __returned__
 }
@@ -19217,21 +19344,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* reexport safe */ _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Canvas_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
 /* harmony import */ var _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Canvas_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Canvas.vue?vue&type=script&setup=true&lang=ts */ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Canvas.vue?vue&type=script&setup=true&lang=ts");
- 
-
-/***/ }),
-
-/***/ "./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=ts":
-/*!*****************************************************************************!*\
-  !*** ./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=ts ***!
-  \*****************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Defs_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__["default"])
-/* harmony export */ });
-/* harmony import */ var _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Defs_vue_vue_type_script_setup_true_lang_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Defs.vue?vue&type=script&setup=true&lang=ts */ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=ts");
  
 
 /***/ }),
@@ -19341,21 +19453,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/components/elements/Defs.vue?vue&type=template&id=5179b466&ts=true":
-/*!********************************************************************************!*\
-  !*** ./src/components/elements/Defs.vue?vue&type=template&id=5179b466&ts=true ***!
-  \********************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Defs_vue_vue_type_template_id_5179b466_ts_true__WEBPACK_IMPORTED_MODULE_0__.render)
-/* harmony export */ });
-/* harmony import */ var _node_modules_ts_loader_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Defs_vue_vue_type_template_id_5179b466_ts_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Defs.vue?vue&type=template&id=5179b466&ts=true */ "../../node_modules/ts-loader/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=template&id=5179b466&ts=true");
-
-
-/***/ }),
-
 /***/ "./src/components/elements/Group.vue?vue&type=template&id=7806e452&ts=true":
 /*!*********************************************************************************!*\
   !*** ./src/components/elements/Group.vue?vue&type=template&id=7806e452&ts=true ***!
@@ -19446,6 +19543,21 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=js":
+/*!*****************************************************************************!*\
+  !*** ./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Defs_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Defs_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Defs.vue?vue&type=script&setup=true&lang=js */ "../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=script&setup=true&lang=js");
+ 
+
+/***/ }),
+
 /***/ "./src/components/interactive/Interactive.vue?vue&type=script&setup=true&lang=js":
 /*!***************************************************************************************!*\
   !*** ./src/components/interactive/Interactive.vue?vue&type=script&setup=true&lang=js ***!
@@ -19473,6 +19585,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Selector_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Selector.vue?vue&type=script&setup=true&lang=js */ "../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/interactive/Selector.vue?vue&type=script&setup=true&lang=js");
  
+
+/***/ }),
+
+/***/ "./src/components/elements/Defs.vue?vue&type=template&id=5179b466":
+/*!************************************************************************!*\
+  !*** ./src/components/elements/Defs.vue?vue&type=template&id=5179b466 ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Defs_vue_vue_type_template_id_5179b466__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Defs_vue_vue_type_template_id_5179b466__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Defs.vue?vue&type=template&id=5179b466 */ "../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=template&id=5179b466");
+
 
 /***/ }),
 
@@ -19521,6 +19648,46 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=template&id=5179b466":
+/*!**************************************************************************************************************************************************************************************************************************!*\
+  !*** ../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/elements/Defs.vue?vue&type=template&id=5179b466 ***!
+  \**************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "../../node_modules/vue/dist/vue.runtime.esm-bundler.js");
+
+
+const _hoisted_1 = { key: 0 }
+const _hoisted_2 = {
+  key: 0,
+  id: "grafik-drawing-area"
+}
+
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return ($setup.hasDefs)
+    ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("defs", _hoisted_1, [
+        ($setup.hasDrawingArea)
+          ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("clipPath", _hoisted_2, [
+              (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("rect", (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.guardReactiveProps)($setup.daAttrs)), null, 16 /* FULL_PROPS */)
+            ]))
+          : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true),
+        ($setup.showGrid)
+          ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("pattern", (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeProps)((0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)({ key: 1 }, $setup.pAttrs)), [
+              ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.pPaths, (path) => {
+                return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("path", (0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)({ ref_for: true }, path), null, 16 /* FULL_PROPS */))
+              }), 256 /* UNKEYED_FRAGMENT */))
+            ], 16 /* FULL_PROPS */))
+          : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)
+      ]))
+    : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)
+}
+
+/***/ }),
+
 /***/ "../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/interactive/Interactive.vue?vue&type=template&id=696f46b5":
 /*!************************************************************************************************************************************************************************************************************************************!*\
   !*** ../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/interactive/Interactive.vue?vue&type=template&id=696f46b5 ***!
@@ -19546,9 +19713,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.shapes, (shape) => {
       return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["Control"], {
         key: shape.id,
-        control: shape.getControl()
-      }, null, 8 /* PROPS */, ["control"]))
+        shape: shape
+      }, null, 8 /* PROPS */, ["shape"]))
     }), 128 /* KEYED_FRAGMENT */)),
+    ($setup.multiselection)
+      ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["Selector"], { key: 0 }))
+      : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true),
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "default")
   ], 32 /* NEED_HYDRATION */))
 }
@@ -19877,6 +20047,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Circle: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_4__.Circle),
 /* harmony export */   Control: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_3__.Control),
 /* harmony export */   Defs: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_3__.Defs),
+/* harmony export */   Ellipse: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_4__.Ellipse),
 /* harmony export */   Group: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_3__.Group),
 /* harmony export */   Image: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_4__.Image),
 /* harmony export */   Interactive: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_3__.Interactive),
@@ -19888,9 +20059,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   ShapeBase: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_3__.ShapeBase),
 /* harmony export */   ShapeTree: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_3__.ShapeTree),
 /* harmony export */   Text: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_4__.Text),
+/* harmony export */   TextPath: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_4__.TextPath),
 /* harmony export */   Wrapper: () => (/* reexport safe */ _components__WEBPACK_IMPORTED_MODULE_3__.Wrapper),
 /* harmony export */   createGrafik: () => (/* reexport safe */ _plugin__WEBPACK_IMPORTED_MODULE_0__.createGrafik),
 /* harmony export */   useCanvas: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvas),
+/* harmony export */   useCollection: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_2__.useCollection),
+/* harmony export */   useObject: () => (/* reexport safe */ _hooks__WEBPACK_IMPORTED_MODULE_2__.useObject),
 /* harmony export */   withCollectionContext: () => (/* reexport safe */ _hocs__WEBPACK_IMPORTED_MODULE_1__.withCollectionContext)
 /* harmony export */ });
 /* harmony import */ var _plugin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./plugin */ "./src/plugin.ts");

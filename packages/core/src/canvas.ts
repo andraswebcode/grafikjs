@@ -102,6 +102,12 @@ class Canvas extends ElementCollection(Element) {
 			: new Point();
 	}
 
+	public getDrawingAreaSize() {
+		return this.hasDrawingArea
+			? new Point(this.drawingWidth, this.drawingHeight)
+			: new Point(this.width, this.height);
+	}
+
 	public getShapesWrapperAttributes(): any {
 		if (!this.hasDrawingArea) {
 			return {};

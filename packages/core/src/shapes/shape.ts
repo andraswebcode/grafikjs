@@ -2,6 +2,7 @@ import { Element } from './../element';
 import { Color, Matrix, BBox, Point, CurvePath } from './../maths';
 import { TransformControl } from './../interactive';
 import { Animation } from './../animation';
+import { AnimationObject, KeyframeObject, TrackObject } from './../types';
 
 class Shape extends Element {
 	public readonly isShape = true;
@@ -18,15 +19,7 @@ class Shape extends Element {
 
 	protected _animation = new Animation();
 
-	protected transformProps: string[] = [
-		'left',
-		'top',
-		'angle',
-		'scaleX',
-		'scaleY',
-		'skewX',
-		'skewY'
-	];
+	protected transformProps = ['left', 'top', 'angle', 'scaleX', 'scaleY', 'skewX', 'skewY'];
 
 	protected left = 0;
 	protected top = 0;
@@ -99,6 +92,15 @@ class Shape extends Element {
 		return this.origin.y;
 	}
 
+	set animation(value: AnimationObject) {
+		const { tracks } = value;
+		this._animation.setTracks(tracks);
+	}
+
+	get animation(): AnimationObject {
+		return this._animation.toJSON();
+	}
+
 	public init(params) {
 		this.set(params, true);
 		this.createId(this.tagName);
@@ -110,6 +112,7 @@ class Shape extends Element {
 		).setControl('transform');
 		this.updateMatrix();
 		this.updateBBox();
+		this._animation.shape = this;
 		this.trigger('init', this);
 	}
 
@@ -242,8 +245,12 @@ class Shape extends Element {
 		return pointer.transform(matrix || this.getWorldMatrix(true).invert());
 	}
 
-	public animate() {
+	public getAnimation() {
 		return this._animation;
+	}
+
+	public animate(property: string, keyframes: KeyframeObject[]) {
+		return this._animation.addTrack(property, keyframes);
 	}
 
 	public toPolygon(): CurvePath {
@@ -273,7 +280,8 @@ class Shape extends Element {
 		return {
 			...json,
 			...transform,
-			...defs
+			...defs,
+			animation: this.animation
 		};
 	}
 }

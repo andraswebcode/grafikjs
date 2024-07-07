@@ -14,7 +14,7 @@ const {
 	shape,
 	(shape) => ({
 		wAttrs: shape.getWrapperAttributes(),
-		attrs: shape.getAttributes()
+		attrs: shape.getAttributes(true)
 	}),
 	null,
 	'set'

@@ -13,23 +13,24 @@ type EasingName =
 	| 'backOut';
 
 interface KeyframeObject {
-	time: number;
+	to: number;
 	value: any;
-	easing: EasingName;
+	easing?: EasingName;
 }
 
 interface TrackObject {
 	property: string;
-	children: KeyframeObject[];
+	easing?: EasingName;
+	keyframes: KeyframeObject[];
 }
 
 interface AnimationObject {
-	shape: any;
-	children: TrackObject[];
+	easing?: EasingName;
+	tracks: TrackObject[];
 }
 
 interface TimelineObject {
-	children: AnimationObject[];
+	animations: AnimationObject[];
 }
 
 export { TimelineObject, AnimationObject, TrackObject, KeyframeObject, EasingName };

@@ -1,12 +1,12 @@
-import {
-	Observable
-} from './../observable';
-import {
-	Collection
-} from './../mixins';
+import { Observable } from './../observable';
+import { Collection } from './../mixins';
 
-class Timeline extends Collection(Observable) {}
+class Timeline extends Collection(Observable) {
+	get animations() {
+		return this.getChildren();
+	}
 
-export {
-	Timeline
-};
+	set animations(value) {}
+}
+
+export { Timeline };

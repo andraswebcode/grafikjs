@@ -1,3 +1,4 @@
+import { AnimationObject } from './animation';
 import type { AnyColor } from './math';
 
 type ColorStopObject = {
@@ -46,9 +47,11 @@ interface CanvasObject {
 interface ShapeObject extends TransformObject {
 	tagName: string;
 	id: string;
+	name: string;
 	fill: FillStroke;
 	stroke: FillStroke;
 	strokeWidth: number;
+	animation?: AnimationObject;
 	width?: number;
 	height?: number;
 	r?: number;
