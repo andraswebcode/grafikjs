@@ -16,7 +16,7 @@ class OriginControlNode extends ControlNode {
 	public onPointerStart(e) {
 		const shape = this.getShape();
 		const canvas = shape.get('canvas');
-		const { left, top } = shape.getWorldMatrix(false).toOptions();
+		const { left, top } = shape.getWorldMatrix().toOptions();
 
 		this._isDragging = true;
 		this._startVector.copy(canvas.getPointer(e));

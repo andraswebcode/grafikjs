@@ -25,7 +25,7 @@ class Canvas extends ElementCollection(Element) {
 
 	protected viewBox: ViewBoxArray;
 	protected viewportMatrix = new Matrix();
-	protected drawingAreaMatrix = new Matrix();
+	// protected drawingAreaMatrix = new Matrix();
 
 	public hasDrawingArea = false;
 	public showGrid = false;
@@ -93,14 +93,36 @@ class Canvas extends ElementCollection(Element) {
 			.concat(['xmlns', 'width', 'height', 'viewBox', 'preserveAspectRatio']);
 	}
 
+	public getDrawingAreaPosition() {
+		return this.hasDrawingArea
+			? new Point(
+					this.width / 2 - this.drawingWidth / 2,
+					this.height / 2 - this.drawingHeight / 2
+			  )
+			: new Point();
+	}
+
+	public getShapesWrapperAttributes(): any {
+		if (!this.hasDrawingArea) {
+			return {};
+		}
+
+		const { x, y } = this.getDrawingAreaPosition();
+		return {
+			transform: `translate(${x}, ${y})`
+		};
+	}
+
 	public getDrawingAreaAttributes(): any {
 		if (!this.hasDrawingArea) {
 			return {};
 		}
 
+		const { x, y } = this.getDrawingAreaPosition();
+
 		return {
-			x: this.width / 2 - this.drawingWidth / 2,
-			y: this.height / 2 - this.drawingHeight / 2,
+			x,
+			y,
 			width: this.drawingWidth,
 			height: this.drawingHeight
 		};
@@ -111,12 +133,14 @@ class Canvas extends ElementCollection(Element) {
 			return {};
 		}
 
+		const { x, y } = this.getDrawingAreaPosition();
+
 		return {
 			id: 'grafik-grid',
 			width: this.gridSize * 2,
 			height: this.gridSize * 2,
-			x: this.width / 2 - this.drawingWidth / 2,
-			y: this.height / 2 - this.drawingHeight / 2,
+			x,
+			y,
 			patternUnits: 'userSpaceOnUse'
 		};
 	}
@@ -241,6 +265,17 @@ class Canvas extends ElementCollection(Element) {
 		return this._selector;
 	}
 
+	public setResponsiveSize(element: SVGElement) {
+		if (!this.autoSize || !element) {
+			return;
+		}
+
+		element.style.display = 'none';
+		const { clientWidth = 0, clientHeight = 0 } = element.parentElement || {};
+		element.style.display = '';
+		this.set({ width: clientWidth, height: clientHeight }).zoomTo();
+	}
+
 	public zoomTo(zoom = 1, pan = new Point()) {
 		// First we have to set viewport to update shapes world matrix.
 		const size = this.getSize();
@@ -251,13 +286,6 @@ class Canvas extends ElementCollection(Element) {
 			.multiplyScalar(-1)
 			.add(pan);
 		this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
-
-		// Second we also have to set drawing area matrix, if it is enabled.
-		if (this.hasDrawingArea) {
-			const daTx = this.width / 2 - this.drawingWidth / 2;
-			const daTy = this.height / 2 - this.drawingHeight / 2;
-			this.drawingAreaMatrix.fromArray([1, 0, 0, 1, daTx, daTy]);
-		}
 
 		// And we also need to calculate viewBox from viewport to update svg attribute.
 		const { a, d, tx, ty } = this.viewportMatrix;
@@ -332,7 +360,7 @@ class Canvas extends ElementCollection(Element) {
 		if (this._selection) {
 			const selectedShapes = this.mapChildren((shape) => {
 				const selectorPolygon = this._selector.bBox.toPolygon();
-				const shapePolygon = shape.bBox.toPolygon(shape.getWorldMatrix());
+				const shapePolygon = shape.toPolygon();
 				return (
 					!this._selector.bBox.isEmpty() &&
 					selectorPolygon.intersects(shapePolygon) &&

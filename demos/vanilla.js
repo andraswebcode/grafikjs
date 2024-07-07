@@ -807,7 +807,7 @@ var Canvas = /** @class */ (function (_super) {
         _this.width = 0;
         _this.height = 0;
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
-        _this.drawingAreaMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
+        // protected drawingAreaMatrix = new Matrix();
         _this.hasDrawingArea = false;
         _this.showGrid = false;
         _this.autoSize = false;
@@ -873,13 +873,28 @@ var Canvas = /** @class */ (function (_super) {
         return _super.prototype.getAttrMap.call(this)
             .concat(['xmlns', 'width', 'height', 'viewBox', 'preserveAspectRatio']);
     };
+    Canvas.prototype.getDrawingAreaPosition = function () {
+        return this.hasDrawingArea
+            ? new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.width / 2 - this.drawingWidth / 2, this.height / 2 - this.drawingHeight / 2)
+            : new _maths__WEBPACK_IMPORTED_MODULE_4__.Point();
+    };
+    Canvas.prototype.getShapesWrapperAttributes = function () {
+        if (!this.hasDrawingArea) {
+            return {};
+        }
+        var _a = this.getDrawingAreaPosition(), x = _a.x, y = _a.y;
+        return {
+            transform: "translate(".concat(x, ", ").concat(y, ")")
+        };
+    };
     Canvas.prototype.getDrawingAreaAttributes = function () {
         if (!this.hasDrawingArea) {
             return {};
         }
+        var _a = this.getDrawingAreaPosition(), x = _a.x, y = _a.y;
         return {
-            x: this.width / 2 - this.drawingWidth / 2,
-            y: this.height / 2 - this.drawingHeight / 2,
+            x: x,
+            y: y,
             width: this.drawingWidth,
             height: this.drawingHeight
         };
@@ -888,12 +903,13 @@ var Canvas = /** @class */ (function (_super) {
         if (!this.showGrid) {
             return {};
         }
+        var _a = this.getDrawingAreaPosition(), x = _a.x, y = _a.y;
         return {
             id: 'grafik-grid',
             width: this.gridSize * 2,
             height: this.gridSize * 2,
-            x: this.width / 2 - this.drawingWidth / 2,
-            y: this.height / 2 - this.drawingHeight / 2,
+            x: x,
+            y: y,
             patternUnits: 'userSpaceOnUse'
         };
     };
@@ -1003,6 +1019,15 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype.getSelector = function () {
         return this._selector;
     };
+    Canvas.prototype.setResponsiveSize = function (element) {
+        if (!this.autoSize || !element) {
+            return;
+        }
+        element.style.display = 'none';
+        var _a = element.parentElement || {}, _b = _a.clientWidth, clientWidth = _b === void 0 ? 0 : _b, _c = _a.clientHeight, clientHeight = _c === void 0 ? 0 : _c;
+        element.style.display = '';
+        this.set({ width: clientWidth, height: clientHeight }).zoomTo();
+    };
     Canvas.prototype.zoomTo = function (zoom, pan) {
         if (zoom === void 0) { zoom = 1; }
         if (pan === void 0) { pan = new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(); }
@@ -1015,12 +1040,6 @@ var Canvas = /** @class */ (function (_super) {
             .multiplyScalar(-1)
             .add(pan);
         this.viewportMatrix.fromArray([zoom, 0, 0, zoom, translate.x, translate.y]);
-        // Second we also have to set drawing area matrix, if it is enabled.
-        if (this.hasDrawingArea) {
-            var daTx = this.width / 2 - this.drawingWidth / 2;
-            var daTy = this.height / 2 - this.drawingHeight / 2;
-            this.drawingAreaMatrix.fromArray([1, 0, 0, 1, daTx, daTy]);
-        }
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;
@@ -1092,7 +1111,7 @@ var Canvas = /** @class */ (function (_super) {
         if (this._selection) {
             var selectedShapes = this.mapChildren(function (shape) {
                 var selectorPolygon = _this._selector.bBox.toPolygon();
-                var shapePolygon = shape.bBox.toPolygon(shape.getWorldMatrix());
+                var shapePolygon = shape.toPolygon();
                 return (!_this._selector.bBox.isEmpty() &&
                     selectorPolygon.intersects(shapePolygon) &&
                     shape);
@@ -2070,7 +2089,7 @@ var OriginControlNode = /** @class */ (function (_super) {
     OriginControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
         var canvas = shape.get('canvas');
-        var _a = shape.getWorldMatrix(false).toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.copy(canvas.getPointer(e));
         this._startPosition.set(left, top);
@@ -2265,14 +2284,16 @@ var Control = /** @class */ (function (_super) {
         return this.shape.bBox.getSize().multiply(new _maths__WEBPACK_IMPORTED_MODULE_2__.Point(scaleX, scaleY));
     };
     Control.prototype.getStyle = function () {
-        var _a = this.shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top, angle = _a.angle;
+        var shape = this.shape;
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top, angle = _a.angle;
+        var daPosition = shape.canvas.getDrawingAreaPosition();
         var size = this.getSize();
-        var _b = this.shape.origin.clone().multiplyScalar(100), x = _b.x, y = _b.y;
+        var _b = shape.origin.clone().multiplyScalar(100), x = _b.x, y = _b.y;
         return {
             width: Math.abs(size.x) + 'px',
             height: Math.abs(size.y) + 'px',
-            left: left + 'px',
-            top: top + 'px',
+            left: left + daPosition.x + 'px',
+            top: top + daPosition.y + 'px',
             transform: "translate(".concat(-x, "%, ").concat(-y, "%) rotate(").concat(angle, "deg)"),
             transformOrigin: "".concat(x, "% ").concat(y, "%")
         };
@@ -2560,7 +2581,7 @@ var TransformControl = /** @class */ (function (_super) {
     TransformControl.prototype.onPointerStart = function (e) {
         var shape = this.shape;
         var canvas = shape.get('canvas');
-        var _a = shape.getWorldMatrix(false).toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startVector.subtractPoints(canvas.getPointer(e), new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(left, top));
     };
@@ -5968,18 +5989,9 @@ var Shape = /** @class */ (function (_super) {
         return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
     };
     Shape.prototype.getWrapperAttributes = function () {
-        var _a, _b;
-        var transform = this.matrix.toCSS();
-        if (((_a = this.parent) === null || _a === void 0 ? void 0 : _a.isCanvas) && ((_b = this.canvas) === null || _b === void 0 ? void 0 : _b.hasDrawingArea)) {
-            var daMatrix = this.canvas.drawingAreaMatrix;
-            transform = this.matrix
-                .clone()
-                .translate(this.matrix.tx + daMatrix.tx, this.matrix.ty + daMatrix.ty)
-                .toCSS();
-        }
         var attrs = {
             id: this.id,
-            transform: transform
+            transform: this.matrix.toCSS()
         };
         if (this.className) {
             attrs.className = this.className;
@@ -6013,20 +6025,10 @@ var Shape = /** @class */ (function (_super) {
     };
     Shape.prototype.getWorldMatrix = function (withDrawingArea) {
         if (withDrawingArea === void 0) { withDrawingArea = true; }
-        var _a = this.parent, viewportMatrix = _a.viewportMatrix, drawingAreaMatrix = _a.drawingAreaMatrix, isCanvas = _a.isCanvas, hasDrawingArea = _a.hasDrawingArea;
-        var matrix;
-        if (isCanvas) {
-            if (withDrawingArea && hasDrawingArea) {
-                matrix = viewportMatrix.clone().multiply(drawingAreaMatrix);
-            }
-            else {
-                matrix = viewportMatrix;
-            }
-        }
-        else {
-            matrix = this.parent.getWorldMatrix();
-        }
-        return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().copy(matrix).multiply(this.matrix);
+        var _a = this.parent, viewportMatrix = _a.viewportMatrix, isCanvas = _a.isCanvas;
+        return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix()
+            .copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix())
+            .multiply(this.matrix);
     };
     Shape.prototype.getLocalPointer = function (e, matrix) {
         var pointer = this.canvas.getPointer(e);

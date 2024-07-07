@@ -3,14 +3,18 @@ import { useCanvas } from './../../hooks';
 
 const {
 	state: { hasDefs, hasDrawingArea, showGrid, daAttrs, pAttrs, pPaths }
-} = useCanvas((canvas) => ({
-	hasDefs: canvas.hasDefs(),
-	hasDrawingArea: canvas.hasDrawingArea,
-	showGrid: canvas.showGrid,
-	daAttrs: canvas.getDrawingAreaAttributes(),
-	pAttrs: canvas.getGridPatternAttributes(),
-	pPaths: canvas.getGridPatternPaths(true)
-}));
+} = useCanvas(
+	(canvas) => ({
+		hasDefs: canvas.hasDefs(),
+		hasDrawingArea: canvas.hasDrawingArea,
+		showGrid: canvas.showGrid,
+		daAttrs: canvas.getDrawingAreaAttributes(),
+		pAttrs: canvas.getGridPatternAttributes(),
+		pPaths: canvas.getGridPatternPaths(true)
+	}),
+	null,
+	'set'
+);
 </script>
 
 <template>

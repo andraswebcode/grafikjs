@@ -94,7 +94,7 @@ class TransformControl extends Control {
 	public onPointerStart(e) {
 		const shape = this.shape;
 		const canvas = shape.get('canvas');
-		const { left, top } = shape.getWorldMatrix(false).toOptions();
+		const { left, top } = shape.getWorldMatrix().toOptions();
 
 		this._isDragging = true;
 		this._startVector.subtractPoints(canvas.getPointer(e), new Point(left, top));
