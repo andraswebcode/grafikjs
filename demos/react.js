@@ -1931,12 +1931,38 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var Animation = /** @class */ (function (_super) {
     __extends(Animation, _super);
     function Animation() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._isPlaying = false;
+        _this._startTime = 0;
+        _this._currentTime = 0;
+        return _this;
     }
-    Animation.prototype.play = function () { };
-    Animation.prototype.pause = function () { };
-    Animation.prototype.seek = function (ms) { };
-    Animation.prototype._render = function (timeStamp) { };
+    Animation.prototype.play = function () {
+        this._isPlaying = true;
+        this._startTime = performance.now() - this._currentTime;
+        requestAnimationFrame(this._render.bind(this));
+    };
+    Animation.prototype.pause = function () {
+        this._isPlaying = false;
+    };
+    Animation.prototype.update = function () {
+        var _this = this;
+        this.eachChild(function (track) {
+            _this.shape.set(track.property, track.getValue(_this._currentTime));
+        });
+        this.trigger('updated', this.shape);
+    };
+    Animation.prototype.seek = function (ms) {
+        this._currentTime = ms;
+        this.update();
+    };
+    Animation.prototype._render = function (timeStamp) {
+        if (!this._isPlaying)
+            return;
+        this._currentTime = timeStamp - this._startTime;
+        this.update();
+        requestAnimationFrame(this._render.bind(this));
+    };
     return Animation;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
@@ -2084,12 +2110,14 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var Track = /** @class */ (function (_super) {
     __extends(Track, _super);
-    function Track() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function Track(property) {
+        var _this = _super.call(this) || this;
         _this.property = '';
         _this.duration = 0;
+        _this.property = property;
         return _this;
     }
+    Track.prototype.getValue = function (time) { };
     return Track;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 

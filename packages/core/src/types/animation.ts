@@ -1,16 +1,35 @@
-interface TimelineObject {}
+type EasingName =
+	| 'linear'
+	| 'quadraticIn'
+	| 'quadraticOut'
+	| 'quadraticInOut'
+	| 'cubicIn'
+	| 'cubicOut'
+	| 'cubicInOut'
+	| 'bounceIn'
+	| 'bounceOut'
+	| 'bounceInOut'
+	| 'backIn'
+	| 'backOut';
 
-interface AnimationObject {}
+interface KeyframeObject {
+	time: number;
+	value: any;
+	easing: EasingName;
+}
 
 interface TrackObject {
 	property: string;
-	duration: number;
+	children: KeyframeObject[];
 }
 
-interface KeyframeObject {
-	duration: number;
-	delay: number;
-	easing: string;
+interface AnimationObject {
+	shape: any;
+	children: TrackObject[];
 }
 
-export { TimelineObject, AnimationObject, TrackObject, KeyframeObject };
+interface TimelineObject {
+	children: AnimationObject[];
+}
+
+export { TimelineObject, AnimationObject, TrackObject, KeyframeObject, EasingName };
