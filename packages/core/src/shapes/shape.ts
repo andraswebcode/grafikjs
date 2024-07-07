@@ -219,17 +219,27 @@ class Shape extends Element {
 		return this;
 	}
 
-	public getWorldMatrix(withDrawingArea = true): Matrix {
-		const { viewportMatrix, isCanvas } = this.parent;
+	public getWorldMatrix(withDrawingArea?: boolean): Matrix {
+		const { viewportMatrix, isCanvas, hasDrawingArea } = this.parent;
+		let matrix: Matrix;
+		if (isCanvas) {
+			if (withDrawingArea && hasDrawingArea) {
+				const { x, y } = this.parent.getDrawingAreaPosition();
+				const daMatrix = new Matrix().fromArray([1, 0, 0, 1, x, y]);
+				matrix = viewportMatrix.clone().multiply(daMatrix);
+			} else {
+				matrix = viewportMatrix;
+			}
+		} else {
+			matrix = this.parent.getWorldMatrix();
+		}
 
-		return new Matrix()
-			.copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix())
-			.multiply(this.matrix);
+		return new Matrix().copy(matrix).multiply(this.matrix);
 	}
 
 	public getLocalPointer(e, matrix?: Matrix): Point {
 		const pointer = this.canvas.getPointer(e);
-		return pointer.transform(matrix || this.getWorldMatrix().invert());
+		return pointer.transform(matrix || this.getWorldMatrix(true).invert());
 	}
 
 	public animate() {
@@ -237,7 +247,7 @@ class Shape extends Element {
 	}
 
 	public toPolygon(): CurvePath {
-		return this.bBox.toPolygon(this.getWorldMatrix());
+		return this.bBox.toPolygon(this.getWorldMatrix(true));
 	}
 
 	public toJSON(): object {

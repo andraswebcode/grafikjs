@@ -27,15 +27,14 @@ class Control extends ElementCollection(Element) {
 
 	public getStyle(): object {
 		const shape = this.shape;
-		const { left, top, angle } = shape.getWorldMatrix().toOptions();
-		const daPosition = shape.canvas.getDrawingAreaPosition();
+		const { left, top, angle } = shape.getWorldMatrix(true).toOptions();
 		const size = this.getSize();
 		const { x, y } = shape.origin.clone().multiplyScalar(100);
 		return {
 			width: Math.abs(size.x) + 'px',
 			height: Math.abs(size.y) + 'px',
-			left: left + daPosition.x + 'px',
-			top: top + daPosition.y + 'px',
+			left: left + 'px',
+			top: top + 'px',
 			transform: `translate(${-x}%, ${-y}%) rotate(${angle}deg)`,
 			transformOrigin: `${x}% ${y}%`
 		};

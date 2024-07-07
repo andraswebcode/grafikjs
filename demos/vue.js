@@ -12811,7 +12811,7 @@ __webpack_require__.r(__webpack_exports__);
             attrs: shape.getControl().getAttributes(),
             style: shape.getControl().getStyle(),
             nodes: shape.getControl().getChildren()
-        }); }, null, 'set').state, attrs = _b.attrs, style = _b.style, nodes = _b.nodes;
+        }); }, null, 'set canvas:set').state, attrs = _b.attrs, style = _b.style, nodes = _b.nodes;
         var __returned__ = { props: props, attrs: attrs, style: style, nodes: nodes, ControlNode: _ControlNode_vue__WEBPACK_IMPORTED_MODULE_2__["default"] };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
@@ -12848,7 +12848,7 @@ __webpack_require__.r(__webpack_exports__);
         var _b = (0,_hooks__WEBPACK_IMPORTED_MODULE_1__.useObject)(props.shape, function (shape) { return ({
             attrs: shape.getControl().childById(props.id).getAttributes(),
             style: shape.getControl().childById(props.id).getStyle()
-        }); }, null, 'set').state, attrs = _b.attrs, style = _b.style;
+        }); }, null, 'set canvas:set').state, attrs = _b.attrs, style = _b.style;
         var __returned__ = { props: props, attrs: attrs, style: style };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
@@ -14514,7 +14514,7 @@ var AngleControlNode = /** @class */ (function (_super) {
     }
     AngleControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
-        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top;
+        var _a = shape.getWorldMatrix(true).toOptions(), left = _a.left, top = _a.top;
         this._isDragging = true;
         this._startAngle = shape.get('angle');
         // We do not want to get the whole world matrix, just want to get the translate matrix here.
@@ -14701,7 +14701,7 @@ var ScaleControlNode = /** @class */ (function (_super) {
     }
     ScaleControlNode.prototype.onPointerStart = function (e) {
         var shape = this.getShape();
-        var wMatrix = shape.getWorldMatrix();
+        var wMatrix = shape.getWorldMatrix(true);
         var _a = wMatrix.toOptions(), left = _a.left, top = _a.top;
         var _b = shape.get(['scaleX', 'scaleY']), scaleX = _b.scaleX, scaleY = _b.scaleY;
         this._startScale.set(scaleX, scaleY);
@@ -14809,15 +14809,14 @@ var Control = /** @class */ (function (_super) {
     };
     Control.prototype.getStyle = function () {
         var shape = this.shape;
-        var _a = shape.getWorldMatrix().toOptions(), left = _a.left, top = _a.top, angle = _a.angle;
-        var daPosition = shape.canvas.getDrawingAreaPosition();
+        var _a = shape.getWorldMatrix(true).toOptions(), left = _a.left, top = _a.top, angle = _a.angle;
         var size = this.getSize();
         var _b = shape.origin.clone().multiplyScalar(100), x = _b.x, y = _b.y;
         return {
             width: Math.abs(size.x) + 'px',
             height: Math.abs(size.y) + 'px',
-            left: left + daPosition.x + 'px',
-            top: top + daPosition.y + 'px',
+            left: left + 'px',
+            top: top + 'px',
             transform: "translate(".concat(-x, "%, ").concat(-y, "%) rotate(").concat(angle, "deg)"),
             transformOrigin: "".concat(x, "% ").concat(y, "%")
         };
@@ -17595,7 +17594,11 @@ function ElementCollection(Base) {
                 child.set('parent', _this, true);
                 // @ts-ignore
                 if (_this.isCanvas) {
-                    var setCanvas = function (child) { return child.set('canvas', _this, true); };
+                    var setCanvas = function (child) {
+                        child.set('canvas', _this, true);
+                        // @ts-ignore
+                        _this.on('set', function (set) { return child.trigger('canvas:set', set); });
+                    };
                     setCanvas(child);
                     if (child.isCollection) {
                         child.eachChild(setCanvas);
@@ -18548,21 +18551,32 @@ var Shape = /** @class */ (function (_super) {
         return this;
     };
     Shape.prototype.getWorldMatrix = function (withDrawingArea) {
-        if (withDrawingArea === void 0) { withDrawingArea = true; }
-        var _a = this.parent, viewportMatrix = _a.viewportMatrix, isCanvas = _a.isCanvas;
-        return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix()
-            .copy(isCanvas ? viewportMatrix : this.parent.getWorldMatrix())
-            .multiply(this.matrix);
+        var _a = this.parent, viewportMatrix = _a.viewportMatrix, isCanvas = _a.isCanvas, hasDrawingArea = _a.hasDrawingArea;
+        var matrix;
+        if (isCanvas) {
+            if (withDrawingArea && hasDrawingArea) {
+                var _b = this.parent.getDrawingAreaPosition(), x = _b.x, y = _b.y;
+                var daMatrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().fromArray([1, 0, 0, 1, x, y]);
+                matrix = viewportMatrix.clone().multiply(daMatrix);
+            }
+            else {
+                matrix = viewportMatrix;
+            }
+        }
+        else {
+            matrix = this.parent.getWorldMatrix();
+        }
+        return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().copy(matrix).multiply(this.matrix);
     };
     Shape.prototype.getLocalPointer = function (e, matrix) {
         var pointer = this.canvas.getPointer(e);
-        return pointer.transform(matrix || this.getWorldMatrix().invert());
+        return pointer.transform(matrix || this.getWorldMatrix(true).invert());
     };
     Shape.prototype.animate = function () {
         return this._animation;
     };
     Shape.prototype.toPolygon = function () {
-        return this.bBox.toPolygon(this.getWorldMatrix());
+        return this.bBox.toPolygon(this.getWorldMatrix(true));
     };
     Shape.prototype.toJSON = function () {
         var _this = this;

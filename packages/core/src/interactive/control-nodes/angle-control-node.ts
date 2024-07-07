@@ -1,29 +1,21 @@
-import {
-	ControlNode
-} from './../control-node';
-import {
-	Point,
-	Matrix
-} from './../../maths';
-import {
-	toFixed
-} from './../../utils';
+import { ControlNode } from './../control-node';
+import { Point, Matrix } from './../../maths';
+import { toFixed } from './../../utils';
 
 class AngleControlNode extends ControlNode {
-
 	protected _isDragging = false;
 	protected _startAngle = 0;
 	protected _startVector = 0;
 	protected _startMatrix: Matrix;
 
-	public constructor(params?){
+	public constructor(params?) {
 		super();
 		this.init(params);
 	}
 
-	public onPointerStart(e){
+	public onPointerStart(e) {
 		const shape = this.getShape();
-		const {left, top} = shape.getWorldMatrix().toOptions();
+		const { left, top } = shape.getWorldMatrix(true).toOptions();
 		this._isDragging = true;
 		this._startAngle = shape.get('angle');
 		// We do not want to get the whole world matrix, just want to get the translate matrix here.
@@ -31,9 +23,8 @@ class AngleControlNode extends ControlNode {
 		this._startVector = new Point().angleTo(shape.getLocalPointer(e, this._startMatrix));
 	}
 
-	public onPointerMove(e){
-
-		if (!this._isDragging){
+	public onPointerMove(e) {
+		if (!this._isDragging) {
 			return;
 		}
 
@@ -48,15 +39,11 @@ class AngleControlNode extends ControlNode {
 		angle %= 360;
 
 		shape.set('angle', angle);
-
 	}
 
-	public onPointerEnd(e){
+	public onPointerEnd(e) {
 		this._isDragging = false;
 	}
-
 }
 
-export {
-	AngleControlNode
-};
+export { AngleControlNode };

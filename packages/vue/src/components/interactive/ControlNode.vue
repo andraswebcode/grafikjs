@@ -11,7 +11,7 @@ const {
 		style: shape.getControl().childById(props.id).getStyle()
 	}),
 	null,
-	'set'
+	'set canvas:set'
 );
 </script>
 

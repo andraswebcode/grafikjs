@@ -17,7 +17,7 @@ class ScaleControlNode extends ControlNode {
 
 	public onPointerStart(e) {
 		const shape = this.getShape();
-		const wMatrix = shape.getWorldMatrix();
+		const wMatrix = shape.getWorldMatrix(true);
 		const { left, top } = wMatrix.toOptions();
 		const { scaleX, scaleY } = shape.get(['scaleX', 'scaleY']);
 		this._startScale.set(scaleX, scaleY);

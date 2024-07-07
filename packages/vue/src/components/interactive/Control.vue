@@ -13,7 +13,7 @@ const {
 		nodes: shape.getControl().getChildren()
 	}),
 	null,
-	'set'
+	'set canvas:set'
 );
 </script>
 
