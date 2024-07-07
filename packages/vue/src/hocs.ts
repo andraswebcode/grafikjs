@@ -8,7 +8,7 @@ const withCollectionContext = (Component, tagName: string) => {
 	if (!Shape) {
 		return {
 			setup() {
-				return () => '';
+				return () => 'No class belongs to the provided tag name.';
 			}
 		};
 	}
@@ -16,13 +16,18 @@ const withCollectionContext = (Component, tagName: string) => {
 	return {
 		props: new Shape().toJSON(), // Define default props.
 		setup(props) {
-			const collection = useCollection();
+			const {
+				actions: { add, remove }
+			} = useCollection(null, (collection) => ({
+				add: collection.add.bind(collection),
+				remove: collection.remove.bind(collection)
+			}));
 			const shape = new Shape(props);
 			onMounted(() => {
-				collection.add(shape);
+				add(shape);
 			});
 			onUnmounted(() => {
-				collection.remove(shape);
+				remove(shape);
 			});
 			return () =>
 				h(Component, {

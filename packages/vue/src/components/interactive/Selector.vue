@@ -1,5 +1,16 @@
-<script setup></script>
+<script setup>
+import { useCanvas } from './../../hooks';
 
-<template></template>
+const {
+	state: { attrs, style }
+} = useCanvas((canvas) => ({
+	attrs: canvas.getSelector().getAttributes(),
+	style: canvas.getSelector().getStyle()
+}));
+</script>
+
+<template>
+	<div v-bind="attrs" :style="style" />
+</template>
 
 <style scoped></style>

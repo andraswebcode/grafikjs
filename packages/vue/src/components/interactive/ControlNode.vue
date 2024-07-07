@@ -1,5 +1,22 @@
-<script setup></script>
+<script setup lang="ts">
+import { useObject } from './../../hooks';
 
-<template></template>
+const props = defineProps<{ id: string; shape: any }>();
+const {
+	state: { attrs, style }
+} = useObject(
+	props.shape,
+	(shape) => ({
+		attrs: shape.getControl().childById(props.id).getAttributes(),
+		style: shape.getControl().childById(props.id).getStyle()
+	}),
+	null,
+	'set'
+);
+</script>
+
+<template>
+	<div v-bind="attrs" :style="style" />
+</template>
 
 <style scoped></style>

@@ -121,7 +121,7 @@ class Canvas extends ElementCollection(Element) {
 		};
 	}
 
-	public getGridPatternPaths(): any[] {
+	public getGridPatternPaths(makeKebabeCase = false): any[] {
 		if (!this.showGrid) {
 			return [];
 		}
@@ -134,13 +134,13 @@ class Canvas extends ElementCollection(Element) {
 				d: `M 0 0 L ${s2} 0 ${s2} ${s2} 0 ${s2} Z`,
 				fill: this.gridColorDark,
 				stroke: 'none',
-				strokeWidth: 0
+				[makeKebabeCase ? 'stroke-width' : 'strokeWidth']: 0
 			},
 			{
 				d: `M ${s} 0 L ${s2} 0 ${s2} ${s} 0 ${s} 0 ${s2} ${s} ${s2} Z`,
 				fill: this.gridColorLight,
 				stroke: 'none',
-				strokeWidth: 0
+				[makeKebabeCase ? 'stroke-width' : 'strokeWidth']: 0
 			}
 		];
 	}

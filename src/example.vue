@@ -1,16 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import {
-	Canvas,
-	Defs,
-	Group,
-	Rect,
-	Path,
-	ShapeTree,
-	Wrapper,
-	Interactive,
-	Selector
-} from '@grafikjs/vue';
+import { Canvas, Defs, Group, Rect, Path, ShapeTree, Wrapper, Interactive } from '@grafikjs/vue';
 
 const width = ref(1200);
 const height = ref(800);
@@ -144,20 +134,13 @@ const json = ref([
 					:panX="panX"
 					:panY="panY"
 					:mode="mode"
-					@change="
-						zoom = $event.zoom;
-						panX = $event.panX;
-						panY = $event.panY;
-					"
 				>
 					<template v-slot:defs>
 						<Defs />
 					</template>
-					<ShapeTree :json="json" @updated="console.log" />
+					<ShapeTree :json="json" />
 				</Canvas>
-				<Interactive>
-					<Selector />
-				</Interactive>
+				<Interactive />
 			</Wrapper>
 		</div>
 		<label>

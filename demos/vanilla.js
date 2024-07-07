@@ -897,25 +897,29 @@ var Canvas = /** @class */ (function (_super) {
             patternUnits: 'userSpaceOnUse'
         };
     };
-    Canvas.prototype.getGridPatternPaths = function () {
+    Canvas.prototype.getGridPatternPaths = function (makeKebabeCase) {
+        var _a, _b;
+        if (makeKebabeCase === void 0) { makeKebabeCase = false; }
         if (!this.showGrid) {
             return [];
         }
         var s = this.gridSize;
         var s2 = s * 2;
         return [
-            {
-                d: "M 0 0 L ".concat(s2, " 0 ").concat(s2, " ").concat(s2, " 0 ").concat(s2, " Z"),
-                fill: this.gridColorDark,
-                stroke: 'none',
-                strokeWidth: 0
-            },
-            {
-                d: "M ".concat(s, " 0 L ").concat(s2, " 0 ").concat(s2, " ").concat(s, " 0 ").concat(s, " 0 ").concat(s2, " ").concat(s, " ").concat(s2, " Z"),
-                fill: this.gridColorLight,
-                stroke: 'none',
-                strokeWidth: 0
-            }
+            (_a = {
+                    d: "M 0 0 L ".concat(s2, " 0 ").concat(s2, " ").concat(s2, " 0 ").concat(s2, " Z"),
+                    fill: this.gridColorDark,
+                    stroke: 'none'
+                },
+                _a[makeKebabeCase ? 'stroke-width' : 'strokeWidth'] = 0,
+                _a),
+            (_b = {
+                    d: "M ".concat(s, " 0 L ").concat(s2, " 0 ").concat(s2, " ").concat(s, " 0 ").concat(s, " 0 ").concat(s2, " ").concat(s, " ").concat(s2, " Z"),
+                    fill: this.gridColorLight,
+                    stroke: 'none'
+                },
+                _b[makeKebabeCase ? 'stroke-width' : 'strokeWidth'] = 0,
+                _b)
         ];
     };
     Canvas.prototype.selectShapes = function (shapes, silent) {
