@@ -1,16 +1,5 @@
-<script setup lang="ts">
-import { provide } from 'vue';
-import { useCanvas } from './../../hooks';
+<script setup></script>
 
-const canvas = useCanvas();
-
-provide('collection', canvas);
-</script>
-
-<template>
-	<svg>
-		<slot />
-	</svg>
-</template>
+<template></template>
 
 <style scoped></style>
