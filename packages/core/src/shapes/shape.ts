@@ -2,7 +2,7 @@ import { Element } from './../element';
 import { Color, Matrix, BBox, Point, CurvePath } from './../maths';
 import { TransformControl } from './../interactive';
 import { Animation } from './../animation';
-import { AnimationObject, KeyframeObject, TrackObject } from './../types';
+import { AnimationObject, KeyframeObject } from './../types';
 
 class Shape extends Element {
 	public readonly isShape = true;
@@ -17,7 +17,7 @@ class Shape extends Element {
 	protected _controls = {};
 	protected _activeControl: string;
 
-	protected _animation = new Animation();
+	protected _animation: Animation;
 
 	protected transformProps = ['left', 'top', 'angle', 'scaleX', 'scaleY', 'skewX', 'skewY'];
 
@@ -102,6 +102,7 @@ class Shape extends Element {
 	}
 
 	public init(params) {
+		this._animation = new Animation(this);
 		this.set(params, true);
 		this.createId(this.tagName);
 		this.addControl(
@@ -112,7 +113,6 @@ class Shape extends Element {
 		).setControl('transform');
 		this.updateMatrix();
 		this.updateBBox();
-		this._animation.shape = this;
 		this.trigger('init', this);
 	}
 

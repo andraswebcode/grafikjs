@@ -99,12 +99,18 @@ var Animation = /** @class */ (function (_super) {
     Animation.prototype.addTrack = function (property, keyframes) {
         var track = new _track__WEBPACK_IMPORTED_MODULE_2__.Track(property);
         keyframes.forEach(function (kf) {
-            track.addKeyframe();
+            track.addKeyframe(kf);
         });
+        this.add(track);
         return track;
     };
+    Animation.prototype.toJSON = function () {
+        return {
+            tracks: this.mapChildren(function (track) { return track.toJSON(); })
+        };
+    };
     return Animation;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Stateful)((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable))));
 
 
 
@@ -171,6 +177,12 @@ var Keyframe = /** @class */ (function (_super) {
         _this.easing = 'linear';
         return _this;
     }
+    Keyframe.prototype.toJSON = function () {
+        return {
+            to: 0,
+            value: 0
+        };
+    };
     return Keyframe;
 }(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
 
@@ -239,6 +251,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./src/observable.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./src/mixins/index.ts");
+/* harmony import */ var _keyframe__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./keyframe */ "./src/animation/keyframe.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -254,6 +267,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+
 
 
 var Track = /** @class */ (function (_super) {
@@ -273,8 +287,18 @@ var Track = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
-    Track.prototype.addKeyframe = function () { };
+    Track.prototype.addKeyframe = function (kf) {
+        var keyframe = new _keyframe__WEBPACK_IMPORTED_MODULE_2__.Keyframe();
+        this.add(keyframe);
+        return keyframe;
+    };
     Track.prototype.getValueAt = function (time) { };
+    Track.prototype.toJSON = function () {
+        return {
+            property: '',
+            keyframes: this.mapChildren(function (kf) { return kf.toJSON(); })
+        };
+    };
     return Track;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
 
@@ -1108,8 +1132,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Element: () => (/* binding */ Element)
 /* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./observable */ "./src/observable.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
+/* harmony import */ var _mixins_statueful__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mixins/statueful */ "./src/mixins/statueful.ts");
+/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./observable */ "./src/observable.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1138,6 +1163,7 @@ var __assign = (undefined && undefined.__assign) || function () {
 };
 
 
+
 var Element = /** @class */ (function (_super) {
     __extends(Element, _super);
     function Element() {
@@ -1150,43 +1176,6 @@ var Element = /** @class */ (function (_super) {
     Element.prototype.getAttrMap = function () {
         return ['className'];
     };
-    Element.prototype.set = function (key, value, silent) {
-        var _a;
-        if (silent === void 0) { silent = false; }
-        if (typeof key === 'string' && typeof value !== 'undefined') {
-            this._set(key, value);
-            if (!silent) {
-                this.trigger('set', (_a = {}, _a[key] = value, _a), this);
-            }
-        }
-        else {
-            for (var prop in key) {
-                this._set(prop, key[prop]);
-            }
-            // Attention please: here - if 'key' is an object - 'value' becomes the 'silent'!
-            if (!value) {
-                this.trigger('set', key, this);
-            }
-        }
-        return this;
-    };
-    Element.prototype._set = function (key, value) {
-        if (typeof this[key] !== 'function' && typeof value !== 'undefined') {
-            this[key] = value;
-        }
-    };
-    Element.prototype.get = function (key) {
-        var _this = this;
-        if (Array.isArray(key)) {
-            return key.reduce(function (memo, k) {
-                memo[k] = _this[k];
-                return memo;
-            }, {});
-        }
-        else {
-            return this[key];
-        }
-    };
     Element.prototype.getAttributes = function (makeKebabeCase) {
         var _this = this;
         if (makeKebabeCase === void 0) { makeKebabeCase = false; }
@@ -1196,7 +1185,7 @@ var Element = /** @class */ (function (_super) {
             if (typeof _this[key] !== 'undefined') {
                 value = _this[key];
                 value = Array.isArray(value) ? value.join(' ') : value;
-                memo[makeKebabeCase ? (0,_utils__WEBPACK_IMPORTED_MODULE_1__.kebabize)(key) : key] = value;
+                memo[makeKebabeCase ? (0,_utils__WEBPACK_IMPORTED_MODULE_2__.kebabize)(key) : key] = value;
             }
             return memo;
         }, {});
@@ -1206,7 +1195,7 @@ var Element = /** @class */ (function (_super) {
     };
     Element.prototype.createId = function (prefix) {
         if (!this.id) {
-            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.uniqueId)(prefix);
+            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.uniqueId)(prefix);
         }
     };
     Element.prototype.addClass = function () {
@@ -1239,7 +1228,7 @@ var Element = /** @class */ (function (_super) {
         return json;
     };
     return Element;
-}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
+}((0,_mixins_statueful__WEBPACK_IMPORTED_MODULE_0__.Stateful)(_observable__WEBPACK_IMPORTED_MODULE_1__.Observable)));
 
 
 
@@ -1370,7 +1359,7 @@ var ControlNode = /** @class */ (function (_super) {
     ControlNode.prototype.onPointerMove = function (e) { };
     ControlNode.prototype.onPointerEnd = function (e) { };
     return ControlNode;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.ElementCollection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
 
 
 
@@ -1734,7 +1723,7 @@ var Control = /** @class */ (function (_super) {
     Control.prototype.onPointerMove = function (e) { };
     Control.prototype.onPointerEnd = function (e) { };
     return Control;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.ElementCollection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
 
 
 
@@ -4358,6 +4347,7 @@ function Collection(Base) {
             children = Array.isArray(children) ? children : [children];
             children.forEach(function (child) {
                 _this.children.push(child);
+                child.set('parent', _this, true);
             });
             if (!silent) {
                 // @ts-ignore
@@ -4560,11 +4550,92 @@ function ElementCollection(Base) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Collection: () => (/* reexport safe */ _collection__WEBPACK_IMPORTED_MODULE_0__.Collection),
-/* harmony export */   ElementCollection: () => (/* reexport safe */ _element_collection__WEBPACK_IMPORTED_MODULE_1__.ElementCollection)
+/* harmony export */   ElementCollection: () => (/* reexport safe */ _element_collection__WEBPACK_IMPORTED_MODULE_1__.ElementCollection),
+/* harmony export */   Stateful: () => (/* reexport safe */ _statueful__WEBPACK_IMPORTED_MODULE_2__.Stateful)
 /* harmony export */ });
 /* harmony import */ var _collection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./collection */ "./src/mixins/collection.ts");
 /* harmony import */ var _element_collection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./element-collection */ "./src/mixins/element-collection.ts");
+/* harmony import */ var _statueful__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./statueful */ "./src/mixins/statueful.ts");
 
+
+
+
+
+/***/ }),
+
+/***/ "./src/mixins/statueful.ts":
+/*!*********************************!*\
+  !*** ./src/mixins/statueful.ts ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Stateful: () => (/* binding */ Stateful)
+/* harmony export */ });
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+function Stateful(Base) {
+    return /** @class */ (function (_super) {
+        __extends(Stateful, _super);
+        function Stateful() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        Stateful.prototype.set = function (key, value, silent) {
+            var _a;
+            if (silent === void 0) { silent = false; }
+            if (typeof key === 'string' && typeof value !== 'undefined') {
+                this._set(key, value);
+                if (!silent) {
+                    // @ts-ignore
+                    this.trigger('set', (_a = {}, _a[key] = value, _a), this);
+                }
+            }
+            else {
+                for (var prop in key) {
+                    this._set(prop, key[prop]);
+                }
+                // Attention please: here - if 'key' is an object - 'value' becomes the 'silent'!
+                if (!value) {
+                    // @ts-ignore
+                    this.trigger('set', key, this);
+                }
+            }
+            return this;
+        };
+        Stateful.prototype._set = function (key, value) {
+            if (typeof this[key] !== 'function' && typeof value !== 'undefined') {
+                this[key] = value;
+            }
+        };
+        Stateful.prototype.get = function (key) {
+            var _this = this;
+            if (Array.isArray(key)) {
+                return key.reduce(function (memo, k) {
+                    memo[k] = _this[k];
+                    return memo;
+                }, {});
+            }
+            else {
+                return this[key];
+            }
+        };
+        return Stateful;
+    }(Base));
+}
 
 
 
@@ -5220,7 +5291,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./src/element.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../maths */ "./src/maths/index.ts");
 /* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../interactive */ "./src/interactive/index.ts");
-/* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../animation */ "./src/animation/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -5250,7 +5320,6 @@ var __assign = (undefined && undefined.__assign) || function () {
 
 
 
-
 var Shape = /** @class */ (function (_super) {
     __extends(Shape, _super);
     function Shape() {
@@ -5261,16 +5330,8 @@ var Shape = /** @class */ (function (_super) {
         _this.bBox = new _maths__WEBPACK_IMPORTED_MODULE_1__.BBox();
         _this.origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(0.5, 0.5);
         _this._controls = {};
-        _this._animation = new _animation__WEBPACK_IMPORTED_MODULE_3__.Animation();
-        _this.transformProps = [
-            'left',
-            'top',
-            'angle',
-            'scaleX',
-            'scaleY',
-            'skewX',
-            'skewY'
-        ];
+        //protected _animation = new Animation();
+        _this.transformProps = ['left', 'top', 'angle', 'scaleX', 'scaleY', 'skewX', 'skewY'];
         _this.left = 0;
         _this.top = 0;
         _this.angle = 0;
@@ -5353,17 +5414,16 @@ var Shape = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(Shape.prototype, "animation", {
-        get: function () {
-            return [];
-        },
-        set: function (value) {
-            console.log(value);
-            this._animation.setTracks(value);
-        },
-        enumerable: false,
-        configurable: true
-    });
+    /*
+    set animation(value: AnimationObject) {
+        const { tracks } = value;
+        this._animation.setTracks(tracks);
+    }
+
+    get animation(): AnimationObject {
+        return this._animation.toJSON();
+    }
+*/
     Shape.prototype.init = function (params) {
         this.set(params, true);
         this.createId(this.tagName);
@@ -5372,6 +5432,7 @@ var Shape = /** @class */ (function (_super) {
         })).setControl('transform');
         this.updateMatrix();
         this.updateBBox();
+        //this._animation.shape = this;
         this.trigger('init', this);
     };
     Shape.prototype.set = function (key, value, silent) {
@@ -5488,12 +5549,15 @@ var Shape = /** @class */ (function (_super) {
         var pointer = this.canvas.getPointer(e);
         return pointer.transform(matrix || this.getWorldMatrix(true).invert());
     };
-    Shape.prototype.getAnimation = function () {
+    /*
+    public getAnimation() {
         return this._animation;
-    };
-    Shape.prototype.animate = function (property, keyframes) {
+    }
+
+    public animate(property: string, keyframes: KeyframeObject[]) {
         return this._animation.addTrack(property, keyframes);
-    };
+    }
+*/
     Shape.prototype.toPolygon = function () {
         return this.bBox.toPolygon(this.getWorldMatrix(true));
     };
@@ -5515,7 +5579,9 @@ var Shape = /** @class */ (function (_super) {
             }
         }
         delete json.transform;
-        return __assign(__assign(__assign({}, json), transform), defs);
+        return __assign(__assign(__assign({}, json), transform), defs
+        //animation: this.animation
+        );
     };
     return Shape;
 }(_element__WEBPACK_IMPORTED_MODULE_0__.Element));

@@ -282,9 +282,8 @@ class CurvePath {
 			.split(' ')
 			.map((n) => toFixed(n));
 		const curves: LineCurve[] = [];
-		let i, prevPoint;
 
-		for (i = 0; i < nums.length; i += 2) {
+		for (let i = 0; i < nums.length; i += 2) {
 			curves.push(
 				new LineCurve(
 					new Point(nums[i], nums[i + 1]),

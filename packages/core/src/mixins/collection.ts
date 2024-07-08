@@ -1,10 +1,13 @@
 import { Constructor } from './../types/mixin';
-import { Point } from './../maths';
 
 function Collection<TBase extends Constructor>(Base: TBase) {
 	return class Collection extends Base {
 		public readonly isCollection = true;
 		protected children: any[] = [];
+
+		get childrenLength() {
+			return this.children.length;
+		}
 
 		public setChildren(children: any | any[], silent = false): Collection {
 			this.children = [];
@@ -23,6 +26,7 @@ function Collection<TBase extends Constructor>(Base: TBase) {
 
 			children.forEach((child) => {
 				this.children.push(child);
+				child.set('parent', this, true);
 			});
 
 			if (!silent) {
@@ -64,6 +68,14 @@ function Collection<TBase extends Constructor>(Base: TBase) {
 
 		public childAt(index: number) {
 			return this.children[index];
+		}
+
+		public firstChild() {
+			return this.children[0];
+		}
+
+		public lastChild() {
+			return this.children[this.childrenLength - 1];
 		}
 
 		public childById(id: string) {

@@ -12,6 +12,12 @@ type EasingName =
 	| 'backIn'
 	| 'backOut';
 
+type EasingFunction = (k: number) => number;
+
+type Easings = {
+	[name in EasingName]: EasingFunction;
+};
+
 interface KeyframeObject {
 	to: number;
 	value: any;
@@ -20,6 +26,7 @@ interface KeyframeObject {
 
 interface TrackObject {
 	property: string;
+	originalValue: any;
 	easing?: EasingName;
 	keyframes: KeyframeObject[];
 }
@@ -33,4 +40,12 @@ interface TimelineObject {
 	animations: AnimationObject[];
 }
 
-export { TimelineObject, AnimationObject, TrackObject, KeyframeObject, EasingName };
+export {
+	EasingName,
+	EasingFunction,
+	Easings,
+	TimelineObject,
+	AnimationObject,
+	TrackObject,
+	KeyframeObject
+};

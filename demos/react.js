@@ -1899,6 +1899,60 @@ module.exports = styleTagTransform;
 
 /***/ }),
 
+/***/ "./packages/core/src/animation/animation-base.ts":
+/*!*******************************************************!*\
+  !*** ./packages/core/src/animation/animation-base.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   AnimationBase: () => (/* binding */ AnimationBase)
+/* harmony export */ });
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
+/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../observable */ "./packages/core/src/observable.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var AnimationBase = /** @class */ (function (_super) {
+    __extends(AnimationBase, _super);
+    function AnimationBase() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.id = '';
+        _this.name = '';
+        return _this;
+    }
+    AnimationBase.prototype.createId = function (prefix) {
+        if (!this.id) {
+            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.uniqueId)(prefix);
+        }
+    };
+    AnimationBase.prototype.toJSON = function () {
+        return {};
+    };
+    return AnimationBase;
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Stateful)(_observable__WEBPACK_IMPORTED_MODULE_2__.Observable)));
+
+
+
+/***/ }),
+
 /***/ "./packages/core/src/animation/animation.ts":
 /*!**************************************************!*\
   !*** ./packages/core/src/animation/animation.ts ***!
@@ -1909,7 +1963,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Animation: () => (/* binding */ Animation)
 /* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./packages/core/src/observable.ts");
+/* harmony import */ var _animation_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation-base */ "./packages/core/src/animation/animation-base.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
 /* harmony import */ var _track__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./track */ "./packages/core/src/animation/track.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
@@ -1932,11 +1986,12 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var Animation = /** @class */ (function (_super) {
     __extends(Animation, _super);
-    function Animation() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function Animation(shape) {
+        var _this = _super.call(this) || this;
         _this._isPlaying = false;
         _this._startTime = 0;
         _this._currentTime = 0;
+        _this.shape = shape;
         return _this;
     }
     Object.defineProperty(Animation.prototype, "tracks", {
@@ -1951,43 +2006,41 @@ var Animation = /** @class */ (function (_super) {
         this._isPlaying = true;
         this._startTime = performance.now() - this._currentTime;
         requestAnimationFrame(this._render.bind(this));
+        return this;
     };
     Animation.prototype.pause = function () {
         this._isPlaying = false;
         return this;
     };
-    Animation.prototype.update = function () {
-        var _this = this;
-        this.eachChild(function (track) {
-            _this.shape.set(track.property, track.getValue(_this._currentTime));
-        });
-        this.trigger('updated', this.shape);
+    Animation.prototype.seek = function (time) {
+        this._currentTime = time;
+        this._update();
         return this;
     };
-    Animation.prototype.seek = function (ms) {
-        this._currentTime = ms;
-        this.update();
+    Animation.prototype._update = function () {
+        var _this = this;
+        this.eachChild(function (track) {
+            _this.shape.set(track.property, track.getValueAt(_this._currentTime), true);
+        });
+        this.trigger('updated', this.shape);
+        this.shape.trigger('animation:updated', this);
         return this;
     };
     Animation.prototype._render = function (timeStamp) {
         if (!this._isPlaying)
             return;
         this._currentTime = timeStamp - this._startTime;
-        this.update();
+        this._update();
         requestAnimationFrame(this._render.bind(this));
     };
     Animation.prototype.setTracks = function (objects) {
         var _this = this;
         var tracks = objects.map(function (obj) { return _this.addTrack(obj.property, obj.keyframes); });
-        console.log(tracks);
         this.setChildren(tracks);
         return this;
     };
     Animation.prototype.addTrack = function (property, keyframes) {
-        var track = new _track__WEBPACK_IMPORTED_MODULE_2__.Track(property);
-        keyframes.forEach(function (kf) {
-            track.addKeyframe(kf);
-        });
+        var track = new _track__WEBPACK_IMPORTED_MODULE_2__.Track(property, this.shape.get(property), keyframes);
         this.add(track);
         return track;
     };
@@ -1997,8 +2050,54 @@ var Animation = /** @class */ (function (_super) {
         };
     };
     return Animation;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_animation_base__WEBPACK_IMPORTED_MODULE_0__.AnimationBase)));
 
+
+
+/***/ }),
+
+/***/ "./packages/core/src/animation/easings.ts":
+/*!************************************************!*\
+  !*** ./packages/core/src/animation/easings.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var easings = {
+    linear: function (k) { return k; },
+    quadraticIn: function (k) { return k * k; },
+    quadraticOut: function (k) { return 1 - Math.pow(1 - k, 2); },
+    quadraticInOut: function (k) { return (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2); },
+    cubicIn: function (k) { return k * k * k; },
+    cubicOut: function (k) { return 1 - Math.pow(1 - k, 3); },
+    cubicInOut: function (k) { return (k < 0.5 ? 4 * Math.pow(k, 3) : 1 - Math.pow(-2 * k + 2, 3) / 2); },
+    bounceIn: function (k) { return 1 - easings.bounceOut(1 - k); },
+    bounceOut: function (k) {
+        var n1 = 7.5625;
+        var d1 = 2.75;
+        if (k < 1 / d1) {
+            return n1 * k * k;
+        }
+        else if (k < 2 / d1) {
+            return n1 * (k -= 1.5 / d1) * k + 0.75;
+        }
+        else if (k < 2.5 / d1) {
+            return n1 * (k -= 2.25 / d1) * k + 0.9375;
+        }
+        else {
+            return n1 * (k -= 2.625 / d1) * k + 0.984375;
+        }
+    },
+    bounceInOut: function (k) {
+        return k < 0.5 ? (1 - easings.bounceOut(1 - 2 * k)) / 2 : (1 + easings.bounceOut(2 * k - 1)) / 2;
+    },
+    backIn: function (k) { return 2.70158 * Math.pow(k, 3) - 1.70158 * Math.pow(k, 2); },
+    backOut: function (k) { return 1 + 2.70158 * Math.pow(k - 1, 3) + 1.70158 * Math.pow(k - 1, 2); }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (easings);
 
 
 /***/ }),
@@ -2038,7 +2137,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Keyframe: () => (/* binding */ Keyframe)
 /* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./packages/core/src/observable.ts");
+/* harmony import */ var _animation_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation-base */ "./packages/core/src/animation/animation-base.ts");
+/* harmony import */ var _easings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./easings */ "./packages/core/src/animation/easings.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -2055,23 +2155,44 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var Keyframe = /** @class */ (function (_super) {
     __extends(Keyframe, _super);
-    function Keyframe() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.duration = 0;
-        _this.delay = 0;
-        _this.easing = 'linear';
+    function Keyframe(from, to, startValue, endValue, easing) {
+        if (easing === void 0) { easing = 'linear'; }
+        var _this = _super.call(this) || this;
+        _this.from = 0;
+        _this.to = 0;
+        _this.startValue = null;
+        _this.endValue = null;
+        _this.from = from;
+        _this.to = to;
+        _this.startValue = startValue;
+        _this.endValue = endValue;
+        _this.easing = typeof easing === 'string' ? _easings__WEBPACK_IMPORTED_MODULE_1__["default"][easing] : easing;
         return _this;
     }
+    Keyframe.prototype.getValueAt = function (time) {
+        if (time < this.from || time > this.to) {
+            console.warn('Time is out of bounds.');
+            return null;
+        }
+        var t = (time - this.from) / (this.to - this.from);
+        var eased = this.easing(t);
+        return this._interpolateValue(eased);
+    };
+    Keyframe.prototype._interpolateValue = function (t) {
+        console.log(t);
+    };
     Keyframe.prototype.toJSON = function () {
         return {
-            to: 0,
-            value: 0
+            to: this.to,
+            value: this.endValue,
+            easing: 'linear'
         };
     };
     return Keyframe;
-}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
+}(_animation_base__WEBPACK_IMPORTED_MODULE_0__.AnimationBase));
 
 
 
@@ -2087,7 +2208,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Timeline: () => (/* binding */ Timeline)
 /* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./packages/core/src/observable.ts");
+/* harmony import */ var _animation_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation-base */ "./packages/core/src/animation/animation-base.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2120,7 +2241,7 @@ var Timeline = /** @class */ (function (_super) {
         configurable: true
     });
     return Timeline;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_animation_base__WEBPACK_IMPORTED_MODULE_0__.AnimationBase)));
 
 
 
@@ -2136,7 +2257,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Track: () => (/* binding */ Track)
 /* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./packages/core/src/observable.ts");
+/* harmony import */ var _animation_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation-base */ "./packages/core/src/animation/animation-base.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./packages/core/src/mixins/index.ts");
 /* harmony import */ var _keyframe__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./keyframe */ "./packages/core/src/animation/keyframe.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
@@ -2159,11 +2280,15 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var Track = /** @class */ (function (_super) {
     __extends(Track, _super);
-    function Track(property) {
+    function Track(property, originalValue, keyframes) {
         var _this = _super.call(this) || this;
         _this.property = '';
-        _this.duration = 0;
+        _this.originalValue = 0;
         _this.property = property;
+        _this.originalValue = originalValue;
+        keyframes === null || keyframes === void 0 ? void 0 : keyframes.forEach(function (kf) {
+            _this.addKeyframe(kf);
+        });
         return _this;
     }
     Object.defineProperty(Track.prototype, "keyframes", {
@@ -2175,19 +2300,28 @@ var Track = /** @class */ (function (_super) {
         configurable: true
     });
     Track.prototype.addKeyframe = function (kf) {
-        var keyframe = new _keyframe__WEBPACK_IMPORTED_MODULE_2__.Keyframe();
+        var prevKf = this.lastChild();
+        var from = prevKf ? prevKf.to : 0;
+        var startValue = prevKf ? prevKf.endValue : this.originalValue;
+        var keyframe = new _keyframe__WEBPACK_IMPORTED_MODULE_2__.Keyframe(from, kf.to, startValue, kf.value, kf.easing);
         this.add(keyframe);
         return keyframe;
     };
-    Track.prototype.getValueAt = function (time) { };
+    Track.prototype.getValueAt = function (time) {
+        if (!this.childrenLength) {
+            return null;
+        }
+        return 0;
+    };
     Track.prototype.toJSON = function () {
         return {
-            property: '',
+            property: this.property,
+            originalValue: this.originalValue,
             keyframes: this.mapChildren(function (kf) { return kf.toJSON(); })
         };
     };
     return Track;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_animation_base__WEBPACK_IMPORTED_MODULE_0__.AnimationBase)));
 
 
 
@@ -3019,8 +3153,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Element: () => (/* binding */ Element)
 /* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./observable */ "./packages/core/src/observable.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _mixins_statueful__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mixins/statueful */ "./packages/core/src/mixins/statueful.ts");
+/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./observable */ "./packages/core/src/observable.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -3049,6 +3184,7 @@ var __assign = (undefined && undefined.__assign) || function () {
 };
 
 
+
 var Element = /** @class */ (function (_super) {
     __extends(Element, _super);
     function Element() {
@@ -3061,43 +3197,6 @@ var Element = /** @class */ (function (_super) {
     Element.prototype.getAttrMap = function () {
         return ['className'];
     };
-    Element.prototype.set = function (key, value, silent) {
-        var _a;
-        if (silent === void 0) { silent = false; }
-        if (typeof key === 'string' && typeof value !== 'undefined') {
-            this._set(key, value);
-            if (!silent) {
-                this.trigger('set', (_a = {}, _a[key] = value, _a), this);
-            }
-        }
-        else {
-            for (var prop in key) {
-                this._set(prop, key[prop]);
-            }
-            // Attention please: here - if 'key' is an object - 'value' becomes the 'silent'!
-            if (!value) {
-                this.trigger('set', key, this);
-            }
-        }
-        return this;
-    };
-    Element.prototype._set = function (key, value) {
-        if (typeof this[key] !== 'function' && typeof value !== 'undefined') {
-            this[key] = value;
-        }
-    };
-    Element.prototype.get = function (key) {
-        var _this = this;
-        if (Array.isArray(key)) {
-            return key.reduce(function (memo, k) {
-                memo[k] = _this[k];
-                return memo;
-            }, {});
-        }
-        else {
-            return this[key];
-        }
-    };
     Element.prototype.getAttributes = function (makeKebabeCase) {
         var _this = this;
         if (makeKebabeCase === void 0) { makeKebabeCase = false; }
@@ -3107,7 +3206,7 @@ var Element = /** @class */ (function (_super) {
             if (typeof _this[key] !== 'undefined') {
                 value = _this[key];
                 value = Array.isArray(value) ? value.join(' ') : value;
-                memo[makeKebabeCase ? (0,_utils__WEBPACK_IMPORTED_MODULE_1__.kebabize)(key) : key] = value;
+                memo[makeKebabeCase ? (0,_utils__WEBPACK_IMPORTED_MODULE_2__.kebabize)(key) : key] = value;
             }
             return memo;
         }, {});
@@ -3117,7 +3216,7 @@ var Element = /** @class */ (function (_super) {
     };
     Element.prototype.createId = function (prefix) {
         if (!this.id) {
-            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.uniqueId)(prefix);
+            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.uniqueId)(prefix);
         }
     };
     Element.prototype.addClass = function () {
@@ -3150,7 +3249,7 @@ var Element = /** @class */ (function (_super) {
         return json;
     };
     return Element;
-}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
+}((0,_mixins_statueful__WEBPACK_IMPORTED_MODULE_0__.Stateful)(_observable__WEBPACK_IMPORTED_MODULE_1__.Observable)));
 
 
 
@@ -3385,7 +3484,7 @@ var ControlNode = /** @class */ (function (_super) {
     ControlNode.prototype.onPointerMove = function (e) { };
     ControlNode.prototype.onPointerEnd = function (e) { };
     return ControlNode;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.ElementCollection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
 
 
 
@@ -3749,7 +3848,7 @@ var Control = /** @class */ (function (_super) {
     Control.prototype.onPointerMove = function (e) { };
     Control.prototype.onPointerEnd = function (e) { };
     return Control;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.ElementCollection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
 
 
 
@@ -4955,8 +5054,7 @@ var CurvePath = /** @class */ (function () {
             .split(' ')
             .map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_3__.toFixed)(n); });
         var curves = [];
-        var i, prevPoint;
-        for (i = 0; i < nums.length; i += 2) {
+        for (var i = 0; i < nums.length; i += 2) {
             curves.push(new _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[i], nums[i + 1]), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[(i + 2) % nums.length], nums[(i + 3) % nums.length])));
         }
         return this.set(curves);
@@ -6358,6 +6456,13 @@ function Collection(Base) {
             _this.children = [];
             return _this;
         }
+        Object.defineProperty(Collection.prototype, "childrenLength", {
+            get: function () {
+                return this.children.length;
+            },
+            enumerable: false,
+            configurable: true
+        });
         Collection.prototype.setChildren = function (children, silent) {
             if (silent === void 0) { silent = false; }
             this.children = [];
@@ -6373,6 +6478,7 @@ function Collection(Base) {
             children = Array.isArray(children) ? children : [children];
             children.forEach(function (child) {
                 _this.children.push(child);
+                child.set('parent', _this, true);
             });
             if (!silent) {
                 // @ts-ignore
@@ -6407,6 +6513,12 @@ function Collection(Base) {
         };
         Collection.prototype.childAt = function (index) {
             return this.children[index];
+        };
+        Collection.prototype.firstChild = function () {
+            return this.children[0];
+        };
+        Collection.prototype.lastChild = function () {
+            return this.children[this.childrenLength - 1];
         };
         Collection.prototype.childById = function (id) {
             return this.children.find(function (el) { return el.id === id; });
@@ -6575,11 +6687,92 @@ function ElementCollection(Base) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Collection: () => (/* reexport safe */ _collection__WEBPACK_IMPORTED_MODULE_0__.Collection),
-/* harmony export */   ElementCollection: () => (/* reexport safe */ _element_collection__WEBPACK_IMPORTED_MODULE_1__.ElementCollection)
+/* harmony export */   ElementCollection: () => (/* reexport safe */ _element_collection__WEBPACK_IMPORTED_MODULE_1__.ElementCollection),
+/* harmony export */   Stateful: () => (/* reexport safe */ _statueful__WEBPACK_IMPORTED_MODULE_2__.Stateful)
 /* harmony export */ });
 /* harmony import */ var _collection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./collection */ "./packages/core/src/mixins/collection.ts");
 /* harmony import */ var _element_collection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./element-collection */ "./packages/core/src/mixins/element-collection.ts");
+/* harmony import */ var _statueful__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./statueful */ "./packages/core/src/mixins/statueful.ts");
 
+
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/mixins/statueful.ts":
+/*!***********************************************!*\
+  !*** ./packages/core/src/mixins/statueful.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Stateful: () => (/* binding */ Stateful)
+/* harmony export */ });
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+function Stateful(Base) {
+    return /** @class */ (function (_super) {
+        __extends(Stateful, _super);
+        function Stateful() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        Stateful.prototype.set = function (key, value, silent) {
+            var _a;
+            if (silent === void 0) { silent = false; }
+            if (typeof key === 'string') {
+                this._set(key, value);
+                if (!silent) {
+                    // @ts-ignore
+                    this.trigger('set', (_a = {}, _a[key] = value, _a), this);
+                }
+            }
+            else {
+                for (var prop in key) {
+                    this._set(prop, key[prop]);
+                }
+                // Attention please: here - if 'key' is an object - 'value' becomes the 'silent'!
+                if (!value) {
+                    // @ts-ignore
+                    this.trigger('set', key, this);
+                }
+            }
+            return this;
+        };
+        Stateful.prototype._set = function (key, value) {
+            if (typeof this[key] !== 'function' && typeof value !== 'undefined') {
+                this[key] = value;
+            }
+        };
+        Stateful.prototype.get = function (key) {
+            var _this = this;
+            if (Array.isArray(key)) {
+                return key.reduce(function (memo, k) {
+                    memo[k] = _this[k];
+                    return memo;
+                }, {});
+            }
+            else {
+                return this[key];
+            }
+        };
+        return Stateful;
+    }(Base));
+}
 
 
 
@@ -7276,7 +7469,6 @@ var Shape = /** @class */ (function (_super) {
         _this.bBox = new _maths__WEBPACK_IMPORTED_MODULE_1__.BBox();
         _this.origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(0.5, 0.5);
         _this._controls = {};
-        _this._animation = new _animation__WEBPACK_IMPORTED_MODULE_3__.Animation();
         _this.transformProps = ['left', 'top', 'angle', 'scaleX', 'scaleY', 'skewX', 'skewY'];
         _this.left = 0;
         _this.top = 0;
@@ -7372,6 +7564,7 @@ var Shape = /** @class */ (function (_super) {
         configurable: true
     });
     Shape.prototype.init = function (params) {
+        this._animation = new _animation__WEBPACK_IMPORTED_MODULE_3__.Animation(this);
         this.set(params, true);
         this.createId(this.tagName);
         this.addControl('transform', new _interactive__WEBPACK_IMPORTED_MODULE_2__.TransformControl({
@@ -7379,7 +7572,6 @@ var Shape = /** @class */ (function (_super) {
         })).setControl('transform');
         this.updateMatrix();
         this.updateBBox();
-        this._animation.shape = this;
         this.trigger('init', this);
     };
     Shape.prototype.set = function (key, value, silent) {

@@ -1,10 +1,10 @@
-import { Observable } from './../observable';
-import { Collection } from './../mixins';
+import { AnimationBase } from './animation-base';
+import { Collection, Stateful } from './../mixins';
 import { AnimationObject, KeyframeObject, TrackObject } from './../types';
 import { Track } from './track';
 
-class Animation extends Collection(Observable) {
-	public shape: any;
+class Animation extends Collection(AnimationBase) {
+	protected shape: any;
 
 	private _isPlaying = false;
 	private _startTime = 0;
@@ -16,10 +16,16 @@ class Animation extends Collection(Observable) {
 
 	set tracks(value) {}
 
+	public constructor(shape: any) {
+		super();
+		this.shape = shape;
+	}
+
 	public play() {
 		this._isPlaying = true;
 		this._startTime = performance.now() - this._currentTime;
 		requestAnimationFrame(this._render.bind(this));
+		return this;
 	}
 
 	public pause() {
@@ -27,17 +33,18 @@ class Animation extends Collection(Observable) {
 		return this;
 	}
 
-	public update() {
-		this.eachChild((track) => {
-			this.shape.set(track.property, track.getValue(this._currentTime));
-		});
-		this.trigger('updated', this.shape);
+	public seek(time: number) {
+		this._currentTime = time;
+		this._update();
 		return this;
 	}
 
-	public seek(ms: number) {
-		this._currentTime = ms;
-		this.update();
+	private _update() {
+		this.eachChild((track) => {
+			this.shape.set(track.property, track.getValueAt(this._currentTime), true);
+		});
+		this.trigger('updated', this.shape);
+		this.shape.trigger('animation:updated', this);
 		return this;
 	}
 
@@ -45,23 +52,19 @@ class Animation extends Collection(Observable) {
 		if (!this._isPlaying) return;
 
 		this._currentTime = timeStamp - this._startTime;
-		this.update();
+		this._update();
 
 		requestAnimationFrame(this._render.bind(this));
 	}
 
 	public setTracks(objects: TrackObject[]) {
 		const tracks = objects.map((obj) => this.addTrack(obj.property, obj.keyframes));
-		console.log(tracks);
 		this.setChildren(tracks);
 		return this;
 	}
 
 	public addTrack(property: string, keyframes: KeyframeObject[]) {
-		const track = new Track(property);
-		keyframes.forEach((kf) => {
-			track.addKeyframe(kf);
-		});
+		const track = new Track(property, this.shape.get(property), keyframes);
 		this.add(track);
 		return track;
 	}

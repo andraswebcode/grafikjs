@@ -1,8 +1,8 @@
 import { Element } from './../element';
-import { ElementCollection } from './../mixins';
+import { Collection } from './../mixins';
 import { Point, Matrix } from './../maths';
 
-class ControlNode extends ElementCollection(Element) {
+class ControlNode extends Collection(Element) {
 	protected readonly tagName = 'div';
 	protected className = 'grafik-control-node';
 	protected name = '';

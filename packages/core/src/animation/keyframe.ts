@@ -1,15 +1,50 @@
-import { KeyframeObject } from './../types';
-import { Observable } from './../observable';
+import { AnimationBase } from './animation-base';
+import { EasingFunction, EasingName, KeyframeObject } from './../types';
+import easings from './easings';
 
-class Keyframe extends Observable {
-	public duration = 0;
-	public delay = 0;
-	public easing = 'linear';
+class Keyframe extends AnimationBase {
+	public from = 0;
+	public to = 0;
+	public startValue: any = null;
+	public endValue: any = null;
+	public easing: EasingFunction;
 
-	toJSON(): KeyframeObject {
+	public constructor(
+		from: number,
+		to: number,
+		startValue: any,
+		endValue: any,
+		easing: EasingName | EasingFunction = 'linear'
+	) {
+		super();
+		this.from = from;
+		this.to = to;
+		this.startValue = startValue;
+		this.endValue = endValue;
+		this.easing = typeof easing === 'string' ? easings[easing] : easing;
+	}
+
+	public getValueAt(time: number): any {
+		if (time < this.from || time > this.to) {
+			console.warn('Time is out of bounds.');
+			return null;
+		}
+
+		const t = (time - this.from) / (this.to - this.from);
+		const eased = this.easing(t);
+
+		return this._interpolateValue(eased);
+	}
+
+	private _interpolateValue(t: number): any {
+		console.log(t);
+	}
+
+	public toJSON(): KeyframeObject {
 		return {
-			to: 0,
-			value: 0
+			to: this.to,
+			value: this.endValue,
+			easing: 'linear'
 		};
 	}
 }

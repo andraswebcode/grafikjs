@@ -153,7 +153,7 @@ const json = ref([
 									keyframes: [
 										{
 											to: 1000,
-											value: 0
+											value: 400
 										}
 									]
 								},
@@ -163,7 +163,11 @@ const json = ref([
 									keyframes: [
 										{
 											to: 1000,
-											value: 0
+											value: 2
+										},
+										{
+											to: 2000,
+											value: 1
 										}
 									]
 								}

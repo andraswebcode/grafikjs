@@ -1,7 +1,8 @@
+import { Stateful } from './mixins/statueful';
 import { Observable } from './observable';
 import { uniqueId, kebabize } from './utils';
 
-class Element extends Observable {
+class Element extends Stateful(Observable) {
 	protected readonly tagName: string;
 	protected id = '';
 	protected name = '';
@@ -9,42 +10,6 @@ class Element extends Observable {
 
 	protected getAttrMap(): string[] {
 		return ['className'];
-	}
-
-	public set(key, value?, silent = false) {
-		if (typeof key === 'string' && typeof value !== 'undefined') {
-			this._set(key, value);
-			if (!silent) {
-				this.trigger('set', { [key]: value }, this);
-			}
-		} else {
-			for (let prop in key) {
-				this._set(prop, key[prop]);
-			}
-			// Attention please: here - if 'key' is an object - 'value' becomes the 'silent'!
-			if (!value) {
-				this.trigger('set', key, this);
-			}
-		}
-
-		return this;
-	}
-
-	protected _set(key: string, value: string | number) {
-		if (typeof this[key] !== 'function' && typeof value !== 'undefined') {
-			this[key] = value;
-		}
-	}
-
-	public get(key: string | string[]): any {
-		if (Array.isArray(key)) {
-			return key.reduce((memo: object, k: string): object => {
-				memo[k] = this[k];
-				return memo;
-			}, {});
-		} else {
-			return this[key];
-		}
 	}
 
 	public getAttributes(makeKebabeCase = false): object {

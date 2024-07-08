@@ -1,6 +1,4 @@
-type Easings = {
-	[name: string]: (k: number) => number;
-};
+import { Easings } from './../types/animation';
 
 const easings: Easings = {
 	linear: (k) => k,
@@ -25,7 +23,7 @@ const easings: Easings = {
 		}
 	},
 	bounceInOut: (k) =>
-		k < 0.5 ? (1 - easings.bunceOut(1 - 2 * k)) / 2 : (1 + easings.bounceOut(2 * k - 1)) / 2,
+		k < 0.5 ? (1 - easings.bounceOut(1 - 2 * k)) / 2 : (1 + easings.bounceOut(2 * k - 1)) / 2,
 	backIn: (k) => 2.70158 * Math.pow(k, 3) - 1.70158 * Math.pow(k, 2),
 	backOut: (k) => 1 + 2.70158 * Math.pow(k - 1, 3) + 1.70158 * Math.pow(k - 1, 2)
 };

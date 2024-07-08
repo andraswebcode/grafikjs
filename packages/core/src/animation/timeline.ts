@@ -1,7 +1,7 @@
-import { Observable } from './../observable';
+import { AnimationBase } from './animation-base';
 import { Collection } from './../mixins';
 
-class Timeline extends Collection(Observable) {
+class Timeline extends Collection(AnimationBase) {
 	get animations() {
 		return this.getChildren();
 	}
