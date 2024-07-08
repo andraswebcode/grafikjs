@@ -1,6 +1,6 @@
 import { AnimationBase } from './animation-base';
 import { EasingFunction, EasingName, KeyframeObject } from './../types';
-import easings from './easings';
+import { easings } from './easings';
 
 class Keyframe extends AnimationBase {
 	public from = 0;
@@ -26,6 +26,8 @@ class Keyframe extends AnimationBase {
 		this.startValue = startValue;
 		this.endValue = endValue;
 		this.easing = typeof easing === 'string' ? easings[easing] : easing;
+		this.name = 'keyframe';
+		this.createId();
 	}
 
 	public getValueAt(time: number): any {

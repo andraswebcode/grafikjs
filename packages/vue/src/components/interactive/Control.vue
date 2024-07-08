@@ -14,7 +14,7 @@ const {
 		playing: shape.getAnimation().playing
 	}),
 	null,
-	'set canvas:set animation:played animation:paused animation:completed'
+	'set canvas:set animation:played animation:paused animation:completed animation:updated'
 );
 </script>
 

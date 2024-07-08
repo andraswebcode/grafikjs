@@ -1,18 +1,12 @@
-import {
-	Gradient
-} from './gradient';
+import { Gradient } from './gradient';
 
 class RadialGradient extends Gradient {
-
 	protected readonly tagName = 'radialGradient';
 
-	public constructor(params?){
+	public constructor(params?) {
 		super();
 		this.init(params);
 	}
-
 }
 
-export {
-	RadialGradient
-};
+export { RadialGradient };

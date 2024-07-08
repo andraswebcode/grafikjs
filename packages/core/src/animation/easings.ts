@@ -28,4 +28,4 @@ const easings: Easings = {
 	backOut: (k) => 1 + 2.70158 * Math.pow(k - 1, 3) + 1.70158 * Math.pow(k - 1, 2)
 };
 
-export default easings;
+export { easings };

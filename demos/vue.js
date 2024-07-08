@@ -12817,7 +12817,7 @@ __webpack_require__.r(__webpack_exports__);
             style: shape.getControl().getStyle(),
             nodes: shape.getControl().getChildren(),
             playing: shape.getAnimation().playing
-        }); }, null, 'set canvas:set animation:played animation:paused animation:completed').state, attrs = _b.attrs, style = _b.style, nodes = _b.nodes, playing = _b.playing;
+        }); }, null, 'set canvas:set animation:played animation:paused animation:completed animation:updated').state, attrs = _b.attrs, style = _b.style, nodes = _b.nodes, playing = _b.playing;
         var __returned__ = { props: props, attrs: attrs, style: style, nodes: nodes, playing: playing, ControlNode: _ControlNode_vue__WEBPACK_IMPORTED_MODULE_2__["default"] };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
@@ -12854,7 +12854,7 @@ __webpack_require__.r(__webpack_exports__);
         var _b = (0,_hooks__WEBPACK_IMPORTED_MODULE_1__.useObject)(props.shape, function (shape) { return ({
             attrs: shape.getControl().childById(props.id).getAttributes(),
             style: shape.getControl().childById(props.id).getStyle()
-        }); }, null, 'set canvas:set').state, attrs = _b.attrs, style = _b.style;
+        }); }, null, 'set canvas:set animation:updated').state, attrs = _b.attrs, style = _b.style;
         var __returned__ = { props: props, attrs: attrs, style: style };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
@@ -13099,9 +13099,9 @@ var AnimationBase = /** @class */ (function (_super) {
         _this.name = '';
         return _this;
     }
-    AnimationBase.prototype.createId = function (prefix) {
+    AnimationBase.prototype.createId = function () {
         if (!this.id) {
-            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.uniqueId)(prefix);
+            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.uniqueId)(this.name);
         }
     };
     AnimationBase.prototype.toJSON = function () {
@@ -13153,6 +13153,8 @@ var Animation = /** @class */ (function (_super) {
         _this._startTime = 0;
         _this._currentTime = 0;
         _this.shape = shape;
+        _this.name = 'animation';
+        _this.createId();
         return _this;
     }
     Object.defineProperty(Animation.prototype, "tracks", {
@@ -13179,6 +13181,9 @@ var Animation = /** @class */ (function (_super) {
         configurable: true
     });
     Animation.prototype.play = function () {
+        if (this._isPlaying) {
+            return this;
+        }
         this._isPlaying = true;
         this._startTime = performance.now() - this._currentTime;
         requestAnimationFrame(this._render.bind(this));
@@ -13220,7 +13225,6 @@ var Animation = /** @class */ (function (_super) {
         });
         this.trigger('updated', this.shape);
         this.shape.trigger('animation:updated', this);
-        return this;
     };
     Animation.prototype.setTracks = function (objects) {
         var _this = this;
@@ -13253,7 +13257,7 @@ var Animation = /** @class */ (function (_super) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   easings: () => (/* binding */ easings)
 /* harmony export */ });
 var easings = {
     linear: function (k) { return k; },
@@ -13286,7 +13290,7 @@ var easings = {
     backIn: function (k) { return 2.70158 * Math.pow(k, 3) - 1.70158 * Math.pow(k, 2); },
     backOut: function (k) { return 1 + 2.70158 * Math.pow(k - 1, 3) + 1.70158 * Math.pow(k - 1, 2); }
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (easings);
+
 
 
 /***/ }),
@@ -13302,12 +13306,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Animation: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_1__.Animation),
 /* harmony export */   Keyframe: () => (/* reexport safe */ _keyframe__WEBPACK_IMPORTED_MODULE_3__.Keyframe),
 /* harmony export */   Timeline: () => (/* reexport safe */ _timeline__WEBPACK_IMPORTED_MODULE_0__.Timeline),
-/* harmony export */   Track: () => (/* reexport safe */ _track__WEBPACK_IMPORTED_MODULE_2__.Track)
+/* harmony export */   Track: () => (/* reexport safe */ _track__WEBPACK_IMPORTED_MODULE_2__.Track),
+/* harmony export */   easings: () => (/* reexport safe */ _easings__WEBPACK_IMPORTED_MODULE_4__.easings)
 /* harmony export */ });
 /* harmony import */ var _timeline__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./timeline */ "./packages/core/src/animation/timeline.ts");
 /* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./animation */ "./packages/core/src/animation/animation.ts");
 /* harmony import */ var _track__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./track */ "./packages/core/src/animation/track.ts");
 /* harmony import */ var _keyframe__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./keyframe */ "./packages/core/src/animation/keyframe.ts");
+/* harmony import */ var _easings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./easings */ "./packages/core/src/animation/easings.ts");
+
 
 
 
@@ -13358,7 +13365,9 @@ var Keyframe = /** @class */ (function (_super) {
         _this.to = to;
         _this.startValue = startValue;
         _this.endValue = endValue;
-        _this.easing = typeof easing === 'string' ? _easings__WEBPACK_IMPORTED_MODULE_1__["default"][easing] : easing;
+        _this.easing = typeof easing === 'string' ? _easings__WEBPACK_IMPORTED_MODULE_1__.easings[easing] : easing;
+        _this.name = 'keyframe';
+        _this.createId();
         return _this;
     }
     Object.defineProperty(Keyframe.prototype, "duration", {
@@ -13425,7 +13434,10 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var Timeline = /** @class */ (function (_super) {
     __extends(Timeline, _super);
     function Timeline() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        _this.name = 'timeline';
+        _this.createId();
+        return _this;
     }
     Object.defineProperty(Timeline.prototype, "animations", {
         get: function () {
@@ -13435,6 +13447,18 @@ var Timeline = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Timeline.prototype.play = function () {
+        this.eachChild(function (child) { return child.play(); });
+        return this;
+    };
+    Timeline.prototype.pause = function () {
+        this.eachChild(function (child) { return child.pause(); });
+        return this;
+    };
+    Timeline.prototype.seek = function (time) {
+        this.eachChild(function (child) { return child.seek(time); });
+        return this;
+    };
     return Timeline;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_animation_base__WEBPACK_IMPORTED_MODULE_0__.AnimationBase)));
 
@@ -13484,6 +13508,8 @@ var Track = /** @class */ (function (_super) {
         keyframes === null || keyframes === void 0 ? void 0 : keyframes.forEach(function (kf) {
             _this.addKeyframe(kf);
         });
+        _this.name = 'track';
+        _this.createId();
         return _this;
     }
     Object.defineProperty(Track.prototype, "keyframes", {
@@ -13807,6 +13833,9 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype.getSelector = function () {
         return this._selector;
     };
+    Canvas.prototype.getAnimation = function () {
+        return this._animation;
+    };
     Canvas.prototype.setResponsiveSize = function (element) {
         if (!this.autoSize || !element) {
             return;
@@ -14077,11 +14106,7 @@ var ColorStop = /** @class */ (function (_super) {
         return _this;
     }
     ColorStop.prototype.getAttrMap = function () {
-        return [
-            'offset',
-            'stopColor',
-            'stopOpacity'
-        ];
+        return ['offset', 'stopColor', 'stopOpacity'];
     };
     return ColorStop;
 }(_element__WEBPACK_IMPORTED_MODULE_0__.Element));
@@ -14132,12 +14157,10 @@ var Definition = /** @class */ (function (_super) {
         this.trigger('init', this);
     };
     Definition.prototype.getAttrMap = function () {
-        return [
-            'id'
-        ];
+        return ['id'];
     };
     return Definition;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.ElementCollection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
 
 
 
@@ -14528,6 +14551,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   camelize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.camelize),
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
+/* harmony export */   easings: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.easings),
 /* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.isEqual),
 /* harmony export */   kebabize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.kebabize),
 /* harmony export */   omitBy: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.omitBy),
@@ -17687,8 +17711,10 @@ function Collection(Base) {
             if (silent === void 0) { silent = false; }
             children = Array.isArray(children) ? children : [children];
             children.forEach(function (child) {
-                _this.children.push(child);
-                child.set('parent', _this, true);
+                if (!_this.children.includes(child)) {
+                    _this.children.push(child);
+                    child.set('parent', _this, true);
+                }
             });
             if (!silent) {
                 // @ts-ignore
@@ -17834,6 +17860,9 @@ function ElementCollection(Base) {
             children = Array.isArray(children) ? children : [children];
             children.forEach(function (child) {
                 var _a;
+                if (_this.children.includes(child)) {
+                    return;
+                }
                 // Set up child.
                 _this.children.push(child);
                 child.set('parent', _this, true);
@@ -17843,6 +17872,8 @@ function ElementCollection(Base) {
                         child.set('canvas', _this, true);
                         // @ts-ignore
                         _this.on('set', function (set) { return child.trigger('canvas:set', set); });
+                        // @ts-ignore
+                        _this.getAnimation().add(child.getAnimation());
                     };
                     setCanvas(child);
                     if (child.isCollection) {

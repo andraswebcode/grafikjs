@@ -7,6 +7,27 @@ class Timeline extends Collection(AnimationBase) {
 	}
 
 	set animations(value) {}
+
+	public constructor() {
+		super();
+		this.name = 'timeline';
+		this.createId();
+	}
+
+	public play() {
+		this.eachChild((child) => child.play());
+		return this;
+	}
+
+	public pause() {
+		this.eachChild((child) => child.pause());
+		return this;
+	}
+
+	public seek(time: number) {
+		this.eachChild((child) => child.seek(time));
+		return this;
+	}
 }
 
 export { Timeline };

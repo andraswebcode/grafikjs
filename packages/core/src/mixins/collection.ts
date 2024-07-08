@@ -25,8 +25,10 @@ function Collection<TBase extends Constructor>(Base: TBase) {
 			children = Array.isArray(children) ? children : [children];
 
 			children.forEach((child) => {
-				this.children.push(child);
-				child.set('parent', this, true);
+				if (!this.children.includes(child)) {
+					this.children.push(child);
+					child.set('parent', this, true);
+				}
 			});
 
 			if (!silent) {

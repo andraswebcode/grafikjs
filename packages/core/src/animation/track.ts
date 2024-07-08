@@ -26,6 +26,8 @@ class Track extends Collection(AnimationBase) {
 		keyframes?.forEach((kf) => {
 			this.addKeyframe(kf);
 		});
+		this.name = 'track';
+		this.createId();
 	}
 
 	public addKeyframe(kf: KeyframeObject) {

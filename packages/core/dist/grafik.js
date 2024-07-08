@@ -12,6 +12,60 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/animation/animation-base.ts":
+/*!*****************************************!*\
+  !*** ./src/animation/animation-base.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   AnimationBase: () => (/* binding */ AnimationBase)
+/* harmony export */ });
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../utils */ "./src/utils/index.ts");
+/* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./src/mixins/index.ts");
+/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../observable */ "./src/observable.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var AnimationBase = /** @class */ (function (_super) {
+    __extends(AnimationBase, _super);
+    function AnimationBase() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.id = '';
+        _this.name = '';
+        return _this;
+    }
+    AnimationBase.prototype.createId = function (prefix) {
+        if (!this.id) {
+            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.uniqueId)(prefix);
+        }
+    };
+    AnimationBase.prototype.toJSON = function () {
+        return {};
+    };
+    return AnimationBase;
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Stateful)(_observable__WEBPACK_IMPORTED_MODULE_2__.Observable)));
+
+
+
+/***/ }),
+
 /***/ "./src/animation/animation.ts":
 /*!************************************!*\
   !*** ./src/animation/animation.ts ***!
@@ -22,7 +76,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Animation: () => (/* binding */ Animation)
 /* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./src/observable.ts");
+/* harmony import */ var _animation_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation-base */ "./src/animation/animation-base.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./src/mixins/index.ts");
 /* harmony import */ var _track__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./track */ "./src/animation/track.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
@@ -45,11 +99,12 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var Animation = /** @class */ (function (_super) {
     __extends(Animation, _super);
-    function Animation() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function Animation(shape) {
+        var _this = _super.call(this) || this;
         _this._isPlaying = false;
         _this._startTime = 0;
         _this._currentTime = 0;
+        _this.shape = shape;
         return _this;
     }
     Object.defineProperty(Animation.prototype, "tracks", {
@@ -60,47 +115,73 @@ var Animation = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Animation.prototype, "duration", {
+        get: function () {
+            var durs = this.mapChildren(function (child) { return child.duration; });
+            return Math.max.apply(Math, durs);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Animation.prototype, "playing", {
+        get: function () {
+            return this._isPlaying;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Animation.prototype.play = function () {
         this._isPlaying = true;
         this._startTime = performance.now() - this._currentTime;
         requestAnimationFrame(this._render.bind(this));
+        this.trigger('played', this.shape);
+        this.shape.trigger('animation:played', this);
+        return this;
     };
     Animation.prototype.pause = function () {
         this._isPlaying = false;
+        this.trigger('paused', this.shape);
+        this.shape.trigger('animation:paused', this);
         return this;
     };
-    Animation.prototype.update = function () {
-        var _this = this;
-        this.eachChild(function (track) {
-            _this.shape.set(track.property, track.getValue(_this._currentTime));
-        });
-        this.trigger('updated', this.shape);
-        return this;
-    };
-    Animation.prototype.seek = function (ms) {
-        this._currentTime = ms;
-        this.update();
+    Animation.prototype.seek = function (time) {
+        this._currentTime = time;
+        this._update();
         return this;
     };
     Animation.prototype._render = function (timeStamp) {
         if (!this._isPlaying)
             return;
         this._currentTime = timeStamp - this._startTime;
-        this.update();
-        requestAnimationFrame(this._render.bind(this));
+        this._update();
+        if (this._currentTime <= this.duration) {
+            requestAnimationFrame(this._render.bind(this));
+        }
+        else {
+            this._isPlaying = false;
+            this._startTime = 0;
+            this._currentTime = 0;
+            this.trigger('completed', this.shape);
+            this.shape.trigger('animation:completed', this);
+        }
+    };
+    Animation.prototype._update = function () {
+        var _this = this;
+        this.eachChild(function (track) {
+            _this.shape.set(track.property, track.getValueAt(_this._currentTime), true);
+        });
+        this.trigger('updated', this.shape);
+        this.shape.trigger('animation:updated', this);
+        return this;
     };
     Animation.prototype.setTracks = function (objects) {
         var _this = this;
         var tracks = objects.map(function (obj) { return _this.addTrack(obj.property, obj.keyframes); });
-        console.log(tracks);
         this.setChildren(tracks);
         return this;
     };
     Animation.prototype.addTrack = function (property, keyframes) {
-        var track = new _track__WEBPACK_IMPORTED_MODULE_2__.Track(property);
-        keyframes.forEach(function (kf) {
-            track.addKeyframe(kf);
-        });
+        var track = new _track__WEBPACK_IMPORTED_MODULE_2__.Track(property, this.shape.get(property), keyframes);
         this.add(track);
         return track;
     };
@@ -110,7 +191,53 @@ var Animation = /** @class */ (function (_super) {
         };
     };
     return Animation;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Stateful)((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable))));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_animation_base__WEBPACK_IMPORTED_MODULE_0__.AnimationBase)));
+
+
+
+/***/ }),
+
+/***/ "./src/animation/easings.ts":
+/*!**********************************!*\
+  !*** ./src/animation/easings.ts ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   easings: () => (/* binding */ easings)
+/* harmony export */ });
+var easings = {
+    linear: function (k) { return k; },
+    quadraticIn: function (k) { return k * k; },
+    quadraticOut: function (k) { return 1 - Math.pow(1 - k, 2); },
+    quadraticInOut: function (k) { return (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2); },
+    cubicIn: function (k) { return k * k * k; },
+    cubicOut: function (k) { return 1 - Math.pow(1 - k, 3); },
+    cubicInOut: function (k) { return (k < 0.5 ? 4 * Math.pow(k, 3) : 1 - Math.pow(-2 * k + 2, 3) / 2); },
+    bounceIn: function (k) { return 1 - easings.bounceOut(1 - k); },
+    bounceOut: function (k) {
+        var n1 = 7.5625;
+        var d1 = 2.75;
+        if (k < 1 / d1) {
+            return n1 * k * k;
+        }
+        else if (k < 2 / d1) {
+            return n1 * (k -= 1.5 / d1) * k + 0.75;
+        }
+        else if (k < 2.5 / d1) {
+            return n1 * (k -= 2.25 / d1) * k + 0.9375;
+        }
+        else {
+            return n1 * (k -= 2.625 / d1) * k + 0.984375;
+        }
+    },
+    bounceInOut: function (k) {
+        return k < 0.5 ? (1 - easings.bounceOut(1 - 2 * k)) / 2 : (1 + easings.bounceOut(2 * k - 1)) / 2;
+    },
+    backIn: function (k) { return 2.70158 * Math.pow(k, 3) - 1.70158 * Math.pow(k, 2); },
+    backOut: function (k) { return 1 + 2.70158 * Math.pow(k - 1, 3) + 1.70158 * Math.pow(k - 1, 2); }
+};
 
 
 
@@ -127,12 +254,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Animation: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_1__.Animation),
 /* harmony export */   Keyframe: () => (/* reexport safe */ _keyframe__WEBPACK_IMPORTED_MODULE_3__.Keyframe),
 /* harmony export */   Timeline: () => (/* reexport safe */ _timeline__WEBPACK_IMPORTED_MODULE_0__.Timeline),
-/* harmony export */   Track: () => (/* reexport safe */ _track__WEBPACK_IMPORTED_MODULE_2__.Track)
+/* harmony export */   Track: () => (/* reexport safe */ _track__WEBPACK_IMPORTED_MODULE_2__.Track),
+/* harmony export */   easings: () => (/* reexport safe */ _easings__WEBPACK_IMPORTED_MODULE_4__.easings)
 /* harmony export */ });
 /* harmony import */ var _timeline__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./timeline */ "./src/animation/timeline.ts");
 /* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./animation */ "./src/animation/animation.ts");
 /* harmony import */ var _track__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./track */ "./src/animation/track.ts");
 /* harmony import */ var _keyframe__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./keyframe */ "./src/animation/keyframe.ts");
+/* harmony import */ var _easings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./easings */ "./src/animation/easings.ts");
+
 
 
 
@@ -151,7 +281,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Keyframe: () => (/* binding */ Keyframe)
 /* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./src/observable.ts");
+/* harmony import */ var _animation_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation-base */ "./src/animation/animation-base.ts");
+/* harmony import */ var _easings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./easings */ "./src/animation/easings.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -168,23 +299,50 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var Keyframe = /** @class */ (function (_super) {
     __extends(Keyframe, _super);
-    function Keyframe() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.duration = 0;
-        _this.delay = 0;
-        _this.easing = 'linear';
+    function Keyframe(from, to, startValue, endValue, easing) {
+        if (easing === void 0) { easing = 'linear'; }
+        var _this = _super.call(this) || this;
+        _this.from = 0;
+        _this.to = 0;
+        _this.startValue = null;
+        _this.endValue = null;
+        _this.from = from;
+        _this.to = to;
+        _this.startValue = startValue;
+        _this.endValue = endValue;
+        _this.easing = typeof easing === 'string' ? _easings__WEBPACK_IMPORTED_MODULE_1__.easings[easing] : easing;
         return _this;
     }
+    Object.defineProperty(Keyframe.prototype, "duration", {
+        get: function () {
+            return this.to - this.from;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Keyframe.prototype.getValueAt = function (time) {
+        if (time < this.from || time > this.to) {
+            return null;
+        }
+        var t = (time - this.from) / (this.to - this.from);
+        var eased = this.easing(t);
+        return this._interpolateValue(eased);
+    };
+    Keyframe.prototype._interpolateValue = function (t) {
+        return this.startValue + (this.endValue - this.startValue) * t;
+    };
     Keyframe.prototype.toJSON = function () {
         return {
-            to: 0,
-            value: 0
+            to: this.to,
+            value: this.endValue,
+            easing: 'linear'
         };
     };
     return Keyframe;
-}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
+}(_animation_base__WEBPACK_IMPORTED_MODULE_0__.AnimationBase));
 
 
 
@@ -200,7 +358,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Timeline: () => (/* binding */ Timeline)
 /* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./src/observable.ts");
+/* harmony import */ var _animation_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation-base */ "./src/animation/animation-base.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./src/mixins/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -233,7 +391,7 @@ var Timeline = /** @class */ (function (_super) {
         configurable: true
     });
     return Timeline;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_animation_base__WEBPACK_IMPORTED_MODULE_0__.AnimationBase)));
 
 
 
@@ -249,7 +407,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Track: () => (/* binding */ Track)
 /* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./src/observable.ts");
+/* harmony import */ var _animation_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation-base */ "./src/animation/animation-base.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./src/mixins/index.ts");
 /* harmony import */ var _keyframe__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./keyframe */ "./src/animation/keyframe.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
@@ -272,11 +430,15 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var Track = /** @class */ (function (_super) {
     __extends(Track, _super);
-    function Track(property) {
+    function Track(property, originalValue, keyframes) {
         var _this = _super.call(this) || this;
         _this.property = '';
-        _this.duration = 0;
+        _this.originalValue = 0;
         _this.property = property;
+        _this.originalValue = originalValue;
+        keyframes === null || keyframes === void 0 ? void 0 : keyframes.forEach(function (kf) {
+            _this.addKeyframe(kf);
+        });
         return _this;
     }
     Object.defineProperty(Track.prototype, "keyframes", {
@@ -287,20 +449,44 @@ var Track = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Track.prototype, "duration", {
+        get: function () {
+            return this.reduceChildren(function (memo, child) {
+                return memo + child.duration;
+            }, 0);
+        },
+        enumerable: false,
+        configurable: true
+    });
     Track.prototype.addKeyframe = function (kf) {
-        var keyframe = new _keyframe__WEBPACK_IMPORTED_MODULE_2__.Keyframe();
+        var prevKf = this.lastChild();
+        var from = prevKf ? prevKf.to : 0;
+        var startValue = prevKf ? prevKf.endValue : this.originalValue;
+        var keyframe = new _keyframe__WEBPACK_IMPORTED_MODULE_2__.Keyframe(from, kf.to, startValue, kf.value, kf.easing);
         this.add(keyframe);
         return keyframe;
     };
-    Track.prototype.getValueAt = function (time) { };
+    Track.prototype.getValueAt = function (time) {
+        var _a;
+        if (!this.childrenLength) {
+            return null;
+        }
+        for (var i = 0; i < this.childrenLength; i++) {
+            var value = (_a = this.childAt(i)) === null || _a === void 0 ? void 0 : _a.getValueAt(time);
+            if (value !== null) {
+                return value;
+            }
+        }
+    };
     Track.prototype.toJSON = function () {
         return {
-            property: '',
+            property: this.property,
+            originalValue: this.originalValue,
             keyframes: this.mapChildren(function (kf) { return kf.toJSON(); })
         };
     };
     return Track;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_animation_base__WEBPACK_IMPORTED_MODULE_0__.AnimationBase)));
 
 
 
@@ -2929,8 +3115,7 @@ var CurvePath = /** @class */ (function () {
             .split(' ')
             .map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_3__.toFixed)(n); });
         var curves = [];
-        var i, prevPoint;
-        for (i = 0; i < nums.length; i += 2) {
+        for (var i = 0; i < nums.length; i += 2) {
             curves.push(new _curves__WEBPACK_IMPORTED_MODULE_2__.LineCurve(new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[i], nums[i + 1]), new _point__WEBPACK_IMPORTED_MODULE_0__.Point(nums[(i + 2) % nums.length], nums[(i + 3) % nums.length])));
         }
         return this.set(curves);
@@ -4332,6 +4517,13 @@ function Collection(Base) {
             _this.children = [];
             return _this;
         }
+        Object.defineProperty(Collection.prototype, "childrenLength", {
+            get: function () {
+                return this.children.length;
+            },
+            enumerable: false,
+            configurable: true
+        });
         Collection.prototype.setChildren = function (children, silent) {
             if (silent === void 0) { silent = false; }
             this.children = [];
@@ -4380,8 +4572,17 @@ function Collection(Base) {
         Collection.prototype.mapChildren = function (callback) {
             return this.children.map(callback);
         };
+        Collection.prototype.reduceChildren = function (callback, initValue) {
+            return this.children.reduce(callback, initValue);
+        };
         Collection.prototype.childAt = function (index) {
             return this.children[index];
+        };
+        Collection.prototype.firstChild = function () {
+            return this.children[0];
+        };
+        Collection.prototype.lastChild = function () {
+            return this.children[this.childrenLength - 1];
         };
         Collection.prototype.childById = function (id) {
             return this.children.find(function (el) { return el.id === id; });
@@ -4597,7 +4798,7 @@ function Stateful(Base) {
         Stateful.prototype.set = function (key, value, silent) {
             var _a;
             if (silent === void 0) { silent = false; }
-            if (typeof key === 'string' && typeof value !== 'undefined') {
+            if (typeof key === 'string') {
                 this._set(key, value);
                 if (!silent) {
                     // @ts-ignore
@@ -5291,6 +5492,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../element */ "./src/element.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../maths */ "./src/maths/index.ts");
 /* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../interactive */ "./src/interactive/index.ts");
+/* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../animation */ "./src/animation/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -5320,6 +5522,7 @@ var __assign = (undefined && undefined.__assign) || function () {
 
 
 
+
 var Shape = /** @class */ (function (_super) {
     __extends(Shape, _super);
     function Shape() {
@@ -5330,7 +5533,6 @@ var Shape = /** @class */ (function (_super) {
         _this.bBox = new _maths__WEBPACK_IMPORTED_MODULE_1__.BBox();
         _this.origin = new _maths__WEBPACK_IMPORTED_MODULE_1__.Point(0.5, 0.5);
         _this._controls = {};
-        //protected _animation = new Animation();
         _this.transformProps = ['left', 'top', 'angle', 'scaleX', 'scaleY', 'skewX', 'skewY'];
         _this.left = 0;
         _this.top = 0;
@@ -5414,17 +5616,19 @@ var Shape = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
-    /*
-    set animation(value: AnimationObject) {
-        const { tracks } = value;
-        this._animation.setTracks(tracks);
-    }
-
-    get animation(): AnimationObject {
-        return this._animation.toJSON();
-    }
-*/
+    Object.defineProperty(Shape.prototype, "animation", {
+        get: function () {
+            return this._animation.toJSON();
+        },
+        set: function (value) {
+            var tracks = value.tracks;
+            this._animation.setTracks(tracks);
+        },
+        enumerable: false,
+        configurable: true
+    });
     Shape.prototype.init = function (params) {
+        this._animation = new _animation__WEBPACK_IMPORTED_MODULE_3__.Animation(this);
         this.set(params, true);
         this.createId(this.tagName);
         this.addControl('transform', new _interactive__WEBPACK_IMPORTED_MODULE_2__.TransformControl({
@@ -5432,7 +5636,6 @@ var Shape = /** @class */ (function (_super) {
         })).setControl('transform');
         this.updateMatrix();
         this.updateBBox();
-        //this._animation.shape = this;
         this.trigger('init', this);
     };
     Shape.prototype.set = function (key, value, silent) {
@@ -5549,15 +5752,12 @@ var Shape = /** @class */ (function (_super) {
         var pointer = this.canvas.getPointer(e);
         return pointer.transform(matrix || this.getWorldMatrix(true).invert());
     };
-    /*
-    public getAnimation() {
+    Shape.prototype.getAnimation = function () {
         return this._animation;
-    }
-
-    public animate(property: string, keyframes: KeyframeObject[]) {
+    };
+    Shape.prototype.animate = function (property, keyframes) {
         return this._animation.addTrack(property, keyframes);
-    }
-*/
+    };
     Shape.prototype.toPolygon = function () {
         return this.bBox.toPolygon(this.getWorldMatrix(true));
     };
@@ -5579,9 +5779,7 @@ var Shape = /** @class */ (function (_super) {
             }
         }
         delete json.transform;
-        return __assign(__assign(__assign({}, json), transform), defs
-        //animation: this.animation
-        );
+        return __assign(__assign(__assign(__assign({}, json), transform), defs), { animation: this.animation });
     };
     return Shape;
 }(_element__WEBPACK_IMPORTED_MODULE_0__.Element));
@@ -6118,6 +6316,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   camelize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.camelize),
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
+/* harmony export */   easings: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.easings),
 /* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.isEqual),
 /* harmony export */   kebabize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.kebabize),
 /* harmony export */   omitBy: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.omitBy),

@@ -6,9 +6,9 @@ class AnimationBase extends Stateful(Observable) {
 	protected id = '';
 	protected name = '';
 
-	public createId(prefix?: string) {
+	public createId() {
 		if (!this.id) {
-			this.id = uniqueId(prefix);
+			this.id = uniqueId(this.name);
 		}
 	}
 

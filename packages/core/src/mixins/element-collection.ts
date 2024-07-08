@@ -8,6 +8,10 @@ function ElementCollection<TBase extends Constructor>(Base: TBase) {
 			children = Array.isArray(children) ? children : [children];
 
 			children.forEach((child) => {
+				if (this.children.includes(child)) {
+					return;
+				}
+
 				// Set up child.
 				this.children.push(child);
 				child.set('parent', this, true);
@@ -18,12 +22,15 @@ function ElementCollection<TBase extends Constructor>(Base: TBase) {
 						child.set('canvas', this, true);
 						// @ts-ignore
 						this.on('set', (set) => child.trigger('canvas:set', set));
+						// @ts-ignore
+						this.getAnimation().add(child.getAnimation());
 					};
 					setCanvas(child);
 					if (child.isCollection) {
 						child.eachChild(setCanvas);
 					}
 				}
+
 				// Set up defs.
 				const defs = child.get('_defs') || {};
 				const def2Add: any[] = [];

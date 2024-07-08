@@ -27,13 +27,11 @@ interface KeyframeObject {
 interface TrackObject {
 	property: string;
 	originalValue: any;
-	easing?: EasingName;
 	keyframes: KeyframeObject[];
 }
 
 interface AnimationObject {
 	loop?: boolean;
-	easing?: EasingName;
 	tracks: TrackObject[];
 }
 

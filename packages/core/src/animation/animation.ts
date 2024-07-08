@@ -28,9 +28,15 @@ class Animation extends Collection(AnimationBase) {
 	public constructor(shape: any) {
 		super();
 		this.shape = shape;
+		this.name = 'animation';
+		this.createId();
 	}
 
 	public play() {
+		if (this._isPlaying) {
+			return this;
+		}
+
 		this._isPlaying = true;
 		this._startTime = performance.now() - this._currentTime;
 		requestAnimationFrame(this._render.bind(this));
@@ -75,7 +81,6 @@ class Animation extends Collection(AnimationBase) {
 		});
 		this.trigger('updated', this.shape);
 		this.shape.trigger('animation:updated', this);
-		return this;
 	}
 
 	public setTracks(objects: TrackObject[]) {

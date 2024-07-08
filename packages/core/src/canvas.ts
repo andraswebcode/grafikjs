@@ -271,6 +271,10 @@ class Canvas extends ElementCollection(Element) {
 		return this._selector;
 	}
 
+	public getAnimation() {
+		return this._animation;
+	}
+
 	public setResponsiveSize(element: SVGElement) {
 		if (!this.autoSize || !element) {
 			return;

@@ -11,7 +11,7 @@ const {
 		style: shape.getControl().childById(props.id).getStyle()
 	}),
 	null,
-	'set canvas:set'
+	'set canvas:set animation:updated'
 );
 </script>
 
