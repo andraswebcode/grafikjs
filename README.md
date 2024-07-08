@@ -98,3 +98,11 @@ import { Canvas, Rect, Wrapper, Interactive, Selector } from '@grafikjs/vue';
 ## Examples
 
 Check the collection of examples on [CodePen](https://codepen.io/collection/ExJELG).
+
+## Contributing
+
+We are currently developing the Vue.js package for GrafikJS, and we are looking for developers interested in helping us create Angular and Svelte packages. These packages should follow the conceptual framework established by our Vue.js package to ensure consistency and ease of use across different frameworks.
+
+If you're passionate about web development and SVG graphics and would like to contribute to GrafikJS, we invite you to join us! Whether you have experience with Angular, Svelte, or SVG manipulation in JavaScript, your contributions can make a significant impact.
+
+To get started, please check out our contributing guidelines and feel free to reach out on our GitHub repository if you have any questions or ideas. Let's build together!
