@@ -51,9 +51,9 @@ var AnimationBase = /** @class */ (function (_super) {
         _this.name = '';
         return _this;
     }
-    AnimationBase.prototype.createId = function (prefix) {
+    AnimationBase.prototype.createId = function () {
         if (!this.id) {
-            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.uniqueId)(prefix);
+            this.id = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.uniqueId)(this.name);
         }
     };
     AnimationBase.prototype.toJSON = function () {
@@ -105,6 +105,8 @@ var Animation = /** @class */ (function (_super) {
         _this._startTime = 0;
         _this._currentTime = 0;
         _this.shape = shape;
+        _this.name = 'animation';
+        _this.createId();
         return _this;
     }
     Object.defineProperty(Animation.prototype, "tracks", {
@@ -118,7 +120,14 @@ var Animation = /** @class */ (function (_super) {
     Object.defineProperty(Animation.prototype, "duration", {
         get: function () {
             var durs = this.mapChildren(function (child) { return child.duration; });
-            return Math.max.apply(Math, durs);
+            return durs.length ? Math.max.apply(Math, durs) : 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Animation.prototype, "time", {
+        get: function () {
+            return this._currentTime;
         },
         enumerable: false,
         configurable: true
@@ -131,6 +140,9 @@ var Animation = /** @class */ (function (_super) {
         configurable: true
     });
     Animation.prototype.play = function () {
+        if (this._isPlaying) {
+            return this;
+        }
         this._isPlaying = true;
         this._startTime = performance.now() - this._currentTime;
         requestAnimationFrame(this._render.bind(this));
@@ -168,11 +180,13 @@ var Animation = /** @class */ (function (_super) {
     Animation.prototype._update = function () {
         var _this = this;
         this.eachChild(function (track) {
-            _this.shape.set(track.property, track.getValueAt(_this._currentTime), true);
+            var value = track.getValueAt(_this._currentTime);
+            if (value !== null) {
+                _this.shape.set(track.property, value, true);
+            }
         });
         this.trigger('updated', this.shape);
         this.shape.trigger('animation:updated', this);
-        return this;
     };
     Animation.prototype.setTracks = function (objects) {
         var _this = this;
@@ -314,6 +328,8 @@ var Keyframe = /** @class */ (function (_super) {
         _this.startValue = startValue;
         _this.endValue = endValue;
         _this.easing = typeof easing === 'string' ? _easings__WEBPACK_IMPORTED_MODULE_1__.easings[easing] : easing;
+        _this.name = 'keyframe';
+        _this.createId();
         return _this;
     }
     Object.defineProperty(Keyframe.prototype, "duration", {
@@ -380,7 +396,10 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var Timeline = /** @class */ (function (_super) {
     __extends(Timeline, _super);
     function Timeline() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        _this.name = 'timeline';
+        _this.createId();
+        return _this;
     }
     Object.defineProperty(Timeline.prototype, "animations", {
         get: function () {
@@ -390,6 +409,34 @@ var Timeline = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Timeline.prototype, "duration", {
+        get: function () {
+            var durs = this.mapChildren(function (child) { return child.duration; });
+            return durs.length ? Math.max.apply(Math, durs) : 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Timeline.prototype, "time", {
+        get: function () {
+            var longest = this.reduceChildren(function (max, animation) { return (animation.duration > max.duration ? animation : max); }, this.firstChild());
+            return this.childrenLength ? longest.time : 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Timeline.prototype.play = function () {
+        this.eachChild(function (child) { return child.play(); });
+        return this;
+    };
+    Timeline.prototype.pause = function () {
+        this.eachChild(function (child) { return child.pause(); });
+        return this;
+    };
+    Timeline.prototype.seek = function (time) {
+        this.eachChild(function (child) { return child.seek(time); });
+        return this;
+    };
     return Timeline;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_animation_base__WEBPACK_IMPORTED_MODULE_0__.AnimationBase)));
 
@@ -439,6 +486,8 @@ var Track = /** @class */ (function (_super) {
         keyframes === null || keyframes === void 0 ? void 0 : keyframes.forEach(function (kf) {
             _this.addKeyframe(kf);
         });
+        _this.name = 'track';
+        _this.createId();
         return _this;
     }
     Object.defineProperty(Track.prototype, "keyframes", {
@@ -467,16 +516,20 @@ var Track = /** @class */ (function (_super) {
         return keyframe;
     };
     Track.prototype.getValueAt = function (time) {
-        var _a;
         if (!this.childrenLength) {
             return null;
         }
         for (var i = 0; i < this.childrenLength; i++) {
-            var value = (_a = this.childAt(i)) === null || _a === void 0 ? void 0 : _a.getValueAt(time);
-            if (value !== null) {
+            var kf = this.childAt(i);
+            if (!kf) {
+                continue;
+            }
+            var value = kf.getValueAt(time);
+            if (value !== null && value !== undefined) {
                 return value;
             }
         }
+        return null;
     };
     Track.prototype.toJSON = function () {
         return {
@@ -762,6 +815,9 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype.getSelector = function () {
         return this._selector;
     };
+    Canvas.prototype.getAnimation = function () {
+        return this._animation;
+    };
     Canvas.prototype.setResponsiveSize = function (element) {
         if (!this.autoSize || !element) {
             return;
@@ -1032,11 +1088,7 @@ var ColorStop = /** @class */ (function (_super) {
         return _this;
     }
     ColorStop.prototype.getAttrMap = function () {
-        return [
-            'offset',
-            'stopColor',
-            'stopOpacity'
-        ];
+        return ['offset', 'stopColor', 'stopOpacity'];
     };
     return ColorStop;
 }(_element__WEBPACK_IMPORTED_MODULE_0__.Element));
@@ -1087,12 +1139,10 @@ var Definition = /** @class */ (function (_super) {
         this.trigger('init', this);
     };
     Definition.prototype.getAttrMap = function () {
-        return [
-            'id'
-        ];
+        return ['id'];
     };
     return Definition;
-}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.ElementCollection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
+}((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_element__WEBPACK_IMPORTED_MODULE_0__.Element)));
 
 
 
@@ -4538,8 +4588,10 @@ function Collection(Base) {
             if (silent === void 0) { silent = false; }
             children = Array.isArray(children) ? children : [children];
             children.forEach(function (child) {
-                _this.children.push(child);
-                child.set('parent', _this, true);
+                if (!_this.children.includes(child)) {
+                    _this.children.push(child);
+                    child.set('parent', _this, true);
+                }
             });
             if (!silent) {
                 // @ts-ignore
@@ -4685,6 +4737,9 @@ function ElementCollection(Base) {
             children = Array.isArray(children) ? children : [children];
             children.forEach(function (child) {
                 var _a;
+                if (_this.children.includes(child)) {
+                    return;
+                }
                 // Set up child.
                 _this.children.push(child);
                 child.set('parent', _this, true);
@@ -4694,6 +4749,8 @@ function ElementCollection(Base) {
                         child.set('canvas', _this, true);
                         // @ts-ignore
                         _this.on('set', function (set) { return child.trigger('canvas:set', set); });
+                        // @ts-ignore
+                        _this.getAnimation().add(child.getAnimation());
                     };
                     setCanvas(child);
                     if (child.isCollection) {

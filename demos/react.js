@@ -2007,7 +2007,14 @@ var Animation = /** @class */ (function (_super) {
     Object.defineProperty(Animation.prototype, "duration", {
         get: function () {
             var durs = this.mapChildren(function (child) { return child.duration; });
-            return Math.max.apply(Math, durs);
+            return durs.length ? Math.max.apply(Math, durs) : 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Animation.prototype, "time", {
+        get: function () {
+            return this._currentTime;
         },
         enumerable: false,
         configurable: true
@@ -2060,7 +2067,10 @@ var Animation = /** @class */ (function (_super) {
     Animation.prototype._update = function () {
         var _this = this;
         this.eachChild(function (track) {
-            _this.shape.set(track.property, track.getValueAt(_this._currentTime), true);
+            var value = track.getValueAt(_this._currentTime);
+            if (value !== null) {
+                _this.shape.set(track.property, value, true);
+            }
         });
         this.trigger('updated', this.shape);
         this.shape.trigger('animation:updated', this);
@@ -2286,6 +2296,22 @@ var Timeline = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Timeline.prototype, "duration", {
+        get: function () {
+            var durs = this.mapChildren(function (child) { return child.duration; });
+            return durs.length ? Math.max.apply(Math, durs) : 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Timeline.prototype, "time", {
+        get: function () {
+            var longest = this.reduceChildren(function (max, animation) { return (animation.duration > max.duration ? animation : max); }, this.firstChild());
+            return this.childrenLength ? longest.time : 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Timeline.prototype.play = function () {
         this.eachChild(function (child) { return child.play(); });
         return this;
@@ -2377,16 +2403,20 @@ var Track = /** @class */ (function (_super) {
         return keyframe;
     };
     Track.prototype.getValueAt = function (time) {
-        var _a;
         if (!this.childrenLength) {
             return null;
         }
         for (var i = 0; i < this.childrenLength; i++) {
-            var value = (_a = this.childAt(i)) === null || _a === void 0 ? void 0 : _a.getValueAt(time);
-            if (value !== null) {
+            var kf = this.childAt(i);
+            if (!kf) {
+                continue;
+            }
+            var value = kf.getValueAt(time);
+            if (value !== null && value !== undefined) {
                 return value;
             }
         }
+        return null;
     };
     Track.prototype.toJSON = function () {
         return {

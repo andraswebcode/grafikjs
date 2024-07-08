@@ -18,7 +18,11 @@ class Animation extends Collection(AnimationBase) {
 
 	get duration() {
 		const durs = this.mapChildren((child) => child.duration);
-		return Math.max(...durs);
+		return durs.length ? Math.max(...durs) : 0;
+	}
+
+	get time() {
+		return this._currentTime;
 	}
 
 	get playing() {
@@ -77,7 +81,10 @@ class Animation extends Collection(AnimationBase) {
 
 	private _update() {
 		this.eachChild((track) => {
-			this.shape.set(track.property, track.getValueAt(this._currentTime), true);
+			const value = track.getValueAt(this._currentTime);
+			if (value !== null) {
+				this.shape.set(track.property, value, true);
+			}
 		});
 		this.trigger('updated', this.shape);
 		this.shape.trigger('animation:updated', this);

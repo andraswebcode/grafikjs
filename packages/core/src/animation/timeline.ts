@@ -8,6 +8,19 @@ class Timeline extends Collection(AnimationBase) {
 
 	set animations(value) {}
 
+	get duration() {
+		const durs = this.mapChildren((child) => child.duration);
+		return durs.length ? Math.max(...durs) : 0;
+	}
+
+	get time(): number {
+		const longest = this.reduceChildren(
+			(max, animation) => (animation.duration > max.duration ? animation : max),
+			this.firstChild()
+		);
+		return this.childrenLength ? longest.time : 0;
+	}
+
 	public constructor() {
 		super();
 		this.name = 'timeline';

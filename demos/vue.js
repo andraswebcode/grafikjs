@@ -13168,7 +13168,14 @@ var Animation = /** @class */ (function (_super) {
     Object.defineProperty(Animation.prototype, "duration", {
         get: function () {
             var durs = this.mapChildren(function (child) { return child.duration; });
-            return Math.max.apply(Math, durs);
+            return durs.length ? Math.max.apply(Math, durs) : 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Animation.prototype, "time", {
+        get: function () {
+            return this._currentTime;
         },
         enumerable: false,
         configurable: true
@@ -13221,7 +13228,10 @@ var Animation = /** @class */ (function (_super) {
     Animation.prototype._update = function () {
         var _this = this;
         this.eachChild(function (track) {
-            _this.shape.set(track.property, track.getValueAt(_this._currentTime), true);
+            var value = track.getValueAt(_this._currentTime);
+            if (value !== null) {
+                _this.shape.set(track.property, value, true);
+            }
         });
         this.trigger('updated', this.shape);
         this.shape.trigger('animation:updated', this);
@@ -13447,6 +13457,22 @@ var Timeline = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Timeline.prototype, "duration", {
+        get: function () {
+            var durs = this.mapChildren(function (child) { return child.duration; });
+            return durs.length ? Math.max.apply(Math, durs) : 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Timeline.prototype, "time", {
+        get: function () {
+            var longest = this.reduceChildren(function (max, animation) { return (animation.duration > max.duration ? animation : max); }, this.firstChild());
+            return this.childrenLength ? longest.time : 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Timeline.prototype.play = function () {
         this.eachChild(function (child) { return child.play(); });
         return this;
@@ -13538,16 +13564,20 @@ var Track = /** @class */ (function (_super) {
         return keyframe;
     };
     Track.prototype.getValueAt = function (time) {
-        var _a;
         if (!this.childrenLength) {
             return null;
         }
         for (var i = 0; i < this.childrenLength; i++) {
-            var value = (_a = this.childAt(i)) === null || _a === void 0 ? void 0 : _a.getValueAt(time);
-            if (value !== null) {
+            var kf = this.childAt(i);
+            if (!kf) {
+                continue;
+            }
+            var value = kf.getValueAt(time);
+            if (value !== null && value !== undefined) {
                 return value;
             }
         }
+        return null;
     };
     Track.prototype.toJSON = function () {
         return {
@@ -20248,6 +20278,39 @@ const panX = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(0);
 const panY = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(0);
 const mode = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('select');
 const show = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(true);
+const {
+	state: { time, duration },
+	actions: { seek, play, pause }
+} = (0,_grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.useCanvas)(
+	(canvas) => {
+		const anim = canvas.getAnimation();
+		return {
+			duration: anim.duration,
+			time: anim.time
+		};
+	},
+	(canvas) => {
+		const anim = canvas.getAnimation();
+		return {
+			seek: anim.seek.bind(anim),
+			play: anim.play.bind(anim),
+			pause: anim.pause.bind(anim)
+		};
+	}
+);
+const onSeek = (e) => {
+	const time = parseInt(e.target.value);
+	console.log(time);
+	seek(time);
+};
+
+(0,vue__WEBPACK_IMPORTED_MODULE_0__.onUpdated)(() => {
+	console.log(duration.value, time.value);
+});
+
+(0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(() => {
+	console.log(duration.value, time.value);
+});
 const json = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([
 	{
 		id: 'g-4IP9Il7Xh24b',
@@ -20359,7 +20422,7 @@ const json = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([
 	}
 ]);
 
-const __returned__ = { width, height, dWidth, dHeight, zoom, panX, panY, mode, show, json, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, get Canvas() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Canvas }, get Defs() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Defs }, get Group() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Group }, get Rect() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Rect }, get Path() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Path }, get ShapeTree() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.ShapeTree }, get Wrapper() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Wrapper }, get Interactive() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Interactive } }
+const __returned__ = { width, height, dWidth, dHeight, zoom, panX, panY, mode, show, time, duration, seek, play, pause, onSeek, json, onMounted: vue__WEBPACK_IMPORTED_MODULE_0__.onMounted, onUpdated: vue__WEBPACK_IMPORTED_MODULE_0__.onUpdated, ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref, get Canvas() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Canvas }, get Defs() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Defs }, get Group() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Group }, get Rect() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Rect }, get Path() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Path }, get ShapeTree() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.ShapeTree }, get Wrapper() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Wrapper }, get Interactive() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.Interactive }, get useCanvas() { return _grafikjs_vue__WEBPACK_IMPORTED_MODULE_1__.useCanvas } }
 Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
 return __returned__
 }
@@ -20854,6 +20917,7 @@ const _hoisted_5 = [
   _hoisted_3,
   _hoisted_4
 ]
+const _hoisted_6 = ["max"]
 
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [
@@ -20884,25 +20948,26 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 							tracks: [
 								{
 									property: 'top',
-									easing: 'bounceOut',
 									keyframes: [
 										{
 											to: 1000,
-											value: 400
+											value: 400,
+											easing: 'bounceOut'
 										}
 									]
 								},
 								{
 									property: 'scaleY',
-									easing: 'cubicOut',
 									keyframes: [
 										{
 											to: 1000,
-											value: 2
+											value: 2,
+											easing: 'cubicOut'
 										},
 										{
 											to: 2000,
-											value: 1
+											value: 1,
+											easing: 'cubicOut'
 										}
 									]
 								}
@@ -20998,7 +21063,25 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       }, [..._hoisted_5], 512 /* NEED_PATCH */), [
         [vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $setup.mode]
       ])
-    ])
+    ]),
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [
+      (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Time: "),
+      (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+        type: "range",
+        "onUpdate:modelValue": _cache[9] || (_cache[9] = $event => (($setup.time) = $event)),
+        onInput: $setup.onSeek,
+        min: 0,
+        max: $setup.duration
+      }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_6), [
+        [vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.time]
+      ])
+    ]),
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+      onClick: _cache[10] || (_cache[10] = (...args) => ($setup.play && $setup.play(...args)))
+    }, "Play"),
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+      onClick: _cache[11] || (_cache[11] = (...args) => ($setup.pause && $setup.pause(...args)))
+    }, "Pause")
   ]))
 }
 

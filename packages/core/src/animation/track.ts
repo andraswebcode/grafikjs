@@ -45,11 +45,17 @@ class Track extends Collection(AnimationBase) {
 		}
 
 		for (let i = 0; i < this.childrenLength; i++) {
-			const value = this.childAt(i)?.getValueAt(time);
-			if (value !== null) {
+			const kf = this.childAt(i);
+			if (!kf) {
+				continue;
+			}
+			const value = kf.getValueAt(time);
+			if (value !== null && value !== undefined) {
 				return value;
 			}
 		}
+
+		return null;
 	}
 
 	public toJSON(): TrackObject {

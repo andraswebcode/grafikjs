@@ -1,6 +1,16 @@
 <script setup>
-import { ref } from 'vue';
-import { Canvas, Defs, Group, Rect, Path, ShapeTree, Wrapper, Interactive } from '@grafikjs/vue';
+import { onMounted, onUpdated, ref } from 'vue';
+import {
+	Canvas,
+	Defs,
+	Group,
+	Rect,
+	Path,
+	ShapeTree,
+	Wrapper,
+	Interactive,
+	useCanvas
+} from '@grafikjs/vue';
 
 const width = ref(1200);
 const height = ref(800);
@@ -11,6 +21,39 @@ const panX = ref(0);
 const panY = ref(0);
 const mode = ref('select');
 const show = ref(true);
+const {
+	state: { time, duration },
+	actions: { seek, play, pause }
+} = useCanvas(
+	(canvas) => {
+		const anim = canvas.getAnimation();
+		return {
+			duration: anim.duration,
+			time: anim.time
+		};
+	},
+	(canvas) => {
+		const anim = canvas.getAnimation();
+		return {
+			seek: anim.seek.bind(anim),
+			play: anim.play.bind(anim),
+			pause: anim.pause.bind(anim)
+		};
+	}
+);
+const onSeek = (e) => {
+	const time = parseInt(e.target.value);
+	console.log(time);
+	seek(time);
+};
+
+onUpdated(() => {
+	console.log(duration.value, time.value);
+});
+
+onMounted(() => {
+	console.log(duration.value, time.value);
+});
 const json = ref([
 	{
 		id: 'g-4IP9Il7Xh24b',
@@ -149,25 +192,26 @@ const json = ref([
 							tracks: [
 								{
 									property: 'top',
-									easing: 'bounceOut',
 									keyframes: [
 										{
 											to: 1000,
-											value: 400
+											value: 400,
+											easing: 'bounceOut'
 										}
 									]
 								},
 								{
 									property: 'scaleY',
-									easing: 'cubicOut',
 									keyframes: [
 										{
 											to: 1000,
-											value: 2
+											value: 2,
+											easing: 'cubicOut'
 										},
 										{
 											to: 2000,
-											value: 1
+											value: 1,
+											easing: 'cubicOut'
 										}
 									]
 								}
@@ -218,6 +262,12 @@ const json = ref([
 				<option value="draw">Draw</option>
 			</select>
 		</label>
+		<label>
+			Time:
+			<input type="range" v-model="time" @input="onSeek" :min="0" :max="duration" />
+		</label>
+		<button @click="play">Play</button>
+		<button @click="pause">Pause</button>
 	</div>
 </template>
 
