@@ -52,10 +52,10 @@ import { Canvas, Rect, Wrapper, Interactive } from '@grafikjs/vue';
 </template>
 ```
 
-**Wrapper:** A container component for GrafikJS elements.
-**Canvas:** The drawing area where you place your SVG elements.
-**Rect:** An example SVG element representing a rectangle.
-**Interactive:** A component that makes shapes transformable, enabling operations such as translate, scale, and rotate.
+-   **Wrapper:** A container component for GrafikJS elements.
+-   **Canvas:** The drawing area where you place your SVG elements.
+-   **Rect:** An example SVG element representing a rectangle.
+-   **Interactive:** A component that makes shapes transformable, enabling operations such as translate, scale, and rotate.
 
 This basic setup will render a rectangle that is 200x200 pixels in size, rotated 45 degrees, and positioned at coordinates (100, 100) within a 400x400 canvas.
 The Interactive component renders the top layer that allows for interactive transformations of shapes, such as translating, scaling, and rotating.
