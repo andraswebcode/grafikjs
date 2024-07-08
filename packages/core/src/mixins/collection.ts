@@ -66,6 +66,10 @@ function Collection<TBase extends Constructor>(Base: TBase) {
 			return this.children.map(callback);
 		}
 
+		public reduceChildren<T>(callback, initValue: T): T {
+			return this.children.reduce(callback, initValue);
+		}
+
 		public childAt(index: number) {
 			return this.children[index];
 		}

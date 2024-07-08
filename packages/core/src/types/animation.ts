@@ -32,6 +32,7 @@ interface TrackObject {
 }
 
 interface AnimationObject {
+	loop?: boolean;
 	easing?: EasingName;
 	tracks: TrackObject[];
 }

@@ -17,7 +17,7 @@ const {
 		attrs: shape.getAttributes(true)
 	}),
 	null,
-	'set'
+	'set animation:updated'
 );
 </script>
 

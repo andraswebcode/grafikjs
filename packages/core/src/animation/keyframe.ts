@@ -9,6 +9,10 @@ class Keyframe extends AnimationBase {
 	public endValue: any = null;
 	public easing: EasingFunction;
 
+	get duration() {
+		return this.to - this.from;
+	}
+
 	public constructor(
 		from: number,
 		to: number,
@@ -26,7 +30,6 @@ class Keyframe extends AnimationBase {
 
 	public getValueAt(time: number): any {
 		if (time < this.from || time > this.to) {
-			console.warn('Time is out of bounds.');
 			return null;
 		}
 
@@ -37,7 +40,7 @@ class Keyframe extends AnimationBase {
 	}
 
 	private _interpolateValue(t: number): any {
-		console.log(t);
+		return this.startValue + (this.endValue - this.startValue) * t;
 	}
 
 	public toJSON(): KeyframeObject {

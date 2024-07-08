@@ -16,6 +16,15 @@ class Animation extends Collection(AnimationBase) {
 
 	set tracks(value) {}
 
+	get duration() {
+		const durs = this.mapChildren((child) => child.duration);
+		return Math.max(...durs);
+	}
+
+	get playing() {
+		return this._isPlaying;
+	}
+
 	public constructor(shape: any) {
 		super();
 		this.shape = shape;
@@ -25,11 +34,15 @@ class Animation extends Collection(AnimationBase) {
 		this._isPlaying = true;
 		this._startTime = performance.now() - this._currentTime;
 		requestAnimationFrame(this._render.bind(this));
+		this.trigger('played', this.shape);
+		this.shape.trigger('animation:played', this);
 		return this;
 	}
 
 	public pause() {
 		this._isPlaying = false;
+		this.trigger('paused', this.shape);
+		this.shape.trigger('animation:paused', this);
 		return this;
 	}
 
@@ -39,6 +52,23 @@ class Animation extends Collection(AnimationBase) {
 		return this;
 	}
 
+	private _render(timeStamp: number) {
+		if (!this._isPlaying) return;
+
+		this._currentTime = timeStamp - this._startTime;
+		this._update();
+
+		if (this._currentTime <= this.duration) {
+			requestAnimationFrame(this._render.bind(this));
+		} else {
+			this._isPlaying = false;
+			this._startTime = 0;
+			this._currentTime = 0;
+			this.trigger('completed', this.shape);
+			this.shape.trigger('animation:completed', this);
+		}
+	}
+
 	private _update() {
 		this.eachChild((track) => {
 			this.shape.set(track.property, track.getValueAt(this._currentTime), true);
@@ -46,15 +76,6 @@ class Animation extends Collection(AnimationBase) {
 		this.trigger('updated', this.shape);
 		this.shape.trigger('animation:updated', this);
 		return this;
-	}
-
-	private _render(timeStamp: number) {
-		if (!this._isPlaying) return;
-
-		this._currentTime = timeStamp - this._startTime;
-		this._update();
-
-		requestAnimationFrame(this._render.bind(this));
 	}
 
 	public setTracks(objects: TrackObject[]) {

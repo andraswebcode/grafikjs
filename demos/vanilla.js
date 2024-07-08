@@ -631,20 +631,55 @@ var Animation = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Animation.prototype, "duration", {
+        get: function () {
+            var durs = this.mapChildren(function (child) { return child.duration; });
+            return Math.max.apply(Math, durs);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Animation.prototype, "playing", {
+        get: function () {
+            return this._isPlaying;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Animation.prototype.play = function () {
         this._isPlaying = true;
         this._startTime = performance.now() - this._currentTime;
         requestAnimationFrame(this._render.bind(this));
+        this.trigger('played', this.shape);
+        this.shape.trigger('animation:played', this);
         return this;
     };
     Animation.prototype.pause = function () {
         this._isPlaying = false;
+        this.trigger('paused', this.shape);
+        this.shape.trigger('animation:paused', this);
         return this;
     };
     Animation.prototype.seek = function (time) {
         this._currentTime = time;
         this._update();
         return this;
+    };
+    Animation.prototype._render = function (timeStamp) {
+        if (!this._isPlaying)
+            return;
+        this._currentTime = timeStamp - this._startTime;
+        this._update();
+        if (this._currentTime <= this.duration) {
+            requestAnimationFrame(this._render.bind(this));
+        }
+        else {
+            this._isPlaying = false;
+            this._startTime = 0;
+            this._currentTime = 0;
+            this.trigger('completed', this.shape);
+            this.shape.trigger('animation:completed', this);
+        }
     };
     Animation.prototype._update = function () {
         var _this = this;
@@ -654,13 +689,6 @@ var Animation = /** @class */ (function (_super) {
         this.trigger('updated', this.shape);
         this.shape.trigger('animation:updated', this);
         return this;
-    };
-    Animation.prototype._render = function (timeStamp) {
-        if (!this._isPlaying)
-            return;
-        this._currentTime = timeStamp - this._startTime;
-        this._update();
-        requestAnimationFrame(this._render.bind(this));
     };
     Animation.prototype.setTracks = function (objects) {
         var _this = this;
@@ -801,9 +829,15 @@ var Keyframe = /** @class */ (function (_super) {
         _this.easing = typeof easing === 'string' ? _easings__WEBPACK_IMPORTED_MODULE_1__["default"][easing] : easing;
         return _this;
     }
+    Object.defineProperty(Keyframe.prototype, "duration", {
+        get: function () {
+            return this.to - this.from;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Keyframe.prototype.getValueAt = function (time) {
         if (time < this.from || time > this.to) {
-            console.warn('Time is out of bounds.');
             return null;
         }
         var t = (time - this.from) / (this.to - this.from);
@@ -811,7 +845,7 @@ var Keyframe = /** @class */ (function (_super) {
         return this._interpolateValue(eased);
     };
     Keyframe.prototype._interpolateValue = function (t) {
-        console.log(t);
+        return this.startValue + (this.endValue - this.startValue) * t;
     };
     Keyframe.prototype.toJSON = function () {
         return {
@@ -928,6 +962,15 @@ var Track = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Track.prototype, "duration", {
+        get: function () {
+            return this.reduceChildren(function (memo, child) {
+                return memo + child.duration;
+            }, 0);
+        },
+        enumerable: false,
+        configurable: true
+    });
     Track.prototype.addKeyframe = function (kf) {
         var prevKf = this.lastChild();
         var from = prevKf ? prevKf.to : 0;
@@ -937,10 +980,16 @@ var Track = /** @class */ (function (_super) {
         return keyframe;
     };
     Track.prototype.getValueAt = function (time) {
+        var _a;
         if (!this.childrenLength) {
             return null;
         }
-        return 0;
+        for (var i = 0; i < this.childrenLength; i++) {
+            var value = (_a = this.childAt(i)) === null || _a === void 0 ? void 0 : _a.getValueAt(time);
+            if (value !== null) {
+                return value;
+            }
+        }
     };
     Track.prototype.toJSON = function () {
         return {
@@ -5139,6 +5188,9 @@ function Collection(Base) {
         };
         Collection.prototype.mapChildren = function (callback) {
             return this.children.map(callback);
+        };
+        Collection.prototype.reduceChildren = function (callback, initValue) {
+            return this.children.reduce(callback, initValue);
         };
         Collection.prototype.childAt = function (index) {
             return this.children[index];

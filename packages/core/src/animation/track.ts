@@ -13,6 +13,12 @@ class Track extends Collection(AnimationBase) {
 
 	set keyframes(value) {}
 
+	get duration() {
+		return this.reduceChildren<number>((memo, child) => {
+			return memo + child.duration;
+		}, 0);
+	}
+
 	constructor(property: string, originalValue: any, keyframes: KeyframeObject[]) {
 		super();
 		this.property = property;
@@ -35,7 +41,13 @@ class Track extends Collection(AnimationBase) {
 		if (!this.childrenLength) {
 			return null;
 		}
-		return 0;
+
+		for (let i = 0; i < this.childrenLength; i++) {
+			const value = this.childAt(i)?.getValueAt(time);
+			if (value !== null) {
+				return value;
+			}
+		}
 	}
 
 	public toJSON(): TrackObject {
