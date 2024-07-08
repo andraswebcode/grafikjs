@@ -1,6 +1,6 @@
 {
-	"name": "@grafikjs/core",
-	"version": "0.0.57",
+	"name": "@grafikjs/svelte",
+	"version": "0.0.1",
 	"main": "./src/index.ts",
 	"types": "./src/index.d.ts",
 	"scripts": {
@@ -9,19 +9,16 @@
 	},
 	"author": "Andras Tovishati",
 	"license": "MIT",
-	"description": "A lightweight JavaScript library for creating interactive SVG on the web.",
-	"dependencies": {},
-	"devDependencies": {
-		"webpack": "*",
-		"webpack-cli": "*",
-		"typescript": "*",
-		"ts-loader": "*"
+	"description": "A lightweight Svelte library for creating interactive SVG on the web.",
+	"dependencies": {
+		"@grafikjs/core": "*"
 	},
+	"devDependencies": {},
 	"homepage": "https://grafikjs.andrasweb.com/",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/andraswebcode/grafikjs/tree/master",
-		"directory": "packages/core"
+		"directory": "packages/svelte"
 	},
 	"keywords": [
 		"SVG",
@@ -32,6 +29,7 @@
 		"scale",
 		"move",
 		"rotate",
+		"vue",
 		"object",
 		"model"
 	]

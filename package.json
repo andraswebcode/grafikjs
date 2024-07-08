@@ -26,12 +26,15 @@
 		"packages/vanilla",
 		"packages/styles",
 		"packages/angular",
-		"packages/vue"
+		"packages/vue",
+		"packages/svelte",
+		"packages/canvas"
 	],
 	"dependencies": {
 		"@grafikjs/core": "*",
 		"@grafikjs/vanilla": "*",
 		"@grafikjs/react": "*",
+		"@grafikjs/vue": "*",
 		"@grafikjs/styles": "*",
 		"react": "*",
 		"react-dom": "*",
