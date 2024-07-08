@@ -81,23 +81,21 @@ createApp(App).use(grafik).mount('#wrap');
 
 ```vue
 <script>
-import { Canvas, Rect, Wrapper, Interactive, Selector } from '@grafikjs/vue';
+import { Canvas, Rect, Wrapper, Interactive } from '@grafikjs/vue';
 </script>
 <template>
 	<Wrapper>
 		<Canvas :width="400" :height="400">
 			<Rect :width="200" :height="200" :left="400" :top="400" :angle="45" fill="#00ff00" />
 		</Canvas>
-		<Interactive>
-			<Selector />
-		</Interactive>
+		<Interactive />
 	</Wrapper>
 </template>
 ```
 
 ## Examples
 
-Check the collection of examples on [CodePen](https://codepen.io/collection/ExJELG).
+Check the collection of examples on [CodePen](https://codepen.io/collection/ExJELG), and [StackBlitz](https://stackblitz.com/@andraswebcode/collections/grafikjs-examples).
 
 ## Contributing
 
@@ -105,4 +103,4 @@ We are currently developing the Vue.js package for GrafikJS, and we are looking 
 
 If you're passionate about web development and SVG graphics and would like to contribute to GrafikJS, we invite you to join us! Whether you have experience with Angular, Svelte, or SVG manipulation in JavaScript, your contributions can make a significant impact.
 
-To get started, please check out our contributing guidelines and feel free to reach out on our GitHub repository if you have any questions or ideas. Let's build together!
+To get started, please check out our [contributing guidelines](https://github.com/andraswebcode/grafikjs/blob/master/CONTRIBUTING.md) and feel free to reach out on our GitHub repository if you have any questions or ideas. Let's build together!
