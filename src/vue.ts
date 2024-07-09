@@ -10,8 +10,8 @@ const grafik = createGrafik({
 	gridSize: 50,
 	width: 1200,
 	height: 800,
-	drawingWidth: 400,
-	drawingHeight: 400
+	drawingWidth: 200,
+	drawingHeight: 200
 });
 
 createApp(App).use(grafik).mount('#wrap');

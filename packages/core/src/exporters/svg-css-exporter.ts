@@ -1,5 +1,33 @@
+import { toFixed } from './../utils';
 import { SVGExporter } from './svg-exporter';
 
+const TRANSFORM_VALUES = {
+	left: {
+		fn: 'translateX',
+		defValue: 0,
+		unit: 'px'
+	},
+	top: {
+		fn: 'translateY',
+		defValue: 0,
+		unit: 'px'
+	},
+	scaleX: {
+		fn: 'scaleX',
+		defValue: 1,
+		unit: ''
+	},
+	scaleY: {
+		fn: 'scaleY',
+		defValue: 1,
+		unit: ''
+	},
+	angle: {
+		fn: 'rotate',
+		defValue: 0,
+		unit: 'deg'
+	}
+};
 class SVGCSSExporter extends SVGExporter {
 	protected _createCanvas() {
 		const canvas = this._canvas;
@@ -8,7 +36,14 @@ class SVGCSSExporter extends SVGExporter {
 		const style = animation.mapChildren((child) => this._createAnimation(child)).join('');
 		const shapes = canvas.mapChildren((child) => this._createShape(child)).join('');
 
-		return `<svg ${attrs}>${style}${shapes}</svg>`;
+		return `
+			<svg ${attrs}>
+				<style>
+					${style}
+				</style>
+				${shapes}
+			</svg>
+		`;
 	}
 
 	protected _createShape(shape: any) {
@@ -26,7 +61,79 @@ class SVGCSSExporter extends SVGExporter {
 	}
 
 	protected _createAnimation(animation: any) {
-		return '';
+		const id = animation.shape.id;
+		const duration = animation.duration;
+		const keyframes = this._createKeyframes(animation);
+		const output = `
+			#${id} {
+				animation-name: ${id};
+				animation-duration: ${duration}ms;
+			}
+			${keyframes}
+		`;
+
+		return output;
+	}
+
+	private _createKeyframes(animation) {
+		const { duration, shape } = animation;
+		const { id } = shape;
+		const keyframes = animation
+			.mapChildren((track) =>
+				track.mapChildren((kf) => ({
+					...kf.toJSON(),
+					property: track.property
+				}))
+			)
+			.flat()
+			.reduce((memo, item) => {
+				(memo[item.to] = memo[item.to] || []).push(item);
+				return memo;
+			}, {});
+
+		let output = `@keyframes ${id} {`,
+			sec = '0',
+			_sec = 0,
+			_prc = 0,
+			_body = '';
+
+		for (sec in keyframes) {
+			_sec = parseInt(sec);
+			_prc = toFixed((_sec / duration) * 100);
+			_body = keyframes[sec]
+				.map((data) => this._getCSSDecaration(data.property, data.value))
+				.join('');
+			output += `
+				${_prc}% {
+					${_body}
+				}
+			`;
+		}
+
+		output += '}';
+
+		return output;
+	}
+
+	private _getCSSDecaration(property, value) {
+		const transformValue = this._getTransformValue(property, value);
+
+		if (transformValue) {
+			return `transform: ${transformValue};`;
+		}
+
+		return `${property}: ${value};`;
+	}
+
+	private _getTransformValue(property, value) {
+		if (!TRANSFORM_VALUES[property]) {
+			return '';
+		}
+
+		const { fn, defValue, unit } = TRANSFORM_VALUES[property];
+		const val = typeof value === 'undefined' ? defValue : value;
+
+		return `${fn}(${val}${unit})`;
 	}
 }
 

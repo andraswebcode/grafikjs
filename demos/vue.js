@@ -21870,8 +21870,8 @@ var grafik = (0,_grafikjs_vue__WEBPACK_IMPORTED_MODULE_2__.createGrafik)({
     gridSize: 50,
     width: 1200,
     height: 800,
-    drawingWidth: 400,
-    drawingHeight: 400
+    drawingWidth: 200,
+    drawingHeight: 200
 });
 (0,vue__WEBPACK_IMPORTED_MODULE_0__.createApp)(_example_vue__WEBPACK_IMPORTED_MODULE_1__["default"]).use(grafik).mount('#wrap');
 

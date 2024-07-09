@@ -358,7 +358,7 @@ var Keyframe = /** @class */ (function (_super) {
         return {
             to: this.to,
             value: this.endValue,
-            easing: 'linear'
+            easing: this.easing.name
         };
     };
     return Keyframe;
@@ -440,6 +440,11 @@ var Timeline = /** @class */ (function (_super) {
     Timeline.prototype.seek = function (time) {
         this.eachChild(function (child) { return child.seek(time); });
         return this;
+    };
+    Timeline.prototype.toJSON = function () {
+        return {
+            animations: this.mapChildren(function (animation) { return animation.toJSON(); })
+        };
     };
     return Timeline;
 }((0,_mixins__WEBPACK_IMPORTED_MODULE_1__.Collection)(_animation_base__WEBPACK_IMPORTED_MODULE_0__.AnimationBase)));
@@ -1688,7 +1693,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   SVGCSSExporter: () => (/* binding */ SVGCSSExporter)
 /* harmony export */ });
-/* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./svg-exporter */ "./src/exporters/svg-exporter.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../utils */ "./src/utils/index.ts");
+/* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./svg-exporter */ "./src/exporters/svg-exporter.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1704,7 +1710,46 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 
+
+var TRANSFORM_VALUES = {
+    left: {
+        fn: 'translateX',
+        defValue: 0,
+        unit: 'px'
+    },
+    top: {
+        fn: 'translateY',
+        defValue: 0,
+        unit: 'px'
+    },
+    scaleX: {
+        fn: 'scaleX',
+        defValue: 1,
+        unit: ''
+    },
+    scaleY: {
+        fn: 'scaleY',
+        defValue: 1,
+        unit: ''
+    },
+    angle: {
+        fn: 'rotate',
+        defValue: 0,
+        unit: 'deg'
+    }
+};
 var SVGCSSExporter = /** @class */ (function (_super) {
     __extends(SVGCSSExporter, _super);
     function SVGCSSExporter() {
@@ -1717,7 +1762,7 @@ var SVGCSSExporter = /** @class */ (function (_super) {
         var attrs = this._serializeAttributes(this._getCanvasAttributes());
         var style = animation.mapChildren(function (child) { return _this._createAnimation(child); }).join('');
         var shapes = canvas.mapChildren(function (child) { return _this._createShape(child); }).join('');
-        return "<svg ".concat(attrs, ">").concat(style).concat(shapes, "</svg>");
+        return "\n\t\t\t<svg ".concat(attrs, ">\n\t\t\t\t<style>\n\t\t\t\t\t").concat(style, "\n\t\t\t\t</style>\n\t\t\t\t").concat(shapes, "\n\t\t\t</svg>\n\t\t");
     };
     SVGCSSExporter.prototype._createShape = function (shape) {
         var _this = this;
@@ -1731,10 +1776,54 @@ var SVGCSSExporter = /** @class */ (function (_super) {
         return "<g ".concat(wAttrs, "><").concat(tag, " ").concat(attrs, " /></g>");
     };
     SVGCSSExporter.prototype._createAnimation = function (animation) {
-        return '';
+        var id = animation.shape.id;
+        var duration = animation.duration;
+        var keyframes = this._createKeyframes(animation);
+        var output = "\n\t\t\t#".concat(id, " {\n\t\t\t\tanimation-name: ").concat(id, ";\n\t\t\t\tanimation-duration: ").concat(duration, "ms;\n\t\t\t}\n\t\t\t").concat(keyframes, "\n\t\t");
+        return output;
+    };
+    SVGCSSExporter.prototype._createKeyframes = function (animation) {
+        var _this = this;
+        var duration = animation.duration, shape = animation.shape;
+        var id = shape.id;
+        var keyframes = animation
+            .mapChildren(function (track) {
+            return track.mapChildren(function (kf) { return (__assign(__assign({}, kf.toJSON()), { property: track.property })); });
+        })
+            .flat()
+            .reduce(function (memo, item) {
+            (memo[item.to] = memo[item.to] || []).push(item);
+            return memo;
+        }, {});
+        var output = "@keyframes ".concat(id, " {"), sec = '0', _sec = 0, _prc = 0, _body = '';
+        for (sec in keyframes) {
+            _sec = parseInt(sec);
+            _prc = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.toFixed)((_sec / duration) * 100);
+            _body = keyframes[sec]
+                .map(function (data) { return _this._getCSSDecaration(data.property, data.value); })
+                .join('');
+            output += "\n\t\t\t\t".concat(_prc, "% {\n\t\t\t\t\t").concat(_body, "\n\t\t\t\t}\n\t\t\t");
+        }
+        output += '}';
+        return output;
+    };
+    SVGCSSExporter.prototype._getCSSDecaration = function (property, value) {
+        var transformValue = this._getTransformValue(property, value);
+        if (transformValue) {
+            return "transform: ".concat(transformValue, ";");
+        }
+        return "".concat(property, ": ").concat(value, ";");
+    };
+    SVGCSSExporter.prototype._getTransformValue = function (property, value) {
+        if (!TRANSFORM_VALUES[property]) {
+            return '';
+        }
+        var _a = TRANSFORM_VALUES[property], fn = _a.fn, defValue = _a.defValue, unit = _a.unit;
+        var val = typeof value === 'undefined' ? defValue : value;
+        return "".concat(fn, "(").concat(val).concat(unit, ")");
     };
     return SVGCSSExporter;
-}(_svg_exporter__WEBPACK_IMPORTED_MODULE_0__.SVGExporter));
+}(_svg_exporter__WEBPACK_IMPORTED_MODULE_1__.SVGExporter));
 
 
 
