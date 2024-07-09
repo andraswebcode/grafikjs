@@ -817,6 +817,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _animation_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation-base */ "./packages/core/src/animation/animation-base.ts");
 /* harmony import */ var _easings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./easings */ "./packages/core/src/animation/easings.ts");
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../maths */ "./packages/core/src/maths/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -834,6 +835,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
+
 var Keyframe = /** @class */ (function (_super) {
     __extends(Keyframe, _super);
     function Keyframe(from, to, startValue, endValue, easing) {
@@ -845,8 +847,8 @@ var Keyframe = /** @class */ (function (_super) {
         _this.endValue = null;
         _this.from = from;
         _this.to = to;
-        _this.startValue = startValue;
-        _this.endValue = endValue;
+        _this.startValue = _this._parseValue(startValue);
+        _this.endValue = _this._parseValue(endValue);
         _this.easing = typeof easing === 'string' ? _easings__WEBPACK_IMPORTED_MODULE_1__.easings[easing] : easing;
         _this.name = 'keyframe';
         _this.createId();
@@ -868,7 +870,40 @@ var Keyframe = /** @class */ (function (_super) {
         return this._interpolateValue(eased);
     };
     Keyframe.prototype._interpolateValue = function (t) {
+        var _this = this;
+        if (Array.isArray(this.startValue) && Array.isArray(this.endValue)) {
+            return this.startValue
+                .map(function (startChunk, i) {
+                var endChunk = _this.endValue[i];
+                return typeof startChunk === 'number'
+                    ? startChunk + (endChunk - startChunk) * t
+                    : startChunk;
+            })
+                .join('');
+        }
         return this.startValue + (this.endValue - this.startValue) * t;
+    };
+    Keyframe.prototype._parseValue = function (value) {
+        if (typeof value === 'number') {
+            return value;
+        }
+        if (_maths__WEBPACK_IMPORTED_MODULE_2__.Color.isColor(value)) {
+            // If value is an any color format, eg #000, or black,
+            // first we need to convert this to a value
+            // that contains decimal numbers eg. rgba().
+            var color = new _maths__WEBPACK_IMPORTED_MODULE_2__.Color(value);
+            value = color.toRGBA();
+        }
+        if (typeof value === 'string') {
+            value = value
+                .split(/(\d+\.?\d*)|(\D+)/g)
+                .filter(Boolean)
+                .map(function (chunk) {
+                var n = parseFloat(chunk);
+                return isNaN(n) ? chunk : n;
+            });
+        }
+        return value;
     };
     Keyframe.prototype.toJSON = function () {
         return {
@@ -2209,7 +2244,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   SVGCSSExporter: () => (/* binding */ SVGCSSExporter)
 /* harmony export */ });
-/* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./svg-exporter */ "./packages/core/src/exporters/svg-exporter.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./svg-exporter */ "./packages/core/src/exporters/svg-exporter.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -2225,7 +2261,46 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 
+
+var TRANSFORM_VALUES = {
+    left: {
+        fn: 'translateX',
+        defValue: 0,
+        unit: 'px'
+    },
+    top: {
+        fn: 'translateY',
+        defValue: 0,
+        unit: 'px'
+    },
+    scaleX: {
+        fn: 'scaleX',
+        defValue: 1,
+        unit: ''
+    },
+    scaleY: {
+        fn: 'scaleY',
+        defValue: 1,
+        unit: ''
+    },
+    angle: {
+        fn: 'rotate',
+        defValue: 0,
+        unit: 'deg'
+    }
+};
 var SVGCSSExporter = /** @class */ (function (_super) {
     __extends(SVGCSSExporter, _super);
     function SVGCSSExporter() {
@@ -2238,7 +2313,7 @@ var SVGCSSExporter = /** @class */ (function (_super) {
         var attrs = this._serializeAttributes(this._getCanvasAttributes());
         var style = animation.mapChildren(function (child) { return _this._createAnimation(child); }).join('');
         var shapes = canvas.mapChildren(function (child) { return _this._createShape(child); }).join('');
-        return "<svg ".concat(attrs, ">").concat(style).concat(shapes, "</svg>");
+        return "\n\t\t\t<svg ".concat(attrs, ">\n\t\t\t\t<style>\n\t\t\t\t\t").concat(style, "\n\t\t\t\t</style>\n\t\t\t\t").concat(shapes, "\n\t\t\t</svg>\n\t\t");
     };
     SVGCSSExporter.prototype._createShape = function (shape) {
         var _this = this;
@@ -2252,10 +2327,54 @@ var SVGCSSExporter = /** @class */ (function (_super) {
         return "<g ".concat(wAttrs, "><").concat(tag, " ").concat(attrs, " /></g>");
     };
     SVGCSSExporter.prototype._createAnimation = function (animation) {
-        return '';
+        var id = animation.shape.id;
+        var duration = animation.duration;
+        var keyframes = this._createKeyframes(animation);
+        var output = "\n\t\t\t#".concat(id, " {\n\t\t\t\tanimation-name: ").concat(id, ";\n\t\t\t\tanimation-duration: ").concat(duration, "ms;\n\t\t\t}\n\t\t\t").concat(keyframes, "\n\t\t");
+        return output;
+    };
+    SVGCSSExporter.prototype._createKeyframes = function (animation) {
+        var _this = this;
+        var duration = animation.duration, shape = animation.shape;
+        var id = shape.id;
+        var keyframes = animation
+            .mapChildren(function (track) {
+            return track.mapChildren(function (kf) { return (__assign(__assign({}, kf.toJSON()), { property: track.property })); });
+        })
+            .flat()
+            .reduce(function (memo, item) {
+            (memo[item.to] = memo[item.to] || []).push(item);
+            return memo;
+        }, {});
+        var output = "@keyframes ".concat(id, " {"), sec = '0', _sec = 0, _prc = 0, _body = '';
+        for (sec in keyframes) {
+            _sec = parseInt(sec);
+            _prc = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.toFixed)((_sec / duration) * 100);
+            _body = keyframes[sec]
+                .map(function (data) { return _this._getCSSDecaration(data.property, data.value); })
+                .join('');
+            output += "\n\t\t\t\t".concat(_prc, "% {\n\t\t\t\t\t").concat(_body, "\n\t\t\t\t}\n\t\t\t");
+        }
+        output += '}';
+        return output;
+    };
+    SVGCSSExporter.prototype._getCSSDecaration = function (property, value) {
+        var transformValue = this._getTransformValue(property, value);
+        if (transformValue) {
+            return "transform: ".concat(transformValue, ";");
+        }
+        return "".concat(property, ": ").concat(value, ";");
+    };
+    SVGCSSExporter.prototype._getTransformValue = function (property, value) {
+        if (!TRANSFORM_VALUES[property]) {
+            return '';
+        }
+        var _a = TRANSFORM_VALUES[property], fn = _a.fn, defValue = _a.defValue, unit = _a.unit;
+        var val = typeof value === 'undefined' ? defValue : value;
+        return "".concat(fn, "(").concat(val).concat(unit, ")");
     };
     return SVGCSSExporter;
-}(_svg_exporter__WEBPACK_IMPORTED_MODULE_0__.SVGExporter));
+}(_svg_exporter__WEBPACK_IMPORTED_MODULE_1__.SVGExporter));
 
 
 
@@ -3761,11 +3880,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Color: () => (/* binding */ Color)
 /* harmony export */ });
 var Color = /** @class */ (function () {
-    function Color() {
+    function Color(color) {
         this.r = 0;
         this.g = 0;
         this.b = 0;
         this.a = 1;
+        if (Color.isHEX(color)) {
+            // @ts-ignore
+            this.fromHEX(color);
+        }
+        else if (Color.isRGB(color)) {
+            // @ts-ignore
+            this.fromRGB(color);
+        }
+        else if (Color.isHSL(color)) {
+            // @ts-ignore
+            this.fromHSL(color);
+        }
+        else if (Array.isArray(color)) {
+            this.fromArray(color);
+        }
+        else {
+            // @ts-ignore
+            this.fromObject(color);
+        }
     }
     Color.prototype.fromHEX = function (color) {
         var match = color.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
@@ -3773,7 +3911,7 @@ var Color = /** @class */ (function () {
             this.r = parseInt(match[1], 16);
             this.g = parseInt(match[2], 16);
             this.b = parseInt(match[3], 16);
-            this.a = (typeof match[4] !== 'undefined') ? parseFloat(match[4]) : 1;
+            this.a = typeof match[4] !== 'undefined' ? parseFloat(match[4]) : 1;
         }
         return this;
     };
@@ -3783,7 +3921,7 @@ var Color = /** @class */ (function () {
             this.r = parseInt(match[1], 10);
             this.g = parseInt(match[2], 10);
             this.b = parseInt(match[3], 10);
-            this.a = (typeof match[4] !== 'undefined') ? parseFloat(match[4]) : 1;
+            this.a = typeof match[4] !== 'undefined' ? parseFloat(match[4]) : 1;
         }
         return this;
     };
@@ -3808,15 +3946,15 @@ var Color = /** @class */ (function () {
         var r = this.r.toString(16);
         var g = this.g.toString(16);
         var b = this.b.toString(16);
-        r = (r.length === 1) ? ('0' + r) : r;
-        g = (g.length === 1) ? ('0' + g) : g;
-        b = (b.length === 1) ? ('0' + b) : b;
+        r = r.length === 1 ? '0' + r : r;
+        g = g.length === 1 ? '0' + g : g;
+        b = b.length === 1 ? '0' + b : b;
         return '#' + r.toUpperCase() + g.toUpperCase() + b.toUpperCase();
     };
     Color.prototype.toHEXA = function () {
         // @ts-ignore
         var a = parseInt(this.a * 255).toString(16);
-        a = (a.length === 1) ? ('0' + a) : a;
+        a = a.length === 1 ? '0' + a : a;
         return this.toHEX() + a.toUpperCase();
     };
     Color.prototype.toRGB = function () {
@@ -3839,26 +3977,34 @@ var Color = /** @class */ (function () {
         return { r: r, g: g, b: b, a: a };
     };
     Color.prototype.copy = function (color) {
-        return this.fromArray(color.toArray());
+        return this.fromObject(color);
     };
     Color.prototype.clone = function () {
-        return new Color().copy(this);
+        return new Color(this);
     };
     Color.isColor = function (value) {
-        return (Color.isHEX(value) || Color.isRGB(value) || Color.isColorName(value));
+        return Color.isHEX(value) || Color.isRGB(value) || Color.isColorName(value);
     };
     Color.isColorName = function (value) {
         return Color.isHEX(Color.colorNameMap[value]);
     };
     Color.isHEX = function (value) {
+        // There was a bug: isHEX test below passed both 3, and 6-digits numbers too.
+        // So we first check if it is a string at all.
+        if (typeof value !== 'string') {
+            return false;
+        }
         var isHex = /^(#?)([a-f0-9]{3}){1,2}$/i.test(value);
         var isHexa = /^(#?)([a-f0-9]{8})$/i.test(value);
-        return (isHex || isHexa);
+        return isHex || isHexa;
     };
     Color.isRGB = function (value) {
         var isRgb = /^(rgb)[(]\s*([\d.]+\s*)\s*,\s*([\d.]+\s*)\s*,\s*([\d.]+\s*)\s*[)]$/.test(value);
         var isRgba = /^(rgba)[(]\s*([\d.]+\s*)\s*,\s*([\d.]+\s*)\s*,\s*([\d.]+\s*)\s*,\s*([\d.]+\s*)\s*[)]$/.test(value);
-        return (isRgb || isRgba);
+        return isRgb || isRgba;
+    };
+    Color.isHSL = function (value) {
+        return false;
     };
     Color.colorNameMap = {
         aliceblue: '#F0F8FF',

@@ -190,8 +190,24 @@ const json = ref([
 						:height="40"
 						:left="200"
 						:top="200"
+						fill="#000"
 						:animation="{
 							tracks: [
+								{
+									property: 'fill',
+									keyframes: [
+										{
+											to: 1000,
+											value: '#00ff00',
+											easing: 'cubicIn'
+										},
+										{
+											to: 2000,
+											value: '#0000ff',
+											easing: 'cubicIn'
+										}
+									]
+								},
 								{
 									property: 'left',
 									keyframes: [
