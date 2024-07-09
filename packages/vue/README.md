@@ -4,7 +4,7 @@ The Vue package is a specialized extension of the GrafikJS library, designed spe
 
 ## Installation
 
-To get started with @grafikjs/vue, you'll first need to install the package along with GrafikJS styles. You can do this using npm:
+To get started with Vue package, you'll first need to install it along with GrafikJS styles. You can do this using npm:
 
 ```bash
 npm install @grafikjs/vue
