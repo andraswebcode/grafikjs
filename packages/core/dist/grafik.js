@@ -1750,17 +1750,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __assign = (undefined && undefined.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 
 
 var TRANSFORM_VALUES = {
@@ -1892,55 +1881,47 @@ var SVGCSSExporter = /** @class */ (function (_super) {
         var shape = animation.shape;
         var id = shape.get('id');
         var tag = shape.get('tagName');
-        var duration = animation.duration;
+        var duration = this.getOption('duration') || animation.duration;
+        var delay = this.getOption('delay') || '0';
+        var repeat = this.getOption('repeat') || '1';
+        var direction = this.getOption('direction') || 'normal';
+        var fillMode = this.getOption('fillMode') || 'both';
+        var animationNames = animation
+            .mapChildren(function (track) { return track.property; })
+            .filter(function (prop) { return !TRANSFORM_PROPERTIES.includes(prop); })
+            .map(function (prop) { return "".concat(id, "-").concat(prop); })
+            .join(', ');
         var keyframes = this._createKeyframes(animation);
         var transformCSS = this._getAnimatedTransformProps(shape)
-            .map(function (prop) { return "\n\t\t\t#".concat(id, "-").concat(prop, " {\n\t\t\t\tanimation-name: ").concat(id, "-").concat(prop, ";\n\t\t\t\tanimation-duration: ").concat(duration, "ms;\n\t\t\t\tanimation-fill-mode: both;\n\t\t\t\ttransform: ").concat(_this._getTransformValue(prop, shape.get(prop)), "\n\t\t\t}\n\t\t\t"); })
+            .map(function (prop) { return "\n\t\t\t#".concat(id, "-").concat(prop, " {\n\t\t\t\tanimation-name: ").concat(id, "-").concat(prop, ";\n\t\t\t\tanimation-duration: ").concat(duration, "ms;\n\t\t\t\tanimation-delay: ").concat(delay, "ms;\n\t\t\t\tanimation-iteration-count: ").concat(repeat, ";\n\t\t\t\tanimation-direction: ").concat(direction, ";\n\t\t\t\tanimation-fill-mode: ").concat(fillMode, ";\n\t\t\t\ttransform: ").concat(_this._getTransformValue(prop, shape.get(prop)), "\n\t\t\t}\n\t\t\t"); })
             .join('');
-        var output = "\n\t\t\t#".concat(id, " ").concat(tag, " {\n\t\t\t\tanimation-name: ").concat(id, ";\n\t\t\t\tanimation-duration: ").concat(duration, "ms;\n\t\t\t\tanimation-fill-mode: both;\n\t\t\t}\n\t\t\t").concat(transformCSS, "\n\t\t\t").concat(keyframes, "\n\t\t");
+        var output = "\n\t\t\t#".concat(id, " ").concat(tag, " {\n\t\t\t\tanimation-name: ").concat(animationNames, ";\n\t\t\t\tanimation-duration: ").concat(duration, "ms;\n\t\t\t\tanimation-delay: ").concat(delay, "ms;\n\t\t\t\tanimation-iteration-count: ").concat(repeat, ";\n\t\t\t\tanimation-direction: ").concat(direction, ";\n\t\t\t\tanimation-fill-mode: ").concat(fillMode, ";\n\t\t\t}\n\t\t\t").concat(transformCSS, "\n\t\t\t").concat(keyframes, "\n\t\t");
         return output;
     };
     SVGCSSExporter.prototype._createKeyframes = function (animation) {
         var _this = this;
         var duration = animation.duration, shape = animation.shape;
         var id = shape.id;
-        var keyframes = animation
+        return animation
             .mapChildren(function (track) {
-            return track.mapChildren(function (kf) { return (__assign(__assign({}, kf.toJSON()), { property: track.property })); });
-        })
-            .flat();
-        var reducer = function (memo, item) {
-            (memo[item.to] = memo[item.to] || []).push(item);
-            return memo;
-        };
-        var buildKeyframes = function (kfs) {
-            var o = '', sec = '0', _sec = 0, _prc = 0, _body = '';
-            for (sec in kfs) {
-                _sec = parseInt(sec);
-                _prc = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.toFixed)((_sec / duration) * 100);
-                _body = kfs[sec]
-                    .map(function (data) { return _this._getCSSDeclaration(data.property, data.value); })
-                    .join('');
-                o += "\n\t\t\t\t\t".concat(_prc, "% {\n\t\t\t\t\t\t").concat(_body, "\n\t\t\t\t\t}\n\t\t\t\t");
-            }
-            return o;
-        };
-        var shapeKeyframes = keyframes
-            .filter(function (kf) { return !TRANSFORM_PROPERTIES.includes(kf.property); })
-            .reduce(reducer, {});
-        var output = "@keyframes ".concat(id, " {");
-        output += buildKeyframes(shapeKeyframes);
-        output += '}';
-        output += this._getAnimatedTransformProps(shape)
-            .map(function (prop) {
-            var trKfs = keyframes.filter(function (kf) { return kf.property === prop; }).reduce(reducer, {});
-            var output = "@keyframes ".concat(id, "-").concat(prop, " {");
-            output += buildKeyframes(trKfs);
+            var property = track.property, originalValue = track.originalValue;
+            var output = "@keyframes ".concat(id, "-").concat(property, " {");
+            var cssDeclaration = '';
+            output += "\n\t\t\t\t\t0% {\n\t\t\t\t\t\t".concat(_this._getCSSDeclaration(property, originalValue), "\n\t\t\t\t\t}\n\t\t\t\t");
+            output += track
+                .mapChildren(function (kf) {
+                var _a = kf.toJSON(), to = _a.to, value = _a.value, easing = _a.easing;
+                var prc = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.toFixed)((to / duration) * 100);
+                var easingFn = EASING_FUNCTIONS[easing] || 'linear';
+                cssDeclaration = _this._getCSSDeclaration(property, value);
+                return "\n\t\t\t\t\t\t\t".concat(prc, "% {\n\t\t\t\t\t\t\t\t").concat(cssDeclaration, "\n\t\t\t\t\t\t\t\tanimation-timing-function: ").concat(easingFn, ";\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t");
+            })
+                .join('');
+            output += "\n\t\t\t\t\t100% {\n\t\t\t\t\t\t".concat(cssDeclaration, "\n\t\t\t\t\t}\n\t\t\t\t");
             output += '}';
             return output;
         })
             .join('');
-        return output;
     };
     SVGCSSExporter.prototype._getAnimatedTransformProps = function (shape) {
         return shape
@@ -1954,7 +1935,8 @@ var SVGCSSExporter = /** @class */ (function (_super) {
         if (transformValue) {
             return "transform: ".concat(transformValue, ";");
         }
-        return "".concat(property, ": ").concat(value, ";");
+        var unit = typeof value === 'number' ? 'px' : '';
+        return "".concat((0,_utils__WEBPACK_IMPORTED_MODULE_0__.kebabize)(property), ": ").concat(value).concat(unit, ";");
     };
     SVGCSSExporter.prototype._getTransformValue = function (property, value) {
         if (!TRANSFORM_VALUES[property]) {

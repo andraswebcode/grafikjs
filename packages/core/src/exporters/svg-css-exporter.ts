@@ -1,4 +1,4 @@
-import { toFixed } from './../utils';
+import { kebabize, toFixed } from './../utils';
 import { SVGExporter } from './svg-exporter';
 
 const TRANSFORM_VALUES = {
@@ -150,7 +150,16 @@ class SVGCSSExporter extends SVGExporter {
 		const { shape } = animation;
 		const id = shape.get('id');
 		const tag = shape.get('tagName');
-		const duration = animation.duration;
+		const duration = this.getOption('duration') || animation.duration;
+		const delay = this.getOption('delay') || '0';
+		const repeat = this.getOption('repeat') || '1';
+		const direction = this.getOption('direction') || 'normal';
+		const fillMode = this.getOption('fillMode') || 'both';
+		const animationNames = animation
+			.mapChildren((track) => track.property)
+			.filter((prop) => !TRANSFORM_PROPERTIES.includes(prop))
+			.map((prop) => `${id}-${prop}`)
+			.join(', ');
 		const keyframes = this._createKeyframes(animation);
 		const transformCSS = this._getAnimatedTransformProps(shape)
 			.map(
@@ -158,7 +167,10 @@ class SVGCSSExporter extends SVGExporter {
 			#${id}-${prop} {
 				animation-name: ${id}-${prop};
 				animation-duration: ${duration}ms;
-				animation-fill-mode: both;
+				animation-delay: ${delay}ms;
+				animation-iteration-count: ${repeat};
+				animation-direction: ${direction};
+				animation-fill-mode: ${fillMode};
 				transform: ${this._getTransformValue(prop, shape.get(prop))}
 			}
 			`
@@ -166,9 +178,12 @@ class SVGCSSExporter extends SVGExporter {
 			.join('');
 		const output = `
 			#${id} ${tag} {
-				animation-name: ${id};
+				animation-name: ${animationNames};
 				animation-duration: ${duration}ms;
-				animation-fill-mode: both;
+				animation-delay: ${delay}ms;
+				animation-iteration-count: ${repeat};
+				animation-direction: ${direction};
+				animation-fill-mode: ${fillMode};
 			}
 			${transformCSS}
 			${keyframes}
@@ -180,59 +195,39 @@ class SVGCSSExporter extends SVGExporter {
 	private _createKeyframes(animation) {
 		const { duration, shape } = animation;
 		const { id } = shape;
-		const keyframes = animation
-			.mapChildren((track) =>
-				track.mapChildren((kf) => ({
-					...kf.toJSON(),
-					property: track.property
-				}))
-			)
-			.flat();
-		const reducer = (memo, item) => {
-			(memo[item.to] = memo[item.to] || []).push(item);
-			return memo;
-		};
-		const buildKeyframes = (kfs) => {
-			let o = '',
-				sec = '0',
-				_sec = 0,
-				_prc = 0,
-				_body = '';
-			for (sec in kfs) {
-				_sec = parseInt(sec);
-				_prc = toFixed((_sec / duration) * 100);
-				_body = kfs[sec]
-					.map((data) => this._getCSSDeclaration(data.property, data.value))
-					.join('');
-				o += `
-					${_prc}% {
-						${_body}
+		return animation
+			.mapChildren((track) => {
+				const { property, originalValue } = track;
+				let output = `@keyframes ${id}-${property} {`;
+				let cssDeclaration = '';
+				output += `
+					0% {
+						${this._getCSSDeclaration(property, originalValue)}
 					}
 				`;
-			}
-			return o;
-		};
-		const shapeKeyframes = keyframes
-			.filter((kf) => !TRANSFORM_PROPERTIES.includes(kf.property))
-			.reduce(reducer, {});
-
-		let output = `@keyframes ${id} {`;
-
-		output += buildKeyframes(shapeKeyframes);
-
-		output += '}';
-
-		output += this._getAnimatedTransformProps(shape)
-			.map((prop) => {
-				const trKfs = keyframes.filter((kf) => kf.property === prop).reduce(reducer, {});
-				let output = `@keyframes ${id}-${prop} {`;
-				output += buildKeyframes(trKfs);
+				output += track
+					.mapChildren((kf) => {
+						const { to, value, easing } = kf.toJSON();
+						const prc = toFixed((to / duration) * 100);
+						const easingFn = EASING_FUNCTIONS[easing] || 'linear';
+						cssDeclaration = this._getCSSDeclaration(property, value);
+						return `
+							${prc}% {
+								${cssDeclaration}
+								animation-timing-function: ${easingFn};
+							}
+						`;
+					})
+					.join('');
+				output += `
+					100% {
+						${cssDeclaration}
+					}
+				`;
 				output += '}';
 				return output;
 			})
 			.join('');
-
-		return output;
 	}
 
 	private _getAnimatedTransformProps(shape: any) {
@@ -250,7 +245,9 @@ class SVGCSSExporter extends SVGExporter {
 			return `transform: ${transformValue};`;
 		}
 
-		return `${property}: ${value};`;
+		const unit = typeof value === 'number' ? 'px' : '';
+
+		return `${kebabize(property)}: ${value}${unit};`;
 	}
 
 	private _getTransformValue(property, value) {
