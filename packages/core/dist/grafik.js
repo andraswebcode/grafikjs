@@ -1791,6 +1791,60 @@ var TRANSFORM_VALUES = {
     }
 };
 var TRANSFORM_PROPERTIES = Object.keys(TRANSFORM_VALUES);
+var TRANSFORM_ORDER = ['top', 'left', 'angle', 'scaleY', 'scaleX'];
+var EASING_FUNCTIONS = {
+    linear: 'linear',
+    // Quadratic
+    quadraticIn: 'cubic-bezier(0.11, 0, 0.5, 0)',
+    quadraticOut: 'cubic-bezier(0.5, 1, 0.89, 1)',
+    quadraticInOut: 'cubic-bezier(0.45, 0, 0.55, 1)',
+    quadraticOutIn: 'cubic-bezier(0, 0.45, 1, 0.55)',
+    // Cubic
+    cubicIn: 'cubic-bezier(0.32, 0, 0.67, 0)',
+    cubicOut: 'cubic-bezier(0.33, 1, 0.68, 1)',
+    cubicInOut: 'cubic-bezier(0.65, 0, 0.35, 1)',
+    cubicOutIn: 'cubic-bezier(0, 0.65, 1, 0.35)',
+    // Quartic
+    quarticIn: 'cubic-bezier(0.5, 0, 0.75, 0)',
+    quarticOut: 'cubic-bezier(0.25, 1, 0.5, 1)',
+    quarticInOut: 'cubic-bezier(0.76, 0, 0.24, 1)',
+    quarticOutIn: 'cubic-bezier(0, 0.76, 1, 0.24)',
+    // Quintic
+    quinticIn: 'cubic-bezier(0.64, 0, 0.78, 0)',
+    quinticOut: 'cubic-bezier(0.22, 1, 0.36, 1)',
+    quinticInOut: 'cubic-bezier(0.83, 0, 0.17, 1)',
+    quinticOutIn: 'cubic-bezier(0, 0.83, 1, 0.17)',
+    // Sine
+    sineIn: 'cubic-bezier(0.12, 0, 0.39, 0)',
+    sineOut: 'cubic-bezier(0.61, 1, 0.88, 1)',
+    sineInOut: 'cubic-bezier(0.37, 0, 0.63, 1)',
+    sineOutIn: 'cubic-bezier(0, 0.37, 1, 0.63)',
+    // Exponential
+    exponentialIn: 'cubic-bezier(0.7, 0, 0.84, 0)',
+    exponentialOut: 'cubic-bezier(0.16, 1, 0.3, 1)',
+    exponentialInOut: 'cubic-bezier(0.87, 0, 0.13, 1)',
+    exponentialOutIn: 'cubic-bezier(0, 0.87, 1, 0.13)',
+    // Circular
+    circularIn: 'cubic-bezier(0.55, 0, 1, 0.45)',
+    circularOut: 'cubic-bezier(0, 0.55, 0.45, 1)',
+    circularInOut: 'cubic-bezier(0.85, 0, 0.15, 1)',
+    circularOutIn: 'cubic-bezier(0, 0.85, 1, 0.15)',
+    // Back
+    backIn: '',
+    backOut: '',
+    backInOut: '',
+    backOutIn: '',
+    // Bounce
+    bounceIn: '',
+    bounceOut: '',
+    bounceInOut: '',
+    bounceOutIn: '',
+    // Elastic
+    elasticIn: '',
+    elasticOut: '',
+    elasticInOut: '',
+    elasticOutIn: ''
+};
 var SVGCSSExporter = /** @class */ (function (_super) {
     __extends(SVGCSSExporter, _super);
     function SVGCSSExporter() {
@@ -1810,16 +1864,17 @@ var SVGCSSExporter = /** @class */ (function (_super) {
         var wAttrs = this._serializeAttributes(shape.getWrapperAttributes());
         var attrs = this._serializeAttributes(shape.getAttributes(true));
         var animatedTransforms = this._getAnimatedTransformProps(shape);
+        var tag = shape.get('tagName');
+        var id = shape.get('id');
         if (shape.isCollection && shape.childrenLength) {
             var shapes = shape.mapChildren(function (child) { return _this._createShape(child); });
             if (animatedTransforms.length) {
-                return this._createGroupsForTransform(animatedTransforms, shape.id, "<g ".concat(attrs, ">").concat(shapes, "</g>"));
+                return this._createGroupsForTransform(animatedTransforms, shape.id, "<g id=\"".concat(id, "\"><g ").concat(attrs, ">").concat(shapes, "</g></g>"));
             }
             return "<g ".concat(wAttrs, "><g ").concat(attrs, ">").concat(shapes, "</g></g>");
         }
-        var tag = shape.get('tagName');
         if (animatedTransforms.length) {
-            return this._createGroupsForTransform(animatedTransforms, shape.id, "<".concat(tag, " ").concat(attrs, " />"));
+            return this._createGroupsForTransform(animatedTransforms, shape.id, "<g id=\"".concat(id, "\"><").concat(tag, " ").concat(attrs, " /></g>"));
         }
         return "<g ".concat(wAttrs, "><").concat(tag, " ").concat(attrs, " /></g>");
     };
@@ -1833,13 +1888,14 @@ var SVGCSSExporter = /** @class */ (function (_super) {
         return output;
     };
     SVGCSSExporter.prototype._createAnimation = function (animation) {
+        var _this = this;
         var shape = animation.shape;
         var id = shape.get('id');
         var tag = shape.get('tagName');
         var duration = animation.duration;
         var keyframes = this._createKeyframes(animation);
         var transformCSS = this._getAnimatedTransformProps(shape)
-            .map(function (prop) { return "\n\t\t\t#".concat(id, "-").concat(prop, " {\n\t\t\t\tanimation-name: ").concat(id, "-").concat(prop, ";\n\t\t\t\tanimation-duration: ").concat(duration, "ms;\n\t\t\t\tanimation-fill-mode: both;\n\t\t\t}\n\t\t\t"); })
+            .map(function (prop) { return "\n\t\t\t#".concat(id, "-").concat(prop, " {\n\t\t\t\tanimation-name: ").concat(id, "-").concat(prop, ";\n\t\t\t\tanimation-duration: ").concat(duration, "ms;\n\t\t\t\tanimation-fill-mode: both;\n\t\t\t\ttransform: ").concat(_this._getTransformValue(prop, shape.get(prop)), "\n\t\t\t}\n\t\t\t"); })
             .join('');
         var output = "\n\t\t\t#".concat(id, " ").concat(tag, " {\n\t\t\t\tanimation-name: ").concat(id, ";\n\t\t\t\tanimation-duration: ").concat(duration, "ms;\n\t\t\t\tanimation-fill-mode: both;\n\t\t\t}\n\t\t\t").concat(transformCSS, "\n\t\t\t").concat(keyframes, "\n\t\t");
         return output;
@@ -1890,7 +1946,8 @@ var SVGCSSExporter = /** @class */ (function (_super) {
         return shape
             .getAnimation()
             .mapChildren(function (track) { return track.property; })
-            .filter(function (prop) { return TRANSFORM_PROPERTIES.includes(prop); });
+            .filter(function (prop) { return TRANSFORM_PROPERTIES.includes(prop); })
+            .sort(function (a, b) { return TRANSFORM_ORDER.indexOf(a) - TRANSFORM_ORDER.indexOf(b); });
     };
     SVGCSSExporter.prototype._getCSSDeclaration = function (property, value) {
         var transformValue = this._getTransformValue(property, value);

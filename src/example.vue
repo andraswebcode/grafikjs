@@ -208,6 +208,36 @@ const json = ref([
 									]
 								},
 								{
+									property: 'strokeWidth',
+									keyframes: [
+										{
+											to: 500,
+											value: 4,
+											easing: 'cubicOut'
+										},
+										{
+											to: 1500,
+											value: 2,
+											easing: 'cubicIn'
+										}
+									]
+								},
+								{
+									property: 'width',
+									keyframes: [
+										{
+											to: 500,
+											value: 80,
+											easing: 'cubicOut'
+										},
+										{
+											to: 1500,
+											value: 20,
+											easing: 'cubicIn'
+										}
+									]
+								},
+								{
 									property: 'left',
 									keyframes: [
 										{
