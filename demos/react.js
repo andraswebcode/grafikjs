@@ -2218,8 +2218,10 @@ var Keyframe = /** @class */ (function (_super) {
         _this.endValue = null;
         _this.from = from;
         _this.to = to;
-        _this.startValue = _this._parseValue(startValue);
-        _this.endValue = _this._parseValue(endValue);
+        _this.startValue = startValue;
+        _this.endValue = endValue;
+        _this._startValue = _this._parseValue(startValue);
+        _this._endValue = _this._parseValue(endValue);
         _this.easing = typeof easing === 'string' ? _easings__WEBPACK_IMPORTED_MODULE_1__.easings[easing] : easing;
         _this.name = 'keyframe';
         _this.createId();
@@ -2242,15 +2244,18 @@ var Keyframe = /** @class */ (function (_super) {
     };
     Keyframe.prototype._interpolateValue = function (t) {
         var _this = this;
-        if (Array.isArray(this.startValue) && Array.isArray(this.endValue)) {
-            return this.startValue
+        if (Array.isArray(this._startValue) && Array.isArray(this._endValue)) {
+            return this._startValue
                 .map(function (startChunk, i) {
-                var endChunk = _this.endValue[i];
-                return typeof startChunk === 'number'
+                var endChunk = _this._endValue[i];
+                return typeof startChunk === 'number' && typeof endChunk === 'number'
                     ? startChunk + (endChunk - startChunk) * t
                     : startChunk;
             })
                 .join('');
+        }
+        if (typeof this.startValue !== 'number' || typeof this.endValue !== 'number') {
+            return 0;
         }
         return this.startValue + (this.endValue - this.startValue) * t;
     };
@@ -5256,7 +5261,11 @@ var Color = /** @class */ (function () {
         this.g = 0;
         this.b = 0;
         this.a = 1;
-        if (Color.isHEX(color)) {
+        if (Color.isColorName(color)) {
+            // @ts-ignore
+            this.fromColorName(color);
+        }
+        else if (Color.isHEX(color)) {
             // @ts-ignore
             this.fromHEX(color);
         }
@@ -5276,6 +5285,10 @@ var Color = /** @class */ (function () {
             this.fromObject(color);
         }
     }
+    Color.prototype.fromColorName = function (color) {
+        this.fromHEX(Color.colorNameMap[color]);
+        return this;
+    };
     Color.prototype.fromHEX = function (color) {
         var match = color.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
         if (match) {
@@ -5354,7 +5367,10 @@ var Color = /** @class */ (function () {
         return new Color(this);
     };
     Color.isColor = function (value) {
-        return Color.isHEX(value) || Color.isRGB(value) || Color.isColorName(value);
+        return (Color.isHEX(value) ||
+            Color.isRGB(value) ||
+            Color.isHSL(value) ||
+            Color.isColorName(value));
     };
     Color.isColorName = function (value) {
         return Color.isHEX(Color.colorNameMap[value]);

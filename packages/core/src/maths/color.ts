@@ -7,7 +7,10 @@ class Color {
 	public a = 1;
 
 	public constructor(color?: AnyColor) {
-		if (Color.isHEX(color)) {
+		if (Color.isColorName(color)) {
+			// @ts-ignore
+			this.fromColorName(color);
+		} else if (Color.isHEX(color)) {
 			// @ts-ignore
 			this.fromHEX(color);
 		} else if (Color.isRGB(color)) {
@@ -22,6 +25,11 @@ class Color {
 			// @ts-ignore
 			this.fromObject(color);
 		}
+	}
+
+	public fromColorName(color: string): Color {
+		this.fromHEX(Color.colorNameMap[color]);
+		return this;
 	}
 
 	public fromHEX(color: string): Color {
@@ -132,7 +140,12 @@ class Color {
 	}
 
 	static isColor(value: any): boolean {
-		return Color.isHEX(value) || Color.isRGB(value) || Color.isColorName(value);
+		return (
+			Color.isHEX(value) ||
+			Color.isRGB(value) ||
+			Color.isHSL(value) ||
+			Color.isColorName(value)
+		);
 	}
 
 	static isColorName(value: any): boolean {

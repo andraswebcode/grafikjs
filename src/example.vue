@@ -190,7 +190,6 @@ const json = ref([
 						:height="40"
 						:left="200"
 						:top="200"
-						fill="#000"
 						:animation="{
 							tracks: [
 								{

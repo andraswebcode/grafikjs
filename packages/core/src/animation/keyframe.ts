@@ -3,12 +3,17 @@ import { EasingFunction, EasingName, KeyframeObject } from './../types';
 import { easings } from './easings';
 import { Color } from './../maths';
 
+type Value = string | number | null;
+
 class Keyframe extends AnimationBase {
 	public from = 0;
 	public to = 0;
-	public startValue: any = null;
-	public endValue: any = null;
+	public startValue: Value = null;
+	public endValue: Value = null;
 	public easing: EasingFunction;
+
+	private _startValue: Value[];
+	private _endValue: Value[];
 
 	get duration() {
 		return this.to - this.from;
@@ -17,15 +22,17 @@ class Keyframe extends AnimationBase {
 	public constructor(
 		from: number,
 		to: number,
-		startValue: any,
-		endValue: any,
+		startValue: Value,
+		endValue: Value,
 		easing: EasingName | EasingFunction = 'linear'
 	) {
 		super();
 		this.from = from;
 		this.to = to;
-		this.startValue = this._parseValue(startValue);
-		this.endValue = this._parseValue(endValue);
+		this.startValue = startValue;
+		this.endValue = endValue;
+		this._startValue = this._parseValue(startValue);
+		this._endValue = this._parseValue(endValue);
 		this.easing = typeof easing === 'string' ? easings[easing] : easing;
 		this.name = 'keyframe';
 		this.createId();
@@ -42,16 +49,20 @@ class Keyframe extends AnimationBase {
 		return this._interpolateValue(eased);
 	}
 
-	private _interpolateValue(t: number): any {
-		if (Array.isArray(this.startValue) && Array.isArray(this.endValue)) {
-			return this.startValue
+	private _interpolateValue(t: number): Value {
+		if (Array.isArray(this._startValue) && Array.isArray(this._endValue)) {
+			return this._startValue
 				.map((startChunk, i) => {
-					const endChunk = this.endValue[i];
-					return typeof startChunk === 'number'
+					const endChunk = this._endValue[i];
+					return typeof startChunk === 'number' && typeof endChunk === 'number'
 						? startChunk + (endChunk - startChunk) * t
 						: startChunk;
 				})
 				.join('');
+		}
+
+		if (typeof this.startValue !== 'number' || typeof this.endValue !== 'number') {
+			return 0;
 		}
 
 		return this.startValue + (this.endValue - this.startValue) * t;
