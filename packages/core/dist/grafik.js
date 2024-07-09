@@ -1808,18 +1808,38 @@ var SVGCSSExporter = /** @class */ (function (_super) {
         var _this = this;
         var wAttrs = this._serializeAttributes(shape.getWrapperAttributes());
         var attrs = this._serializeAttributes(shape.getAttributes(true));
+        var animatedTransforms = shape
+            .getAnimation()
+            .mapChildren(function (track) { return track.property; })
+            .filter(function (prop) { return Object.keys(TRANSFORM_VALUES).includes(prop); });
         if (shape.isCollection && shape.childrenLength) {
             var shapes = shape.mapChildren(function (child) { return _this._createShape(child); });
+            if (animatedTransforms.length) {
+                return this._createGroupsForTransform(animatedTransforms, shape.id, "<g ".concat(attrs, ">").concat(shapes, "</g>"));
+            }
             return "<g ".concat(wAttrs, "><g ").concat(attrs, ">").concat(shapes, "</g></g>");
         }
         var tag = shape.get('tagName');
+        if (animatedTransforms.length) {
+            return this._createGroupsForTransform(animatedTransforms, shape.id, "<".concat(tag, " ").concat(attrs, " />"));
+        }
         return "<g ".concat(wAttrs, "><").concat(tag, " ").concat(attrs, " /></g>");
     };
+    SVGCSSExporter.prototype._createGroupsForTransform = function (properties, shapeId, children) {
+        var output = '', id = '', child = '';
+        for (var i = properties.length - 1; i >= 0; i--) {
+            id = "".concat(shapeId, "-").concat(properties[i]);
+            child = i === properties.length - 1 ? children : output;
+            output = "<g id=\"".concat(id, "\">").concat(child, "</g>");
+        }
+        return output;
+    };
     SVGCSSExporter.prototype._createAnimation = function (animation) {
-        var id = animation.shape.id;
+        var id = animation.shape.get('id');
+        var tag = animation.shape.get('tagName');
         var duration = animation.duration;
         var keyframes = this._createKeyframes(animation);
-        var output = "\n\t\t\t#".concat(id, " {\n\t\t\t\tanimation-name: ").concat(id, ";\n\t\t\t\tanimation-duration: ").concat(duration, "ms;\n\t\t\t}\n\t\t\t").concat(keyframes, "\n\t\t");
+        var output = "\n\t\t\t#".concat(id, " ").concat(tag, " {\n\t\t\t\tanimation-name: ").concat(id, ";\n\t\t\t\tanimation-duration: ").concat(duration, "ms;\n\t\t\t}\n\t\t\t").concat(keyframes, "\n\t\t");
         return output;
     };
     SVGCSSExporter.prototype._createKeyframes = function (animation) {

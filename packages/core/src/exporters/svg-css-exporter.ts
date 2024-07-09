@@ -49,23 +49,57 @@ class SVGCSSExporter extends SVGExporter {
 	protected _createShape(shape: any) {
 		const wAttrs = this._serializeAttributes(shape.getWrapperAttributes());
 		const attrs = this._serializeAttributes(shape.getAttributes(true));
+		const animatedTransforms = shape
+			.getAnimation()
+			.mapChildren((track) => track.property)
+			.filter((prop) => Object.keys(TRANSFORM_VALUES).includes(prop));
 
 		if (shape.isCollection && shape.childrenLength) {
 			const shapes = shape.mapChildren((child) => this._createShape(child));
+			if (animatedTransforms.length) {
+				return this._createGroupsForTransform(
+					animatedTransforms,
+					shape.id,
+					`<g ${attrs}>${shapes}</g>`
+				);
+			}
 			return `<g ${wAttrs}><g ${attrs}>${shapes}</g></g>`;
 		}
 
 		const tag = shape.get('tagName');
 
+		if (animatedTransforms.length) {
+			return this._createGroupsForTransform(
+				animatedTransforms,
+				shape.id,
+				`<${tag} ${attrs} />`
+			);
+		}
+
 		return `<g ${wAttrs}><${tag} ${attrs} /></g>`;
 	}
 
+	private _createGroupsForTransform(properties: string[], shapeId: string, children: string) {
+		let output = '',
+			id = '',
+			child = '';
+
+		for (let i = properties.length - 1; i >= 0; i--) {
+			id = `${shapeId}-${properties[i]}`;
+			child = i === properties.length - 1 ? children : output;
+			output = `<g id="${id}">${child}</g>`;
+		}
+
+		return output;
+	}
+
 	protected _createAnimation(animation: any) {
-		const id = animation.shape.id;
+		const id = animation.shape.get('id');
+		const tag = animation.shape.get('tagName');
 		const duration = animation.duration;
 		const keyframes = this._createKeyframes(animation);
 		const output = `
-			#${id} {
+			#${id} ${tag} {
 				animation-name: ${id};
 				animation-duration: ${duration}ms;
 			}
