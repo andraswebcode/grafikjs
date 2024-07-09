@@ -6,14 +6,32 @@ abstract class Exporter {
 	protected _content: string;
 	private _options: any;
 
-	constructor(canvas: Canvas, options: any = {}) {
+	protected abstract _mimeType: string;
+	protected abstract _extension: string;
+
+	public constructor(canvas: Canvas, options: any = {}) {
 		this._canvas = canvas;
 		this._options = options;
 		this._build();
 	}
 
+	public download(filename: string) {
+		const link = document.createElement('a');
+
+		link.href = this.getHref();
+		link.download = filename + '.' + this._extension;
+
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	}
+
 	public getContent() {
 		return this._content;
+	}
+
+	public getHref() {
+		return 'data:' + this._mimeType + ';charset=utf-8,' + encodeURIComponent(this._content);
 	}
 
 	public getOption(key: string) {
@@ -50,6 +68,8 @@ abstract class Exporter {
 	protected abstract _build();
 
 	protected abstract _createCanvas();
+
+	protected abstract _createDefs();
 
 	protected abstract _createShape(shape: any);
 

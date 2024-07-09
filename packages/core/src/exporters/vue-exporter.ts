@@ -2,6 +2,9 @@ import { Exporter } from './exporter';
 
 // Creates vue file with a vue component.
 class VueExporter extends Exporter {
+	protected _mimeType = 'text/plain';
+	protected _extension = 'vue';
+	protected _createDefs() {}
 	protected _build() {
 		throw new Error('Method not implemented.');
 	}

@@ -1,6 +1,9 @@
 import { Exporter } from './exporter';
 
 class LottieExporter extends Exporter {
+	protected _mimeType = 'application/json';
+	protected _extension = 'json';
+	protected _createDefs() {}
 	protected _build() {
 		throw new Error('Method not implemented.');
 	}

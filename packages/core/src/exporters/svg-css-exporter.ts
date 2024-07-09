@@ -85,20 +85,15 @@ const EASING_FUNCTIONS = {
 };
 
 class SVGCSSExporter extends SVGExporter {
-	protected _createCanvas() {
+	protected _createDefs() {
 		const canvas = this._canvas;
 		const animation = canvas.getAnimation();
-		const attrs = this._serializeAttributes(this._getCanvasAttributes());
 		const style = animation.mapChildren((child) => this._createAnimation(child)).join('');
-		const shapes = canvas.mapChildren((child) => this._createShape(child)).join('');
 
 		return `
-			<svg ${attrs}>
-				<style>
-					${style}
-				</style>
-				${shapes}
-			</svg>
+		<style>
+			${style}
+		</style>
 		`;
 	}
 
