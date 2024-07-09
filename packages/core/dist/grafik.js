@@ -1484,32 +1484,52 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Exporter: () => (/* binding */ Exporter)
 /* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./src/observable.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../maths */ "./src/maths/index.ts");
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
     };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+    return __assign.apply(this, arguments);
+};
 
-var Exporter = /** @class */ (function (_super) {
-    __extends(Exporter, _super);
-    function Exporter(canvas) {
-        var _this = _super.call(this) || this;
-        _this.canvas = canvas;
-        return _this;
+var Exporter = /** @class */ (function () {
+    function Exporter(canvas, options) {
+        if (options === void 0) { options = {}; }
+        this._canvas = canvas;
+        this._options = options;
+        this._build();
     }
+    Exporter.prototype.getContent = function () {
+        return this._content;
+    };
+    Exporter.prototype.getOption = function (key) {
+        return this._options[key];
+    };
+    Exporter.prototype._getCanvasAttributes = function () {
+        var zoom = this._canvas.zoom;
+        var pan = this._canvas.pan;
+        // Reset viewport.
+        this._canvas.zoomTo(1, new _maths__WEBPACK_IMPORTED_MODULE_0__.Point());
+        var attrs = this._canvas.getAttributes();
+        // Restore viewport.
+        this._canvas.zoomTo(zoom, pan);
+        // OverWrite canvas size, if it has drawing area.
+        var overWrites = {};
+        if (this._canvas.hasDrawingArea) {
+            var size = this._canvas.getDrawingAreaSize();
+            overWrites.width = size.x;
+            overWrites.height = size.y;
+            overWrites.viewBox = "0 0 ".concat(size.x, " ").concat(size.y);
+        }
+        return __assign(__assign({}, attrs), overWrites);
+    };
     return Exporter;
-}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
+}());
 
 
 
@@ -1524,12 +1544,24 @@ var Exporter = /** @class */ (function (_super) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Exporter: () => (/* reexport safe */ _exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter),
-/* harmony export */   LottieExporter: () => (/* reexport safe */ _lottie_exporter__WEBPACK_IMPORTED_MODULE_2__.LottieExporter),
-/* harmony export */   SVGExporter: () => (/* reexport safe */ _svg_exporter__WEBPACK_IMPORTED_MODULE_1__.SVGExporter)
+/* harmony export */   LottieExporter: () => (/* reexport safe */ _lottie_exporter__WEBPACK_IMPORTED_MODULE_5__.LottieExporter),
+/* harmony export */   RasterExporter: () => (/* reexport safe */ _raster_exporter__WEBPACK_IMPORTED_MODULE_6__.RasterExporter),
+/* harmony export */   SVGCSSExporter: () => (/* reexport safe */ _svg_css_exporter__WEBPACK_IMPORTED_MODULE_2__.SVGCSSExporter),
+/* harmony export */   SVGExporter: () => (/* reexport safe */ _svg_exporter__WEBPACK_IMPORTED_MODULE_1__.SVGExporter),
+/* harmony export */   SVGJSExporter: () => (/* reexport safe */ _svg_js_exporter__WEBPACK_IMPORTED_MODULE_3__.SVGJSExporter),
+/* harmony export */   SVGSMILExporter: () => (/* reexport safe */ _svg_smil_exporter__WEBPACK_IMPORTED_MODULE_4__.SVGSMILExporter)
 /* harmony export */ });
 /* harmony import */ var _exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exporter */ "./src/exporters/exporter.ts");
 /* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./svg-exporter */ "./src/exporters/svg-exporter.ts");
-/* harmony import */ var _lottie_exporter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./lottie-exporter */ "./src/exporters/lottie-exporter.ts");
+/* harmony import */ var _svg_css_exporter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./svg-css-exporter */ "./src/exporters/svg-css-exporter.ts");
+/* harmony import */ var _svg_js_exporter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./svg-js-exporter */ "./src/exporters/svg-js-exporter.ts");
+/* harmony import */ var _svg_smil_exporter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./svg-smil-exporter */ "./src/exporters/svg-smil-exporter.ts");
+/* harmony import */ var _lottie_exporter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./lottie-exporter */ "./src/exporters/lottie-exporter.ts");
+/* harmony import */ var _raster_exporter__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./raster-exporter */ "./src/exporters/raster-exporter.ts");
+
+
+
+
 
 
 
@@ -1569,8 +1601,140 @@ var LottieExporter = /** @class */ (function (_super) {
     function LottieExporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    LottieExporter.prototype._build = function () {
+        throw new Error('Method not implemented.');
+    };
+    LottieExporter.prototype._createCanvas = function () {
+        throw new Error('Method not implemented.');
+    };
+    LottieExporter.prototype._createShape = function () {
+        throw new Error('Method not implemented.');
+    };
+    LottieExporter.prototype._createAnimation = function () {
+        throw new Error('Method not implemented.');
+    };
     return LottieExporter;
 }(_exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter));
+
+
+
+/***/ }),
+
+/***/ "./src/exporters/raster-exporter.ts":
+/*!******************************************!*\
+  !*** ./src/exporters/raster-exporter.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   RasterExporter: () => (/* binding */ RasterExporter)
+/* harmony export */ });
+/* harmony import */ var _exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exporter */ "./src/exporters/exporter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+// The plan is this will provide an array of raster image buffers,
+// that you can use to create gif, mp4, or any raster file.
+var RasterExporter = /** @class */ (function (_super) {
+    __extends(RasterExporter, _super);
+    function RasterExporter() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._buffers = [];
+        return _this;
+    }
+    RasterExporter.prototype._build = function () {
+        throw new Error('Method not implemented.');
+    };
+    RasterExporter.prototype._createCanvas = function () {
+        throw new Error('Method not implemented.');
+    };
+    RasterExporter.prototype._createShape = function () {
+        throw new Error('Method not implemented.');
+    };
+    RasterExporter.prototype._createAnimation = function () {
+        throw new Error('Method not implemented.');
+    };
+    RasterExporter.prototype.getBuffers = function () {
+        return this._buffers;
+    };
+    return RasterExporter;
+}(_exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter));
+
+
+
+/***/ }),
+
+/***/ "./src/exporters/svg-css-exporter.ts":
+/*!*******************************************!*\
+  !*** ./src/exporters/svg-css-exporter.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SVGCSSExporter: () => (/* binding */ SVGCSSExporter)
+/* harmony export */ });
+/* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./svg-exporter */ "./src/exporters/svg-exporter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var SVGCSSExporter = /** @class */ (function (_super) {
+    __extends(SVGCSSExporter, _super);
+    function SVGCSSExporter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SVGCSSExporter.prototype._createCanvas = function () {
+        var _this = this;
+        var canvas = this._canvas;
+        var animation = canvas.getAnimation();
+        var attrs = this._serializeAttributes(this._getCanvasAttributes());
+        var style = animation.mapChildren(function (child) { return _this._createAnimation(child); }).join('');
+        var shapes = canvas.mapChildren(function (child) { return _this._createShape(child); }).join('');
+        return "<svg ".concat(attrs, ">").concat(style).concat(shapes, "</svg>");
+    };
+    SVGCSSExporter.prototype._createShape = function (shape) {
+        var _this = this;
+        var wAttrs = this._serializeAttributes(shape.getWrapperAttributes());
+        var attrs = this._serializeAttributes(shape.getAttributes(true));
+        if (shape.isCollection && shape.childrenLength) {
+            var shapes = shape.mapChildren(function (child) { return _this._createShape(child); });
+            return "<g ".concat(wAttrs, "><g ").concat(attrs, ">").concat(shapes, "</g></g>");
+        }
+        var tag = shape.get('tagName');
+        return "<g ".concat(wAttrs, "><").concat(tag, " ").concat(attrs, " /></g>");
+    };
+    SVGCSSExporter.prototype._createAnimation = function (animation) {
+        return '';
+    };
+    return SVGCSSExporter;
+}(_svg_exporter__WEBPACK_IMPORTED_MODULE_0__.SVGExporter));
 
 
 
@@ -1608,8 +1772,114 @@ var SVGExporter = /** @class */ (function (_super) {
     function SVGExporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    SVGExporter.prototype._build = function () {
+        this._content = this._createCanvas();
+    };
+    SVGExporter.prototype._serializeAttributes = function (attrs) {
+        var output = [];
+        for (var key in attrs) {
+            output.push("".concat(key, "=\"").concat(attrs[key], "\""));
+        }
+        return output.join(' ');
+    };
     return SVGExporter;
 }(_exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter));
+
+
+
+/***/ }),
+
+/***/ "./src/exporters/svg-js-exporter.ts":
+/*!******************************************!*\
+  !*** ./src/exporters/svg-js-exporter.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SVGJSExporter: () => (/* binding */ SVGJSExporter)
+/* harmony export */ });
+/* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./svg-exporter */ "./src/exporters/svg-exporter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var SVGJSExporter = /** @class */ (function (_super) {
+    __extends(SVGJSExporter, _super);
+    function SVGJSExporter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SVGJSExporter.prototype._createCanvas = function () {
+        throw new Error('Method not implemented.');
+    };
+    SVGJSExporter.prototype._createShape = function (shape) {
+        throw new Error('Method not implemented.');
+    };
+    SVGJSExporter.prototype._createAnimation = function () {
+        throw new Error('Method not implemented.');
+    };
+    return SVGJSExporter;
+}(_svg_exporter__WEBPACK_IMPORTED_MODULE_0__.SVGExporter));
+
+
+
+/***/ }),
+
+/***/ "./src/exporters/svg-smil-exporter.ts":
+/*!********************************************!*\
+  !*** ./src/exporters/svg-smil-exporter.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SVGSMILExporter: () => (/* binding */ SVGSMILExporter)
+/* harmony export */ });
+/* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./svg-exporter */ "./src/exporters/svg-exporter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var SVGSMILExporter = /** @class */ (function (_super) {
+    __extends(SVGSMILExporter, _super);
+    function SVGSMILExporter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SVGSMILExporter.prototype._createCanvas = function () {
+        throw new Error('Method not implemented.');
+    };
+    SVGSMILExporter.prototype._createShape = function (shape) {
+        throw new Error('Method not implemented.');
+    };
+    SVGSMILExporter.prototype._createAnimation = function () {
+        throw new Error('Method not implemented.');
+    };
+    return SVGSMILExporter;
+}(_svg_exporter__WEBPACK_IMPORTED_MODULE_0__.SVGExporter));
 
 
 
@@ -6478,9 +6748,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Polyline: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Polyline),
 /* harmony export */   QuadraticBezierCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.QuadraticBezierCurve),
 /* harmony export */   RadialGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.RadialGradient),
+/* harmony export */   RasterExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.RasterExporter),
 /* harmony export */   Rect: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Rect),
+/* harmony export */   SVGCSSExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGCSSExporter),
 /* harmony export */   SVGExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGExporter),
+/* harmony export */   SVGJSExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGJSExporter),
 /* harmony export */   SVGLoader: () => (/* reexport safe */ _loaders__WEBPACK_IMPORTED_MODULE_10__.SVGLoader),
+/* harmony export */   SVGSMILExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGSMILExporter),
 /* harmony export */   ScaleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.ScaleControlNode),
 /* harmony export */   Selector: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.Selector),
 /* harmony export */   Shape: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Shape),

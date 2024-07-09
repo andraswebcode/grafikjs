@@ -1,5 +1,5 @@
 import { Observable } from './../observable';
 
-class Loader extends Observable {}
+abstract class Loader extends Observable {}
 
 export { Loader };

@@ -1,13 +1,14 @@
 import { Exporter } from './exporter';
 
-class LottieExporter extends Exporter {
+// Creates tsx file with a react component.
+class ReactExporter extends Exporter {
 	protected _build() {
 		throw new Error('Method not implemented.');
 	}
-	protected _createCanvas() {
+	protected _createCanvas(children: any) {
 		throw new Error('Method not implemented.');
 	}
-	protected _createShape() {
+	protected _createShape(children: any) {
 		throw new Error('Method not implemented.');
 	}
 	protected _createAnimation() {
@@ -15,4 +16,4 @@ class LottieExporter extends Exporter {
 	}
 }
 
-export { LottieExporter };
+export { ReactExporter };

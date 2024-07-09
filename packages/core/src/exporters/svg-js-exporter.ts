@@ -1,13 +1,10 @@
-import { Exporter } from './exporter';
+import { SVGExporter } from './svg-exporter';
 
-class LottieExporter extends Exporter {
-	protected _build() {
-		throw new Error('Method not implemented.');
-	}
+class SVGJSExporter extends SVGExporter {
 	protected _createCanvas() {
 		throw new Error('Method not implemented.');
 	}
-	protected _createShape() {
+	protected _createShape(shape: any) {
 		throw new Error('Method not implemented.');
 	}
 	protected _createAnimation() {
@@ -15,4 +12,4 @@ class LottieExporter extends Exporter {
 	}
 }
 
-export { LottieExporter };
+export { SVGJSExporter };

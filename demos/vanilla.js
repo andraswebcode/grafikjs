@@ -2021,9 +2021,17 @@ var Exporter = /** @class */ (function (_super) {
     __extends(Exporter, _super);
     function Exporter(canvas) {
         var _this = _super.call(this) || this;
-        _this.canvas = canvas;
+        _this._canvas = canvas;
+        _this._build();
         return _this;
     }
+    Exporter.prototype.getContent = function () {
+        return this._content;
+    };
+    Exporter.prototype._build = function () { };
+    Exporter.prototype._createCanvas = function (children) { };
+    Exporter.prototype._createShape = function (children) { };
+    Exporter.prototype._createAnimation = function () { };
     return Exporter;
 }(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
 
@@ -2124,6 +2132,19 @@ var SVGExporter = /** @class */ (function (_super) {
     function SVGExporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    SVGExporter.prototype._createCanvas = function (children) {
+        var attrs = this._canvas.getAttributes();
+        return "<svg ".concat(attrs, "></svg>");
+    };
+    SVGExporter.prototype._createShape = function (children) { };
+    SVGExporter.prototype._createAnimation = function () { };
+    SVGExporter.prototype._serializeAttributes = function (attrs) {
+        var output = [];
+        for (var key in attrs) {
+            output.push("".concat(key, "=\"").concat(attrs[key], "\""));
+        }
+        return output.join(' ');
+    };
     return SVGExporter;
 }(_exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter));
 
