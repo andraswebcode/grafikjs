@@ -28,6 +28,8 @@ const TRANSFORM_VALUES = {
 		unit: 'deg'
 	}
 };
+const TRANSFORM_PROPERTIES = Object.keys(TRANSFORM_VALUES);
+
 class SVGCSSExporter extends SVGExporter {
 	protected _createCanvas() {
 		const canvas = this._canvas;
@@ -49,10 +51,7 @@ class SVGCSSExporter extends SVGExporter {
 	protected _createShape(shape: any) {
 		const wAttrs = this._serializeAttributes(shape.getWrapperAttributes());
 		const attrs = this._serializeAttributes(shape.getAttributes(true));
-		const animatedTransforms = shape
-			.getAnimation()
-			.mapChildren((track) => track.property)
-			.filter((prop) => Object.keys(TRANSFORM_VALUES).includes(prop));
+		const animatedTransforms = this._getAnimatedTransformProps(shape);
 
 		if (shape.isCollection && shape.childrenLength) {
 			const shapes = shape.mapChildren((child) => this._createShape(child));
@@ -94,15 +93,29 @@ class SVGCSSExporter extends SVGExporter {
 	}
 
 	protected _createAnimation(animation: any) {
-		const id = animation.shape.get('id');
-		const tag = animation.shape.get('tagName');
+		const { shape } = animation;
+		const id = shape.get('id');
+		const tag = shape.get('tagName');
 		const duration = animation.duration;
 		const keyframes = this._createKeyframes(animation);
+		const transformCSS = this._getAnimatedTransformProps(shape)
+			.map(
+				(prop) => `
+			#${id}-${prop} {
+				animation-name: ${id}-${prop};
+				animation-duration: ${duration}ms;
+				animation-fill-mode: both;
+			}
+			`
+			)
+			.join('');
 		const output = `
 			#${id} ${tag} {
 				animation-name: ${id};
 				animation-duration: ${duration}ms;
+				animation-fill-mode: both;
 			}
+			${transformCSS}
 			${keyframes}
 		`;
 
@@ -119,37 +132,62 @@ class SVGCSSExporter extends SVGExporter {
 					property: track.property
 				}))
 			)
-			.flat()
-			.reduce((memo, item) => {
-				(memo[item.to] = memo[item.to] || []).push(item);
-				return memo;
-			}, {});
+			.flat();
+		const reducer = (memo, item) => {
+			(memo[item.to] = memo[item.to] || []).push(item);
+			return memo;
+		};
+		const buildKeyframes = (kfs) => {
+			let o = '',
+				sec = '0',
+				_sec = 0,
+				_prc = 0,
+				_body = '';
+			for (sec in kfs) {
+				_sec = parseInt(sec);
+				_prc = toFixed((_sec / duration) * 100);
+				_body = kfs[sec]
+					.map((data) => this._getCSSDeclaration(data.property, data.value))
+					.join('');
+				o += `
+					${_prc}% {
+						${_body}
+					}
+				`;
+			}
+			return o;
+		};
+		const shapeKeyframes = keyframes
+			.filter((kf) => !TRANSFORM_PROPERTIES.includes(kf.property))
+			.reduce(reducer, {});
 
-		let output = `@keyframes ${id} {`,
-			sec = '0',
-			_sec = 0,
-			_prc = 0,
-			_body = '';
+		let output = `@keyframes ${id} {`;
 
-		for (sec in keyframes) {
-			_sec = parseInt(sec);
-			_prc = toFixed((_sec / duration) * 100);
-			_body = keyframes[sec]
-				.map((data) => this._getCSSDecaration(data.property, data.value))
-				.join('');
-			output += `
-				${_prc}% {
-					${_body}
-				}
-			`;
-		}
+		output += buildKeyframes(shapeKeyframes);
 
 		output += '}';
+
+		output += this._getAnimatedTransformProps(shape)
+			.map((prop) => {
+				const trKfs = keyframes.filter((kf) => kf.property === prop).reduce(reducer, {});
+				let output = `@keyframes ${id}-${prop} {`;
+				output += buildKeyframes(trKfs);
+				output += '}';
+				return output;
+			})
+			.join('');
 
 		return output;
 	}
 
-	private _getCSSDecaration(property, value) {
+	private _getAnimatedTransformProps(shape: any) {
+		return shape
+			.getAnimation()
+			.mapChildren((track) => track.property)
+			.filter((prop) => TRANSFORM_PROPERTIES.includes(prop));
+	}
+
+	private _getCSSDeclaration(property, value) {
 		const transformValue = this._getTransformValue(property, value);
 
 		if (transformValue) {
