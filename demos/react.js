@@ -3437,6 +3437,7 @@ var Exporter = /** @class */ (function () {
         this._build();
     }
     Exporter.prototype.download = function (filename) {
+        if (filename === void 0) { filename = 'grafik'; }
         var link = document.createElement('a');
         link.href = this.getHref();
         link.download = filename + '.' + this._extension;
@@ -3487,21 +3488,18 @@ var Exporter = /** @class */ (function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Exporter: () => (/* reexport safe */ _exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter),
-/* harmony export */   LottieExporter: () => (/* reexport safe */ _lottie_exporter__WEBPACK_IMPORTED_MODULE_5__.LottieExporter),
-/* harmony export */   RasterExporter: () => (/* reexport safe */ _raster_exporter__WEBPACK_IMPORTED_MODULE_6__.RasterExporter),
+/* harmony export */   LottieExporter: () => (/* reexport safe */ _lottie_exporter__WEBPACK_IMPORTED_MODULE_4__.LottieExporter),
+/* harmony export */   RasterExporter: () => (/* reexport safe */ _raster_exporter__WEBPACK_IMPORTED_MODULE_5__.RasterExporter),
 /* harmony export */   SVGCSSExporter: () => (/* reexport safe */ _svg_css_exporter__WEBPACK_IMPORTED_MODULE_2__.SVGCSSExporter),
 /* harmony export */   SVGExporter: () => (/* reexport safe */ _svg_exporter__WEBPACK_IMPORTED_MODULE_1__.SVGExporter),
-/* harmony export */   SVGJSExporter: () => (/* reexport safe */ _svg_js_exporter__WEBPACK_IMPORTED_MODULE_3__.SVGJSExporter),
-/* harmony export */   SVGSMILExporter: () => (/* reexport safe */ _svg_smil_exporter__WEBPACK_IMPORTED_MODULE_4__.SVGSMILExporter)
+/* harmony export */   SVGJSExporter: () => (/* reexport safe */ _svg_js_exporter__WEBPACK_IMPORTED_MODULE_3__.SVGJSExporter)
 /* harmony export */ });
 /* harmony import */ var _exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exporter */ "./packages/core/src/exporters/exporter.ts");
 /* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./svg-exporter */ "./packages/core/src/exporters/svg-exporter.ts");
 /* harmony import */ var _svg_css_exporter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./svg-css-exporter */ "./packages/core/src/exporters/svg-css-exporter.ts");
 /* harmony import */ var _svg_js_exporter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./svg-js-exporter */ "./packages/core/src/exporters/svg-js-exporter.ts");
-/* harmony import */ var _svg_smil_exporter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./svg-smil-exporter */ "./packages/core/src/exporters/svg-smil-exporter.ts");
-/* harmony import */ var _lottie_exporter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./lottie-exporter */ "./packages/core/src/exporters/lottie-exporter.ts");
-/* harmony import */ var _raster_exporter__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./raster-exporter */ "./packages/core/src/exporters/raster-exporter.ts");
-
+/* harmony import */ var _lottie_exporter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./lottie-exporter */ "./packages/core/src/exporters/lottie-exporter.ts");
+/* harmony import */ var _raster_exporter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./raster-exporter */ "./packages/core/src/exporters/raster-exporter.ts");
 
 
 
@@ -3547,6 +3545,7 @@ var LottieExporter = /** @class */ (function (_super) {
         _this._extension = 'json';
         return _this;
     }
+    LottieExporter.prototype._createDefs = function () { };
     LottieExporter.prototype._build = function () {
         throw new Error('Method not implemented.');
     };
@@ -3602,6 +3601,7 @@ var RasterExporter = /** @class */ (function (_super) {
         _this._buffers = [];
         return _this;
     }
+    RasterExporter.prototype._createDefs = function () { };
     RasterExporter.prototype._build = function () {
         throw new Error('Method not implemented.');
     };
@@ -3740,14 +3740,12 @@ var SVGCSSExporter = /** @class */ (function (_super) {
     function SVGCSSExporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    SVGCSSExporter.prototype._createCanvas = function () {
+    SVGCSSExporter.prototype._createDefs = function () {
         var _this = this;
         var canvas = this._canvas;
         var animation = canvas.getAnimation();
-        var attrs = this._serializeAttributes(this._getCanvasAttributes());
         var style = animation.mapChildren(function (child) { return _this._createAnimation(child); }).join('');
-        var shapes = canvas.mapChildren(function (child) { return _this._createShape(child); }).join('');
-        return "\n\t\t\t<svg ".concat(attrs, ">\n\t\t\t\t<style>\n\t\t\t\t\t").concat(style, "\n\t\t\t\t</style>\n\t\t\t\t").concat(shapes, "\n\t\t\t</svg>\n\t\t");
+        return "\n\t\t<style>\n\t\t\t".concat(style, "\n\t\t</style>\n\t\t");
     };
     SVGCSSExporter.prototype._createShape = function (shape) {
         var _this = this;
@@ -3892,6 +3890,14 @@ var SVGExporter = /** @class */ (function (_super) {
     SVGExporter.prototype._build = function () {
         this._content = this._createCanvas();
     };
+    SVGExporter.prototype._createCanvas = function () {
+        var _this = this;
+        var canvas = this._canvas;
+        var attrs = this._serializeAttributes(this._getCanvasAttributes());
+        var defs = this._createDefs();
+        var shapes = canvas.mapChildren(function (child) { return _this._createShape(child); }).join('');
+        return "\n\t\t\t<svg ".concat(attrs, ">\n\t\t\t\t").concat(defs, "\n\t\t\t\t").concat(shapes, "\n\t\t\t</svg>\n\t\t");
+    };
     SVGExporter.prototype._serializeAttributes = function (attrs) {
         var output = [];
         for (var key in attrs) {
@@ -3938,15 +3944,21 @@ var SVGJSExporter = /** @class */ (function (_super) {
     function SVGJSExporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    SVGJSExporter.prototype._createCanvas = function () {
-        throw new Error('Method not implemented.');
+    SVGJSExporter.prototype._createDefs = function () {
+        return '';
     };
     SVGJSExporter.prototype._createShape = function (shape) {
-        throw new Error('Method not implemented.');
+        var _this = this;
+        var wAttrs = this._serializeAttributes(shape.getWrapperAttributes());
+        var attrs = this._serializeAttributes(shape.getAttributes(true));
+        var tag = shape.get('tagName');
+        if (shape.isCollection && shape.childrenLength) {
+            var shapes = shape.mapChildren(function (child) { return _this._createShape(child); });
+            return "<g ".concat(wAttrs, "><g ").concat(attrs, ">").concat(shapes, "</g></g>");
+        }
+        return "<g ".concat(wAttrs, "><").concat(tag, " ").concat(attrs, " /></g>");
     };
-    SVGJSExporter.prototype._createAnimation = function () {
-        throw new Error('Method not implemented.');
-    };
+    SVGJSExporter.prototype._createAnimation = function () { };
     return SVGJSExporter;
 }(_svg_exporter__WEBPACK_IMPORTED_MODULE_0__.SVGExporter));
 
@@ -3954,17 +3966,63 @@ var SVGJSExporter = /** @class */ (function (_super) {
 
 /***/ }),
 
-/***/ "./packages/core/src/exporters/svg-smil-exporter.ts":
-/*!**********************************************************!*\
-  !*** ./packages/core/src/exporters/svg-smil-exporter.ts ***!
-  \**********************************************************/
+/***/ "./packages/core/src/importers/importer.ts":
+/*!*************************************************!*\
+  !*** ./packages/core/src/importers/importer.ts ***!
+  \*************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   SVGSMILExporter: () => (/* binding */ SVGSMILExporter)
+/* harmony export */   Importer: () => (/* binding */ Importer)
 /* harmony export */ });
-/* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./svg-exporter */ "./packages/core/src/exporters/svg-exporter.ts");
+var Importer = /** @class */ (function () {
+    function Importer(canvas) {
+        this._canvas = canvas;
+    }
+    return Importer;
+}());
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/importers/index.ts":
+/*!**********************************************!*\
+  !*** ./packages/core/src/importers/index.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Importer: () => (/* reexport safe */ _importer__WEBPACK_IMPORTED_MODULE_0__.Importer),
+/* harmony export */   JSONImporter: () => (/* reexport safe */ _json_importer__WEBPACK_IMPORTED_MODULE_1__.JSONImporter),
+/* harmony export */   LottieImporter: () => (/* reexport safe */ _lottie_importer__WEBPACK_IMPORTED_MODULE_2__.LottieImporter),
+/* harmony export */   SVGImporter: () => (/* reexport safe */ _svg_importer__WEBPACK_IMPORTED_MODULE_3__.SVGImporter)
+/* harmony export */ });
+/* harmony import */ var _importer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./importer */ "./packages/core/src/importers/importer.ts");
+/* harmony import */ var _json_importer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./json-importer */ "./packages/core/src/importers/json-importer.ts");
+/* harmony import */ var _lottie_importer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./lottie-importer */ "./packages/core/src/importers/lottie-importer.ts");
+/* harmony import */ var _svg_importer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./svg-importer */ "./packages/core/src/importers/svg-importer.ts");
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/importers/json-importer.ts":
+/*!******************************************************!*\
+  !*** ./packages/core/src/importers/json-importer.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   JSONImporter: () => (/* binding */ JSONImporter)
+/* harmony export */ });
+/* harmony import */ var _importer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./importer */ "./packages/core/src/importers/importer.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -3981,22 +4039,109 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
-var SVGSMILExporter = /** @class */ (function (_super) {
-    __extends(SVGSMILExporter, _super);
-    function SVGSMILExporter() {
+var JSONImporter = /** @class */ (function (_super) {
+    __extends(JSONImporter, _super);
+    function JSONImporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    SVGSMILExporter.prototype._createCanvas = function () {
+    JSONImporter.prototype.load = function (content) {
         throw new Error('Method not implemented.');
     };
-    SVGSMILExporter.prototype._createShape = function (shape) {
+    JSONImporter.prototype._parseShape = function (shape) {
         throw new Error('Method not implemented.');
     };
-    SVGSMILExporter.prototype._createAnimation = function () {
+    return JSONImporter;
+}(_importer__WEBPACK_IMPORTED_MODULE_0__.Importer));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/importers/lottie-importer.ts":
+/*!********************************************************!*\
+  !*** ./packages/core/src/importers/lottie-importer.ts ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   LottieImporter: () => (/* binding */ LottieImporter)
+/* harmony export */ });
+/* harmony import */ var _importer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./importer */ "./packages/core/src/importers/importer.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var LottieImporter = /** @class */ (function (_super) {
+    __extends(LottieImporter, _super);
+    function LottieImporter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    LottieImporter.prototype.load = function (content) {
         throw new Error('Method not implemented.');
     };
-    return SVGSMILExporter;
-}(_svg_exporter__WEBPACK_IMPORTED_MODULE_0__.SVGExporter));
+    LottieImporter.prototype._parseShape = function (shape) {
+        throw new Error('Method not implemented.');
+    };
+    return LottieImporter;
+}(_importer__WEBPACK_IMPORTED_MODULE_0__.Importer));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/importers/svg-importer.ts":
+/*!*****************************************************!*\
+  !*** ./packages/core/src/importers/svg-importer.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SVGImporter: () => (/* binding */ SVGImporter)
+/* harmony export */ });
+/* harmony import */ var _importer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./importer */ "./packages/core/src/importers/importer.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var SVGImporter = /** @class */ (function (_super) {
+    __extends(SVGImporter, _super);
+    function SVGImporter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SVGImporter.prototype.load = function (content) {
+        throw new Error('Method not implemented.');
+    };
+    SVGImporter.prototype._parseShape = function (shape) {
+        throw new Error('Method not implemented.');
+    };
+    return SVGImporter;
+}(_importer__WEBPACK_IMPORTED_MODULE_0__.Importer));
 
 
 
@@ -4034,13 +4179,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Group: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Group),
 /* harmony export */   HorizontalLineCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.HorizontalLineCurve),
 /* harmony export */   Image: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Image),
-/* harmony export */   ImageLoader: () => (/* reexport safe */ _loaders__WEBPACK_IMPORTED_MODULE_10__.ImageLoader),
+/* harmony export */   Importer: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_10__.Importer),
+/* harmony export */   JSONImporter: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_10__.JSONImporter),
 /* harmony export */   Keyframe: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.Keyframe),
 /* harmony export */   LineCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.LineCurve),
 /* harmony export */   LinearGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.LinearGradient),
-/* harmony export */   Loader: () => (/* reexport safe */ _loaders__WEBPACK_IMPORTED_MODULE_10__.Loader),
 /* harmony export */   LottieExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.LottieExporter),
-/* harmony export */   LottieLoader: () => (/* reexport safe */ _loaders__WEBPACK_IMPORTED_MODULE_10__.LottieLoader),
+/* harmony export */   LottieImporter: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_10__.LottieImporter),
 /* harmony export */   Matrix: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Matrix),
 /* harmony export */   MoveCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.MoveCurve),
 /* harmony export */   Observable: () => (/* reexport safe */ _observable__WEBPACK_IMPORTED_MODULE_0__.Observable),
@@ -4058,9 +4203,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Rect: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Rect),
 /* harmony export */   SVGCSSExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGCSSExporter),
 /* harmony export */   SVGExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGExporter),
+/* harmony export */   SVGImporter: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_10__.SVGImporter),
 /* harmony export */   SVGJSExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGJSExporter),
-/* harmony export */   SVGLoader: () => (/* reexport safe */ _loaders__WEBPACK_IMPORTED_MODULE_10__.SVGLoader),
-/* harmony export */   SVGSMILExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGSMILExporter),
 /* harmony export */   ScaleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.ScaleControlNode),
 /* harmony export */   Selector: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.Selector),
 /* harmony export */   Shape: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Shape),
@@ -4096,7 +4240,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./animation */ "./packages/core/src/animation/index.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
 /* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./types */ "./packages/core/src/types/index.ts");
-/* harmony import */ var _loaders__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./loaders */ "./packages/core/src/loaders/index.ts");
+/* harmony import */ var _importers__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./importers */ "./packages/core/src/importers/index.ts");
 /* harmony import */ var _exporters__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./exporters */ "./packages/core/src/exporters/index.ts");
 // Core
 
@@ -4116,7 +4260,7 @@ __webpack_require__.r(__webpack_exports__);
 
 // Types
 
-// Loaders
+// Importers
 
 // Exporters
 
@@ -5027,187 +5171,6 @@ var Selector = /** @class */ (function (_super) {
     };
     return Selector;
 }(_element__WEBPACK_IMPORTED_MODULE_0__.Element));
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/loaders/image-loader.ts":
-/*!***************************************************!*\
-  !*** ./packages/core/src/loaders/image-loader.ts ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ImageLoader: () => (/* binding */ ImageLoader)
-/* harmony export */ });
-/* harmony import */ var _loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./loader */ "./packages/core/src/loaders/loader.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ImageLoader = /** @class */ (function (_super) {
-    __extends(ImageLoader, _super);
-    function ImageLoader() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ImageLoader;
-}(_loader__WEBPACK_IMPORTED_MODULE_0__.Loader));
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/loaders/index.ts":
-/*!********************************************!*\
-  !*** ./packages/core/src/loaders/index.ts ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ImageLoader: () => (/* reexport safe */ _image_loader__WEBPACK_IMPORTED_MODULE_3__.ImageLoader),
-/* harmony export */   Loader: () => (/* reexport safe */ _loader__WEBPACK_IMPORTED_MODULE_0__.Loader),
-/* harmony export */   LottieLoader: () => (/* reexport safe */ _lottie_loader__WEBPACK_IMPORTED_MODULE_2__.LottieLoader),
-/* harmony export */   SVGLoader: () => (/* reexport safe */ _svg_loader__WEBPACK_IMPORTED_MODULE_1__.SVGLoader)
-/* harmony export */ });
-/* harmony import */ var _loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./loader */ "./packages/core/src/loaders/loader.ts");
-/* harmony import */ var _svg_loader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./svg-loader */ "./packages/core/src/loaders/svg-loader.ts");
-/* harmony import */ var _lottie_loader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./lottie-loader */ "./packages/core/src/loaders/lottie-loader.ts");
-/* harmony import */ var _image_loader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./image-loader */ "./packages/core/src/loaders/image-loader.ts");
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/loaders/loader.ts":
-/*!*********************************************!*\
-  !*** ./packages/core/src/loaders/loader.ts ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Loader: () => (/* binding */ Loader)
-/* harmony export */ });
-/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./packages/core/src/observable.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var Loader = /** @class */ (function (_super) {
-    __extends(Loader, _super);
-    function Loader() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return Loader;
-}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/loaders/lottie-loader.ts":
-/*!****************************************************!*\
-  !*** ./packages/core/src/loaders/lottie-loader.ts ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   LottieLoader: () => (/* binding */ LottieLoader)
-/* harmony export */ });
-/* harmony import */ var _loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./loader */ "./packages/core/src/loaders/loader.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var LottieLoader = /** @class */ (function (_super) {
-    __extends(LottieLoader, _super);
-    function LottieLoader() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return LottieLoader;
-}(_loader__WEBPACK_IMPORTED_MODULE_0__.Loader));
-
-
-
-/***/ }),
-
-/***/ "./packages/core/src/loaders/svg-loader.ts":
-/*!*************************************************!*\
-  !*** ./packages/core/src/loaders/svg-loader.ts ***!
-  \*************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   SVGLoader: () => (/* binding */ SVGLoader)
-/* harmony export */ });
-/* harmony import */ var _loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./loader */ "./packages/core/src/loaders/loader.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var SVGLoader = /** @class */ (function (_super) {
-    __extends(SVGLoader, _super);
-    function SVGLoader() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return SVGLoader;
-}(_loader__WEBPACK_IMPORTED_MODULE_0__.Loader));
 
 
 
@@ -7863,7 +7826,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Image: () => (/* binding */ Image)
 /* harmony export */ });
 /* harmony import */ var _rect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./rect */ "./packages/core/src/shapes/rect.ts");
-/* harmony import */ var _loaders__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../loaders */ "./packages/core/src/loaders/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -7880,14 +7842,12 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
-
 var Image = /** @class */ (function (_super) {
     __extends(Image, _super);
     function Image(params) {
         var _this = _super.call(this) || this;
         _this.tagName = 'image';
         _this.href = '';
-        _this.loader = new _loaders__WEBPACK_IMPORTED_MODULE_1__.ImageLoader();
         _this.init(params);
         _this.setImage(_this.href);
         return _this;

@@ -1,11 +1,8 @@
 import { Rect } from './rect';
-import { ImageLoader } from './../loaders';
 
 class Image extends Rect {
 	protected readonly tagName = 'image';
 	private href = '';
-
-	private loader = new ImageLoader();
 
 	public constructor(params?) {
 		super();

@@ -15,7 +15,7 @@ abstract class Exporter {
 		this._build();
 	}
 
-	public download(filename: string) {
+	public download(filename = 'grafik') {
 		const link = document.createElement('a');
 
 		link.href = this.getHref();

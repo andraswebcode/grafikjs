@@ -24,8 +24,8 @@ export * from './utils';
 // Types
 export * from './types';
 
-// Loaders
-export * from './loaders';
+// Importers
+export * from './importers';
 
 // Exporters
 export * from './exporters';
