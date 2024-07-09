@@ -46,6 +46,7 @@ class Animation extends Collection(AnimationBase) {
 		requestAnimationFrame(this._render.bind(this));
 		this.trigger('played', this.shape);
 		this.shape.trigger('animation:played', this);
+		this.shape.canvas.trigger('shapes:animation:played', this, this.shape);
 		return this;
 	}
 
@@ -53,6 +54,7 @@ class Animation extends Collection(AnimationBase) {
 		this._isPlaying = false;
 		this.trigger('paused', this.shape);
 		this.shape.trigger('animation:paused', this);
+		this.shape.canvas.trigger('shapes:animation:paused', this, this.shape);
 		return this;
 	}
 
@@ -76,6 +78,7 @@ class Animation extends Collection(AnimationBase) {
 			this._currentTime = 0;
 			this.trigger('completed', this.shape);
 			this.shape.trigger('animation:completed', this);
+			this.shape.canvas.trigger('shapes:animation:completed', this, this.shape);
 		}
 	}
 
@@ -88,6 +91,7 @@ class Animation extends Collection(AnimationBase) {
 		});
 		this.trigger('updated', this.shape);
 		this.shape.trigger('animation:updated', this);
+		this.shape.canvas.trigger('shapes:animation:updated', this, this.shape);
 	}
 
 	public setTracks(objects: TrackObject[]) {

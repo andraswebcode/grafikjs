@@ -148,12 +148,14 @@ var Animation = /** @class */ (function (_super) {
         requestAnimationFrame(this._render.bind(this));
         this.trigger('played', this.shape);
         this.shape.trigger('animation:played', this);
+        this.shape.canvas.trigger('shapes:animation:played', this, this.shape);
         return this;
     };
     Animation.prototype.pause = function () {
         this._isPlaying = false;
         this.trigger('paused', this.shape);
         this.shape.trigger('animation:paused', this);
+        this.shape.canvas.trigger('shapes:animation:paused', this, this.shape);
         return this;
     };
     Animation.prototype.seek = function (time) {
@@ -175,6 +177,7 @@ var Animation = /** @class */ (function (_super) {
             this._currentTime = 0;
             this.trigger('completed', this.shape);
             this.shape.trigger('animation:completed', this);
+            this.shape.canvas.trigger('shapes:animation:completed', this, this.shape);
         }
     };
     Animation.prototype._update = function () {
@@ -187,6 +190,7 @@ var Animation = /** @class */ (function (_super) {
         });
         this.trigger('updated', this.shape);
         this.shape.trigger('animation:updated', this);
+        this.shape.canvas.trigger('shapes:animation:updated', this, this.shape);
     };
     Animation.prototype.setTracks = function (objects) {
         var _this = this;
@@ -1470,6 +1474,147 @@ var Element = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ "./src/exporters/exporter.ts":
+/*!***********************************!*\
+  !*** ./src/exporters/exporter.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Exporter: () => (/* binding */ Exporter)
+/* harmony export */ });
+/* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../observable */ "./src/observable.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var Exporter = /** @class */ (function (_super) {
+    __extends(Exporter, _super);
+    function Exporter(canvas) {
+        var _this = _super.call(this) || this;
+        _this.canvas = canvas;
+        return _this;
+    }
+    return Exporter;
+}(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
+
+
+
+/***/ }),
+
+/***/ "./src/exporters/index.ts":
+/*!********************************!*\
+  !*** ./src/exporters/index.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Exporter: () => (/* reexport safe */ _exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter),
+/* harmony export */   LottieExporter: () => (/* reexport safe */ _lottie_exporter__WEBPACK_IMPORTED_MODULE_2__.LottieExporter),
+/* harmony export */   SVGExporter: () => (/* reexport safe */ _svg_exporter__WEBPACK_IMPORTED_MODULE_1__.SVGExporter)
+/* harmony export */ });
+/* harmony import */ var _exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exporter */ "./src/exporters/exporter.ts");
+/* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./svg-exporter */ "./src/exporters/svg-exporter.ts");
+/* harmony import */ var _lottie_exporter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./lottie-exporter */ "./src/exporters/lottie-exporter.ts");
+
+
+
+
+
+/***/ }),
+
+/***/ "./src/exporters/lottie-exporter.ts":
+/*!******************************************!*\
+  !*** ./src/exporters/lottie-exporter.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   LottieExporter: () => (/* binding */ LottieExporter)
+/* harmony export */ });
+/* harmony import */ var _exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exporter */ "./src/exporters/exporter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var LottieExporter = /** @class */ (function (_super) {
+    __extends(LottieExporter, _super);
+    function LottieExporter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return LottieExporter;
+}(_exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter));
+
+
+
+/***/ }),
+
+/***/ "./src/exporters/svg-exporter.ts":
+/*!***************************************!*\
+  !*** ./src/exporters/svg-exporter.ts ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SVGExporter: () => (/* binding */ SVGExporter)
+/* harmony export */ });
+/* harmony import */ var _exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exporter */ "./src/exporters/exporter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var SVGExporter = /** @class */ (function (_super) {
+    __extends(SVGExporter, _super);
+    function SVGExporter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return SVGExporter;
+}(_exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter));
+
+
+
+/***/ }),
+
 /***/ "./src/interactive/control-node.ts":
 /*!*****************************************!*\
   !*** ./src/interactive/control-node.ts ***!
@@ -2410,15 +2555,6 @@ var ImageLoader = /** @class */ (function (_super) {
     function ImageLoader() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    ImageLoader.prototype.fromURL = function (url) {
-        var _this = this;
-        var img = new Image();
-        img.src = url;
-        img.onload = function () {
-            _this.trigger('loaded', img);
-        };
-        return this;
-    };
     return ImageLoader;
 }(_loader__WEBPACK_IMPORTED_MODULE_0__.Loader));
 
@@ -2483,18 +2619,6 @@ var Loader = /** @class */ (function (_super) {
     function Loader() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Loader.prototype.fromURL = function (url) {
-        return this;
-    };
-    Loader.prototype.fromString = function (string) {
-        return this;
-    };
-    Loader.prototype.onLoad = function (callback) {
-        return this.on('loaded', callback);
-    };
-    Loader.prototype.onError = function (callback) {
-        return this;
-    };
     return Loader;
 }(_observable__WEBPACK_IMPORTED_MODULE_0__.Observable));
 
@@ -5222,14 +5346,6 @@ var Image = /** @class */ (function (_super) {
         return _this;
     }
     Image.prototype.setImage = function (src) {
-        var _this = this;
-        this.loader.fromURL(src).onLoad(function (_a) {
-            var width = _a.width, height = _a.height;
-            return _this.set({
-                width: width,
-                height: height
-            });
-        });
         return this;
     };
     Image.prototype.getAttrMap = function () {
@@ -6336,14 +6452,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Definition: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.Definition),
 /* harmony export */   Element: () => (/* reexport safe */ _element__WEBPACK_IMPORTED_MODULE_1__.Element),
 /* harmony export */   Ellipse: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Ellipse),
+/* harmony export */   Exporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.Exporter),
 /* harmony export */   Gradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.Gradient),
 /* harmony export */   GradientControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.GradientControl),
 /* harmony export */   Group: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Group),
 /* harmony export */   HorizontalLineCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.HorizontalLineCurve),
 /* harmony export */   Image: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Image),
+/* harmony export */   ImageLoader: () => (/* reexport safe */ _loaders__WEBPACK_IMPORTED_MODULE_10__.ImageLoader),
 /* harmony export */   Keyframe: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.Keyframe),
 /* harmony export */   LineCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.LineCurve),
 /* harmony export */   LinearGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.LinearGradient),
+/* harmony export */   Loader: () => (/* reexport safe */ _loaders__WEBPACK_IMPORTED_MODULE_10__.Loader),
+/* harmony export */   LottieExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.LottieExporter),
+/* harmony export */   LottieLoader: () => (/* reexport safe */ _loaders__WEBPACK_IMPORTED_MODULE_10__.LottieLoader),
 /* harmony export */   Matrix: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Matrix),
 /* harmony export */   MoveCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.MoveCurve),
 /* harmony export */   Observable: () => (/* reexport safe */ _observable__WEBPACK_IMPORTED_MODULE_0__.Observable),
@@ -6358,6 +6479,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   QuadraticBezierCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.QuadraticBezierCurve),
 /* harmony export */   RadialGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.RadialGradient),
 /* harmony export */   Rect: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Rect),
+/* harmony export */   SVGExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGExporter),
+/* harmony export */   SVGLoader: () => (/* reexport safe */ _loaders__WEBPACK_IMPORTED_MODULE_10__.SVGLoader),
 /* harmony export */   ScaleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.ScaleControlNode),
 /* harmony export */   Selector: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.Selector),
 /* harmony export */   Shape: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Shape),
@@ -6393,6 +6516,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./animation */ "./src/animation/index.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
 /* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./types */ "./src/types/index.ts");
+/* harmony import */ var _loaders__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./loaders */ "./src/loaders/index.ts");
+/* harmony import */ var _exporters__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./exporters */ "./src/exporters/index.ts");
 // Core
 
 
@@ -6410,6 +6535,10 @@ __webpack_require__.r(__webpack_exports__);
 // Utils
 
 // Types
+
+// Loaders
+
+// Exporters
 
 
 })();

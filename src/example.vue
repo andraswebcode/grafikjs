@@ -27,6 +27,7 @@ const {
 } = useCanvas(
 	(canvas) => {
 		const anim = canvas.getAnimation();
+		// console.log('coll');
 		return {
 			duration: anim.duration,
 			time: anim.time
@@ -39,20 +40,21 @@ const {
 			play: anim.play.bind(anim),
 			pause: anim.pause.bind(anim)
 		};
-	}
+	},
+	'set'
 );
 const onSeek = (e) => {
 	const time = parseInt(e.target.value);
-	console.log(time);
+	// console.log(time);
 	seek(time);
 };
 
 onUpdated(() => {
-	console.log(duration.value, time.value);
+	// console.log(duration.value, time.value);
 });
 
 onMounted(() => {
-	console.log(duration.value, time.value);
+	// console.log(duration.value, time.value);
 });
 const json = ref([
 	{

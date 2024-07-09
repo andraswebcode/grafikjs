@@ -9,22 +9,25 @@ type Collected<T> = {
 	actions: any;
 	context: T;
 };
+type Subscribe = (...args: any[]) => void;
 
 const _useCollector = <Context extends Observable>(
 	collector: Collector<Context>,
 	actions: Actions<Context> = null,
 	context: Context,
-	eventName = 'all'
+	eventName = 'all',
+	subscribe?: Subscribe
 ): Collected<Context> => {
 	const state = reactive(collector?.(context) || {});
 	const collectedActions = actions?.(context) || null;
-	const onEventEmited = () => {
+	const onEventEmited = (...args) => {
 		const collected = collector?.(context) || {};
 		Object.keys(collected).forEach((key) => {
 			if (!isEqual(state[key], collected[key])) {
 				state[key] = collected[key];
 			}
 		});
+		subscribe?.(...args);
 	};
 
 	onMounted(() => {
@@ -40,7 +43,8 @@ const _useCollector = <Context extends Observable>(
 const useCanvas = (
 	collector: Collector<Canvas>,
 	actions: Actions<Canvas> = null,
-	eventName = 'all'
+	eventName = 'all',
+	subscribe?: Subscribe
 ): Collected<Canvas> => {
 	const canvas: Canvas | undefined = inject('canvas');
 
@@ -53,13 +57,14 @@ const useCanvas = (
 		};
 	}
 
-	return _useCollector<Canvas>(collector, actions, canvas, eventName);
+	return _useCollector<Canvas>(collector, actions, canvas, eventName, subscribe);
 };
 
 const useCollection = (
 	collector: Collector<any>,
 	actions: Actions<any> = null,
-	eventName = 'all'
+	eventName = 'all',
+	subscribe?: Subscribe
 ): Collected<any> => {
 	const collection: any = inject('collection');
 
@@ -72,16 +77,17 @@ const useCollection = (
 		};
 	}
 
-	return _useCollector(collector, actions, collection, eventName);
+	return _useCollector(collector, actions, collection, eventName, subscribe);
 };
 
 const useObject = (
 	object: any,
 	collector: Collector<any>,
 	actions: Actions<any> = null,
-	eventName = 'all'
+	eventName = 'all',
+	subscribe?: Subscribe
 ): Collected<any> => {
-	return _useCollector(collector, actions, object, eventName);
+	return _useCollector(collector, actions, object, eventName, subscribe);
 };
 
 export { useCanvas, useCollection, useObject };

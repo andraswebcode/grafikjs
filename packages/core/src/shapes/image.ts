@@ -1,6 +1,5 @@
 import { Rect } from './rect';
 import { ImageLoader } from './../loaders';
-import { Point } from './../maths';
 
 class Image extends Rect {
 	protected readonly tagName = 'image';
@@ -15,13 +14,6 @@ class Image extends Rect {
 	}
 
 	protected setImage(src: string) {
-		this.loader.fromURL(src).onLoad(({ width, height }) =>
-			this.set({
-				width,
-				height
-			})
-		);
-
 		return this;
 	}
 

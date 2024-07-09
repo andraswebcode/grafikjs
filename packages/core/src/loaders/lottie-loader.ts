@@ -1,9 +1,5 @@
-import {
-	Loader
-} from './loader';
+import { Loader } from './loader';
 
 class LottieLoader extends Loader {}
 
-export {
-	LottieLoader
-};
+export { LottieLoader };
