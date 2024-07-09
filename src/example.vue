@@ -193,10 +193,54 @@ const json = ref([
 						:animation="{
 							tracks: [
 								{
+									property: 'left',
+									keyframes: [
+										{
+											to: 500,
+											value: 300,
+											easing: 'cubicOut'
+										},
+										{
+											to: 1500,
+											value: 100,
+											easing: 'cubicOut'
+										},
+										{
+											to: 2000,
+											value: 200,
+											easing: 'cubicOut'
+										}
+									]
+								},
+								{
+									property: 'angle',
+									keyframes: [
+										{
+											to: 500,
+											value: 180,
+											easing: 'cubicOut'
+										},
+										{
+											to: 1500,
+											value: -180,
+											easing: 'cubicOut'
+										},
+										{
+											to: 2000,
+											value: 0,
+											easing: 'cubicOut'
+										}
+									]
+								},
+								{
 									property: 'top',
 									keyframes: [
 										{
-											to: 1000,
+											to: 2000,
+											value: 200
+										},
+										{
+											to: 3000,
 											value: 400,
 											easing: 'bounceOut'
 										}
@@ -206,12 +250,16 @@ const json = ref([
 									property: 'scaleY',
 									keyframes: [
 										{
-											to: 1000,
-											value: 2,
+											to: 2000,
+											value: 1
+										},
+										{
+											to: 3000,
+											value: 0.5,
 											easing: 'cubicOut'
 										},
 										{
-											to: 2000,
+											to: 3500,
 											value: 1,
 											easing: 'cubicOut'
 										}

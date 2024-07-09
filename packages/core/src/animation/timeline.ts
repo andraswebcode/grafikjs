@@ -1,5 +1,6 @@
 import { AnimationBase } from './animation-base';
 import { Collection } from './../mixins';
+import { TimelineObject } from './../types';
 
 class Timeline extends Collection(AnimationBase) {
 	get animations() {
@@ -40,6 +41,12 @@ class Timeline extends Collection(AnimationBase) {
 	public seek(time: number) {
 		this.eachChild((child) => child.seek(time));
 		return this;
+	}
+
+	public toJSON(): TimelineObject {
+		return {
+			animations: this.mapChildren((animation) => animation.toJSON())
+		};
 	}
 }
 

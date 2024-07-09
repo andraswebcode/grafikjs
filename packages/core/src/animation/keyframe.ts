@@ -49,7 +49,7 @@ class Keyframe extends AnimationBase {
 		return {
 			to: this.to,
 			value: this.endValue,
-			easing: 'linear'
+			easing: this.easing.name as EasingName
 		};
 	}
 }
