@@ -4,7 +4,7 @@ The Core package is the foundational library of GrafikJS, providing the essentia
 
 ## Purpose and Usage
 
-It's important to note that while the Core package provides core functionalities for managing graphics data and behavior, it does not handle rendering or direct interaction with the DOM. For rendering SVG graphics in web applications, GrafikJS offers integrations with Vue.js, React, Angular, Svelte, and standalone canvas rendering packages, which seamlessly integrate with Core library.
+It's important to note that while the Core package provides core functionalities for managing graphics data and behavior, it does not handle rendering or direct interaction with the DOM. For rendering SVG graphics in web applications, GrafikJS offers integrations with [Vue.js](https://github.com/andraswebcode/grafikjs/blob/master/packages/vue/README.md), [React](https://github.com/andraswebcode/grafikjs/blob/master/packages/react/README.md), [Angular](https://github.com/andraswebcode/grafikjs/blob/master/packages/angular/README.md), and [Svelte](https://github.com/andraswebcode/grafikjs/blob/master/packages/svelte/README.md) packages, which integrate with Core library.
 
 Developers can enhance their applications by utilizing the Core library to manage and manipulate graphical elements efficiently, whether within a framework ecosystem or as a standalone utility for mathematical computations and graphical data management.
 
