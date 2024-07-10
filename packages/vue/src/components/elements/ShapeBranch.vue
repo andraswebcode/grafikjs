@@ -1,24 +1,20 @@
 <script setup lang="ts">
-import { GroupObject } from '@grafikjs/core';
-import { withCollectionContext } from './../../hocs';
 import ShapeBase from './ShapeBase.vue';
-import Group from './Group.vue';
 
-const props = defineProps<Partial<GroupObject>>();
+const props = defineProps<{
+	shape: any;
+}>();
 </script>
 
 <template>
-	<component
-		:is="props.tagName === 'g' ? Group : withCollectionContext(ShapeBase, props.tagName || '')"
-		v-bind="props"
-	>
+	<ShapeBase :tagName="props.shape.tagName" :shape="props.shape">
 		<ShapeBranch
-			v-if="props.children?.length"
-			v-for="child in props.children"
+			v-if="props.shape.childrenLength"
+			v-for="child in props.shape.children"
 			:key="child.id"
-			v-bind="child"
+			:shape="child"
 		/>
-	</component>
+	</ShapeBase>
 </template>
 
 <style scoped></style>

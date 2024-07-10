@@ -5,7 +5,7 @@ import { useObject } from './../../hooks';
 const props = defineProps<{
 	tagName: string;
 	shape: any;
-	props: Partial<ShapeObject>;
+	// props: Partial<ShapeObject>;
 }>();
 const { shape, tagName } = props;
 const {

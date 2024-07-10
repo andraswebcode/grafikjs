@@ -1,12 +1,20 @@
 <script setup lang="ts">
-import { GroupObject } from '@grafikjs/core';
 import ShapeBranch from './ShapeBranch.vue';
+import { useCanvas } from './../../hooks';
 
-const props = defineProps<{ json: GroupObject[] }>();
+const {
+	state: { shapes }
+} = useCanvas(
+	(canvas) => ({
+		shapes: [...canvas.getChildren()]
+	}),
+	null,
+	'added removed'
+);
 </script>
 
 <template>
-	<ShapeBranch v-for="shape in props.json" :key="shape.id" v-bind="shape" />
+	<ShapeBranch v-for="shape in shapes" :key="shape.id" :shape="shape" />
 </template>
 
 <style scoped></style>

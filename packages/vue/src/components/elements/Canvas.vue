@@ -30,6 +30,7 @@ const resize = () => {
 onMounted(() => {
 	window.addEventListener('resize', resize);
 	set({ ...props }, true);
+	resize();
 	// setSize(svgRef.value);
 });
 onUnmounted(() => {

@@ -10,11 +10,7 @@ function Collection<TBase extends Constructor>(Base: TBase) {
 		}
 
 		public setChildren(children: any | any[], silent = false): Collection {
-			this.children = [];
-
-			this.add(children, silent);
-
-			return this;
+			return this.reset().add(children, silent);
 		}
 
 		public getChildren() {
@@ -56,6 +52,11 @@ function Collection<TBase extends Constructor>(Base: TBase) {
 				this.trigger('removed', children);
 			}
 
+			return this;
+		}
+
+		public reset(): Collection {
+			this.children = [];
 			return this;
 		}
 

@@ -32,8 +32,7 @@ const withCollectionContext = (Component, tagName: string) => {
 			return () =>
 				h(Component, {
 					tagName,
-					shape,
-					props
+					shape
 				});
 		}
 	};

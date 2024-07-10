@@ -2595,6 +2595,35 @@ var SVGJSExporter = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ "./packages/core/src/importers/classes.ts":
+/*!************************************************!*\
+  !*** ./packages/core/src/importers/classes.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SHAPES: () => (/* binding */ SHAPES)
+/* harmony export */ });
+/* harmony import */ var _shapes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../shapes */ "./packages/core/src/shapes/index.ts");
+
+var SHAPES = {
+    g: _shapes__WEBPACK_IMPORTED_MODULE_0__.Group,
+    rect: _shapes__WEBPACK_IMPORTED_MODULE_0__.Rect,
+    circle: _shapes__WEBPACK_IMPORTED_MODULE_0__.Circle,
+    ellipse: _shapes__WEBPACK_IMPORTED_MODULE_0__.Ellipse,
+    path: _shapes__WEBPACK_IMPORTED_MODULE_0__.Path,
+    polygon: _shapes__WEBPACK_IMPORTED_MODULE_0__.Polygon,
+    polyline: _shapes__WEBPACK_IMPORTED_MODULE_0__.Polyline,
+    image: _shapes__WEBPACK_IMPORTED_MODULE_0__.Image,
+    text: _shapes__WEBPACK_IMPORTED_MODULE_0__.Text,
+    'text-path': _shapes__WEBPACK_IMPORTED_MODULE_0__.TextPath
+};
+
+
+
+/***/ }),
+
 /***/ "./packages/core/src/importers/importer.ts":
 /*!*************************************************!*\
   !*** ./packages/core/src/importers/importer.ts ***!
@@ -2651,7 +2680,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   JSONImporter: () => (/* binding */ JSONImporter)
 /* harmony export */ });
-/* harmony import */ var _importer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./importer */ "./packages/core/src/importers/importer.ts");
+/* harmony import */ var _classes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./classes */ "./packages/core/src/importers/classes.ts");
+/* harmony import */ var _importer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./importer */ "./packages/core/src/importers/importer.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -2667,6 +2697,18 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __rest = (undefined && undefined.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
+
 
 var JSONImporter = /** @class */ (function (_super) {
     __extends(JSONImporter, _super);
@@ -2674,13 +2716,39 @@ var JSONImporter = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     JSONImporter.prototype.load = function (content) {
-        throw new Error('Method not implemented.');
+        var _this = this;
+        if (!content) {
+            return this._canvas;
+        }
+        var children = content.children, options = __rest(content, ["children"]);
+        // Set canvas options.
+        this._canvas.set(options);
+        if (!(children === null || children === void 0 ? void 0 : children.length)) {
+            return this._canvas;
+        }
+        // Add shapes.
+        var shapes = children.map(function (child) { return _this._parseShape(child); }).filter(function (child) { return !!child; });
+        // @ts-ignore
+        return this._canvas.setChildren(shapes);
     };
-    JSONImporter.prototype._parseShape = function (shape) {
-        throw new Error('Method not implemented.');
+    JSONImporter.prototype._parseShape = function (shapeOptions) {
+        var _this = this;
+        var tagName = shapeOptions.tagName, children = shapeOptions.children, options = __rest(shapeOptions, ["tagName", "children"]);
+        var Shape = _classes__WEBPACK_IMPORTED_MODULE_0__.SHAPES[tagName];
+        if (!Shape) {
+            return console.warn("The specified tagName - ".concat(tagName, " does not have a class definition."));
+        }
+        var shape = new Shape(options);
+        if (children === null || children === void 0 ? void 0 : children.length) {
+            var childShapes = children
+                .map(function (child) { return _this._parseShape(child); })
+                .filter(function (child) { return !!child; });
+            shape.add(childShapes);
+        }
+        return shape;
     };
     return JSONImporter;
-}(_importer__WEBPACK_IMPORTED_MODULE_0__.Importer));
+}(_importer__WEBPACK_IMPORTED_MODULE_1__.Importer));
 
 
 
@@ -5839,9 +5907,7 @@ function Collection(Base) {
         });
         Collection.prototype.setChildren = function (children, silent) {
             if (silent === void 0) { silent = false; }
-            this.children = [];
-            this.add(children, silent);
-            return this;
+            return this.reset().add(children, silent);
         };
         Collection.prototype.getChildren = function () {
             return this.children;
@@ -5878,6 +5944,10 @@ function Collection(Base) {
                 // @ts-ignore
                 this.trigger('removed', children);
             }
+            return this;
+        };
+        Collection.prototype.reset = function () {
+            this.children = [];
             return this;
         };
         Collection.prototype.eachChild = function (callback) {

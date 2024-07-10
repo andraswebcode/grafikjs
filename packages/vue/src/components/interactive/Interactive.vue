@@ -8,7 +8,7 @@ const {
 	actions: { mousedown, mousemove, mouseup, wheel }
 } = useCanvas(
 	(canvas) => ({
-		shapes: canvas.getSelectedShapes(),
+		shapes: [...canvas.getSelectedShapes()],
 		multiselection: canvas.multiselection
 	}),
 	(canvas) => ({

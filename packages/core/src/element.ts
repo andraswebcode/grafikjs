@@ -48,7 +48,7 @@ class Element extends Stateful(Observable) {
 		return this;
 	}
 
-	public toJSON(): object {
+	public toJSON(): any {
 		const { id, name, tagName } = this;
 		const json: any = {
 			id,

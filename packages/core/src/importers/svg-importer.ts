@@ -1,5 +1,4 @@
 import { Canvas } from './../canvas';
-import { SHAPES } from './classes';
 import { Importer } from './importer';
 
 class SVGImporter extends Importer {
