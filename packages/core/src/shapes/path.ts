@@ -41,6 +41,10 @@ class Path extends Shape {
 		this.bBox.fromSizeAndOrigin(this.path.updateBBox().getBBox().getSize(), this.origin);
 		return this;
 	}
+
+	public getPath() {
+		return this.path;
+	}
 }
 
 export { Path };

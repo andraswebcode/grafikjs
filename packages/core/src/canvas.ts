@@ -4,7 +4,8 @@ import { Selector } from './interactive';
 import { Timeline } from './animation';
 import { Matrix, Point } from './maths';
 import { toFixed } from './utils';
-import { ViewBoxArray } from './types';
+import { AnyColor, ViewBoxArray } from './types';
+import { Path } from './shapes';
 
 type ModeType = 'select' | 'pan' | 'draw';
 type MouseOrTouchEvent = MouseEvent | TouchEvent;
@@ -14,6 +15,8 @@ class Canvas extends ElementCollection(Element) {
 	public multiselection = true;
 	public zoomable = true;
 	public mode: ModeType = 'select';
+	public penWidth = 2;
+	public penColor: AnyColor = '#000';
 
 	protected readonly tagName = 'svg';
 	protected readonly xmlns = 'http://www.w3.org/2000/svg';
@@ -25,7 +28,6 @@ class Canvas extends ElementCollection(Element) {
 
 	protected viewBox: ViewBoxArray;
 	protected viewportMatrix = new Matrix();
-	// protected drawingAreaMatrix = new Matrix();
 
 	public hasDrawingArea = false;
 	public showGrid = false;
@@ -49,6 +51,9 @@ class Canvas extends ElementCollection(Element) {
 	private _pan = new Point();
 	private _isDragging = false;
 	private _startVector = new Point();
+
+	private _isDrawing = false;
+	private _drawingPath: Path;
 
 	set zoom(value: number) {
 		this._zoom = value;
@@ -409,11 +414,44 @@ class Canvas extends ElementCollection(Element) {
 		this._isDragging = false;
 	}
 
-	private _onPointerStartInDrawMode(e: MouseOrTouchEvent) {}
+	private _onPointerStartInDrawMode(e: MouseOrTouchEvent) {
+		const { x, y } = this.getPointer(e)
+			.transform(this.viewportMatrix.clone().invert())
+			.subtract(this.getDrawingAreaPosition());
+		const path = new Path({
+			left: 0,
+			top: 0,
+			originX: 0,
+			originY: 0,
+			stroke: this.penColor,
+			strokeWidth: this.penWidth,
+			fill: 'none'
+		});
 
-	private _onPointerMoveInDrawMode(e: MouseOrTouchEvent) {}
+		path.getPath().moveTo(x, y);
 
-	private _onPointerEndInDrawMode(e: MouseOrTouchEvent) {}
+		this._isDrawing = true;
+		this._drawingPath = path;
+		this.add(path);
+	}
+
+	private _onPointerMoveInDrawMode(e: MouseOrTouchEvent) {
+		if (!this._isDrawing) {
+			return;
+		}
+
+		const { x, y } = this.getPointer(e)
+			.transform(this.viewportMatrix.clone().invert())
+			.subtract(this.getDrawingAreaPosition());
+
+		this._drawingPath.getPath().lineTo(x, y);
+		// Set, just to rerender views.
+		this._drawingPath.updateBBox().set({});
+	}
+
+	private _onPointerEndInDrawMode(e: MouseOrTouchEvent) {
+		this._isDrawing = false;
+	}
 
 	public onPointerStart(e: MouseOrTouchEvent) {
 		switch (this.mode) {

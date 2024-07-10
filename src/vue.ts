@@ -8,6 +8,9 @@ const grafik = createGrafik({
 	autoSize: true,
 	showGrid: true,
 	gridSize: 50,
+	mode: 'draw',
+	penWidth: 4,
+	penColor: 'forestgreen',
 	drawingWidth: 400,
 	drawingHeight: 400
 });

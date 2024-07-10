@@ -2497,6 +2497,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./animation */ "./packages/core/src/animation/index.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./maths */ "./packages/core/src/maths/index.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _shapes__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./shapes */ "./packages/core/src/shapes/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -2518,6 +2519,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var Canvas = /** @class */ (function (_super) {
     __extends(Canvas, _super);
     function Canvas(params) {
@@ -2527,6 +2529,8 @@ var Canvas = /** @class */ (function (_super) {
         _this.multiselection = true;
         _this.zoomable = true;
         _this.mode = 'select';
+        _this.penWidth = 2;
+        _this.penColor = '#000';
         _this.tagName = 'svg';
         _this.xmlns = 'http://www.w3.org/2000/svg';
         _this.preserveAspectRatio = 'xMidYMid slice';
@@ -2534,7 +2538,6 @@ var Canvas = /** @class */ (function (_super) {
         _this.width = 0;
         _this.height = 0;
         _this.viewportMatrix = new _maths__WEBPACK_IMPORTED_MODULE_4__.Matrix();
-        // protected drawingAreaMatrix = new Matrix();
         _this.hasDrawingArea = false;
         _this.showGrid = false;
         _this.autoSize = false;
@@ -2552,6 +2555,7 @@ var Canvas = /** @class */ (function (_super) {
         _this._pan = new _maths__WEBPACK_IMPORTED_MODULE_4__.Point();
         _this._isDragging = false;
         _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_4__.Point();
+        _this._isDrawing = false;
         _this.set(params, true);
         _this.trigger('init', _this);
         return _this;
@@ -2879,9 +2883,38 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype._onPointerEndInPanMode = function (e) {
         this._isDragging = false;
     };
-    Canvas.prototype._onPointerStartInDrawMode = function (e) { };
-    Canvas.prototype._onPointerMoveInDrawMode = function (e) { };
-    Canvas.prototype._onPointerEndInDrawMode = function (e) { };
+    Canvas.prototype._onPointerStartInDrawMode = function (e) {
+        var _a = this.getPointer(e)
+            .transform(this.viewportMatrix.clone().invert())
+            .subtract(this.getDrawingAreaPosition()), x = _a.x, y = _a.y;
+        var path = new _shapes__WEBPACK_IMPORTED_MODULE_6__.Path({
+            left: 0,
+            top: 0,
+            originX: 0,
+            originY: 0,
+            stroke: this.penColor,
+            strokeWidth: this.penWidth,
+            fill: 'none'
+        });
+        path.getPath().moveTo(x, y);
+        this._isDrawing = true;
+        this._drawingPath = path;
+        this.add(path);
+    };
+    Canvas.prototype._onPointerMoveInDrawMode = function (e) {
+        if (!this._isDrawing) {
+            return;
+        }
+        var _a = this.getPointer(e)
+            .transform(this.viewportMatrix.clone().invert())
+            .subtract(this.getDrawingAreaPosition()), x = _a.x, y = _a.y;
+        this._drawingPath.getPath().lineTo(x, y);
+        // Set, just to rerender views.
+        this._drawingPath.updateBBox().set({});
+    };
+    Canvas.prototype._onPointerEndInDrawMode = function (e) {
+        this._isDrawing = false;
+    };
     Canvas.prototype.onPointerStart = function (e) {
         switch (this.mode) {
             case 'select':
@@ -8050,6 +8083,9 @@ var Path = /** @class */ (function (_super) {
     Path.prototype.updateBBox = function () {
         this.bBox.fromSizeAndOrigin(this.path.updateBBox().getBBox().getSize(), this.origin);
         return this;
+    };
+    Path.prototype.getPath = function () {
+        return this.path;
     };
     return Path;
 }(_shape__WEBPACK_IMPORTED_MODULE_0__.Shape));
