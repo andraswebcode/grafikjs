@@ -1,26 +1,15 @@
-import {
-	LineCurve
-} from './line-curve';
-import {
-	Point
-} from './../point';
-import {
-	toFixed
-} from './../../utils';
-import {
-	ParsedCurve,
-	ParsedPath
-} from './../../types';
+import { LineCurve } from './line-curve';
+import { Point } from './../point';
+import { toFixed } from './../../utils';
+import { ParsedCurve, ParsedPath } from './../../types';
 
 class HorizontalLineCurve extends LineCurve {
-
 	protected readonly command = 'H';
 
-	public fromArray(curve: ParsedCurve, index: number, path: ParsedPath){
-
+	public fromArray(curve: ParsedCurve, index: number, path: ParsedPath) {
 		const prevCurve = path[index - 1] || [];
 		const prevLength = prevCurve.length;
-		const isRelative = (curve[0] === curve[0].toLowerCase());
+		const isRelative = curve[0] === curve[0].toLowerCase();
 		const prevCurveEndPoint = new Point(
 			// @ts-ignore
 			prevCurve[prevLength - 2],
@@ -31,59 +20,57 @@ class HorizontalLineCurve extends LineCurve {
 		let y = 0;
 		let xSet = false;
 		let ySet = false;
-		let _i = index, _curve, _prevCurve;
+		let _i = index,
+			_curve,
+			_prevCurve;
 
 		// Walking through the path array backward, and pick up the first x, or y value.
 		// And stops at the curve, that is not V, or H. So, the curve.length is not equals to 2.
-		while (path[_i--].length === 2){
+		while (path[_i--].length === 2) {
 			_curve = path[_i];
 			_prevCurve = path[_i - 1];
-			switch (_curve[0]){
+			switch (_curve[0]) {
 				case 'H':
-				if (!xSet){
-					x = _curve[1];
-					xSet = true;
-				}
-				break;
+					if (!xSet) {
+						x = _curve[1];
+						xSet = true;
+					}
+					break;
 				case 'V':
-				if (!ySet){
-					y = _curve[1];
-					ySet = true;
-				}
-				break;
+					if (!ySet) {
+						y = _curve[1];
+						ySet = true;
+					}
+					break;
 				default:
-				if (!xSet){
-					// @ts-ignore
-					x = _curve[_curve.length - 2];
-					xSet = true;
-				}
-				if (!ySet){
-					// @ts-ignore
-					y = _curve[_curve.length - 1];
-					ySet = true;
-				}
-				break;
+					if (!xSet) {
+						// @ts-ignore
+						x = _curve[_curve.length - 2];
+						xSet = true;
+					}
+					if (!ySet) {
+						// @ts-ignore
+						y = _curve[_curve.length - 1];
+						ySet = true;
+					}
+					break;
 			}
 		}
 
 		this.p0.set(x, y);
 		this.p1.set(curve[1], y);
 
-		if (isRelative){
+		if (isRelative) {
 			this.p0.add(prevCurveEndPoint);
 			this.p1.add(prevCurveEndPoint);
 		}
 
 		return this;
-
 	}
 
-	public toString() : string {
-		return this.command + ' ' + this.p1.x;
+	public toString(): string {
+		return this.command + ' ' + toFixed(this.p1.x);
 	}
-
 }
 
-export {
-	HorizontalLineCurve
-};
+export { HorizontalLineCurve };
