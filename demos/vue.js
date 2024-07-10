@@ -14055,10 +14055,24 @@ var Canvas = /** @class */ (function (_super) {
             .transform(this.viewportMatrix.clone().invert())
             .subtract(this.getDrawingAreaPosition()), x = _a.x, y = _a.y;
         this._drawingPath.getPath().lineTo(x, y);
-        // Set, just to rerender views.
+        // Call set, just to trigger events, and rerender views.
         this._drawingPath.updateBBox().set({});
     };
     Canvas.prototype._onPointerEndInDrawMode = function (e) {
+        if (!this._isDrawing) {
+            return;
+        }
+        var path = this._drawingPath;
+        var curves = path.getPath();
+        var bBox = curves.getBBox();
+        var translate = bBox.min.clone().add(bBox.getSize().divideScalar(2));
+        curves.adjust();
+        path.updateBBox().set({
+            left: translate.x,
+            top: translate.y,
+            originX: 0.5,
+            originY: 0.5
+        });
         this._isDrawing = false;
     };
     Canvas.prototype.onPointerStart = function (e) {

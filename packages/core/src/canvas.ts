@@ -445,11 +445,28 @@ class Canvas extends ElementCollection(Element) {
 			.subtract(this.getDrawingAreaPosition());
 
 		this._drawingPath.getPath().lineTo(x, y);
-		// Set, just to rerender views.
+		// Call set, just to trigger events, and rerender views.
 		this._drawingPath.updateBBox().set({});
 	}
 
 	private _onPointerEndInDrawMode(e: MouseOrTouchEvent) {
+		if (!this._isDrawing) {
+			return;
+		}
+
+		const path = this._drawingPath;
+		const curves = path.getPath();
+		const bBox = curves.getBBox();
+		const translate = bBox.min.clone().add(bBox.getSize().divideScalar(2));
+
+		curves.adjust();
+		path.updateBBox().set({
+			left: translate.x,
+			top: translate.y,
+			originX: 0.5,
+			originY: 0.5
+		});
+
 		this._isDrawing = false;
 	}
 
