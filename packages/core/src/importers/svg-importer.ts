@@ -1,4 +1,5 @@
 import { Canvas } from './../canvas';
+import { SHAPES } from './classes';
 import { Importer } from './importer';
 
 class SVGImporter extends Importer {
@@ -28,13 +29,31 @@ class SVGImporter extends Importer {
 		// Add shapes.
 		const shapes = children.map((child) => this._parseShape(child)).filter((child) => !!child);
 		// @ts-ignore
-		return this._canvas; //.setChildren(shapes);
+		return this._canvas.setChildren(shapes);
 	}
 
 	protected _parseShape(shapeDOM: any) {
-		console.log(shapeDOM);
+		const tagName = shapeDOM.tagName.toLowerCase();
+		const attrs = this._getAttributes(shapeDOM);
+		const Shape = SHAPES[tagName];
 
-		return {};
+		if (!Shape) {
+			return console.warn(
+				`The specified tagName - ${tagName} does not have a class definition.`
+			);
+		}
+
+		const shape = new Shape(attrs);
+		const children = this._getChildren(shapeDOM);
+
+		if (children?.length) {
+			const childShapes = children
+				.map((child) => this._parseShape(child))
+				.filter((child) => !!child);
+			shape.add(childShapes);
+		}
+
+		return shape;
 	}
 
 	protected _getAttributes(element: SVGElement) {

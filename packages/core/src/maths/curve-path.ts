@@ -320,7 +320,12 @@ class CurvePath {
 	}
 
 	public updateBBox(): CurvePath {
+		if (!this.length) {
+			return this;
+		}
+
 		this._bBox.flip();
+
 		return this.eachCurve((curve) => {
 			this._bBox.union(curve.updateBBox().getBBox());
 		});
