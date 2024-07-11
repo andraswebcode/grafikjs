@@ -132,12 +132,31 @@ class Point {
 		return this;
 	}
 
+	public lerpPoints(p1: Point, p2: Point, t: number): Point {
+		t = clamp(t, 0, 1);
+
+		this.x = p1.x + (p2.x - p1.x) * t;
+		this.y = p1.y + (p2.y - p1.y) * t;
+
+		return this;
+	}
+
 	public bilerp(point: Point, t: Point): Point {
 		const tX = clamp(t.x, 0, 1);
 		const tY = clamp(t.y, 0, 1);
 
 		this.x += (point.x - this.x) * tX;
 		this.y += (point.y - this.y) * tY;
+
+		return this;
+	}
+
+	public bilerpPoints(p1: Point, p2: Point, t: Point): Point {
+		const tX = clamp(t.x, 0, 1);
+		const tY = clamp(t.y, 0, 1);
+
+		this.x = p1.x + (p2.x - p1.x) * tX;
+		this.y = p1.y + (p2.y - p1.y) * tY;
 
 		return this;
 	}
