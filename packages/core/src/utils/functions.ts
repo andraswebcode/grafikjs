@@ -4,8 +4,10 @@ import { PIBY180 } from './constants';
 const clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max);
 
-const toFixed = (value: any, fractionDigits = 2): number =>
-	Math.round(value * 10 ** fractionDigits) / 10 ** fractionDigits || 0;
+const toFixed = (value: any, fractionDigits = 2): number => {
+	const _value = parseFloat(value) || 0;
+	return Math.round(_value * 10 ** fractionDigits) / 10 ** fractionDigits || 0;
+};
 
 const deg2Rad = (degree: number): number => degree * PIBY180;
 

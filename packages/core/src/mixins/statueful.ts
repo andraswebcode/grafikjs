@@ -1,4 +1,7 @@
+import { Sanitizer } from './../utils';
 import { Constructor } from './../types/mixin';
+
+const _sanitizer = new Sanitizer();
 
 function Stateful<TBase extends Constructor>(Base: TBase) {
 	return class Stateful extends Base {
@@ -25,7 +28,7 @@ function Stateful<TBase extends Constructor>(Base: TBase) {
 
 		protected _set(key: string, value: string | number) {
 			if (typeof this[key] !== 'function' && typeof value !== 'undefined') {
-				this[key] = value;
+				this[key] = _sanitizer.sanitize(key, value);
 			}
 		}
 

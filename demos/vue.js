@@ -13706,6 +13706,21 @@ var Canvas = /** @class */ (function (_super) {
         _this.trigger('init', _this);
         return _this;
     }
+    Object.defineProperty(Canvas.prototype, "viewBox", {
+        get: function () {
+            return this._viewBox ? this._viewBox.join(' ') : '0 0 0 0';
+        },
+        set: function (value) {
+            if (typeof value === 'string') {
+                this._viewBox = value.split(' ').map(function (n) { return (0,_utils__WEBPACK_IMPORTED_MODULE_5__.toFixed)(n); });
+            }
+            else {
+                this._viewBox = value;
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Canvas.prototype, "zoom", {
         get: function () {
             return this._zoom;
@@ -15396,10 +15411,44 @@ var SVGImporter = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     SVGImporter.prototype.load = function (content) {
-        throw new Error('Method not implemented.');
+        var _this = this;
+        if (!content) {
+            return this._canvas;
+        }
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(content, 'image/svg+xml');
+        var svg = doc.querySelector('svg');
+        if (!svg) {
+            console.warn('No <svg> element found in the provided content.');
+            return this._canvas;
+        }
+        // Set canvas options.
+        this._canvas.set(this._getAttributes(svg));
+        console.log(this._getAttributes(svg));
+        var children = this._getChildren(svg);
+        if (!children.length) {
+            return this._canvas;
+        }
+        // Add shapes.
+        var shapes = children.map(function (child) { return _this._parseShape(child); }).filter(function (child) { return !!child; });
+        // @ts-ignore
+        return this._canvas; //.setChildren(shapes);
     };
-    SVGImporter.prototype._parseShape = function (shape) {
-        throw new Error('Method not implemented.');
+    SVGImporter.prototype._parseShape = function (shapeDOM) {
+        console.log(shapeDOM);
+        return {};
+    };
+    SVGImporter.prototype._getAttributes = function (element) {
+        var attributes = {};
+        var i, attr;
+        for (i = 0; i < element.attributes.length; i++) {
+            attr = element.attributes[i];
+            attributes[attr.name] = attr.value;
+        }
+        return attributes;
+    };
+    SVGImporter.prototype._getChildren = function (element) {
+        return Array.from(element.childNodes);
     };
     return SVGImporter;
 }(_importer__WEBPACK_IMPORTED_MODULE_0__.Importer));
@@ -15466,6 +15515,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   SVGExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGExporter),
 /* harmony export */   SVGImporter: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_10__.SVGImporter),
 /* harmony export */   SVGJSExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGJSExporter),
+/* harmony export */   Sanitizer: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.Sanitizer),
 /* harmony export */   ScaleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.ScaleControlNode),
 /* harmony export */   Selector: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.Selector),
 /* harmony export */   Shape: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Shape),
@@ -18730,6 +18780,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Stateful: () => (/* binding */ Stateful)
 /* harmony export */ });
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -18745,6 +18796,8 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+
+var _sanitizer = new _utils__WEBPACK_IMPORTED_MODULE_0__.Sanitizer();
 function Stateful(Base) {
     return /** @class */ (function (_super) {
         __extends(Stateful, _super);
@@ -18775,7 +18828,7 @@ function Stateful(Base) {
         };
         Stateful.prototype._set = function (key, value) {
             if (typeof this[key] !== 'function' && typeof value !== 'undefined') {
-                this[key] = value;
+                this[key] = _sanitizer.sanitize(key, value);
             }
         };
         Stateful.prototype.get = function (key) {
@@ -19976,7 +20029,8 @@ var clamp = function (value, min, max) {
 };
 var toFixed = function (value, fractionDigits) {
     if (fractionDigits === void 0) { fractionDigits = 2; }
-    return Math.round(value * Math.pow(10, fractionDigits)) / Math.pow(10, fractionDigits) || 0;
+    var _value = parseFloat(value) || 0;
+    return Math.round(_value * Math.pow(10, fractionDigits)) / Math.pow(10, fractionDigits) || 0;
 };
 var deg2Rad = function (degree) { return degree * _constants__WEBPACK_IMPORTED_MODULE_0__.PIBY180; };
 var rad2Deg = function (degree) { return degree / _constants__WEBPACK_IMPORTED_MODULE_0__.PIBY180; };
@@ -20125,6 +20179,7 @@ var parsePath = function (string) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   PIBY180: () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.PIBY180),
+/* harmony export */   Sanitizer: () => (/* reexport safe */ _sanitizer__WEBPACK_IMPORTED_MODULE_2__.Sanitizer),
 /* harmony export */   camelize: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.camelize),
 /* harmony export */   clamp: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.deg2Rad),
@@ -20139,7 +20194,48 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./packages/core/src/utils/constants.ts");
 /* harmony import */ var _functions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./functions */ "./packages/core/src/utils/functions.ts");
+/* harmony import */ var _sanitizer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sanitizer */ "./packages/core/src/utils/sanitizer.ts");
 
+
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/utils/sanitizer.ts":
+/*!**********************************************!*\
+  !*** ./packages/core/src/utils/sanitizer.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Sanitizer: () => (/* binding */ Sanitizer)
+/* harmony export */ });
+/* harmony import */ var _functions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./functions */ "./packages/core/src/utils/functions.ts");
+
+var Sanitizer = /** @class */ (function () {
+    function Sanitizer() {
+        this._types = {
+            left: 'number',
+            top: 'number',
+            width: 'number',
+            height: 'number'
+        };
+    }
+    Sanitizer.prototype.sanitize = function (property, value) {
+        var type = this._types[property];
+        if (!type) {
+            return value;
+        }
+        var fn = '_' + type;
+        return this[fn](value);
+    };
+    Sanitizer.prototype._number = function (value) {
+        return (0,_functions__WEBPACK_IMPORTED_MODULE_0__.toFixed)(value);
+    };
+    return Sanitizer;
+}());
 
 
 
@@ -22149,9 +22245,6 @@ var grafik = (0,_grafikjs_vue__WEBPACK_IMPORTED_MODULE_2__.createGrafik)({
     autoSize: true,
     showGrid: true,
     gridSize: 50,
-    mode: 'draw',
-    penWidth: 4,
-    penColor: 'forestgreen',
     drawingWidth: 400,
     drawingHeight: 400
 });

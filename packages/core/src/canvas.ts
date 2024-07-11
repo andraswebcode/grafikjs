@@ -26,7 +26,7 @@ class Canvas extends ElementCollection(Element) {
 	protected width = 0;
 	protected height = 0;
 
-	protected viewBox: ViewBoxArray;
+	private _viewBox: ViewBoxArray;
 	protected viewportMatrix = new Matrix();
 
 	public hasDrawingArea = false;
@@ -54,6 +54,18 @@ class Canvas extends ElementCollection(Element) {
 
 	private _isDrawing = false;
 	private _drawingPath: Path;
+
+	set viewBox(value: ViewBoxArray | string) {
+		if (typeof value === 'string') {
+			this._viewBox = value.split(' ').map((n) => toFixed(n)) as ViewBoxArray;
+		} else {
+			this._viewBox = value;
+		}
+	}
+
+	get viewBox(): string {
+		return this._viewBox ? this._viewBox.join(' ') : '0 0 0 0';
+	}
 
 	set zoom(value: number) {
 		this._zoom = value;
