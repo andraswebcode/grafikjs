@@ -15,8 +15,13 @@ class Sanitizer {
 			return value;
 		}
 
-		const fn = '_' + type;
-		return this[fn](value);
+		const fn = this['_' + type];
+
+		if (!fn) {
+			return value;
+		}
+
+		return fn(value);
 	}
 
 	private _number(value: any): number {

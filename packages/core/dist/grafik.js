@@ -7072,8 +7072,11 @@ var Sanitizer = /** @class */ (function () {
         if (!type) {
             return value;
         }
-        var fn = '_' + type;
-        return this[fn](value);
+        var fn = this['_' + type];
+        if (!fn) {
+            return value;
+        }
+        return fn(value);
     };
     Sanitizer.prototype._number = function (value) {
         return (0,_functions__WEBPACK_IMPORTED_MODULE_0__.toFixed)(value);
