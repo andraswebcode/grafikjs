@@ -228,6 +228,12 @@ class Point {
 		return this;
 	}
 
+	public negate() {
+		this.x = -this.x;
+		this.y = -this.y;
+		return this;
+	}
+
 	public clamp(min: Point, max: Point): Point {
 		this.x = clamp(this.x, min.x, max.x);
 		this.y = clamp(this.y, min.y, max.y);
