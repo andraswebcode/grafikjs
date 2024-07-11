@@ -132,6 +132,16 @@ class Point {
 		return this;
 	}
 
+	public bilerp(point: Point, t: Point): Point {
+		const tX = clamp(t.x, 0, 1);
+		const tY = clamp(t.y, 0, 1);
+
+		this.x += (point.x - this.x) * tX;
+		this.y += (point.y - this.y) * tY;
+
+		return this;
+	}
+
 	public rotate(center: Point, angle: number): Point {
 		const theta = deg2Rad(angle);
 		const cos = Math.cos(theta);
