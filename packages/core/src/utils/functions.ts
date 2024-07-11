@@ -101,6 +101,8 @@ const isEqual = (value1: any, value2: any, visited = new Set()): boolean => {
 	return false;
 };
 
+const unique = (array: any[]): any[] => Array.from(new Set(array));
+
 const omitBy = (obj: any, callback: (value: any, key: string, object: any) => boolean) => {
 	const newObj = {};
 
@@ -180,6 +182,7 @@ export {
 	isEqual,
 	kebabize,
 	camelize,
+	unique,
 	omitBy,
 	parsePath
 };

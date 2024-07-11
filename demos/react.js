@@ -3534,6 +3534,9 @@ var Exporter = /** @class */ (function () {
         }
         return __assign(__assign({}, attrs), overWrites);
     };
+    Exporter.prototype._build = function () {
+        this._content = this._createCanvas();
+    };
     return Exporter;
 }());
 
@@ -3551,17 +3554,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Exporter: () => (/* reexport safe */ _exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter),
 /* harmony export */   LottieExporter: () => (/* reexport safe */ _lottie_exporter__WEBPACK_IMPORTED_MODULE_4__.LottieExporter),
-/* harmony export */   RasterExporter: () => (/* reexport safe */ _raster_exporter__WEBPACK_IMPORTED_MODULE_5__.RasterExporter),
+/* harmony export */   RasterExporter: () => (/* reexport safe */ _raster_exporter__WEBPACK_IMPORTED_MODULE_7__.RasterExporter),
+/* harmony export */   ReactExporter: () => (/* reexport safe */ _react_exporter__WEBPACK_IMPORTED_MODULE_5__.ReactExporter),
 /* harmony export */   SVGCSSExporter: () => (/* reexport safe */ _svg_css_exporter__WEBPACK_IMPORTED_MODULE_2__.SVGCSSExporter),
 /* harmony export */   SVGExporter: () => (/* reexport safe */ _svg_exporter__WEBPACK_IMPORTED_MODULE_1__.SVGExporter),
-/* harmony export */   SVGJSExporter: () => (/* reexport safe */ _svg_js_exporter__WEBPACK_IMPORTED_MODULE_3__.SVGJSExporter)
+/* harmony export */   SVGJSExporter: () => (/* reexport safe */ _svg_js_exporter__WEBPACK_IMPORTED_MODULE_3__.SVGJSExporter),
+/* harmony export */   VueExporter: () => (/* reexport safe */ _vue_exporter__WEBPACK_IMPORTED_MODULE_6__.VueExporter)
 /* harmony export */ });
 /* harmony import */ var _exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exporter */ "./packages/core/src/exporters/exporter.ts");
 /* harmony import */ var _svg_exporter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./svg-exporter */ "./packages/core/src/exporters/svg-exporter.ts");
 /* harmony import */ var _svg_css_exporter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./svg-css-exporter */ "./packages/core/src/exporters/svg-css-exporter.ts");
 /* harmony import */ var _svg_js_exporter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./svg-js-exporter */ "./packages/core/src/exporters/svg-js-exporter.ts");
 /* harmony import */ var _lottie_exporter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./lottie-exporter */ "./packages/core/src/exporters/lottie-exporter.ts");
-/* harmony import */ var _raster_exporter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./raster-exporter */ "./packages/core/src/exporters/raster-exporter.ts");
+/* harmony import */ var _react_exporter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./react-exporter */ "./packages/core/src/exporters/react-exporter.ts");
+/* harmony import */ var _vue_exporter__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./vue-exporter */ "./packages/core/src/exporters/vue-exporter.ts");
+/* harmony import */ var _raster_exporter__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./raster-exporter */ "./packages/core/src/exporters/raster-exporter.ts");
+
+
 
 
 
@@ -3608,9 +3617,6 @@ var LottieExporter = /** @class */ (function (_super) {
         return _this;
     }
     LottieExporter.prototype._createDefs = function () { };
-    LottieExporter.prototype._build = function () {
-        throw new Error('Method not implemented.');
-    };
     LottieExporter.prototype._createCanvas = function () {
         throw new Error('Method not implemented.');
     };
@@ -3664,9 +3670,6 @@ var RasterExporter = /** @class */ (function (_super) {
         return _this;
     }
     RasterExporter.prototype._createDefs = function () { };
-    RasterExporter.prototype._build = function () {
-        throw new Error('Method not implemented.');
-    };
     RasterExporter.prototype._createCanvas = function () {
         throw new Error('Method not implemented.');
     };
@@ -3680,6 +3683,59 @@ var RasterExporter = /** @class */ (function (_super) {
         return this._buffers;
     };
     return RasterExporter;
+}(_exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/exporters/react-exporter.ts":
+/*!*******************************************************!*\
+  !*** ./packages/core/src/exporters/react-exporter.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ReactExporter: () => (/* binding */ ReactExporter)
+/* harmony export */ });
+/* harmony import */ var _exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exporter */ "./packages/core/src/exporters/exporter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+// Creates tsx file with a react component.
+var ReactExporter = /** @class */ (function (_super) {
+    __extends(ReactExporter, _super);
+    function ReactExporter() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._mimeType = 'text/plain';
+        _this._extension = 'tsx';
+        return _this;
+    }
+    ReactExporter.prototype._createDefs = function () { };
+    ReactExporter.prototype._createCanvas = function () {
+        throw new Error('Method not implemented.');
+    };
+    ReactExporter.prototype._createShape = function (shape) {
+        throw new Error('Method not implemented.');
+    };
+    ReactExporter.prototype._createAnimation = function (animation) {
+        throw new Error('Method not implemented.');
+    };
+    return ReactExporter;
 }(_exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter));
 
 
@@ -3949,9 +4005,6 @@ var SVGExporter = /** @class */ (function (_super) {
         _this._extension = 'svg';
         return _this;
     }
-    SVGExporter.prototype._build = function () {
-        this._content = this._createCanvas();
-    };
     SVGExporter.prototype._createCanvas = function () {
         var _this = this;
         var canvas = this._canvas;
@@ -4023,6 +4076,79 @@ var SVGJSExporter = /** @class */ (function (_super) {
     SVGJSExporter.prototype._createAnimation = function () { };
     return SVGJSExporter;
 }(_svg_exporter__WEBPACK_IMPORTED_MODULE_0__.SVGExporter));
+
+
+
+/***/ }),
+
+/***/ "./packages/core/src/exporters/vue-exporter.ts":
+/*!*****************************************************!*\
+  !*** ./packages/core/src/exporters/vue-exporter.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   VueExporter: () => (/* binding */ VueExporter)
+/* harmony export */ });
+/* harmony import */ var _exporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exporter */ "./packages/core/src/exporters/exporter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var EXCLUDED_ATTRIBUTES = ['xmlns', 'viewBox', 'className'];
+// Creates vue file with a vue component.
+var VueExporter = /** @class */ (function (_super) {
+    __extends(VueExporter, _super);
+    function VueExporter() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._mimeType = 'text/plain';
+        _this._extension = 'vue';
+        return _this;
+    }
+    VueExporter.prototype._createCanvas = function () {
+        var attrs = this._serializeAttributes(this._getCanvasAttributes());
+        return "\n\t\t\t<script setup>\n\t\t\t\t".concat(this._createDefs(), "\n\t\t\t</script>\n\t\t\t<template>\n\t\t\t\t<Canvas ").concat(attrs, ">\n\t\t\t\t</Canvas>\n\t\t\t</template>\n\t\t");
+    };
+    VueExporter.prototype._createDefs = function () {
+        return "\n\t\t\timport {  } from '@grafikjs/vue';\n\t\t";
+    };
+    VueExporter.prototype._createShape = function (shape) {
+        throw new Error('Method not implemented.');
+    };
+    VueExporter.prototype._createAnimation = function (animation) {
+        throw new Error('Method not implemented.');
+    };
+    VueExporter.prototype._serializeAttributes = function (attrs) {
+        var output = [];
+        var key, attrKey, value;
+        for (key in attrs) {
+            if (EXCLUDED_ATTRIBUTES.includes(key)) {
+                continue;
+            }
+            value = attrs[key];
+            attrKey = typeof value === 'string' ? key : ':' + key;
+            output.push("".concat(attrKey, "=\"").concat(attrs[key], "\""));
+        }
+        return output.join(' ');
+    };
+    VueExporter.prototype._getComponents = function () {
+        return '';
+    };
+    return VueExporter;
+}(_exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter));
 
 
 
@@ -4379,6 +4505,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   QuadraticBezierCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.QuadraticBezierCurve),
 /* harmony export */   RadialGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.RadialGradient),
 /* harmony export */   RasterExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.RasterExporter),
+/* harmony export */   ReactExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.ReactExporter),
 /* harmony export */   Rect: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Rect),
 /* harmony export */   SVGCSSExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGCSSExporter),
 /* harmony export */   SVGExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGExporter),
@@ -4397,6 +4524,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Track: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.Track),
 /* harmony export */   TransformControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.TransformControl),
 /* harmony export */   VerticalLineCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.VerticalLineCurve),
+/* harmony export */   VueExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.VueExporter),
 /* harmony export */   camelize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.camelize),
 /* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
 /* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
@@ -6135,15 +6263,9 @@ var Curve = /** @class */ (function () {
         return this._bBox;
     };
     Curve.prototype.fromArray = function (curve, index, path) {
-        var prevCurve = path[index - 1] || [];
-        var prevLength = prevCurve.length;
         var length = curve.length;
         var isRelative = curve[0] === curve[0].toLowerCase();
-        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_0__.Point(
-        // @ts-ignore
-        prevCurve[prevLength - 2], 
-        // @ts-ignore
-        prevCurve[prevLength - 1]);
+        var lastPoint = this._getLastCurveEndPoint(path, index);
         var point, i, p;
         // @ts-ignore
         if (this.p0) {
@@ -6153,14 +6275,14 @@ var Curve = /** @class */ (function () {
             }
             else {
                 // @ts-ignore
-                this.p0.copy(prevCurveEndPoint);
+                this.p0.copy(lastPoint);
             }
         }
         for (i = 0, p = 1; i < length - 1; i += 2, p++) {
             if ((point = this['p' + p])) {
                 point.set(curve[i + 1], curve[i + 2]);
                 if (isRelative) {
-                    point.add(prevCurveEndPoint);
+                    point.add(lastPoint);
                 }
             }
         }
@@ -6183,6 +6305,47 @@ var Curve = /** @class */ (function () {
             n++;
         }
         return this;
+    };
+    Curve.prototype._getLastCurveEndPoint = function (path, index) {
+        var x = 0;
+        var y = 0;
+        var xSet = false;
+        var ySet = false;
+        var _i = index, _curve;
+        // Walking through the path array backward, and pick up the first x, or y value.
+        // And stops at the curve, that is not V, or H. So, the curve.length is not equals to 2.
+        while (path[_i--].length === 2) {
+            _curve = path[_i];
+            switch (_curve[0]) {
+                case 'H':
+                case 'h':
+                    if (!xSet) {
+                        x = _curve[1];
+                        xSet = true;
+                    }
+                    break;
+                case 'V':
+                case 'v':
+                    if (!ySet) {
+                        y = _curve[1];
+                        ySet = true;
+                    }
+                    break;
+                default:
+                    if (!xSet) {
+                        // @ts-ignore
+                        x = _curve[_curve.length - 2];
+                        xSet = true;
+                    }
+                    if (!ySet) {
+                        // @ts-ignore
+                        y = _curve[_curve.length - 1];
+                        ySet = true;
+                    }
+                    break;
+            }
+        }
+        return new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y);
     };
     return Curve;
 }());
@@ -6379,8 +6542,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   HorizontalLineCurve: () => (/* binding */ HorizontalLineCurve)
 /* harmony export */ });
 /* harmony import */ var _line_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./line-curve */ "./packages/core/src/maths/curves/line-curve.ts");
-/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../point */ "./packages/core/src/maths/point.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -6398,7 +6560,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
-
 var HorizontalLineCurve = /** @class */ (function (_super) {
     __extends(HorizontalLineCurve, _super);
     function HorizontalLineCurve() {
@@ -6407,61 +6568,18 @@ var HorizontalLineCurve = /** @class */ (function (_super) {
         return _this;
     }
     HorizontalLineCurve.prototype.fromArray = function (curve, index, path) {
-        var prevCurve = path[index - 1] || [];
-        var prevLength = prevCurve.length;
         var isRelative = curve[0] === curve[0].toLowerCase();
-        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
-        // @ts-ignore
-        prevCurve[prevLength - 2], 
-        // @ts-ignore
-        prevCurve[prevLength - 1]);
-        var x = 0;
-        var y = 0;
-        var xSet = false;
-        var ySet = false;
-        var _i = index, _curve, _prevCurve;
-        // Walking through the path array backward, and pick up the first x, or y value.
-        // And stops at the curve, that is not V, or H. So, the curve.length is not equals to 2.
-        while (path[_i--].length === 2) {
-            _curve = path[_i];
-            _prevCurve = path[_i - 1];
-            switch (_curve[0]) {
-                case 'H':
-                    if (!xSet) {
-                        x = _curve[1];
-                        xSet = true;
-                    }
-                    break;
-                case 'V':
-                    if (!ySet) {
-                        y = _curve[1];
-                        ySet = true;
-                    }
-                    break;
-                default:
-                    if (!xSet) {
-                        // @ts-ignore
-                        x = _curve[_curve.length - 2];
-                        xSet = true;
-                    }
-                    if (!ySet) {
-                        // @ts-ignore
-                        y = _curve[_curve.length - 1];
-                        ySet = true;
-                    }
-                    break;
-            }
-        }
-        this.p0.set(x, y);
-        this.p1.set(curve[1], y);
+        var lastPoint = this._getLastCurveEndPoint(path, index);
+        this.p0.copy(lastPoint);
+        this.p1.copy(lastPoint).setX(curve[1]);
         if (isRelative) {
-            this.p0.add(prevCurveEndPoint);
-            this.p1.add(prevCurveEndPoint);
+            this.p0.add(lastPoint);
+            this.p1.add(lastPoint);
         }
         return this;
     };
     HorizontalLineCurve.prototype.toString = function () {
-        return this.command + ' ' + (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(this.p1.x);
+        return this.command + ' ' + (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)(this.p1.x);
     };
     return HorizontalLineCurve;
 }(_line_curve__WEBPACK_IMPORTED_MODULE_0__.LineCurve));
@@ -6716,11 +6834,7 @@ var SmoothCubicBezierCurve = /** @class */ (function (_super) {
         var prevLength = prevCurve.length;
         var isRelative = curve[0] === curve[0].toLowerCase();
         var isCorSCurve = ['C', 'c', 'S', 's'].includes(prevCurve[0]);
-        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
-        // @ts-ignore
-        prevCurve[prevLength - 2], 
-        // @ts-ignore
-        prevCurve[prevLength - 1]);
+        var prevCurveEndPoint = this._getLastCurveEndPoint(path, index);
         var prevCurveControlPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
         // @ts-ignore
         prevCurve[prevLength - 4], 
@@ -6841,8 +6955,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   VerticalLineCurve: () => (/* binding */ VerticalLineCurve)
 /* harmony export */ });
 /* harmony import */ var _line_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./line-curve */ "./packages/core/src/maths/curves/line-curve.ts");
-/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../point */ "./packages/core/src/maths/point.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../utils */ "./packages/core/src/utils/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../utils */ "./packages/core/src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -6860,7 +6973,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
-
 var VerticalLineCurve = /** @class */ (function (_super) {
     __extends(VerticalLineCurve, _super);
     function VerticalLineCurve() {
@@ -6869,61 +6981,18 @@ var VerticalLineCurve = /** @class */ (function (_super) {
         return _this;
     }
     VerticalLineCurve.prototype.fromArray = function (curve, index, path) {
-        var prevCurve = path[index - 1] || [];
-        var prevLength = prevCurve.length;
         var isRelative = curve[0] === curve[0].toLowerCase();
-        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
-        // @ts-ignore
-        prevCurve[prevLength - 2], 
-        // @ts-ignore
-        prevCurve[prevLength - 1]);
-        var x = 0;
-        var y = 0;
-        var xSet = false;
-        var ySet = false;
-        var _i = index, _curve, _prevCurve;
-        // Walking through the path array backward, and pick up the first x, or y value.
-        // And stops at the curve, that is not V, or H. So, the curve.length is not equals to 2.
-        while (path[_i--].length === 2) {
-            _curve = path[_i];
-            _prevCurve = path[_i - 1];
-            switch (_curve[0]) {
-                case 'H':
-                    if (!xSet) {
-                        x = _curve[1];
-                        xSet = true;
-                    }
-                    break;
-                case 'V':
-                    if (!ySet) {
-                        y = _curve[1];
-                        ySet = true;
-                    }
-                    break;
-                default:
-                    if (!xSet) {
-                        // @ts-ignore
-                        x = _curve[_curve.length - 2];
-                        xSet = true;
-                    }
-                    if (!ySet) {
-                        // @ts-ignore
-                        y = _curve[_curve.length - 1];
-                        ySet = true;
-                    }
-                    break;
-            }
-        }
-        this.p0.set(x, y);
-        this.p1.set(x, curve[1]);
+        var lastPoint = this._getLastCurveEndPoint(path, index);
+        this.p0.copy(lastPoint);
+        this.p1.copy(lastPoint).setY(curve[1]);
         if (isRelative) {
-            this.p0.add(prevCurveEndPoint);
-            this.p1.add(prevCurveEndPoint);
+            this.p0.add(lastPoint);
+            this.p1.add(lastPoint);
         }
         return this;
     };
     VerticalLineCurve.prototype.toString = function () {
-        return this.command + ' ' + (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(this.p1.y);
+        return this.command + ' ' + (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)(this.p1.y);
     };
     return VerticalLineCurve;
 }(_line_curve__WEBPACK_IMPORTED_MODULE_0__.LineCurve));
@@ -9067,7 +9136,7 @@ var parsePath = function (string) {
     (string.match(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g) || []).forEach(function (curve, i, array) {
         curve = curve.trim();
         var command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
-        var values = (curve.match(/[\-\.\d]+/g) || []).map(function (n) { return toFixed(n); });
+        var values = (curve.match(/-?\d+(\.\d+)?/g) || []).map(function (n) { return toFixed(n); });
         var commandLength = CURVE_VALUES_LENGTHS[command];
         if (values.length === commandLength) {
             // @ts-ignore

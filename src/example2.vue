@@ -21,6 +21,30 @@ onMounted(() => {
 				top: 200,
 				fill: 'none',
 				strokeWidth: 4,
+				animation: {
+					tracks: [
+						{
+							property: 'angle',
+							keyframes: [
+								{
+									to: 500,
+									value: 180,
+									easing: 'cubicOut'
+								},
+								{
+									to: 1500,
+									value: -180,
+									easing: 'cubicOut'
+								},
+								{
+									to: 2000,
+									value: 0,
+									easing: 'cubicOut'
+								}
+							]
+						}
+					]
+				},
 				children: [
 					{
 						id: 'rect-Mky72OJuTF1y',

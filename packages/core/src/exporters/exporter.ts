@@ -65,7 +65,9 @@ abstract class Exporter {
 		};
 	}
 
-	protected abstract _build();
+	protected _build() {
+		this._content = this._createCanvas();
+	}
 
 	protected abstract _createCanvas();
 

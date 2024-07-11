@@ -5,9 +5,7 @@ class ReactExporter extends Exporter {
 	protected _mimeType = 'text/plain';
 	protected _extension = 'tsx';
 	protected _createDefs() {}
-	protected _build() {
-		throw new Error('Method not implemented.');
-	}
+
 	protected _createCanvas() {
 		throw new Error('Method not implemented.');
 	}
