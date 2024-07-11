@@ -15388,7 +15388,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   SVGImporter: () => (/* binding */ SVGImporter)
 /* harmony export */ });
-/* harmony import */ var _importer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./importer */ "./packages/core/src/importers/importer.ts");
+/* harmony import */ var _classes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./classes */ "./packages/core/src/importers/classes.ts");
+/* harmony import */ var _importer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./importer */ "./packages/core/src/importers/importer.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -15404,6 +15405,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+
 
 var SVGImporter = /** @class */ (function (_super) {
     __extends(SVGImporter, _super);
@@ -15424,7 +15426,6 @@ var SVGImporter = /** @class */ (function (_super) {
         }
         // Set canvas options.
         this._canvas.set(this._getAttributes(svg));
-        console.log(this._getAttributes(svg));
         var children = this._getChildren(svg);
         if (!children.length) {
             return this._canvas;
@@ -15432,11 +15433,25 @@ var SVGImporter = /** @class */ (function (_super) {
         // Add shapes.
         var shapes = children.map(function (child) { return _this._parseShape(child); }).filter(function (child) { return !!child; });
         // @ts-ignore
-        return this._canvas; //.setChildren(shapes);
+        return this._canvas.setChildren(shapes);
     };
     SVGImporter.prototype._parseShape = function (shapeDOM) {
-        console.log(shapeDOM);
-        return {};
+        var _this = this;
+        var tagName = shapeDOM.tagName.toLowerCase();
+        var attrs = this._getAttributes(shapeDOM);
+        var Shape = _classes__WEBPACK_IMPORTED_MODULE_0__.SHAPES[tagName];
+        if (!Shape) {
+            return console.warn("The specified tagName - ".concat(tagName, " does not have a class definition."));
+        }
+        var shape = new Shape(attrs);
+        var children = this._getChildren(shapeDOM);
+        if (children === null || children === void 0 ? void 0 : children.length) {
+            var childShapes = children
+                .map(function (child) { return _this._parseShape(child); })
+                .filter(function (child) { return !!child; });
+            shape.add(childShapes);
+        }
+        return shape;
     };
     SVGImporter.prototype._getAttributes = function (element) {
         var attributes = {};
@@ -15451,7 +15466,7 @@ var SVGImporter = /** @class */ (function (_super) {
         return Array.from(element.childNodes);
     };
     return SVGImporter;
-}(_importer__WEBPACK_IMPORTED_MODULE_0__.Importer));
+}(_importer__WEBPACK_IMPORTED_MODULE_1__.Importer));
 
 
 
@@ -16514,6 +16529,9 @@ var BBox = /** @class */ (function () {
         return this;
     };
     BBox.prototype.fromPoints = function (points) {
+        if (!points.length) {
+            return this;
+        }
         this.flip();
         for (var i = 0; i < points.length; i++) {
             this.expandByPoint(points[i]);
@@ -16529,6 +16547,9 @@ var BBox = /** @class */ (function () {
         return new ___WEBPACK_IMPORTED_MODULE_0__.Point().subtractPoints(this.max, this.min);
     };
     BBox.prototype.getOrigin = function () {
+        if (this.isEmpty()) {
+            return new ___WEBPACK_IMPORTED_MODULE_0__.Point(0.5, 0.5);
+        }
         return new ___WEBPACK_IMPORTED_MODULE_0__.Point().subtract(this.min).divide(this.getSize());
     };
     BBox.prototype.getLineEdges = function (matrix) {
@@ -16559,8 +16580,10 @@ var BBox = /** @class */ (function () {
         ]);
     };
     BBox.prototype.contains = function (point) {
-        return (point.x >= this.min.x && point.x <= this.max.x &&
-            point.y >= this.min.y && point.y <= this.max.y);
+        return (point.x >= this.min.x &&
+            point.x <= this.max.x &&
+            point.y >= this.min.y &&
+            point.y <= this.max.y);
     };
     BBox.prototype.intersects = function (bBox) {
         return (bBox.max.x >= this.min.x &&
@@ -16590,10 +16613,10 @@ var BBox = /** @class */ (function () {
         return this;
     };
     BBox.prototype.isEqual = function (bBox) {
-        return (this.min.isEqual(bBox.min) && this.max.isEqual(bBox.max));
+        return this.min.isEqual(bBox.min) && this.max.isEqual(bBox.max);
     };
     BBox.prototype.isEmpty = function () {
-        return (this.min.isEqual(this.max));
+        return this.min.isEqual(this.max);
     };
     BBox.prototype.intersect = function (bBox) {
         this.min.max(bBox.min);
@@ -17139,6 +17162,9 @@ var CurvePath = /** @class */ (function () {
     };
     CurvePath.prototype.updateBBox = function () {
         var _this = this;
+        if (!this.length) {
+            return this;
+        }
         this._bBox.flip();
         return this.eachCurve(function (curve) {
             _this._bBox.union(curve.updateBBox().getBBox());
@@ -18405,6 +18431,26 @@ var Point = /** @class */ (function () {
         this.y += (point.y - this.y) * t;
         return this;
     };
+    Point.prototype.lerpPoints = function (p1, p2, t) {
+        t = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t, 0, 1);
+        this.x = p1.x + (p2.x - p1.x) * t;
+        this.y = p1.y + (p2.y - p1.y) * t;
+        return this;
+    };
+    Point.prototype.bilerp = function (point, t) {
+        var tX = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t.x, 0, 1);
+        var tY = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t.y, 0, 1);
+        this.x += (point.x - this.x) * tX;
+        this.y += (point.y - this.y) * tY;
+        return this;
+    };
+    Point.prototype.bilerpPoints = function (p1, p2, t) {
+        var tX = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t.x, 0, 1);
+        var tY = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t.y, 0, 1);
+        this.x = p1.x + (p2.x - p1.x) * tX;
+        this.y = p1.y + (p2.y - p1.y) * tY;
+        return this;
+    };
     Point.prototype.rotate = function (center, angle) {
         var theta = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.deg2Rad)(angle);
         var cos = Math.cos(theta);
@@ -18456,6 +18502,11 @@ var Point = /** @class */ (function () {
     Point.prototype.abs = function () {
         this.x = Math.abs(this.x);
         this.y = Math.abs(this.y);
+        return this;
+    };
+    Point.prototype.negate = function () {
+        this.x = -this.x;
+        this.y = -this.y;
         return this;
     };
     Point.prototype.clamp = function (min, max) {
@@ -18598,7 +18649,7 @@ function Collection(Base) {
             }
             this.eachChild(function (item) {
                 if (item.isCollection) {
-                    var _child = item.childByIdDeep(item);
+                    var _child = item.childByIdDeep(id);
                     if (_child) {
                         child = _child;
                     }
@@ -18613,7 +18664,7 @@ function Collection(Base) {
             }
             this.eachChild(function (item) {
                 if (item.isCollection) {
-                    var _child = item.childByNameDeep(item);
+                    var _child = item.childByNameDeep(name);
                     if (_child) {
                         child = _child;
                     }
@@ -19093,6 +19144,17 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 
 
 var Group = /** @class */ (function (_super) {
@@ -19104,6 +19166,11 @@ var Group = /** @class */ (function (_super) {
         _this.updateBBox = _this.updateBBox.bind(_this);
         return _this;
     }
+    Group.prototype.getAttributes = function (makeKebabeCase) {
+        var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
+        var translate = this.bBox.getSize().multiply(this.origin.clone().negate().addScalar(0.5));
+        return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
+    };
     Group.prototype.updateBBox = function () {
         var edges = this.mapChildren(function (child) { return child.bBox.getLineEdges(child.matrix); }).flat();
         this.bBox.fromPoints(edges);
@@ -19689,10 +19756,6 @@ var Shape = /** @class */ (function (_super) {
     };
     Shape.prototype.getAttributes = function (makeKebabeCase) {
         var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
-        // @ts-ignore
-        if (this.isCollection) {
-            return defaultAttributes;
-        }
         var translate = this.bBox.getSize().multiply(this.origin).multiplyScalar(-1).toString();
         return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
     };
@@ -20228,8 +20291,11 @@ var Sanitizer = /** @class */ (function () {
         if (!type) {
             return value;
         }
-        var fn = '_' + type;
-        return this[fn](value);
+        var fn = this['_' + type];
+        if (!fn) {
+            return value;
+        }
+        return fn(value);
     };
     Sanitizer.prototype._number = function (value) {
         return (0,_functions__WEBPACK_IMPORTED_MODULE_0__.toFixed)(value);
@@ -21244,14 +21310,38 @@ const show = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(true);
 (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(() => {
 	const importer = new _grafikjs_core__WEBPACK_IMPORTED_MODULE_1__.JSONImporter(context);
 	const json = {
+		zoom: 2,
 		children: [
 			{
-				name: '',
-				tagName: 'circle',
-				fill: 'orange',
-				r: 40,
+				id: 'g-4IP9Il7Xh24b',
+				name: 'Two Square',
+				tagName: 'g',
 				left: 200,
-				top: 200
+				top: 200,
+				fill: 'none',
+				strokeWidth: 4,
+				children: [
+					{
+						id: 'rect-Mky72OJuTF1y',
+						name: '',
+						tagName: 'rect',
+						width: 40,
+						height: 40,
+						left: -40,
+						top: 0,
+						angle: 45
+					},
+					{
+						id: 'rect-2jp5z8DLz7KK',
+						name: '',
+						tagName: 'rect',
+						width: 40,
+						height: 40,
+						left: 40,
+						top: 0,
+						angle: 45
+					}
+				]
 			}
 		]
 	};

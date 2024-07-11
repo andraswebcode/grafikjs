@@ -1,5 +1,6 @@
 import { Shape } from './shape';
 import { ElementCollection } from './../mixins';
+import { Point } from './../maths';
 
 class Group extends ElementCollection(Shape) {
 	protected readonly tagName = 'g';
@@ -8,6 +9,15 @@ class Group extends ElementCollection(Shape) {
 		super();
 		this.init(params);
 		this.updateBBox = this.updateBBox.bind(this);
+	}
+
+	public getAttributes(makeKebabeCase?: boolean): object {
+		const defaultAttributes = super.getAttributes(makeKebabeCase);
+		const translate = this.bBox.getSize().multiply(this.origin.clone().negate().addScalar(0.5));
+		return {
+			...defaultAttributes,
+			transform: `translate(${translate})`
+		};
 	}
 
 	public updateBBox() {

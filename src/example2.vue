@@ -11,14 +11,38 @@ const show = ref(true);
 onMounted(() => {
 	const importer = new JSONImporter(context);
 	const json = {
+		zoom: 2,
 		children: [
 			{
-				name: '',
-				tagName: 'circle',
-				fill: 'orange',
-				r: 40,
+				id: 'g-4IP9Il7Xh24b',
+				name: 'Two Square',
+				tagName: 'g',
 				left: 200,
-				top: 200
+				top: 200,
+				fill: 'none',
+				strokeWidth: 4,
+				children: [
+					{
+						id: 'rect-Mky72OJuTF1y',
+						name: '',
+						tagName: 'rect',
+						width: 40,
+						height: 40,
+						left: -40,
+						top: 0,
+						angle: 45
+					},
+					{
+						id: 'rect-2jp5z8DLz7KK',
+						name: '',
+						tagName: 'rect',
+						width: 40,
+						height: 40,
+						left: 40,
+						top: 0,
+						angle: 45
+					}
+				]
 			}
 		]
 	};

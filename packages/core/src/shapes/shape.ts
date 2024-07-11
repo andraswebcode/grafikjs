@@ -170,10 +170,6 @@ class Shape extends Element {
 
 	public getAttributes(makeKebabeCase?: boolean): object {
 		const defaultAttributes = super.getAttributes(makeKebabeCase);
-		// @ts-ignore
-		if (this.isCollection) {
-			return defaultAttributes;
-		}
 		const translate = this.bBox.getSize().multiply(this.origin).multiplyScalar(-1).toString();
 		return {
 			...defaultAttributes,

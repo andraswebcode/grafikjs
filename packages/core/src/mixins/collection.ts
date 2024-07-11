@@ -102,7 +102,7 @@ function Collection<TBase extends Constructor>(Base: TBase) {
 
 			this.eachChild((item) => {
 				if (item.isCollection) {
-					const _child = item.childByIdDeep(item);
+					const _child = item.childByIdDeep(id);
 					if (_child) {
 						child = _child;
 					}
@@ -121,7 +121,7 @@ function Collection<TBase extends Constructor>(Base: TBase) {
 
 			this.eachChild((item) => {
 				if (item.isCollection) {
-					const _child = item.childByNameDeep(item);
+					const _child = item.childByNameDeep(name);
 					if (_child) {
 						child = _child;
 					}

@@ -5276,6 +5276,13 @@ var Point = /** @class */ (function () {
         this.y += (point.y - this.y) * t;
         return this;
     };
+    Point.prototype.bilerp = function (point, t) {
+        var tX = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t.x, 0, 1);
+        var tY = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t.y, 0, 1);
+        this.x += (point.x - this.x) * tX;
+        this.y += (point.y - this.y) * tY;
+        return this;
+    };
     Point.prototype.rotate = function (center, angle) {
         var theta = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.deg2Rad)(angle);
         var cos = Math.cos(theta);
@@ -5469,7 +5476,7 @@ function Collection(Base) {
             }
             this.eachChild(function (item) {
                 if (item.isCollection) {
-                    var _child = item.childByIdDeep(item);
+                    var _child = item.childByIdDeep(id);
                     if (_child) {
                         child = _child;
                     }
@@ -5484,7 +5491,7 @@ function Collection(Base) {
             }
             this.eachChild(function (item) {
                 if (item.isCollection) {
-                    var _child = item.childByNameDeep(item);
+                    var _child = item.childByNameDeep(name);
                     if (_child) {
                         child = _child;
                     }
@@ -5949,6 +5956,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./src/shapes/shape.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./src/mixins/index.ts");
+/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../maths */ "./src/maths/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -5964,6 +5972,18 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+
 
 
 var Group = /** @class */ (function (_super) {
@@ -5975,6 +5995,13 @@ var Group = /** @class */ (function (_super) {
         _this.updateBBox = _this.updateBBox.bind(_this);
         return _this;
     }
+    Group.prototype.getAttributes = function (makeKebabeCase) {
+        var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
+        var translate = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point().bilerp(this.bBox.getSize(), this.origin);
+        return __assign({}, defaultAttributes
+        // transform: `translate(${translate})`
+        );
+    };
     Group.prototype.updateBBox = function () {
         var edges = this.mapChildren(function (child) { return child.bBox.getLineEdges(child.matrix); }).flat();
         this.bBox.fromPoints(edges);
@@ -6560,10 +6587,6 @@ var Shape = /** @class */ (function (_super) {
     };
     Shape.prototype.getAttributes = function (makeKebabeCase) {
         var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
-        // @ts-ignore
-        if (this.isCollection) {
-            return defaultAttributes;
-        }
         var translate = this.bBox.getSize().multiply(this.origin).multiplyScalar(-1).toString();
         return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
     };
