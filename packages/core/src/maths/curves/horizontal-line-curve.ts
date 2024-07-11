@@ -7,62 +7,15 @@ class HorizontalLineCurve extends LineCurve {
 	protected readonly command = 'H';
 
 	public fromArray(curve: ParsedCurve, index: number, path: ParsedPath) {
-		const prevCurve = path[index - 1] || [];
-		const prevLength = prevCurve.length;
 		const isRelative = curve[0] === curve[0].toLowerCase();
-		const prevCurveEndPoint = new Point(
-			// @ts-ignore
-			prevCurve[prevLength - 2],
-			// @ts-ignore
-			prevCurve[prevLength - 1]
-		);
-		let x = 0;
-		let y = 0;
-		let xSet = false;
-		let ySet = false;
-		let _i = index,
-			_curve,
-			_prevCurve;
+		const lastPoint = this._getLastCurveEndPoint(path, index);
 
-		// Walking through the path array backward, and pick up the first x, or y value.
-		// And stops at the curve, that is not V, or H. So, the curve.length is not equals to 2.
-		while (path[_i--].length === 2) {
-			_curve = path[_i];
-			_prevCurve = path[_i - 1];
-			switch (_curve[0]) {
-				case 'H':
-					if (!xSet) {
-						x = _curve[1];
-						xSet = true;
-					}
-					break;
-				case 'V':
-					if (!ySet) {
-						y = _curve[1];
-						ySet = true;
-					}
-					break;
-				default:
-					if (!xSet) {
-						// @ts-ignore
-						x = _curve[_curve.length - 2];
-						xSet = true;
-					}
-					if (!ySet) {
-						// @ts-ignore
-						y = _curve[_curve.length - 1];
-						ySet = true;
-					}
-					break;
-			}
-		}
-
-		this.p0.set(x, y);
-		this.p1.set(curve[1], y);
+		this.p0.copy(lastPoint);
+		this.p1.copy(lastPoint).setX(curve[1]);
 
 		if (isRelative) {
-			this.p0.add(prevCurveEndPoint);
-			this.p1.add(prevCurveEndPoint);
+			this.p0.add(lastPoint);
+			this.p1.add(lastPoint);
 		}
 
 		return this;

@@ -10,12 +10,7 @@ class SmoothCubicBezierCurve extends CubicBezierCurve {
 		const prevLength = prevCurve.length;
 		const isRelative = curve[0] === curve[0].toLowerCase();
 		const isCorSCurve = ['C', 'c', 'S', 's'].includes(prevCurve[0]);
-		const prevCurveEndPoint = new Point(
-			// @ts-ignore
-			prevCurve[prevLength - 2],
-			// @ts-ignore
-			prevCurve[prevLength - 1]
-		);
+		const prevCurveEndPoint = this._getLastCurveEndPoint(path, index);
 		const prevCurveControlPoint = new Point(
 			// @ts-ignore
 			prevCurve[prevLength - 4],

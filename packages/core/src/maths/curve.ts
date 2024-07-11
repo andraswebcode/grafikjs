@@ -34,16 +34,9 @@ class Curve {
 	}
 
 	public fromArray(curve: ParsedCurve, index: number, path: ParsedPath): Curve {
-		const prevCurve = path[index - 1] || [];
-		const prevLength = prevCurve.length;
 		const length = curve.length;
 		const isRelative = curve[0] === curve[0].toLowerCase();
-		const prevCurveEndPoint = new Point(
-			// @ts-ignore
-			prevCurve[prevLength - 2],
-			// @ts-ignore
-			prevCurve[prevLength - 1]
-		);
+		const lastPoint = this._getLastCurveEndPoint(path, index);
 		let point, i, p;
 
 		// @ts-ignore
@@ -53,7 +46,7 @@ class Curve {
 				this.p0.set(curve[1], curve[2]);
 			} else {
 				// @ts-ignore
-				this.p0.copy(prevCurveEndPoint);
+				this.p0.copy(lastPoint);
 			}
 		}
 
@@ -61,7 +54,7 @@ class Curve {
 			if ((point = this['p' + p])) {
 				point.set(curve[i + 1], curve[i + 2]);
 				if (isRelative) {
-					point.add(prevCurveEndPoint);
+					point.add(lastPoint);
 				}
 			}
 		}
@@ -91,6 +84,51 @@ class Curve {
 		}
 
 		return this;
+	}
+
+	protected _getLastCurveEndPoint(path: ParsedPath, index: number): Point {
+		let x = 0;
+		let y = 0;
+		let xSet = false;
+		let ySet = false;
+		let _i = index,
+			_curve;
+
+		// Walking through the path array backward, and pick up the first x, or y value.
+		// And stops at the curve, that is not V, or H. So, the curve.length is not equals to 2.
+		while (path[_i--].length === 2) {
+			_curve = path[_i];
+			switch (_curve[0]) {
+				case 'H':
+				case 'h':
+					if (!xSet) {
+						x = _curve[1];
+						xSet = true;
+					}
+					break;
+				case 'V':
+				case 'v':
+					if (!ySet) {
+						y = _curve[1];
+						ySet = true;
+					}
+					break;
+				default:
+					if (!xSet) {
+						// @ts-ignore
+						x = _curve[_curve.length - 2];
+						xSet = true;
+					}
+					if (!ySet) {
+						// @ts-ignore
+						y = _curve[_curve.length - 1];
+						ySet = true;
+					}
+					break;
+			}
+		}
+
+		return new Point(x, y);
 	}
 }
 

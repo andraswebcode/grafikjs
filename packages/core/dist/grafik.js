@@ -4126,15 +4126,9 @@ var Curve = /** @class */ (function () {
         return this._bBox;
     };
     Curve.prototype.fromArray = function (curve, index, path) {
-        var prevCurve = path[index - 1] || [];
-        var prevLength = prevCurve.length;
         var length = curve.length;
         var isRelative = curve[0] === curve[0].toLowerCase();
-        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_0__.Point(
-        // @ts-ignore
-        prevCurve[prevLength - 2], 
-        // @ts-ignore
-        prevCurve[prevLength - 1]);
+        var lastPoint = this._getLastCurveEndPoint(path, index);
         var point, i, p;
         // @ts-ignore
         if (this.p0) {
@@ -4144,14 +4138,14 @@ var Curve = /** @class */ (function () {
             }
             else {
                 // @ts-ignore
-                this.p0.copy(prevCurveEndPoint);
+                this.p0.copy(lastPoint);
             }
         }
         for (i = 0, p = 1; i < length - 1; i += 2, p++) {
             if ((point = this['p' + p])) {
                 point.set(curve[i + 1], curve[i + 2]);
                 if (isRelative) {
-                    point.add(prevCurveEndPoint);
+                    point.add(lastPoint);
                 }
             }
         }
@@ -4174,6 +4168,47 @@ var Curve = /** @class */ (function () {
             n++;
         }
         return this;
+    };
+    Curve.prototype._getLastCurveEndPoint = function (path, index) {
+        var x = 0;
+        var y = 0;
+        var xSet = false;
+        var ySet = false;
+        var _i = index, _curve;
+        // Walking through the path array backward, and pick up the first x, or y value.
+        // And stops at the curve, that is not V, or H. So, the curve.length is not equals to 2.
+        while (path[_i--].length === 2) {
+            _curve = path[_i];
+            switch (_curve[0]) {
+                case 'H':
+                case 'h':
+                    if (!xSet) {
+                        x = _curve[1];
+                        xSet = true;
+                    }
+                    break;
+                case 'V':
+                case 'v':
+                    if (!ySet) {
+                        y = _curve[1];
+                        ySet = true;
+                    }
+                    break;
+                default:
+                    if (!xSet) {
+                        // @ts-ignore
+                        x = _curve[_curve.length - 2];
+                        xSet = true;
+                    }
+                    if (!ySet) {
+                        // @ts-ignore
+                        y = _curve[_curve.length - 1];
+                        ySet = true;
+                    }
+                    break;
+            }
+        }
+        return new _point__WEBPACK_IMPORTED_MODULE_0__.Point(x, y);
     };
     return Curve;
 }());
@@ -4370,8 +4405,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   HorizontalLineCurve: () => (/* binding */ HorizontalLineCurve)
 /* harmony export */ });
 /* harmony import */ var _line_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./line-curve */ "./src/maths/curves/line-curve.ts");
-/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../point */ "./src/maths/point.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../utils */ "./src/utils/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../utils */ "./src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -4389,7 +4423,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
-
 var HorizontalLineCurve = /** @class */ (function (_super) {
     __extends(HorizontalLineCurve, _super);
     function HorizontalLineCurve() {
@@ -4398,61 +4431,18 @@ var HorizontalLineCurve = /** @class */ (function (_super) {
         return _this;
     }
     HorizontalLineCurve.prototype.fromArray = function (curve, index, path) {
-        var prevCurve = path[index - 1] || [];
-        var prevLength = prevCurve.length;
         var isRelative = curve[0] === curve[0].toLowerCase();
-        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
-        // @ts-ignore
-        prevCurve[prevLength - 2], 
-        // @ts-ignore
-        prevCurve[prevLength - 1]);
-        var x = 0;
-        var y = 0;
-        var xSet = false;
-        var ySet = false;
-        var _i = index, _curve, _prevCurve;
-        // Walking through the path array backward, and pick up the first x, or y value.
-        // And stops at the curve, that is not V, or H. So, the curve.length is not equals to 2.
-        while (path[_i--].length === 2) {
-            _curve = path[_i];
-            _prevCurve = path[_i - 1];
-            switch (_curve[0]) {
-                case 'H':
-                    if (!xSet) {
-                        x = _curve[1];
-                        xSet = true;
-                    }
-                    break;
-                case 'V':
-                    if (!ySet) {
-                        y = _curve[1];
-                        ySet = true;
-                    }
-                    break;
-                default:
-                    if (!xSet) {
-                        // @ts-ignore
-                        x = _curve[_curve.length - 2];
-                        xSet = true;
-                    }
-                    if (!ySet) {
-                        // @ts-ignore
-                        y = _curve[_curve.length - 1];
-                        ySet = true;
-                    }
-                    break;
-            }
-        }
-        this.p0.set(x, y);
-        this.p1.set(curve[1], y);
+        var lastPoint = this._getLastCurveEndPoint(path, index);
+        this.p0.copy(lastPoint);
+        this.p1.copy(lastPoint).setX(curve[1]);
         if (isRelative) {
-            this.p0.add(prevCurveEndPoint);
-            this.p1.add(prevCurveEndPoint);
+            this.p0.add(lastPoint);
+            this.p1.add(lastPoint);
         }
         return this;
     };
     HorizontalLineCurve.prototype.toString = function () {
-        return this.command + ' ' + (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(this.p1.x);
+        return this.command + ' ' + (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)(this.p1.x);
     };
     return HorizontalLineCurve;
 }(_line_curve__WEBPACK_IMPORTED_MODULE_0__.LineCurve));
@@ -4707,11 +4697,7 @@ var SmoothCubicBezierCurve = /** @class */ (function (_super) {
         var prevLength = prevCurve.length;
         var isRelative = curve[0] === curve[0].toLowerCase();
         var isCorSCurve = ['C', 'c', 'S', 's'].includes(prevCurve[0]);
-        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
-        // @ts-ignore
-        prevCurve[prevLength - 2], 
-        // @ts-ignore
-        prevCurve[prevLength - 1]);
+        var prevCurveEndPoint = this._getLastCurveEndPoint(path, index);
         var prevCurveControlPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
         // @ts-ignore
         prevCurve[prevLength - 4], 
@@ -4832,8 +4818,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   VerticalLineCurve: () => (/* binding */ VerticalLineCurve)
 /* harmony export */ });
 /* harmony import */ var _line_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./line-curve */ "./src/maths/curves/line-curve.ts");
-/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../point */ "./src/maths/point.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../utils */ "./src/utils/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../utils */ "./src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -4851,7 +4836,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
-
 var VerticalLineCurve = /** @class */ (function (_super) {
     __extends(VerticalLineCurve, _super);
     function VerticalLineCurve() {
@@ -4860,61 +4844,18 @@ var VerticalLineCurve = /** @class */ (function (_super) {
         return _this;
     }
     VerticalLineCurve.prototype.fromArray = function (curve, index, path) {
-        var prevCurve = path[index - 1] || [];
-        var prevLength = prevCurve.length;
         var isRelative = curve[0] === curve[0].toLowerCase();
-        var prevCurveEndPoint = new _point__WEBPACK_IMPORTED_MODULE_1__.Point(
-        // @ts-ignore
-        prevCurve[prevLength - 2], 
-        // @ts-ignore
-        prevCurve[prevLength - 1]);
-        var x = 0;
-        var y = 0;
-        var xSet = false;
-        var ySet = false;
-        var _i = index, _curve, _prevCurve;
-        // Walking through the path array backward, and pick up the first x, or y value.
-        // And stops at the curve, that is not V, or H. So, the curve.length is not equals to 2.
-        while (path[_i--].length === 2) {
-            _curve = path[_i];
-            _prevCurve = path[_i - 1];
-            switch (_curve[0]) {
-                case 'H':
-                    if (!xSet) {
-                        x = _curve[1];
-                        xSet = true;
-                    }
-                    break;
-                case 'V':
-                    if (!ySet) {
-                        y = _curve[1];
-                        ySet = true;
-                    }
-                    break;
-                default:
-                    if (!xSet) {
-                        // @ts-ignore
-                        x = _curve[_curve.length - 2];
-                        xSet = true;
-                    }
-                    if (!ySet) {
-                        // @ts-ignore
-                        y = _curve[_curve.length - 1];
-                        ySet = true;
-                    }
-                    break;
-            }
-        }
-        this.p0.set(x, y);
-        this.p1.set(x, curve[1]);
+        var lastPoint = this._getLastCurveEndPoint(path, index);
+        this.p0.copy(lastPoint);
+        this.p1.copy(lastPoint).setY(curve[1]);
         if (isRelative) {
-            this.p0.add(prevCurveEndPoint);
-            this.p1.add(prevCurveEndPoint);
+            this.p0.add(lastPoint);
+            this.p1.add(lastPoint);
         }
         return this;
     };
     VerticalLineCurve.prototype.toString = function () {
-        return this.command + ' ' + (0,_utils__WEBPACK_IMPORTED_MODULE_2__.toFixed)(this.p1.y);
+        return this.command + ' ' + (0,_utils__WEBPACK_IMPORTED_MODULE_1__.toFixed)(this.p1.y);
     };
     return VerticalLineCurve;
 }(_line_curve__WEBPACK_IMPORTED_MODULE_0__.LineCurve));
@@ -5276,11 +5217,24 @@ var Point = /** @class */ (function () {
         this.y += (point.y - this.y) * t;
         return this;
     };
+    Point.prototype.lerpPoints = function (p1, p2, t) {
+        t = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t, 0, 1);
+        this.x = p1.x + (p2.x - p1.x) * t;
+        this.y = p1.y + (p2.y - p1.y) * t;
+        return this;
+    };
     Point.prototype.bilerp = function (point, t) {
         var tX = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t.x, 0, 1);
         var tY = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t.y, 0, 1);
         this.x += (point.x - this.x) * tX;
         this.y += (point.y - this.y) * tY;
+        return this;
+    };
+    Point.prototype.bilerpPoints = function (p1, p2, t) {
+        var tX = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t.x, 0, 1);
+        var tY = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(t.y, 0, 1);
+        this.x = p1.x + (p2.x - p1.x) * tX;
+        this.y = p1.y + (p2.y - p1.y) * tY;
         return this;
     };
     Point.prototype.rotate = function (center, angle) {
@@ -5334,6 +5288,11 @@ var Point = /** @class */ (function () {
     Point.prototype.abs = function () {
         this.x = Math.abs(this.x);
         this.y = Math.abs(this.y);
+        return this;
+    };
+    Point.prototype.negate = function () {
+        this.x = -this.x;
+        this.y = -this.y;
         return this;
     };
     Point.prototype.clamp = function (min, max) {
@@ -5956,7 +5915,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./shape */ "./src/shapes/shape.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./src/mixins/index.ts");
-/* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../maths */ "./src/maths/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -5985,7 +5943,6 @@ var __assign = (undefined && undefined.__assign) || function () {
 };
 
 
-
 var Group = /** @class */ (function (_super) {
     __extends(Group, _super);
     function Group(params) {
@@ -5997,10 +5954,8 @@ var Group = /** @class */ (function (_super) {
     }
     Group.prototype.getAttributes = function (makeKebabeCase) {
         var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
-        var translate = new _maths__WEBPACK_IMPORTED_MODULE_2__.Point().bilerp(this.bBox.getSize(), this.origin);
-        return __assign({}, defaultAttributes
-        // transform: `translate(${translate})`
-        );
+        var translate = this.bBox.getSize().multiply(this.origin.clone().negate().addScalar(0.5));
+        return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
     };
     Group.prototype.updateBBox = function () {
         var edges = this.mapChildren(function (child) { return child.bBox.getLineEdges(child.matrix); }).flat();
@@ -7044,7 +6999,7 @@ var parsePath = function (string) {
     (string.match(/([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]+)?/g) || []).forEach(function (curve, i, array) {
         curve = curve.trim();
         var command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
-        var values = (curve.match(/[\-\.\d]+/g) || []).map(function (n) { return toFixed(n); });
+        var values = (curve.match(/-?\d+(\.\d+)?/g) || []).map(function (n) { return toFixed(n); });
         var commandLength = CURVE_VALUES_LENGTHS[command];
         if (values.length === commandLength) {
             // @ts-ignore

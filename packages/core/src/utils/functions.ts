@@ -153,7 +153,7 @@ const parsePath = (string: string): ParsedPath => {
 		(curve, i, array) => {
 			curve = curve.trim();
 			const command = curve.replace(/[^MmLlHhVvCcSsQqTtAaZz]/g, '');
-			const values = (curve.match(/[\-\.\d]+/g) || []).map((n: string) => toFixed(n));
+			const values = (curve.match(/-?\d+(\.\d+)?/g) || []).map((n: string) => toFixed(n));
 			const commandLength = CURVE_VALUES_LENGTHS[command];
 			if (values.length === commandLength) {
 				// @ts-ignore
