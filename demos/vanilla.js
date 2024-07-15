@@ -1434,6 +1434,15 @@ var Canvas = /** @class */ (function (_super) {
         this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
         return this;
     };
+    Canvas.prototype.fitToScreen = function () {
+        if (!this.hasDrawingArea) {
+            return this;
+        }
+        var _a = this.getSize().divide(this.getDrawingAreaSize()), x = _a.x, y = _a.y;
+        var zoom = Math.min(x, y);
+        this.zoomTo(zoom);
+        return this;
+    };
     Canvas.prototype.getSize = function () {
         return new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.width, this.height);
     };

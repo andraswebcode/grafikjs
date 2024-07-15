@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import App from './example3.vue';
+import App from './example2.vue';
 import { createGrafik } from '@grafikjs/vue';
 import '@grafikjs/styles';
 

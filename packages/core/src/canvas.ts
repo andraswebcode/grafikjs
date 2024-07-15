@@ -329,6 +329,19 @@ class Canvas extends ElementCollection(Element) {
 		return this;
 	}
 
+	public fitToScreen() {
+		if (!this.hasDrawingArea) {
+			return this;
+		}
+
+		const { x, y } = this.getSize().divide(this.getDrawingAreaSize());
+		const zoom = Math.min(x, y);
+
+		this.zoomTo(zoom);
+
+		return this;
+	}
+
 	public getSize() {
 		return new Point(this.width, this.height);
 	}
