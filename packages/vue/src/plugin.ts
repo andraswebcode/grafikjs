@@ -6,7 +6,7 @@ const createGrafik = (opt?) => ({
 		app.provide('canvas', canvas);
 		if (process.env.NODE_ENV === 'development') {
 			// @ts-ignore
-			window.c = canvas;
+			window.grafikCanvas = canvas;
 		}
 	}
 });
