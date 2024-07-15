@@ -2802,17 +2802,22 @@ var Canvas = /** @class */ (function (_super) {
         // Update cache values too.
         this._zoom = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.clamp)(zoom, this.minZoom, this.maxZoom);
         this._pan.copy(pan);
-        this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
+        this._viewBox = [-tx / a, -ty / d, width / a, height / d];
+        // Just trigger the set event.
+        this.set({});
         return this;
     };
     Canvas.prototype.fitToScreen = function () {
         if (!this.hasDrawingArea) {
             return this;
         }
-        var _a = this.getSize().divide(this.getDrawingAreaSize()), x = _a.x, y = _a.y;
-        var zoom = Math.min(x, y);
+        var zoom = this.getFitZoom();
         this.zoomTo(zoom);
         return this;
+    };
+    Canvas.prototype.getFitZoom = function () {
+        var _a = this.getSize().divide(this.getDrawingAreaSize()), x = _a.x, y = _a.y;
+        return Math.min(x, y);
     };
     Canvas.prototype.getSize = function () {
         return new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.width, this.height);
@@ -2928,7 +2933,7 @@ var Canvas = /** @class */ (function (_super) {
         this.add(path);
     };
     Canvas.prototype._onPointerMoveInDrawMode = function (e) {
-        if (!this._isDrawing) {
+        if (!this._isDrawing || !this._drawingPath) {
             return;
         }
         var _a = this.getPointer(e)

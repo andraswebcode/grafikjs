@@ -324,7 +324,10 @@ class Canvas extends ElementCollection(Element) {
 		this._zoom = clamp(zoom, this.minZoom, this.maxZoom);
 		this._pan.copy(pan);
 
-		this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
+		this._viewBox = [-tx / a, -ty / d, width / a, height / d];
+
+		// Just trigger the set event.
+		this.set({});
 
 		return this;
 	}
@@ -334,12 +337,16 @@ class Canvas extends ElementCollection(Element) {
 			return this;
 		}
 
-		const { x, y } = this.getSize().divide(this.getDrawingAreaSize());
-		const zoom = Math.min(x, y);
-
+		const zoom = this.getFitZoom();
 		this.zoomTo(zoom);
 
 		return this;
+	}
+
+	public getFitZoom() {
+		const { x, y } = this.getSize().divide(this.getDrawingAreaSize());
+
+		return Math.min(x, y);
 	}
 
 	public getSize() {
@@ -463,7 +470,7 @@ class Canvas extends ElementCollection(Element) {
 	}
 
 	private _onPointerMoveInDrawMode(e: MouseOrTouchEvent) {
-		if (!this._isDrawing) {
+		if (!this._isDrawing || !this._drawingPath) {
 			return;
 		}
 
