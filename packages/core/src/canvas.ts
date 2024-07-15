@@ -55,7 +55,7 @@ class Canvas extends ElementCollection(Element) {
 	private _startVector = new Point();
 
 	private _isDrawing = false;
-	private _drawingPath: Path;
+	private _drawingPath: Path | null;
 
 	set viewBox(value: ViewBoxArray | string) {
 		if (typeof value === 'string') {
@@ -464,11 +464,11 @@ class Canvas extends ElementCollection(Element) {
 	}
 
 	private _onPointerEndInDrawMode(e: MouseOrTouchEvent) {
-		if (!this._isDrawing) {
+		const path = this._drawingPath;
+		if (!path) {
 			return;
 		}
 
-		const path = this._drawingPath;
 		const curves = path.getPath();
 		const bBox = curves.getBBox();
 		const translate = bBox.min.clone().add(bBox.getSize().divideScalar(2));
@@ -482,6 +482,9 @@ class Canvas extends ElementCollection(Element) {
 		});
 
 		this._isDrawing = false;
+		this._drawingPath = null;
+
+		this.trigger('drawn:path', path, this);
 	}
 
 	public onPointerStart(e: MouseOrTouchEvent) {

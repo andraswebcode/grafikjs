@@ -641,6 +641,8 @@ var Canvas = /** @class */ (function (_super) {
         _this.isCanvas = true;
         _this.multiselection = true;
         _this.zoomable = true;
+        _this.minZoom = 0.1;
+        _this.maxZoom = 10;
         _this.mode = 'select';
         _this.penWidth = 2;
         _this.penColor = '#000';
@@ -910,10 +912,10 @@ var Canvas = /** @class */ (function (_super) {
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;
-        this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
         // Update cache values too.
-        this._zoom = zoom;
+        this._zoom = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.clamp)(zoom, this.minZoom, this.maxZoom);
         this._pan.copy(pan);
+        this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
         return this;
     };
     Canvas.prototype.getSize = function () {
@@ -2235,7 +2237,7 @@ var COMPONENT_NAMES = {
     text: 'Text',
     'text-path': 'TextPath'
 };
-// Creates vue file with a vue component.
+// Creates a vue single file component.
 var VueExporter = /** @class */ (function (_super) {
     __extends(VueExporter, _super);
     function VueExporter() {

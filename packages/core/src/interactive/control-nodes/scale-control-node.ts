@@ -54,6 +54,14 @@ class ScaleControlNode extends ControlNode {
 	}
 
 	public onPointerEnd(e) {
+		if (this._isDragging) {
+			const shape = this.getShape();
+			const { scaleX, scaleY } = shape;
+			shape.trigger('updated', { scaleX, scaleY }, shape);
+			if (shape.canvas) {
+				shape.canvas.trigger('shapes:updated', { scaleX, scaleY }, shape);
+			}
+		}
 		this._isDragging = false;
 	}
 }

@@ -42,6 +42,14 @@ class AngleControlNode extends ControlNode {
 	}
 
 	public onPointerEnd(e) {
+		if (this._isDragging) {
+			const shape = this.getShape();
+			const { angle } = shape;
+			shape.trigger('updated', { angle }, shape);
+			if (shape.canvas) {
+				shape.canvas.trigger('shapes:updated', { angle }, shape);
+			}
+		}
 		this._isDragging = false;
 	}
 }

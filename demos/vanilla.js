@@ -1559,10 +1559,10 @@ var Canvas = /** @class */ (function (_super) {
         this._drawingPath.updateBBox().set({});
     };
     Canvas.prototype._onPointerEndInDrawMode = function (e) {
-        if (!this._isDrawing) {
+        var path = this._drawingPath;
+        if (!path) {
             return;
         }
-        var path = this._drawingPath;
         var curves = path.getPath();
         var bBox = curves.getBBox();
         var translate = bBox.min.clone().add(bBox.getSize().divideScalar(2));
@@ -1574,6 +1574,8 @@ var Canvas = /** @class */ (function (_super) {
             originY: 0.5
         });
         this._isDrawing = false;
+        this._drawingPath = null;
+        this.trigger('drawn:path', path, this);
     };
     Canvas.prototype.onPointerStart = function (e) {
         switch (this.mode) {
@@ -3476,6 +3478,14 @@ var AngleControlNode = /** @class */ (function (_super) {
         shape.set('angle', angle);
     };
     AngleControlNode.prototype.onPointerEnd = function (e) {
+        if (this._isDragging) {
+            var shape = this.getShape();
+            var angle = shape.angle;
+            shape.trigger('updated', { angle: angle }, shape);
+            if (shape.canvas) {
+                shape.canvas.trigger('shapes:updated', { angle: angle }, shape);
+            }
+        }
         this._isDragging = false;
     };
     return AngleControlNode;
@@ -3586,6 +3596,14 @@ var OriginControlNode = /** @class */ (function (_super) {
         });
     };
     OriginControlNode.prototype.onPointerEnd = function (e) {
+        if (this._isDragging) {
+            var shape = this.getShape();
+            var left = shape.left, top_1 = shape.top, origin_1 = shape.origin;
+            shape.trigger('updated', { left: left, top: top_1, origin: origin_1 }, shape);
+            if (shape.canvas) {
+                shape.canvas.trigger('shapes:updated', { left: left, top: top_1, origin: origin_1 }, shape);
+            }
+        }
         this._isDragging = false;
     };
     return OriginControlNode;
@@ -3673,6 +3691,14 @@ var ScaleControlNode = /** @class */ (function (_super) {
         shape.set(set);
     };
     ScaleControlNode.prototype.onPointerEnd = function (e) {
+        if (this._isDragging) {
+            var shape = this.getShape();
+            var scaleX = shape.scaleX, scaleY = shape.scaleY;
+            shape.trigger('updated', { scaleX: scaleX, scaleY: scaleY }, shape);
+            if (shape.canvas) {
+                shape.canvas.trigger('shapes:updated', { scaleX: scaleX, scaleY: scaleY }, shape);
+            }
+        }
         this._isDragging = false;
     };
     return ScaleControlNode;

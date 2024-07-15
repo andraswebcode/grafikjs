@@ -55,6 +55,14 @@ class OriginControlNode extends ControlNode {
 	}
 
 	public onPointerEnd(e) {
+		if (this._isDragging) {
+			const shape = this.getShape();
+			const { left, top, origin } = shape;
+			shape.trigger('updated', { left, top, origin }, shape);
+			if (shape.canvas) {
+				shape.canvas.trigger('shapes:updated', { left, top, origin }, shape);
+			}
+		}
 		this._isDragging = false;
 	}
 }

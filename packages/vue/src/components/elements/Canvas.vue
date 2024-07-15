@@ -4,6 +4,7 @@ import { useCanvas } from './../../hooks';
 import { onMounted, onUnmounted, provide, ref, watch } from 'vue';
 
 const props = defineProps<CanvasObject>();
+const emit = defineEmits(['change']);
 const svgRef = ref(null);
 const {
 	state: { attrs, daAttrs, shwAttrs, showGrid, hasDrawingArea },
@@ -21,7 +22,8 @@ const {
 		set: canvas.set.bind(canvas),
 		setSize: canvas.setResponsiveSize.bind(canvas)
 	}),
-	'set'
+	'set',
+	(...args) => emit('change', ...args)
 );
 const resize = () => {
 	setSize(svgRef.value);

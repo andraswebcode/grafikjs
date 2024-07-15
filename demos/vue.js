@@ -12535,6 +12535,15 @@ var __assign = (undefined && undefined.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 
 
 
@@ -12550,10 +12559,12 @@ var __assign = (undefined && undefined.__assign) || function () {
         panY: { type: Number, required: false },
         mode: { type: String, required: false }
     },
+    emits: ['change'],
     setup: function (__props, _a) {
-        var __expose = _a.expose;
+        var __expose = _a.expose, __emit = _a.emit;
         __expose();
         var props = __props;
+        var emit = __emit;
         var svgRef = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(null);
         var _b = (0,_hooks__WEBPACK_IMPORTED_MODULE_1__.useCanvas)(function (canvas) { return ({
             attrs: canvas.getAttributes(),
@@ -12564,7 +12575,13 @@ var __assign = (undefined && undefined.__assign) || function () {
         }); }, function (canvas) { return ({
             set: canvas.set.bind(canvas),
             setSize: canvas.setResponsiveSize.bind(canvas)
-        }); }, 'set'), _c = _b.state, attrs = _c.attrs, daAttrs = _c.daAttrs, shwAttrs = _c.shwAttrs, showGrid = _c.showGrid, hasDrawingArea = _c.hasDrawingArea, _d = _b.actions, set = _d.set, setSize = _d.setSize, context = _b.context;
+        }); }, 'set', function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            return emit.apply(void 0, __spreadArray(['change'], args, false));
+        }), _c = _b.state, attrs = _c.attrs, daAttrs = _c.daAttrs, shwAttrs = _c.shwAttrs, showGrid = _c.showGrid, hasDrawingArea = _c.hasDrawingArea, _d = _b.actions, set = _d.set, setSize = _d.setSize, context = _b.context;
         var resize = function () {
             setSize(svgRef.value);
         };
@@ -12581,7 +12598,7 @@ var __assign = (undefined && undefined.__assign) || function () {
             set(__assign({}, props), true);
         });
         (0,vue__WEBPACK_IMPORTED_MODULE_0__.provide)('collection', context);
-        var __returned__ = { props: props, svgRef: svgRef, attrs: attrs, daAttrs: daAttrs, shwAttrs: shwAttrs, showGrid: showGrid, hasDrawingArea: hasDrawingArea, set: set, setSize: setSize, context: context, resize: resize };
+        var __returned__ = { props: props, emit: emit, svgRef: svgRef, attrs: attrs, daAttrs: daAttrs, shwAttrs: shwAttrs, showGrid: showGrid, hasDrawingArea: hasDrawingArea, set: set, setSize: setSize, context: context, resize: resize };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
     }
@@ -12757,13 +12774,30 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
     __name: 'ShapeTree',
+    emits: ['change', 'update', 'add', 'remove'],
     setup: function (__props, _a) {
-        var __expose = _a.expose;
+        var __expose = _a.expose, __emit = _a.emit;
         __expose();
+        var emit = __emit;
         var shapes = (0,_hooks__WEBPACK_IMPORTED_MODULE_2__.useCanvas)(function (canvas) { return ({
             shapes: __spreadArray([], canvas.getChildren(), true)
-        }); }, null, 'added removed').state.shapes;
-        var __returned__ = { shapes: shapes, ShapeBranch: _ShapeBranch_vue__WEBPACK_IMPORTED_MODULE_1__["default"] };
+        }); }, null, 'added removed shapes:updated drawn:path', function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            var eventName = args[args.length - 1];
+            var fnMap = {
+                added: 'add',
+                removed: 'remove',
+                'shapes:updated': 'update'
+            };
+            if (fnMap[eventName]) {
+                emit.apply(void 0, __spreadArray([fnMap[eventName]], args, false));
+            }
+            emit.apply(void 0, __spreadArray(['change'], args, false));
+        }).state.shapes;
+        var __returned__ = { emit: emit, shapes: shapes, ShapeBranch: _ShapeBranch_vue__WEBPACK_IMPORTED_MODULE_1__["default"] };
         Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });
         return __returned__;
     }
@@ -14076,10 +14110,10 @@ var Canvas = /** @class */ (function (_super) {
         this._drawingPath.updateBBox().set({});
     };
     Canvas.prototype._onPointerEndInDrawMode = function (e) {
-        if (!this._isDrawing) {
+        var path = this._drawingPath;
+        if (!path) {
             return;
         }
-        var path = this._drawingPath;
         var curves = path.getPath();
         var bBox = curves.getBBox();
         var translate = bBox.min.clone().add(bBox.getSize().divideScalar(2));
@@ -14091,6 +14125,8 @@ var Canvas = /** @class */ (function (_super) {
             originY: 0.5
         });
         this._isDrawing = false;
+        this._drawingPath = null;
+        this.trigger('drawn:path', path, this);
     };
     Canvas.prototype.onPointerStart = function (e) {
         switch (this.mode) {
@@ -15993,6 +16029,14 @@ var AngleControlNode = /** @class */ (function (_super) {
         shape.set('angle', angle);
     };
     AngleControlNode.prototype.onPointerEnd = function (e) {
+        if (this._isDragging) {
+            var shape = this.getShape();
+            var angle = shape.angle;
+            shape.trigger('updated', { angle: angle }, shape);
+            if (shape.canvas) {
+                shape.canvas.trigger('shapes:updated', { angle: angle }, shape);
+            }
+        }
         this._isDragging = false;
     };
     return AngleControlNode;
@@ -16103,6 +16147,14 @@ var OriginControlNode = /** @class */ (function (_super) {
         });
     };
     OriginControlNode.prototype.onPointerEnd = function (e) {
+        if (this._isDragging) {
+            var shape = this.getShape();
+            var left = shape.left, top_1 = shape.top, origin_1 = shape.origin;
+            shape.trigger('updated', { left: left, top: top_1, origin: origin_1 }, shape);
+            if (shape.canvas) {
+                shape.canvas.trigger('shapes:updated', { left: left, top: top_1, origin: origin_1 }, shape);
+            }
+        }
         this._isDragging = false;
     };
     return OriginControlNode;
@@ -16190,6 +16242,14 @@ var ScaleControlNode = /** @class */ (function (_super) {
         shape.set(set);
     };
     ScaleControlNode.prototype.onPointerEnd = function (e) {
+        if (this._isDragging) {
+            var shape = this.getShape();
+            var scaleX = shape.scaleX, scaleY = shape.scaleY;
+            shape.trigger('updated', { scaleX: scaleX, scaleY: scaleY }, shape);
+            if (shape.canvas) {
+                shape.canvas.trigger('shapes:updated', { scaleX: scaleX, scaleY: scaleY }, shape);
+            }
+        }
         this._isDragging = false;
     };
     return ScaleControlNode;
