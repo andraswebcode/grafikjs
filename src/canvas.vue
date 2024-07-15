@@ -4,7 +4,7 @@ import { Canvas, Defs, ShapeTree, Wrapper, Interactive } from '@grafikjs/vue';
 
 <template>
 	<Wrapper>
-		<Canvas>
+		<Canvas @change="console.log">
 			<template v-slot:defs>
 				<Defs />
 			</template>

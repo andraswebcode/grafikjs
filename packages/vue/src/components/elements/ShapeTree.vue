@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import ShapeBranch from './ShapeBranch.vue';
 import { useCanvas } from './../../hooks';
+import { onMounted } from 'vue';
+import { JSONImporter } from '@grafikjs/core';
 
+const props = defineProps<{
+	initialShapes: any;
+}>();
 const emit = defineEmits(['change', 'update', 'add', 'remove']);
 const {
-	state: { shapes }
+	state: { shapes },
+	context
 } = useCanvas(
 	(canvas) => ({
 		shapes: [...canvas.getChildren()]
@@ -24,6 +30,10 @@ const {
 		emit('change', ...args);
 	}
 );
+onMounted(() => {
+	const importer = new JSONImporter(context);
+	importer.load({ children: JSON.parse(JSON.stringify(props.initialShapes)) });
+});
 </script>
 
 <template>
