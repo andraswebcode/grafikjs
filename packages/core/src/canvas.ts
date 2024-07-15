@@ -3,7 +3,7 @@ import { ElementCollection } from './mixins';
 import { Selector } from './interactive';
 import { Timeline } from './animation';
 import { Matrix, Point } from './maths';
-import { toFixed } from './utils';
+import { clamp, toFixed } from './utils';
 import { AnyColor, ViewBoxArray } from './types';
 import { Path } from './shapes';
 
@@ -14,6 +14,8 @@ class Canvas extends ElementCollection(Element) {
 	public readonly isCanvas = true;
 	public multiselection = true;
 	public zoomable = true;
+	public minZoom = 0.1;
+	public maxZoom = 10;
 	public mode: ModeType = 'select';
 	public penWidth = 2;
 	public penColor: AnyColor = '#000';
@@ -318,11 +320,11 @@ class Canvas extends ElementCollection(Element) {
 		const { a, d, tx, ty } = this.viewportMatrix;
 		const { width, height } = this;
 
-		this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
-
 		// Update cache values too.
-		this._zoom = zoom;
+		this._zoom = clamp(zoom, this.minZoom, this.maxZoom);
 		this._pan.copy(pan);
+
+		this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
 
 		return this;
 	}

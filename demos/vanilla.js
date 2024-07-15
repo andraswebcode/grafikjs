@@ -1157,6 +1157,8 @@ var Canvas = /** @class */ (function (_super) {
         _this.isCanvas = true;
         _this.multiselection = true;
         _this.zoomable = true;
+        _this.minZoom = 0.1;
+        _this.maxZoom = 10;
         _this.mode = 'select';
         _this.penWidth = 2;
         _this.penColor = '#000';
@@ -1426,10 +1428,10 @@ var Canvas = /** @class */ (function (_super) {
         // And we also need to calculate viewBox from viewport to update svg attribute.
         var _a = this.viewportMatrix, a = _a.a, d = _a.d, tx = _a.tx, ty = _a.ty;
         var _b = this, width = _b.width, height = _b.height;
-        this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
         // Update cache values too.
-        this._zoom = zoom;
+        this._zoom = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.clamp)(zoom, this.minZoom, this.maxZoom);
         this._pan.copy(pan);
+        this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
         return this;
     };
     Canvas.prototype.getSize = function () {
@@ -2737,8 +2739,21 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
-var EXCLUDED_ATTRIBUTES = ['xmlns', 'viewBox', 'className'];
-// Creates vue file with a vue component.
+var EXCLUDED_ATTRIBUTES = ['xmlns', 'viewBox', 'className', 'transform', 'preserveAspectRatio'];
+var COMPONENT_NAMES = {
+    svg: 'Canvas',
+    g: 'Group',
+    rect: 'Rect',
+    circle: 'Circle',
+    ellipse: 'Ellipse',
+    path: 'Path',
+    polygon: 'Polygon',
+    polyline: 'Polyline',
+    image: 'Image',
+    text: 'Text',
+    'text-path': 'TextPath'
+};
+// Creates a vue single file component.
 var VueExporter = /** @class */ (function (_super) {
     __extends(VueExporter, _super);
     function VueExporter() {
@@ -2748,17 +2763,47 @@ var VueExporter = /** @class */ (function (_super) {
         return _this;
     }
     VueExporter.prototype._createCanvas = function () {
+        var _this = this;
         var attrs = this._serializeAttributes(this._getCanvasAttributes());
-        return "\n\t\t\t<script setup>\n\t\t\t\t".concat(this._createDefs(), "\n\t\t\t</script>\n\t\t\t<template>\n\t\t\t\t<Canvas ").concat(attrs, ">\n\t\t\t\t</Canvas>\n\t\t\t</template>\n\t\t");
+        var shapes = this._canvas.mapChildren(function (child) { return _this._createShape(child); }).join('');
+        return "\n\t\t\t<script setup>\n\t\t\t\t".concat(this._createDefs(), "\n\t\t\t</script>\n\t\t\t<template>\n\t\t\t\t<Canvas ").concat(attrs, ">\n\t\t\t\t\t").concat(shapes, "\n\t\t\t\t</Canvas>\n\t\t\t</template>\n\t\t");
     };
     VueExporter.prototype._createDefs = function () {
-        return "\n\t\t\timport {  } from '@grafikjs/vue';\n\t\t";
+        var _this = this;
+        var components = this._getComponents();
+        var animations = this._canvas
+            .getAnimation()
+            .mapChildren(function (child) { return _this._createAnimation(child); })
+            .join('');
+        return "\n\t\t\timport { Canvas, ".concat(components, " } from '@grafikjs/vue';\n\t\t\t").concat(animations, "\n\t\t");
     };
     VueExporter.prototype._createShape = function (shape) {
-        throw new Error('Method not implemented.');
+        var _this = this;
+        var tag = shape.get('tagName');
+        var trAttrs = this._serializeAttributes(this._getTransformAttrs(shape));
+        var animAttrs = this._serializeAttributes(this._getAnimationAttr(shape));
+        var attrs = this._serializeAttributes(shape.getAttributes(true));
+        var component = COMPONENT_NAMES[tag];
+        if (!component) {
+            return '';
+        }
+        if (shape.isCollection && shape.childrenLength) {
+            var shapes = shape.mapChildren(function (child) { return _this._createShape(child); }).join('');
+            return "\n\t\t\t\t<".concat(component, " ").concat(trAttrs, " ").concat(attrs, " ").concat(animAttrs, ">\n\t\t\t\t\t").concat(shapes, "\n\t\t\t\t</").concat(component, ">\n\t\t\t");
+        }
+        return "\n\t\t\t<".concat(component, " ").concat(trAttrs, " ").concat(attrs, " />\n\t\t");
     };
     VueExporter.prototype._createAnimation = function (animation) {
-        throw new Error('Method not implemented.');
+        if (!animation.childrenLength) {
+            return '';
+        }
+        var shape = animation.shape;
+        var json = JSON.stringify(animation.toJSON());
+        var varName = this._createAnimationVarName(shape);
+        return "\n\t\t\tconst ".concat(varName, " = ").concat(json, ";\n\t\t");
+    };
+    VueExporter.prototype._createAnimationVarName = function (shape) {
+        return 'anim_' + shape.id.replace(shape.tagName + '-', '');
     };
     VueExporter.prototype._serializeAttributes = function (attrs) {
         var output = [];
@@ -2773,8 +2818,36 @@ var VueExporter = /** @class */ (function (_super) {
         }
         return output.join(' ');
     };
+    VueExporter.prototype._getTransformAttrs = function (shape) {
+        return {
+            left: 0,
+            top: 0
+        };
+    };
+    VueExporter.prototype._getAnimationAttr = function (shape) {
+        if (!shape.getAnimation().childrenLength) {
+            return {};
+        }
+        var varName = this._createAnimationVarName(shape);
+        return {
+            animation: varName
+        };
+    };
     VueExporter.prototype._getComponents = function () {
-        return '';
+        var _this = this;
+        var components = [];
+        this._canvas.eachChild(function (child) { return _this.__getComponent(child, components); });
+        return components.join(', ');
+    };
+    VueExporter.prototype.__getComponent = function (shape, arrayRef) {
+        var _this = this;
+        var component = COMPONENT_NAMES[shape.tagName];
+        if (component && !arrayRef.includes(component)) {
+            arrayRef.push(component);
+        }
+        if (shape.isCollection) {
+            shape.eachChild(function (child) { return _this.__getComponent(child, arrayRef); });
+        }
     };
     return VueExporter;
 }(_exporter__WEBPACK_IMPORTED_MODULE_0__.Exporter));
@@ -3165,6 +3238,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.randInt),
 /* harmony export */   toFixed: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.toFixed),
+/* harmony export */   unique: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.unique),
 /* harmony export */   uniqueId: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.uniqueId)
 /* harmony export */ });
 /* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./observable */ "./packages/core/src/observable.ts");
@@ -7626,6 +7700,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   rad2Deg: () => (/* binding */ rad2Deg),
 /* harmony export */   randInt: () => (/* binding */ randInt),
 /* harmony export */   toFixed: () => (/* binding */ toFixed),
+/* harmony export */   unique: () => (/* binding */ unique),
 /* harmony export */   uniqueId: () => (/* binding */ uniqueId)
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./packages/core/src/utils/constants.ts");
@@ -7722,6 +7797,7 @@ var isEqual = function (value1, value2, visited) {
     // If values are of different types and not arrays or objects, they are not equal
     return false;
 };
+var unique = function (array) { return Array.from(new Set(array)); };
 var omitBy = function (obj, callback) {
     var newObj = {};
     for (var key in obj) {
@@ -7805,6 +7881,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.randInt),
 /* harmony export */   toFixed: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.toFixed),
+/* harmony export */   unique: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.unique),
 /* harmony export */   uniqueId: () => (/* reexport safe */ _functions__WEBPACK_IMPORTED_MODULE_1__.uniqueId)
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./packages/core/src/utils/constants.ts");
@@ -7944,6 +8021,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   rad2Deg: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.rad2Deg),
 /* harmony export */   randInt: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.randInt),
 /* harmony export */   toFixed: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.toFixed),
+/* harmony export */   unique: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.unique),
 /* harmony export */   uniqueId: () => (/* reexport safe */ _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__.uniqueId)
 /* harmony export */ });
 /* harmony import */ var _grafikjs_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @grafikjs/core */ "./packages/core/src/index.ts");

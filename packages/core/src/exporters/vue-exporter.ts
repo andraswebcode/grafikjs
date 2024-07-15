@@ -15,7 +15,7 @@ const COMPONENT_NAMES = {
 	'text-path': 'TextPath'
 };
 
-// Creates vue file with a vue component.
+// Creates a vue single file component.
 class VueExporter extends Exporter {
 	protected _mimeType = 'text/plain';
 	protected _extension = 'vue';
