@@ -234,6 +234,24 @@ class Point {
 		return this;
 	}
 
+	public round() {
+		this.x = Math.round(this.x);
+		this.y = Math.round(this.y);
+		return this;
+	}
+
+	public ceil() {
+		this.x = Math.ceil(this.x);
+		this.y = Math.ceil(this.y);
+		return this;
+	}
+
+	public floor() {
+		this.x = Math.floor(this.x);
+		this.y = Math.floor(this.y);
+		return this;
+	}
+
 	public clamp(min: Point, max: Point): Point {
 		this.x = clamp(this.x, min.x, max.x);
 		this.y = clamp(this.y, min.y, max.y);

@@ -6175,6 +6175,21 @@ var Point = /** @class */ (function () {
         this.y = -this.y;
         return this;
     };
+    Point.prototype.round = function () {
+        this.x = Math.round(this.x);
+        this.y = Math.round(this.y);
+        return this;
+    };
+    Point.prototype.ceil = function () {
+        this.x = Math.ceil(this.x);
+        this.y = Math.ceil(this.y);
+        return this;
+    };
+    Point.prototype.floor = function () {
+        this.x = Math.floor(this.x);
+        this.y = Math.floor(this.y);
+        return this;
+    };
     Point.prototype.clamp = function (min, max) {
         this.x = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(this.x, min.x, max.x);
         this.y = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(this.y, min.y, max.y);
