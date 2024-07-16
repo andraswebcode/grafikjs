@@ -7,7 +7,7 @@ import { JSONImporter } from '@grafikjs/core';
 const props = defineProps<{
 	initialShapes?: any[];
 }>();
-const emit = defineEmits(['change', 'update', 'select', 'add', 'remove']);
+const emit = defineEmits(['change', 'update', 'select', 'add', 'remove', 'draw']);
 const {
 	state: { shapes },
 	context
@@ -27,13 +27,15 @@ const {
 		}
 	}
 );
-useCanvas(null, null, 'shapes:selection:updated shapes:updated drawn:path', (...args) => {
+useCanvas(null, null, 'shapes:selection:updated shapes:updated drawn', (...args) => {
 	const eventName = args[args.length - 1];
 	emit('change', ...args);
 	if (eventName === 'shapes:updated') {
 		emit('update', ...args);
 	} else if (eventName === 'shapes:selection:updated') {
 		emit('select', ...args);
+	} else if (eventName === 'drawn') {
+		emit('draw', ...args);
 	}
 });
 onMounted(() => {

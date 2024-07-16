@@ -1320,6 +1320,16 @@ var Canvas = /** @class */ (function (_super) {
                 _b)
         ];
     };
+    Canvas.prototype.setSelectedShapes = function (shapes, silent) {
+        if (silent === void 0) { silent = false; }
+        shapes = Array.isArray(shapes) ? shapes : [shapes];
+        var prevShapesLength = this._selectedShapes.length;
+        this._selectedShapes = shapes;
+        if (!silent || prevShapesLength !== this._selectedShapes.length) {
+            this.trigger('shapes:selection:updated', shapes);
+        }
+        return this;
+    };
     Canvas.prototype.selectShapes = function (shapes, silent) {
         var _this = this;
         if (silent === void 0) { silent = false; }
@@ -1474,7 +1484,7 @@ var Canvas = /** @class */ (function (_super) {
         else {
             if (!shape) {
                 if (founded) {
-                    this.releaseShapes().selectShapes(founded);
+                    this.setSelectedShapes(founded);
                 }
                 else {
                     this.releaseShapes();
@@ -1589,6 +1599,7 @@ var Canvas = /** @class */ (function (_super) {
         });
         this._isDrawing = false;
         this._drawingPath = null;
+        this.trigger('drawn', path, this);
         this.trigger('drawn:path', path, this);
     };
     Canvas.prototype.onPointerStart = function (e) {
@@ -2992,6 +3003,12 @@ var JSONImporter = /** @class */ (function (_super) {
     function JSONImporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    JSONImporter.prototype.add = function (content, group) {
+        var _group = group || this._canvas;
+        var shapes = this._parseShape(content);
+        _group.add(shapes);
+        return this._canvas;
+    };
     JSONImporter.prototype.load = function (content) {
         var _this = this;
         if (!content) {
@@ -3063,6 +3080,9 @@ var LottieImporter = /** @class */ (function (_super) {
     function LottieImporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    LottieImporter.prototype.add = function (content, group) {
+        throw new Error('Method not implemented.');
+    };
     LottieImporter.prototype.load = function (content) {
         throw new Error('Method not implemented.');
     };
@@ -3110,6 +3130,9 @@ var SVGImporter = /** @class */ (function (_super) {
     function SVGImporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    SVGImporter.prototype.add = function (content, group) {
+        throw new Error('Method not implemented.');
+    };
     SVGImporter.prototype.load = function (content) {
         var _this = this;
         if (!content) {
@@ -6418,7 +6441,11 @@ function ElementCollection(Base) {
             children = Array.isArray(children) ? children : [children];
             children.forEach(function (child) {
                 var _a;
-                if (_this.children.includes(child)) {
+                if (_this.children.includes(child) ||
+                    _this.children.some(function (_a) {
+                        var id = _a.id;
+                        return id === child.id;
+                    })) {
                     return;
                 }
                 // Set up child.

@@ -8,7 +8,10 @@ function ElementCollection<TBase extends Constructor>(Base: TBase) {
 			children = Array.isArray(children) ? children : [children];
 
 			children.forEach((child) => {
-				if (this.children.includes(child)) {
+				if (
+					this.children.includes(child) ||
+					this.children.some(({ id }) => id === child.id)
+				) {
 					return;
 				}
 

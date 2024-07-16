@@ -194,6 +194,20 @@ class Canvas extends ElementCollection(Element) {
 		];
 	}
 
+	public setSelectedShapes(shapes: any | any[], silent = false) {
+		shapes = Array.isArray(shapes) ? shapes : [shapes];
+
+		const prevShapesLength = this._selectedShapes.length;
+
+		this._selectedShapes = shapes;
+
+		if (!silent || prevShapesLength !== this._selectedShapes.length) {
+			this.trigger('shapes:selection:updated', shapes);
+		}
+
+		return this;
+	}
+
 	public selectShapes(shapes: any | any[], silent = false) {
 		shapes = Array.isArray(shapes) ? shapes : [shapes];
 
@@ -376,7 +390,7 @@ class Canvas extends ElementCollection(Element) {
 		} else {
 			if (!shape) {
 				if (founded) {
-					this.releaseShapes().selectShapes(founded);
+					this.setSelectedShapes(founded);
 				} else {
 					this.releaseShapes();
 					if (this.multiselection) {
@@ -504,6 +518,7 @@ class Canvas extends ElementCollection(Element) {
 		this._isDrawing = false;
 		this._drawingPath = null;
 
+		this.trigger('drawn', path, this);
 		this.trigger('drawn:path', path, this);
 	}
 
