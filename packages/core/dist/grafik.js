@@ -804,11 +804,21 @@ var Canvas = /** @class */ (function (_super) {
                 _b)
         ];
     };
+    Canvas.prototype.setSelectedShapes = function (shapes, silent) {
+        if (silent === void 0) { silent = false; }
+        shapes = Array.isArray(shapes) ? shapes : [shapes];
+        var prevShapes = this._selectedShapes.concat();
+        this._selectedShapes = shapes;
+        if (!silent && !(0,_utils__WEBPACK_IMPORTED_MODULE_5__.isEqual)(prevShapes, this._selectedShapes)) {
+            this.trigger('shapes:selection:updated', shapes);
+        }
+        return this;
+    };
     Canvas.prototype.selectShapes = function (shapes, silent) {
         var _this = this;
         if (silent === void 0) { silent = false; }
         shapes = Array.isArray(shapes) ? shapes : [shapes];
-        var prevShapesLength = this._selectedShapes.length;
+        var prevShapes = this._selectedShapes.concat();
         shapes.forEach(function (shape) {
             // @ts-ignore
             if (!_this._selectedShapes.includes(shape) && shape.selectable) {
@@ -816,7 +826,7 @@ var Canvas = /** @class */ (function (_super) {
                 _this._selectedShapes.push(shape);
             }
         });
-        if (!silent || prevShapesLength !== this._selectedShapes.length) {
+        if (!silent && !(0,_utils__WEBPACK_IMPORTED_MODULE_5__.isEqual)(prevShapes, this._selectedShapes)) {
             this.trigger('shapes:selected', shapes);
             this.trigger('shapes:selection:updated', shapes);
         }
@@ -895,7 +905,7 @@ var Canvas = /** @class */ (function (_super) {
         element.style.display = 'none';
         var _a = element.parentElement || {}, _b = _a.clientWidth, clientWidth = _b === void 0 ? 0 : _b, _c = _a.clientHeight, clientHeight = _c === void 0 ? 0 : _c;
         element.style.display = '';
-        this.set({ width: clientWidth, height: clientHeight }).zoomTo();
+        this.set({ width: clientWidth, height: clientHeight }).zoomTo(this._zoom, this._pan);
     };
     Canvas.prototype.zoomTo = function (zoom, pan) {
         if (zoom === void 0) { zoom = 1; }
@@ -915,8 +925,22 @@ var Canvas = /** @class */ (function (_super) {
         // Update cache values too.
         this._zoom = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.clamp)(zoom, this.minZoom, this.maxZoom);
         this._pan.copy(pan);
-        this.set('viewBox', [-tx / a, -ty / d, width / a, height / d]);
+        this._viewBox = [-tx / a, -ty / d, width / a, height / d];
+        // Just trigger the set event.
+        this.set({});
         return this;
+    };
+    Canvas.prototype.fitToScreen = function () {
+        if (!this.hasDrawingArea) {
+            return this;
+        }
+        var zoom = this.getFitZoom();
+        this.zoomTo(zoom);
+        return this;
+    };
+    Canvas.prototype.getFitZoom = function () {
+        var _a = this.getSize().divide(this.getDrawingAreaSize()), x = _a.x, y = _a.y;
+        return Math.min(x, y);
     };
     Canvas.prototype.getSize = function () {
         return new _maths__WEBPACK_IMPORTED_MODULE_4__.Point(this.width, this.height);
@@ -944,7 +968,7 @@ var Canvas = /** @class */ (function (_super) {
         else {
             if (!shape) {
                 if (founded) {
-                    this.releaseShapes().selectShapes(founded);
+                    this.setSelectedShapes(founded);
                 }
                 else {
                     this.releaseShapes();
@@ -1032,7 +1056,7 @@ var Canvas = /** @class */ (function (_super) {
         this.add(path);
     };
     Canvas.prototype._onPointerMoveInDrawMode = function (e) {
-        if (!this._isDrawing) {
+        if (!this._isDrawing || !this._drawingPath) {
             return;
         }
         var _a = this.getPointer(e)
@@ -1043,10 +1067,10 @@ var Canvas = /** @class */ (function (_super) {
         this._drawingPath.updateBBox().set({});
     };
     Canvas.prototype._onPointerEndInDrawMode = function (e) {
-        if (!this._isDrawing) {
+        var path = this._drawingPath;
+        if (!path) {
             return;
         }
-        var path = this._drawingPath;
         var curves = path.getPath();
         var bBox = curves.getBBox();
         var translate = bBox.min.clone().add(bBox.getSize().divideScalar(2));
@@ -1058,6 +1082,9 @@ var Canvas = /** @class */ (function (_super) {
             originY: 0.5
         });
         this._isDrawing = false;
+        this._drawingPath = null;
+        this.trigger('drawn', path, this);
+        this.trigger('drawn:path', path, this);
     };
     Canvas.prototype.onPointerStart = function (e) {
         switch (this.mode) {
@@ -2460,6 +2487,12 @@ var JSONImporter = /** @class */ (function (_super) {
     function JSONImporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    JSONImporter.prototype.add = function (content, group) {
+        var _group = group || this._canvas;
+        var shapes = this._parseShape(content);
+        _group.add(shapes);
+        return this._canvas;
+    };
     JSONImporter.prototype.load = function (content) {
         var _this = this;
         if (!content) {
@@ -2531,6 +2564,9 @@ var LottieImporter = /** @class */ (function (_super) {
     function LottieImporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    LottieImporter.prototype.add = function (content, group) {
+        throw new Error('Method not implemented.');
+    };
     LottieImporter.prototype.load = function (content) {
         throw new Error('Method not implemented.');
     };
@@ -2578,6 +2614,9 @@ var SVGImporter = /** @class */ (function (_super) {
     function SVGImporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    SVGImporter.prototype.add = function (content, group) {
+        throw new Error('Method not implemented.');
+    };
     SVGImporter.prototype.load = function (content) {
         var _this = this;
         if (!content) {
@@ -2835,6 +2874,14 @@ var AngleControlNode = /** @class */ (function (_super) {
         shape.set('angle', angle);
     };
     AngleControlNode.prototype.onPointerEnd = function (e) {
+        if (this._isDragging) {
+            var shape = this.getShape();
+            var angle = shape.angle;
+            shape.trigger('updated', { angle: angle }, shape);
+            if (shape.canvas) {
+                shape.canvas.trigger('shapes:updated', { angle: angle }, shape);
+            }
+        }
         this._isDragging = false;
     };
     return AngleControlNode;
@@ -2945,6 +2992,14 @@ var OriginControlNode = /** @class */ (function (_super) {
         });
     };
     OriginControlNode.prototype.onPointerEnd = function (e) {
+        if (this._isDragging) {
+            var shape = this.getShape();
+            var left = shape.left, top_1 = shape.top, origin_1 = shape.origin;
+            shape.trigger('updated', { left: left, top: top_1, origin: origin_1 }, shape);
+            if (shape.canvas) {
+                shape.canvas.trigger('shapes:updated', { left: left, top: top_1, origin: origin_1 }, shape);
+            }
+        }
         this._isDragging = false;
     };
     return OriginControlNode;
@@ -3032,6 +3087,14 @@ var ScaleControlNode = /** @class */ (function (_super) {
         shape.set(set);
     };
     ScaleControlNode.prototype.onPointerEnd = function (e) {
+        if (this._isDragging) {
+            var shape = this.getShape();
+            var scaleX = shape.scaleX, scaleY = shape.scaleY;
+            shape.trigger('updated', { scaleX: scaleX, scaleY: scaleY }, shape);
+            if (shape.canvas) {
+                shape.canvas.trigger('shapes:updated', { scaleX: scaleX, scaleY: scaleY }, shape);
+            }
+        }
         this._isDragging = false;
     };
     return ScaleControlNode;
@@ -5119,13 +5182,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../utils */ "./src/utils/index.ts");
 
 var Matrix = /** @class */ (function () {
-    function Matrix() {
+    function Matrix(value) {
         this.a = 1;
         this.b = 0;
         this.c = 0;
         this.d = 1;
         this.tx = 0;
         this.ty = 0;
+        if (value) {
+            if (Array.isArray(value)) {
+                this.fromArray(value);
+            }
+            else if (typeof value === 'string') {
+                this.fromCSS(value);
+            }
+            else if (value.a || value.b || value.c || value.d || value.tx || value.ty) {
+                this.fromObject(value);
+            }
+            else {
+                this.fromOptions(value);
+            }
+        }
     }
     Matrix.prototype.fromArray = function (matrix) {
         this.a = matrix[0];
@@ -5494,6 +5571,21 @@ var Point = /** @class */ (function () {
         this.y = -this.y;
         return this;
     };
+    Point.prototype.round = function () {
+        this.x = Math.round(this.x);
+        this.y = Math.round(this.y);
+        return this;
+    };
+    Point.prototype.ceil = function () {
+        this.x = Math.ceil(this.x);
+        this.y = Math.ceil(this.y);
+        return this;
+    };
+    Point.prototype.floor = function () {
+        this.x = Math.floor(this.x);
+        this.y = Math.floor(this.y);
+        return this;
+    };
     Point.prototype.clamp = function (min, max) {
         this.x = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(this.x, min.x, max.x);
         this.y = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.clamp)(this.y, min.y, max.y);
@@ -5722,7 +5814,11 @@ function ElementCollection(Base) {
             children = Array.isArray(children) ? children : [children];
             children.forEach(function (child) {
                 var _a;
-                if (_this.children.includes(child)) {
+                if (_this.children.includes(child) ||
+                    _this.children.some(function (_a) {
+                        var id = _a.id;
+                        return id === child.id;
+                    })) {
                     return;
                 }
                 // Set up child.
@@ -6153,7 +6249,10 @@ var Group = /** @class */ (function (_super) {
     }
     Group.prototype.getAttributes = function (makeKebabeCase) {
         var defaultAttributes = _super.prototype.getAttributes.call(this, makeKebabeCase);
-        var translate = this.bBox.getSize().multiply(this.origin.clone().negate().addScalar(0.5));
+        var translate = this.bBox
+            .getSize()
+            .multiply(this.origin.clone().negate().addScalar(0.5))
+            .toString();
         return __assign(__assign({}, defaultAttributes), { transform: "translate(".concat(translate, ")") });
     };
     Group.prototype.updateBBox = function () {
@@ -6785,7 +6884,7 @@ var Shape = /** @class */ (function (_super) {
         if (isCanvas) {
             if (withDrawingArea && hasDrawingArea) {
                 var _b = this.parent.getDrawingAreaPosition(), x = _b.x, y = _b.y;
-                var daMatrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().fromArray([1, 0, 0, 1, x, y]);
+                var daMatrix = new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix([1, 0, 0, 1, x, y]);
                 matrix = viewportMatrix.clone().multiply(daMatrix);
             }
             else {
@@ -6793,7 +6892,7 @@ var Shape = /** @class */ (function (_super) {
             }
         }
         else {
-            matrix = this.parent.getWorldMatrix();
+            matrix = this.parent.getWorldMatrix(withDrawingArea);
         }
         return new _maths__WEBPACK_IMPORTED_MODULE_1__.Matrix().copy(matrix).multiply(this.matrix);
     };

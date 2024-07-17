@@ -4,21 +4,23 @@ const { VueLoaderPlugin } = require('vue-loader');
 module.exports = [
 	{
 		mode: 'development',
-		watch: true,
+		// watch: true,
 		entry: {
-			vanilla: './src/index.ts',
-			react: './src/react.ts',
 			vue: './src/vue.ts'
 		},
 		output: {
 			filename: `[name].js`,
-			path: path.resolve(__dirname, 'demos')
+			path: path.resolve(__dirname, 'public')
 		},
-		devtool: false,
-		externals: {
-			react: 'React',
-			'react-dom': 'ReactDOM'
+		devServer: {
+			static: {
+				directory: path.join(__dirname, 'public')
+			},
+			compress: true,
+			port: 9000
 		},
+		// devtool: false,
+		// externals: {},
 		module: {
 			rules: [
 				{

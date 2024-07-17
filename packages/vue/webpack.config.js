@@ -7,7 +7,7 @@ module.exports = (env) => {
 
 	return {
 		mode: production ? 'production' : 'development',
-		watch: !production,
+		// watch: !production,
 		entry: {
 			'grafik-vue': './src/index.ts'
 		},

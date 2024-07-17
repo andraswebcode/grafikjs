@@ -3,7 +3,7 @@ import { ElementCollection } from './mixins';
 import { Selector } from './interactive';
 import { Timeline } from './animation';
 import { Matrix, Point } from './maths';
-import { clamp, toFixed } from './utils';
+import { clamp, isEqual, toFixed } from './utils';
 import { AnyColor, ViewBoxArray } from './types';
 import { Path } from './shapes';
 
@@ -197,11 +197,11 @@ class Canvas extends ElementCollection(Element) {
 	public setSelectedShapes(shapes: any | any[], silent = false) {
 		shapes = Array.isArray(shapes) ? shapes : [shapes];
 
-		const prevShapesLength = this._selectedShapes.length;
+		const prevShapes = this._selectedShapes.concat();
 
 		this._selectedShapes = shapes;
 
-		if (!silent || prevShapesLength !== this._selectedShapes.length) {
+		if (!silent && !isEqual(prevShapes, this._selectedShapes)) {
 			this.trigger('shapes:selection:updated', shapes);
 		}
 
@@ -211,7 +211,7 @@ class Canvas extends ElementCollection(Element) {
 	public selectShapes(shapes: any | any[], silent = false) {
 		shapes = Array.isArray(shapes) ? shapes : [shapes];
 
-		const prevShapesLength = this._selectedShapes.length;
+		const prevShapes = this._selectedShapes.concat();
 
 		shapes.forEach((shape) => {
 			// @ts-ignore
@@ -221,7 +221,7 @@ class Canvas extends ElementCollection(Element) {
 			}
 		});
 
-		if (!silent || prevShapesLength !== this._selectedShapes.length) {
+		if (!silent && !isEqual(prevShapes, this._selectedShapes)) {
 			this.trigger('shapes:selected', shapes);
 			this.trigger('shapes:selection:updated', shapes);
 		}
@@ -316,7 +316,7 @@ class Canvas extends ElementCollection(Element) {
 		element.style.display = 'none';
 		const { clientWidth = 0, clientHeight = 0 } = element.parentElement || {};
 		element.style.display = '';
-		this.set({ width: clientWidth, height: clientHeight }).zoomTo();
+		this.set({ width: clientWidth, height: clientHeight }).zoomTo(this._zoom, this._pan);
 	}
 
 	public zoomTo(zoom = 1, pan = new Point()) {

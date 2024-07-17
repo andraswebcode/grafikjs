@@ -1,6 +1,13 @@
 /*!******************************************************************************************************************!*\
   !*** css ../../node_modules/css-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./src/styles.scss ***!
   \******************************************************************************************************************/
+.grafik-mode-pan {
+  cursor: grab;
+}
+.grafik-mode-draw {
+  cursor: crosshair;
+}
+
 .grafik-wrapper {
   position: relative;
   overflow: hidden;
@@ -16,6 +23,10 @@
   bottom: 0;
   left: 0;
   right: 0;
+}
+
+.grafik-interactive * {
+  box-sizing: border-box;
 }
 
 .grafik-selector {

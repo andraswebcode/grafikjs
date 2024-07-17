@@ -1,20 +1,20 @@
 {
-  "name": "@grafikjs/styles",
-  "version": "0.0.15",
-  "main": "./src/index.js",
-  "scripts": {
-    "start": "webpack",
-    "build": "webpack --env production"
-  },
-  "author": "Andras Tovishati",
-  "license": "MIT",
-  "description": "",
-  "devDependencies":{
-    "sass":"*",
-    "sass-loader":"*",
-    "style-loader":"*",
-    "css-loader":"*",
-    "webpack":"*",
-    "mini-css-extract-plugin":"*"
-  }
+	"name": "@grafikjs/styles",
+	"version": "0.0.16",
+	"main": "./src/index.js",
+	"scripts": {
+		"start": "webpack",
+		"build": "webpack --env production"
+	},
+	"author": "Andras Tovishati",
+	"license": "MIT",
+	"description": "",
+	"devDependencies": {
+		"sass": "*",
+		"sass-loader": "*",
+		"style-loader": "*",
+		"css-loader": "*",
+		"webpack": "*",
+		"mini-css-extract-plugin": "*"
+	}
 }

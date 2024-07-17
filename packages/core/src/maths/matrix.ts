@@ -1,18 +1,8 @@
-import {
-	MatrixObject,
-	MatrixArray,
-	TransformObject
-} from './../types';
-import {
-	deg2Rad,
-	rad2Deg
-} from './../utils';
-import {
-	Point
-} from './';
+import { MatrixObject, MatrixArray, TransformObject } from './../types';
+import { deg2Rad, rad2Deg } from './../utils';
+import { Point } from './';
 
 class Matrix {
-
 	public a = 1;
 	public b = 0;
 	public c = 0;
@@ -20,8 +10,21 @@ class Matrix {
 	public tx = 0;
 	public ty = 0;
 
-	public fromArray(matrix: MatrixArray) : Matrix {
+	constructor(value?: any) {
+		if (value) {
+			if (Array.isArray(value)) {
+				this.fromArray(value as MatrixArray);
+			} else if (typeof value === 'string') {
+				this.fromCSS(value);
+			} else if (value.a || value.b || value.c || value.d || value.tx || value.ty) {
+				this.fromObject(value);
+			} else {
+				this.fromOptions(value);
+			}
+		}
+	}
 
+	public fromArray(matrix: MatrixArray): Matrix {
 		this.a = matrix[0];
 		this.b = matrix[1];
 		this.c = matrix[2];
@@ -30,11 +33,9 @@ class Matrix {
 		this.ty = matrix[5];
 
 		return this;
-
 	}
 
-	public fromObject(object: MatrixObject) : Matrix {
-
+	public fromObject(object: MatrixObject): Matrix {
 		this.a = object.a;
 		this.b = object.b;
 		this.c = object.c;
@@ -43,20 +44,10 @@ class Matrix {
 		this.ty = object.ty;
 
 		return this;
-
 	}
 
-	public fromOptions(object: TransformObject) : Matrix {
-
-		const {
-			left,
-			top,
-			angle,
-			scaleX,
-			scaleY,
-			skewX,
-			skewY
-		} = object;
+	public fromOptions(object: TransformObject): Matrix {
+		const { left, top, angle, scaleX, scaleY, skewX, skewY } = object;
 
 		this.reset();
 		this.translate(left, top);
@@ -67,38 +58,32 @@ class Matrix {
 		this.skewY(skewY);
 
 		return this;
-
 	}
 
-	public fromCSS(value: string) : Matrix {
+	public fromCSS(value: string): Matrix {
 		const array = value.replace('matrix(', '').replace(')', '').split(' ').map(parseFloat);
 		// @ts-ignore
 		this.fromArray(array);
 		return this;
 	}
 
-	public toArray() : MatrixArray {
-
+	public toArray(): MatrixArray {
 		return [this.a, this.b, this.c, this.d, this.tx, this.ty];
-
 	}
 
-	public toObject() : MatrixObject {
-
+	public toObject(): MatrixObject {
 		return {
-			a:this.a,
-			b:this.b,
-			c:this.c,
-			d:this.d,
-			tx:this.tx,
-			ty:this.ty
+			a: this.a,
+			b: this.b,
+			c: this.c,
+			d: this.d,
+			tx: this.tx,
+			ty: this.ty
 		};
-
 	}
 
-	public toOptions() : TransformObject {
-
-		const {a, b, c, d, tx, ty} = this;
+	public toOptions(): TransformObject {
+		const { a, b, c, d, tx, ty } = this;
 		const angle = rad2Deg(Math.atan2(b, a));
 		const denom = a ** 2 + b ** 2;
 		const scaleX = Math.sqrt(denom);
@@ -106,37 +91,31 @@ class Matrix {
 		const skewX = rad2Deg(Math.atan2(a * c + b * d, denom));
 
 		return {
-			left:tx,
-			top:ty,
+			left: tx,
+			top: ty,
 			angle,
 			scaleX,
 			scaleY,
 			skewX,
-			skewY:0
+			skewY: 0
 		};
-
 	}
 
-	public toCSS() : string {
-
+	public toCSS(): string {
 		const array = this.toArray().join(', ');
 
 		return `matrix(${array})`;
-
 	}
 
-	public translate(tx: number, ty: number) : Matrix {
-
+	public translate(tx: number, ty: number): Matrix {
 		this.tx = tx;
 		this.ty = ty;
 
 		return this;
-
 	}
 
-	public rotate(angle: number) : Matrix {
-
-		if (!angle){
+	public rotate(angle: number): Matrix {
+		if (!angle) {
 			return this;
 		}
 
@@ -146,12 +125,10 @@ class Matrix {
 		const m = new Matrix().fromArray([cos, sin, -sin, cos, 0, 0]);
 
 		return this.multiply(m);
-
 	}
 
-	public scale(sx: number, sy?: number) : Matrix {
-
-		if (typeof sx === 'undefined'){
+	public scale(sx: number, sy?: number): Matrix {
+		if (typeof sx === 'undefined') {
 			return this;
 		}
 
@@ -160,36 +137,30 @@ class Matrix {
 		const m = new Matrix().fromArray([sx, 0, 0, sy, 0, 0]);
 
 		return this.multiply(m);
-
 	}
 
-	public scaleX(scale: number) : Matrix {
-
-		if (typeof scale === 'undefined'){
+	public scaleX(scale: number): Matrix {
+		if (typeof scale === 'undefined') {
 			return this;
 		}
 
 		const m = new Matrix().fromArray([scale, 0, 0, 1, 0, 0]);
 
 		return this.multiply(m);
-
 	}
 
-	public scaleY(scale: number) : Matrix {
-
-		if (typeof scale === 'undefined'){
+	public scaleY(scale: number): Matrix {
+		if (typeof scale === 'undefined') {
 			return this;
 		}
 
 		const m = new Matrix().fromArray([1, 0, 0, scale, 0, 0]);
 
 		return this.multiply(m);
-
 	}
 
-	public skewX(angle: number) : Matrix {
-
-		if (!angle){
+	public skewX(angle: number): Matrix {
+		if (!angle) {
 			return this;
 		}
 
@@ -198,12 +169,10 @@ class Matrix {
 		const m = new Matrix().fromArray([1, 0, Math.tan(theta), 1, 0, 0]);
 
 		return this.multiply(m);
-
 	}
 
-	public skewY(angle: number) : Matrix {
-
-		if (!angle){
+	public skewY(angle: number): Matrix {
+		if (!angle) {
 			return this;
 		}
 
@@ -212,11 +181,9 @@ class Matrix {
 		const m = new Matrix().fromArray([1, Math.tan(theta), 0, 1, 0, 0]);
 
 		return this.multiply(m);
-
 	}
 
-	public multiply(m: Matrix) : Matrix {
-
+	public multiply(m: Matrix): Matrix {
 		const a = this.a * m.a + this.c * m.b;
 		const b = this.b * m.a + this.d * m.b;
 		const c = this.a * m.c + this.c * m.d;
@@ -224,16 +191,14 @@ class Matrix {
 		const tx = this.a * m.tx + this.c * m.ty + this.tx;
 		const ty = this.b * m.tx + this.d * m.ty + this.ty;
 
-		return this.fromObject({a, b, c, d, tx, ty});
-
+		return this.fromObject({ a, b, c, d, tx, ty });
 	}
 
-	public invert() : Matrix {
-
-		const {a, b, c, d, tx, ty} = this;
+	public invert(): Matrix {
+		const { a, b, c, d, tx, ty } = this;
 		const determinant = a * d - b * c;
 
-		if (determinant === 0){
+		if (determinant === 0) {
 			return this.fromArray([0, 0, 0, 0, 0, 0]);
 		}
 
@@ -245,11 +210,9 @@ class Matrix {
 			(c * ty - d * tx) / determinant,
 			(b * tx - a * ty) / determinant
 		]);
-
 	}
 
-	public reset() : Matrix {
-
+	public reset(): Matrix {
 		this.a = 1;
 		this.b = 0;
 		this.c = 0;
@@ -258,19 +221,15 @@ class Matrix {
 		this.ty = 0;
 
 		return this;
-
 	}
 
-	public copy(matrix: Matrix) : Matrix {
+	public copy(matrix: Matrix): Matrix {
 		return this.fromArray(matrix.toArray());
 	}
 
-	public clone() : Matrix {
+	public clone(): Matrix {
 		return new Matrix().copy(this);
 	}
-
 }
 
-export {
-	Matrix
-};
+export { Matrix };

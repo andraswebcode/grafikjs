@@ -1,0 +1,8 @@
+.#{$prefix}-mode {
+	&-pan {
+		cursor: grab;
+	}
+	&-draw {
+		cursor: crosshair;
+	}
+}

@@ -224,13 +224,13 @@ class Shape extends Element {
 		if (isCanvas) {
 			if (withDrawingArea && hasDrawingArea) {
 				const { x, y } = this.parent.getDrawingAreaPosition();
-				const daMatrix = new Matrix().fromArray([1, 0, 0, 1, x, y]);
+				const daMatrix = new Matrix([1, 0, 0, 1, x, y]);
 				matrix = viewportMatrix.clone().multiply(daMatrix);
 			} else {
 				matrix = viewportMatrix;
 			}
 		} else {
-			matrix = this.parent.getWorldMatrix();
+			matrix = this.parent.getWorldMatrix(withDrawingArea);
 		}
 
 		return new Matrix().copy(matrix).multiply(this.matrix);

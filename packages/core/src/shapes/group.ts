@@ -13,7 +13,10 @@ class Group extends ElementCollection(Shape) {
 
 	public getAttributes(makeKebabeCase?: boolean): object {
 		const defaultAttributes = super.getAttributes(makeKebabeCase);
-		const translate = this.bBox.getSize().multiply(this.origin.clone().negate().addScalar(0.5));
+		const translate = this.bBox
+			.getSize()
+			.multiply(this.origin.clone().negate().addScalar(0.5))
+			.toString();
 		return {
 			...defaultAttributes,
 			transform: `translate(${translate})`

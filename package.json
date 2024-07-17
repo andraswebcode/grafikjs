@@ -4,7 +4,7 @@
 	"private": true,
 	"main": "./src/index.js",
 	"scripts": {
-		"start": "webpack",
+		"start": "webpack serve",
 		"start:core": "npm start --prefix packages/core",
 		"build:core": "npm run build --prefix packages/core",
 		"start:vanilla": "npm start --prefix packages/vanilla",
@@ -32,27 +32,28 @@
 	],
 	"dependencies": {
 		"@grafikjs/core": "*",
-		"@grafikjs/vanilla": "*",
 		"@grafikjs/react": "*",
-		"@grafikjs/vue": "*",
 		"@grafikjs/styles": "*",
+		"@grafikjs/vanilla": "*",
+		"@grafikjs/vue": "*",
 		"react": "*",
 		"react-dom": "*",
 		"vue": "*"
 	},
 	"devDependencies": {
-		"webpack": "*",
-		"webpack-cli": "*",
-		"typescript": "*",
-		"ts-loader": "*",
 		"@types/node": "*",
 		"@types/react": "*",
 		"@types/react-dom": "*",
-		"vue-loader": "*",
-		"vue-tsc": "*",
+		"css-loader": "*",
 		"sass": "*",
 		"sass-loader": "*",
 		"style-loader": "*",
-		"css-loader": "*"
+		"ts-loader": "*",
+		"typescript": "*",
+		"vue-loader": "*",
+		"vue-tsc": "*",
+		"webpack": "*",
+		"webpack-cli": "*",
+		"webpack-dev-server": "^5.0.4"
 	}
 }
