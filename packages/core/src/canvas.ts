@@ -42,7 +42,7 @@ class Canvas extends ElementCollection(Element) {
 
 	private _defs = [];
 
-	private _animation = new Timeline();
+	private _animation: Timeline;
 
 	private _selectedShapes = [];
 	private _currentNode: string;
@@ -104,6 +104,7 @@ class Canvas extends ElementCollection(Element) {
 		super();
 		this.set(params, true);
 		this.trigger('init', this);
+		this._animation = new Timeline(this);
 	}
 
 	protected getAttrMap(): string[] {

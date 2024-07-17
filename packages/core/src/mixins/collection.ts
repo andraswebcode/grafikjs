@@ -73,6 +73,14 @@ function Collection<TBase extends Constructor>(Base: TBase) {
 			return this.children.reduce(callback, initValue);
 		}
 
+		public someChildren(callback): boolean {
+			return this.children.some(callback);
+		}
+
+		public everyChildren(callback): boolean {
+			return this.children.every(callback);
+		}
+
 		public childAt(index: number) {
 			return this.children[index];
 		}

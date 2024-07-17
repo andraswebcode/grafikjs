@@ -1,10 +1,12 @@
 import { AnimationBase } from './animation-base';
-import { Collection, Stateful } from './../mixins';
+import { Collection } from './../mixins';
 import { AnimationObject, KeyframeObject, TrackObject } from './../types';
 import { Track } from './track';
+import { Timeline } from './timeline';
 
 class Animation extends Collection(AnimationBase) {
 	protected shape: any;
+	protected parent: Timeline;
 
 	private _isPlaying = false;
 	private _startTime = 0;
@@ -60,6 +62,9 @@ class Animation extends Collection(AnimationBase) {
 
 	public seek(time: number) {
 		this._currentTime = time;
+		this.trigger('seeking', this.shape);
+		this.shape.trigger('animation:seeking', this);
+		this.shape.canvas.trigger('shapes:animation:seeking', this, this.shape);
 		this._update();
 		return this;
 	}
@@ -79,6 +84,13 @@ class Animation extends Collection(AnimationBase) {
 			this.trigger('completed', this.shape);
 			this.shape.trigger('animation:completed', this);
 			this.shape.canvas.trigger('shapes:animation:completed', this, this.shape);
+			// Check if this animation is the longest,
+			// and if so only then trigger for optimizing performance.
+			// @see Timeline.protoype.duration
+			if (this.duration === this.parent.duration) {
+				this.parent.trigger('completed', this.parent.canvas);
+				this.parent.canvas.trigger('animation:completed', this.parent);
+			}
 		}
 	}
 
@@ -92,6 +104,13 @@ class Animation extends Collection(AnimationBase) {
 		this.trigger('updated', this.shape);
 		this.shape.trigger('animation:updated', this);
 		this.shape.canvas.trigger('shapes:animation:updated', this, this.shape);
+		// Check if this animation is the longest,
+		// and if so only then trigger for optimizing performance.
+		// @see Timeline.protoype.duration
+		if (this.duration === this.parent.duration) {
+			this.parent.trigger('updated', this.parent.canvas);
+			this.parent.canvas.trigger('animation:updated', this.parent);
+		}
 	}
 
 	public setTracks(objects: TrackObject[]) {

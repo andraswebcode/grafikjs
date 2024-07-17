@@ -1,8 +1,11 @@
 import { AnimationBase } from './animation-base';
 import { Collection } from './../mixins';
 import { TimelineObject } from './../types';
+import { Canvas } from './../canvas';
 
 class Timeline extends Collection(AnimationBase) {
+	public canvas: Canvas;
+
 	get animations() {
 		return this.getChildren();
 	}
@@ -22,24 +25,35 @@ class Timeline extends Collection(AnimationBase) {
 		return this.childrenLength ? longest.time : 0;
 	}
 
-	public constructor() {
+	get playing() {
+		return this.someChildren((child) => child.playing);
+	}
+
+	public constructor(canvas: Canvas) {
 		super();
+		this.canvas = canvas;
 		this.name = 'timeline';
 		this.createId();
 	}
 
 	public play() {
 		this.eachChild((child) => child.play());
+		this.trigger('played', this.canvas);
+		this.canvas.trigger('animation:played', this);
 		return this;
 	}
 
 	public pause() {
 		this.eachChild((child) => child.pause());
+		this.trigger('paused', this.canvas);
+		this.canvas.trigger('animation:paused', this);
 		return this;
 	}
 
 	public seek(time: number) {
 		this.eachChild((child) => child.seek(time));
+		this.trigger('seeking', this.canvas);
+		this.canvas.trigger('animation:seeking', this);
 		return this;
 	}
 

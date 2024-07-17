@@ -2,7 +2,7 @@
 import { useCanvas } from '@grafikjs/vue';
 const {
 	state: { dWidth, dHeight, zoom, mode },
-	actions: { set }
+	actions: { set, play, pause }
 } = useCanvas(
 	(canvas) => ({
 		dWidth: canvas.drawingWidth,
@@ -11,7 +11,9 @@ const {
 		mode: canvas.mode
 	}),
 	(canvas) => ({
-		set: canvas.set.bind(canvas)
+		set: canvas.set.bind(canvas),
+		play: canvas.getAnimation().play.bind(canvas.getAnimation()),
+		pause: canvas.getAnimation().pause.bind(canvas.getAnimation())
 	}),
 	'set'
 );
@@ -51,6 +53,8 @@ const {
 			<option value="draw">Draw</option>
 		</select>
 	</label>
+	<button @click="play()">Play</button>
+	<button @click="pause()">Pause</button>
 </template>
 
 <style scoped></style>

@@ -42,6 +42,8 @@ interface CanvasObject {
 	panX?: number;
 	panY?: number;
 	mode?: string;
+	penWidth?: number;
+	penColor?: string;
 }
 
 interface ShapeObject extends TransformObject {
