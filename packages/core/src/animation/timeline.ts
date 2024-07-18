@@ -29,6 +29,24 @@ class Timeline extends Collection(AnimationBase) {
 		return this.someChildren((child) => child.playing);
 	}
 
+	set loop(value: true | number) {
+		this.eachChild((animation) => {
+			animation.loop = value;
+		});
+	}
+
+	set direction(value: 'normal' | 'reverse' | 'alternate') {
+		this.eachChild((animation) => {
+			animation.direction = value;
+		});
+	}
+
+	set speed(value: number) {
+		this.eachChild((animation) => {
+			animation.speed = value;
+		});
+	}
+
 	public constructor(canvas: Canvas) {
 		super();
 		this.canvas = canvas;
