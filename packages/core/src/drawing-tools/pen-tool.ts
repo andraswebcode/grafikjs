@@ -1,8 +1,9 @@
 import { DrawingTool } from './drawing-tool';
 import { Path } from './../shapes';
-import { MouseOrTouchEvent } from './../types';
+import { DrawingToolName, MouseOrTouchEvent } from './../types';
 
 class PenTool extends DrawingTool {
+	public name: DrawingToolName = 'pen';
 	public onPointerStart(e: MouseOrTouchEvent) {
 		const { x, y } = this._canvas
 			.getPointer(e)

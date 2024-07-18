@@ -1,7 +1,8 @@
-import { MouseOrTouchEvent } from './../types';
+import { DrawingToolName, MouseOrTouchEvent } from './../types';
 import { DrawingTool } from './drawing-tool';
 
 class ShapeTool extends DrawingTool {
+	public name: DrawingToolName = 'shape';
 	public onPointerStart(e: MouseOrTouchEvent) {
 		throw new Error('Method not implemented.');
 	}

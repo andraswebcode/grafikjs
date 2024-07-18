@@ -2,7 +2,8 @@ import { DrawingToolName, MouseOrTouchEvent } from './../types';
 import { Canvas } from './../canvas';
 
 abstract class DrawingTool {
-	public name: DrawingToolName;
+	public abstract name: DrawingToolName;
+
 	protected _canvas: Canvas;
 	protected _path: any;
 	protected _isDrawing = false;
