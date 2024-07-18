@@ -1,6 +1,6 @@
 {
 	"name": "@grafikjs/vue",
-	"version": "0.0.28",
+	"version": "0.0.29",
 	"main": "./src/index.ts",
 	"types": "./src/index.d.ts",
 	"scripts": {

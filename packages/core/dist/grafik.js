@@ -160,6 +160,9 @@ var Animation = /** @class */ (function (_super) {
     };
     Animation.prototype.seek = function (time) {
         this._currentTime = time;
+        this.trigger('seeking', this.shape);
+        this.shape.trigger('animation:seeking', this);
+        this.shape.canvas.trigger('shapes:animation:seeking', this, this.shape);
         this._update();
         return this;
     };
@@ -178,6 +181,13 @@ var Animation = /** @class */ (function (_super) {
             this.trigger('completed', this.shape);
             this.shape.trigger('animation:completed', this);
             this.shape.canvas.trigger('shapes:animation:completed', this, this.shape);
+            // Check if this animation is the longest,
+            // and if so only then trigger for optimizing performance.
+            // @see Timeline.protoype.duration
+            if (this.duration === this.parent.duration) {
+                this.parent.trigger('completed', this.parent.canvas);
+                this.parent.canvas.trigger('animation:completed', this.parent);
+            }
         }
     };
     Animation.prototype._update = function () {
@@ -191,6 +201,13 @@ var Animation = /** @class */ (function (_super) {
         this.trigger('updated', this.shape);
         this.shape.trigger('animation:updated', this);
         this.shape.canvas.trigger('shapes:animation:updated', this, this.shape);
+        // Check if this animation is the longest,
+        // and if so only then trigger for optimizing performance.
+        // @see Timeline.protoype.duration
+        if (this.duration === this.parent.duration) {
+            this.parent.trigger('updated', this.parent.canvas);
+            this.parent.canvas.trigger('animation:updated', this.parent);
+        }
     };
     Animation.prototype.setTracks = function (objects) {
         var _this = this;
@@ -439,8 +456,9 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var Timeline = /** @class */ (function (_super) {
     __extends(Timeline, _super);
-    function Timeline() {
+    function Timeline(canvas) {
         var _this = _super.call(this) || this;
+        _this.canvas = canvas;
         _this.name = 'timeline';
         _this.createId();
         return _this;
@@ -469,16 +487,29 @@ var Timeline = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Timeline.prototype, "playing", {
+        get: function () {
+            return this.someChildren(function (child) { return child.playing; });
+        },
+        enumerable: false,
+        configurable: true
+    });
     Timeline.prototype.play = function () {
         this.eachChild(function (child) { return child.play(); });
+        this.trigger('played', this.canvas);
+        this.canvas.trigger('animation:played', this);
         return this;
     };
     Timeline.prototype.pause = function () {
         this.eachChild(function (child) { return child.pause(); });
+        this.trigger('paused', this.canvas);
+        this.canvas.trigger('animation:paused', this);
         return this;
     };
     Timeline.prototype.seek = function (time) {
         this.eachChild(function (child) { return child.seek(time); });
+        this.trigger('seeking', this.canvas);
+        this.canvas.trigger('animation:seeking', this);
         return this;
     };
     Timeline.prototype.toJSON = function () {
@@ -662,7 +693,6 @@ var Canvas = /** @class */ (function (_super) {
         _this.drawingWidth = 0;
         _this.drawingHeight = 0;
         _this._defs = [];
-        _this._animation = new _animation__WEBPACK_IMPORTED_MODULE_3__.Timeline();
         _this._selectedShapes = [];
         _this._selector = new _interactive__WEBPACK_IMPORTED_MODULE_2__.Selector();
         _this._selection = false;
@@ -673,6 +703,7 @@ var Canvas = /** @class */ (function (_super) {
         _this._isDrawing = false;
         _this.set(params, true);
         _this.trigger('init', _this);
+        _this._animation = new _animation__WEBPACK_IMPORTED_MODULE_3__.Timeline(_this);
         return _this;
     }
     Object.defineProperty(Canvas.prototype, "viewBox", {
@@ -5703,6 +5734,12 @@ function Collection(Base) {
         };
         Collection.prototype.reduceChildren = function (callback, initValue) {
             return this.children.reduce(callback, initValue);
+        };
+        Collection.prototype.someChildren = function (callback) {
+            return this.children.some(callback);
+        };
+        Collection.prototype.everyChildren = function (callback) {
+            return this.children.every(callback);
         };
         Collection.prototype.childAt = function (index) {
             return this.children[index];
