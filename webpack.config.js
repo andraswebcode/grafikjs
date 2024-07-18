@@ -4,7 +4,6 @@ const { VueLoaderPlugin } = require('vue-loader');
 module.exports = [
 	{
 		mode: 'development',
-		// watch: true,
 		entry: {
 			vue: './src/vue.ts'
 		},
@@ -19,8 +18,6 @@ module.exports = [
 			compress: true,
 			port: 9000
 		},
-		// devtool: false,
-		// externals: {},
 		module: {
 			rules: [
 				{

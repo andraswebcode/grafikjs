@@ -3,7 +3,7 @@ import { SHAPES } from './classes';
 import { Importer } from './importer';
 
 class SVGImporter extends Importer {
-	public add(content: any, group: any): Canvas {
+	public add(content: any, group?: any): Canvas {
 		throw new Error('Method not implemented.');
 	}
 	public load(content: any): Canvas {

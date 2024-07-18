@@ -8,7 +8,7 @@ abstract class Importer {
 	}
 
 	// Just adding some shapes to the specified group, or the canvas if th group is not set.
-	public abstract add(content: any, group: any): Canvas;
+	public abstract add(content: any, group?: any): Canvas;
 
 	// Loading json and set up a whole new canvas from options
 	public abstract load(content: any): Canvas;

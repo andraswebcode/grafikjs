@@ -3,7 +3,7 @@ import { SHAPES } from './classes';
 import { Importer } from './importer';
 
 class JSONImporter extends Importer {
-	public add(content: any, group: any): Canvas {
+	public add(content: any, group?: any): Canvas {
 		const _group = group || this._canvas;
 		const shapes = this._parseShape(content);
 
