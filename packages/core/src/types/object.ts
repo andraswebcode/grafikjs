@@ -1,12 +1,13 @@
 import { AnimationObject } from './animation';
-import type { AnyColor } from './math';
+import { AnyColor } from './math';
+import { DrawingToolName, ModeType } from './utils';
 
 type ColorStopObject = {
 	color: AnyColor;
 };
 
 interface ElementObject {
-	id?: string;
+	id: string;
 }
 
 interface GradientObject extends ElementObject {
@@ -41,14 +42,14 @@ interface CanvasObject {
 	zoom?: number;
 	panX?: number;
 	panY?: number;
-	mode?: string;
+	mode?: ModeType;
+	drawingTool?: DrawingToolName;
 	penWidth?: number;
-	penColor?: string;
+	penColor?: AnyColor;
 }
 
-interface ShapeObject extends TransformObject {
+interface ShapeObject extends TransformObject, ElementObject {
 	tagName: string;
-	id: string;
 	name: string;
 	fill: FillStroke;
 	stroke: FillStroke;

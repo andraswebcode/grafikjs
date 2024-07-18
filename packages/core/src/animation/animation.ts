@@ -111,7 +111,7 @@ class Animation extends Collection(AnimationBase) {
 			} else {
 				this._isPlaying = false;
 				this._startTime = 0;
-				// this._currentTime = 0;
+				this._currentTime = 0;
 				this.trigger('completed', this.shape);
 				this.shape.trigger('animation:completed', this);
 				this.shape.canvas.trigger('shapes:animation:completed', this, this.shape);
