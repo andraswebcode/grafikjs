@@ -4,11 +4,8 @@ import { Selector } from './interactive';
 import { Timeline } from './animation';
 import { Matrix, Point } from './maths';
 import { clamp, isEqual, toFixed } from './utils';
-import { AnyColor, ViewBoxArray } from './types';
-import { Path } from './shapes';
-
-type ModeType = 'select' | 'pan' | 'draw';
-type MouseOrTouchEvent = MouseEvent | TouchEvent;
+import { AnyColor, DrawingToolName, ModeType, MouseOrTouchEvent, ViewBoxArray } from './types';
+import { DrawingTool, PenTool, ShapeTool, BezierTool } from './drawing-tools';
 
 class Canvas extends ElementCollection(Element) {
 	public readonly isCanvas = true;
@@ -54,8 +51,7 @@ class Canvas extends ElementCollection(Element) {
 	private _isDragging = false;
 	private _startVector = new Point();
 
-	private _isDrawing = false;
-	private _drawingPath: Path | null;
+	private _drawingTool: DrawingTool;
 
 	set viewBox(value: ViewBoxArray | string) {
 		if (typeof value === 'string') {
@@ -100,11 +96,26 @@ class Canvas extends ElementCollection(Element) {
 		return this._pan.y;
 	}
 
+	get drawingTool() {
+		return this._drawingTool.name;
+	}
+
+	set drawingTool(value: DrawingToolName) {
+		if (value === 'pen') {
+			this._drawingTool = new PenTool(this);
+		} else if (value === 'shape') {
+			this._drawingTool = new ShapeTool(this);
+		} else if (value === 'bezier') {
+			this._drawingTool = new BezierTool(this);
+		}
+	}
+
 	public constructor(params = {}) {
 		super();
 		this.set(params, true);
 		this.trigger('init', this);
 		this._animation = new Timeline(this);
+		this._drawingTool = new PenTool(this);
 	}
 
 	protected getAttrMap(): string[] {
@@ -463,66 +474,6 @@ class Canvas extends ElementCollection(Element) {
 		this._isDragging = false;
 	}
 
-	private _onPointerStartInDrawMode(e: MouseOrTouchEvent) {
-		const { x, y } = this.getPointer(e)
-			.transform(this.viewportMatrix.clone().invert())
-			.subtract(this.getDrawingAreaPosition());
-		const path = new Path({
-			left: 0,
-			top: 0,
-			originX: 0,
-			originY: 0,
-			stroke: this.penColor,
-			strokeWidth: this.penWidth,
-			fill: 'none'
-		});
-
-		path.getPath().moveTo(x, y);
-
-		this._isDrawing = true;
-		this._drawingPath = path;
-		this.add(path);
-	}
-
-	private _onPointerMoveInDrawMode(e: MouseOrTouchEvent) {
-		if (!this._isDrawing || !this._drawingPath) {
-			return;
-		}
-
-		const { x, y } = this.getPointer(e)
-			.transform(this.viewportMatrix.clone().invert())
-			.subtract(this.getDrawingAreaPosition());
-
-		this._drawingPath.getPath().lineTo(x, y);
-		// Call set, just to trigger events, and rerender views.
-		this._drawingPath.updateBBox().set({});
-	}
-
-	private _onPointerEndInDrawMode(e: MouseOrTouchEvent) {
-		const path = this._drawingPath;
-		if (!path) {
-			return;
-		}
-
-		const curves = path.getPath();
-		const bBox = curves.getBBox();
-		const translate = bBox.min.clone().add(bBox.getSize().divideScalar(2));
-
-		curves.adjust();
-		path.updateBBox().set({
-			left: translate.x,
-			top: translate.y,
-			originX: 0.5,
-			originY: 0.5
-		});
-
-		this._isDrawing = false;
-		this._drawingPath = null;
-
-		this.trigger('drawn', path, this);
-		this.trigger('drawn:path', path, this);
-	}
-
 	public onPointerStart(e: MouseOrTouchEvent) {
 		switch (this.mode) {
 			case 'select':
@@ -532,7 +483,7 @@ class Canvas extends ElementCollection(Element) {
 				this._onPointerStartInPanMode(e);
 				break;
 			case 'draw':
-				this._onPointerStartInDrawMode(e);
+				this._drawingTool.onPointerStart(e);
 				break;
 			default:
 				break;
@@ -548,7 +499,7 @@ class Canvas extends ElementCollection(Element) {
 				this._onPointerMoveInPanMode(e);
 				break;
 			case 'draw':
-				this._onPointerMoveInDrawMode(e);
+				this._drawingTool.onPointerMove(e);
 				break;
 			default:
 				break;
@@ -564,7 +515,7 @@ class Canvas extends ElementCollection(Element) {
 				this._onPointerEndInPanMode(e);
 				break;
 			case 'draw':
-				this._onPointerEndInDrawMode(e);
+				this._drawingTool.onPointerEnd(e);
 				break;
 			default:
 				break;
