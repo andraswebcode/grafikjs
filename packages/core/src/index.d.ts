@@ -18,6 +18,9 @@ export * from './maths';
 // Animation
 export * from './animation';
 
+// Drawing Tools
+export * from './drawing-tools';
+
 // Utils
 export * from './utils';
 

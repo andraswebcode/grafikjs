@@ -44,5 +44,30 @@ module.exports = [
 			extensions: ['.ts', '.tsx', '.js', '.vue']
 		},
 		plugins: [new VueLoaderPlugin()]
+	},
+	{
+		mode: 'development',
+		entry: {
+			core: './packages/core/src/index.ts'
+		},
+		output: {
+			filename: `[name].js`,
+			path: path.resolve(__dirname, 'public'),
+			library: 'grafik',
+			libraryTarget: 'umd',
+			globalObject: 'window'
+		},
+		module: {
+			rules: [
+				{
+					test: /\.ts?$/,
+					loader: 'ts-loader',
+					exclude: /node_modules/
+				}
+			]
+		},
+		resolve: {
+			extensions: ['.ts', '.js']
+		}
 	}
 ];

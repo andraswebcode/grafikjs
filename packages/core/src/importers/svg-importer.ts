@@ -72,7 +72,7 @@ class SVGImporter extends Importer {
 	}
 
 	protected _getChildren(element: SVGElement) {
-		return Array.from(element.childNodes);
+		return Array.from(element.children);
 	}
 }
 

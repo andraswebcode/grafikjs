@@ -50,7 +50,15 @@ class PenTool extends DrawingTool {
 		const bBox = curves.getBBox();
 		const translate = bBox.min.clone().add(bBox.getSize().divideScalar(2));
 
+		if (bBox.isEmpty()) {
+			this._canvas.remove(this._path);
+			this._isDrawing = false;
+			this._path = null;
+			return;
+		}
+
 		curves.adjust();
+
 		this._path.updateBBox().set({
 			left: translate.x,
 			top: translate.y,
@@ -58,11 +66,11 @@ class PenTool extends DrawingTool {
 			originY: 0.5
 		});
 
-		this._isDrawing = false;
-		this._path = null;
-
 		this._canvas.trigger('drawn', this._path, this);
 		this._canvas.trigger('drawn:path', this._path, this);
+
+		this._isDrawing = false;
+		this._path = null;
 	}
 }
 
