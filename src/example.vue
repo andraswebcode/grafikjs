@@ -4,6 +4,7 @@ import { JSONImporter, SVGImporter } from '@grafikjs/core';
 import { useCanvas } from '@grafikjs/vue';
 import Canvas from './Canvas';
 import Controls from './Controls';
+import InnerCanvas from './InnerCanvas';
 
 const { context } = useCanvas(null);
 const show = ref(true);
@@ -87,6 +88,7 @@ onMounted(() => {
 		Show:
 		<input type="checkbox" v-model="show" />
 	</label>
+	<InnerCanvas />
 </template>
 
 <style scoped></style>

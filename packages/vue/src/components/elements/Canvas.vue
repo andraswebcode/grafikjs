@@ -53,7 +53,7 @@ provide('collection', context);
 </script>
 
 <template>
-	<svg ref="svgRef" v-bind="attrs">
+	<svg ref="svgRef" class="grafik-canvas" v-bind="attrs">
 		<slot name="defs" />
 		<rect v-if="showGrid" v-bind="daAttrs" fill="url(#grafik-grid)" />
 		<g v-if="hasDrawingArea" clip-path="url(#grafik-drawing-area)">

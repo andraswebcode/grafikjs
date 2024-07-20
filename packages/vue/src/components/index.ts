@@ -1,3 +1,4 @@
 export * from './elements';
 export * from './interactive';
-export * from './CanvasProvider.vue';
+import CanvasProvider from './CanvasProvider.vue';
+export { CanvasProvider };

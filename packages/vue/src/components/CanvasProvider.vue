@@ -5,11 +5,11 @@ import { provide, watch } from 'vue';
 const props = defineProps<{
 	value: CanvasObject;
 }>();
-const canvas = new Canvas(props);
+const canvas = new Canvas(props.value);
 provide('canvas', canvas);
 
-watch(props.value, (value) => {
-	canvas.set(value);
+watch(props, (props) => {
+	canvas.set(props.value);
 });
 </script>
 

@@ -79,6 +79,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _animation_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation-base */ "./src/animation/animation-base.ts");
 /* harmony import */ var _mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../mixins */ "./src/mixins/index.ts");
 /* harmony import */ var _track__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./track */ "./src/animation/track.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../utils */ "./src/utils/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -97,16 +98,26 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var Animation = /** @class */ (function (_super) {
     __extends(Animation, _super);
     function Animation(shape) {
         var _this = _super.call(this) || this;
+        // Iteration count, or true for infinity.
+        _this.loop = 1;
+        _this.direction = 'normal';
+        _this.speed = 1;
         _this._isPlaying = false;
         _this._startTime = 0;
         _this._currentTime = 0;
+        _this._loopCount = 1;
+        _this._directionMultiplier = 1;
         _this.shape = shape;
         _this.name = 'animation';
         _this.createId();
+        if (_this.direction === 'reverse') {
+            _this._directionMultiplier = -1;
+        }
         return _this;
     }
     Object.defineProperty(Animation.prototype, "tracks", {
@@ -144,7 +155,7 @@ var Animation = /** @class */ (function (_super) {
             return this;
         }
         this._isPlaying = true;
-        this._startTime = performance.now() - this._currentTime;
+        this._startTime = performance.now() - this._currentTime / this.speed;
         requestAnimationFrame(this._render.bind(this));
         this.trigger('played', this.shape);
         this.shape.trigger('animation:played', this);
@@ -169,24 +180,44 @@ var Animation = /** @class */ (function (_super) {
     Animation.prototype._render = function (timeStamp) {
         if (!this._isPlaying)
             return;
-        this._currentTime = timeStamp - this._startTime;
+        var ellapsed = (timeStamp - this._startTime) * this.speed;
+        var adjusted = this._directionMultiplier === 1 ? ellapsed : this.duration - ellapsed;
+        this._currentTime = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.clamp)(adjusted, 0, this.duration);
         this._update();
-        if (this._currentTime <= this.duration) {
+        if ((this._directionMultiplier === 1 && this._currentTime < this.duration) ||
+            (this._directionMultiplier === -1 && this._currentTime > 0)) {
             requestAnimationFrame(this._render.bind(this));
         }
         else {
-            this._isPlaying = false;
-            this._startTime = 0;
-            this._currentTime = 0;
-            this.trigger('completed', this.shape);
-            this.shape.trigger('animation:completed', this);
-            this.shape.canvas.trigger('shapes:animation:completed', this, this.shape);
-            // Check if this animation is the longest,
-            // and if so only then trigger for optimizing performance.
-            // @see Timeline.protoype.duration
-            if (this.duration === this.parent.duration) {
-                this.parent.trigger('completed', this.parent.canvas);
-                this.parent.canvas.trigger('animation:completed', this.parent);
+            if (this.loop === true || this._loopCount < this.loop) {
+                this._loopCount++;
+                this._startTime = performance.now();
+                if (this.direction === 'alternate') {
+                    this._directionMultiplier *= -1;
+                    this._currentTime = this._directionMultiplier === 1 ? 0 : this.duration;
+                }
+                else if (this.direction === 'reverse') {
+                    this._currentTime = this.duration;
+                }
+                else {
+                    this._currentTime = 0;
+                }
+                requestAnimationFrame(this._render.bind(this));
+            }
+            else {
+                this._isPlaying = false;
+                this._startTime = 0;
+                this._currentTime = 0;
+                this.trigger('completed', this.shape);
+                this.shape.trigger('animation:completed', this);
+                this.shape.canvas.trigger('shapes:animation:completed', this, this.shape);
+                // Check if this animation is the longest,
+                // and if so only then trigger for optimizing performance.
+                // @see Timeline.protoype.duration
+                if (this.duration === this.parent.duration) {
+                    this.parent.trigger('completed', this.parent.canvas);
+                    this.parent.canvas.trigger('animation:completed', this.parent);
+                }
             }
         }
     };
@@ -494,6 +525,33 @@ var Timeline = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Timeline.prototype, "loop", {
+        set: function (value) {
+            this.eachChild(function (animation) {
+                animation.loop = value;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Timeline.prototype, "direction", {
+        set: function (value) {
+            this.eachChild(function (animation) {
+                animation.direction = value;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Timeline.prototype, "speed", {
+        set: function (value) {
+            this.eachChild(function (animation) {
+                animation.speed = value;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
     Timeline.prototype.play = function () {
         this.eachChild(function (child) { return child.play(); });
         this.trigger('played', this.canvas);
@@ -641,7 +699,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./animation */ "./src/animation/index.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./maths */ "./src/maths/index.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
-/* harmony import */ var _shapes__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./shapes */ "./src/shapes/index.ts");
+/* harmony import */ var _drawing_tools__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./drawing-tools */ "./src/drawing-tools/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -700,10 +758,10 @@ var Canvas = /** @class */ (function (_super) {
         _this._pan = new _maths__WEBPACK_IMPORTED_MODULE_4__.Point();
         _this._isDragging = false;
         _this._startVector = new _maths__WEBPACK_IMPORTED_MODULE_4__.Point();
-        _this._isDrawing = false;
         _this.set(params, true);
         _this.trigger('init', _this);
         _this._animation = new _animation__WEBPACK_IMPORTED_MODULE_3__.Timeline(_this);
+        _this._drawingTool = new _drawing_tools__WEBPACK_IMPORTED_MODULE_6__.PenTool(_this);
         return _this;
     }
     Object.defineProperty(Canvas.prototype, "viewBox", {
@@ -757,6 +815,24 @@ var Canvas = /** @class */ (function (_super) {
     Object.defineProperty(Canvas.prototype, "pan", {
         get: function () {
             return this._pan;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Canvas.prototype, "drawingTool", {
+        get: function () {
+            return this._drawingTool.name;
+        },
+        set: function (value) {
+            if (value === 'pen') {
+                this._drawingTool = new _drawing_tools__WEBPACK_IMPORTED_MODULE_6__.PenTool(this);
+            }
+            else if (value === 'shape') {
+                this._drawingTool = new _drawing_tools__WEBPACK_IMPORTED_MODULE_6__.ShapeTool(this);
+            }
+            else if (value === 'bezier') {
+                this._drawingTool = new _drawing_tools__WEBPACK_IMPORTED_MODULE_6__.BezierTool(this);
+            }
         },
         enumerable: false,
         configurable: true
@@ -1068,55 +1144,6 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype._onPointerEndInPanMode = function (e) {
         this._isDragging = false;
     };
-    Canvas.prototype._onPointerStartInDrawMode = function (e) {
-        var _a = this.getPointer(e)
-            .transform(this.viewportMatrix.clone().invert())
-            .subtract(this.getDrawingAreaPosition()), x = _a.x, y = _a.y;
-        var path = new _shapes__WEBPACK_IMPORTED_MODULE_6__.Path({
-            left: 0,
-            top: 0,
-            originX: 0,
-            originY: 0,
-            stroke: this.penColor,
-            strokeWidth: this.penWidth,
-            fill: 'none'
-        });
-        path.getPath().moveTo(x, y);
-        this._isDrawing = true;
-        this._drawingPath = path;
-        this.add(path);
-    };
-    Canvas.prototype._onPointerMoveInDrawMode = function (e) {
-        if (!this._isDrawing || !this._drawingPath) {
-            return;
-        }
-        var _a = this.getPointer(e)
-            .transform(this.viewportMatrix.clone().invert())
-            .subtract(this.getDrawingAreaPosition()), x = _a.x, y = _a.y;
-        this._drawingPath.getPath().lineTo(x, y);
-        // Call set, just to trigger events, and rerender views.
-        this._drawingPath.updateBBox().set({});
-    };
-    Canvas.prototype._onPointerEndInDrawMode = function (e) {
-        var path = this._drawingPath;
-        if (!path) {
-            return;
-        }
-        var curves = path.getPath();
-        var bBox = curves.getBBox();
-        var translate = bBox.min.clone().add(bBox.getSize().divideScalar(2));
-        curves.adjust();
-        path.updateBBox().set({
-            left: translate.x,
-            top: translate.y,
-            originX: 0.5,
-            originY: 0.5
-        });
-        this._isDrawing = false;
-        this._drawingPath = null;
-        this.trigger('drawn', path, this);
-        this.trigger('drawn:path', path, this);
-    };
     Canvas.prototype.onPointerStart = function (e) {
         switch (this.mode) {
             case 'select':
@@ -1126,7 +1153,7 @@ var Canvas = /** @class */ (function (_super) {
                 this._onPointerStartInPanMode(e);
                 break;
             case 'draw':
-                this._onPointerStartInDrawMode(e);
+                this._drawingTool.onPointerStart(e);
                 break;
             default:
                 break;
@@ -1141,7 +1168,7 @@ var Canvas = /** @class */ (function (_super) {
                 this._onPointerMoveInPanMode(e);
                 break;
             case 'draw':
-                this._onPointerMoveInDrawMode(e);
+                this._drawingTool.onPointerMove(e);
                 break;
             default:
                 break;
@@ -1156,7 +1183,7 @@ var Canvas = /** @class */ (function (_super) {
                 this._onPointerEndInPanMode(e);
                 break;
             case 'draw':
-                this._onPointerEndInDrawMode(e);
+                this._drawingTool.onPointerEnd(e);
                 break;
             default:
                 break;
@@ -1524,6 +1551,252 @@ var RadialGradient = /** @class */ (function (_super) {
     }
     return RadialGradient;
 }(_gradient__WEBPACK_IMPORTED_MODULE_0__.Gradient));
+
+
+
+/***/ }),
+
+/***/ "./src/drawing-tools/bezier-tool.ts":
+/*!******************************************!*\
+  !*** ./src/drawing-tools/bezier-tool.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BezierTool: () => (/* binding */ BezierTool)
+/* harmony export */ });
+/* harmony import */ var _drawing_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./drawing-tool */ "./src/drawing-tools/drawing-tool.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var BezierTool = /** @class */ (function (_super) {
+    __extends(BezierTool, _super);
+    function BezierTool() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.name = 'bezier';
+        return _this;
+    }
+    BezierTool.prototype.onPointerStart = function (e) {
+        throw new Error('Method not implemented.');
+    };
+    BezierTool.prototype.onPointerMove = function (e) {
+        throw new Error('Method not implemented.');
+    };
+    BezierTool.prototype.onPointerEnd = function (e) {
+        throw new Error('Method not implemented.');
+    };
+    return BezierTool;
+}(_drawing_tool__WEBPACK_IMPORTED_MODULE_0__.DrawingTool));
+
+
+
+/***/ }),
+
+/***/ "./src/drawing-tools/drawing-tool.ts":
+/*!*******************************************!*\
+  !*** ./src/drawing-tools/drawing-tool.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DrawingTool: () => (/* binding */ DrawingTool)
+/* harmony export */ });
+var DrawingTool = /** @class */ (function () {
+    function DrawingTool(canvas) {
+        this._isDrawing = false;
+        this._canvas = canvas;
+    }
+    return DrawingTool;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/drawing-tools/index.ts":
+/*!************************************!*\
+  !*** ./src/drawing-tools/index.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BezierTool: () => (/* reexport safe */ _bezier_tool__WEBPACK_IMPORTED_MODULE_3__.BezierTool),
+/* harmony export */   DrawingTool: () => (/* reexport safe */ _drawing_tool__WEBPACK_IMPORTED_MODULE_0__.DrawingTool),
+/* harmony export */   PenTool: () => (/* reexport safe */ _pen_tool__WEBPACK_IMPORTED_MODULE_1__.PenTool),
+/* harmony export */   ShapeTool: () => (/* reexport safe */ _shape_tool__WEBPACK_IMPORTED_MODULE_2__.ShapeTool)
+/* harmony export */ });
+/* harmony import */ var _drawing_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./drawing-tool */ "./src/drawing-tools/drawing-tool.ts");
+/* harmony import */ var _pen_tool__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./pen-tool */ "./src/drawing-tools/pen-tool.ts");
+/* harmony import */ var _shape_tool__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./shape-tool */ "./src/drawing-tools/shape-tool.ts");
+/* harmony import */ var _bezier_tool__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./bezier-tool */ "./src/drawing-tools/bezier-tool.ts");
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./src/drawing-tools/pen-tool.ts":
+/*!***************************************!*\
+  !*** ./src/drawing-tools/pen-tool.ts ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PenTool: () => (/* binding */ PenTool)
+/* harmony export */ });
+/* harmony import */ var _drawing_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./drawing-tool */ "./src/drawing-tools/drawing-tool.ts");
+/* harmony import */ var _shapes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../shapes */ "./src/shapes/index.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var PenTool = /** @class */ (function (_super) {
+    __extends(PenTool, _super);
+    function PenTool() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.name = 'pen';
+        return _this;
+    }
+    PenTool.prototype.onPointerStart = function (e) {
+        var _a = this._canvas
+            .getPointer(e)
+            .transform(this._canvas.get('viewportMatrix').clone().invert())
+            .subtract(this._canvas.getDrawingAreaPosition()), x = _a.x, y = _a.y;
+        var path = new _shapes__WEBPACK_IMPORTED_MODULE_1__.Path({
+            left: 0,
+            top: 0,
+            originX: 0,
+            originY: 0,
+            stroke: this._canvas.penColor,
+            strokeWidth: this._canvas.penWidth,
+            fill: 'none'
+        });
+        path.getPath().moveTo(x, y);
+        this._isDrawing = true;
+        this._path = path;
+        this._canvas.add(path);
+    };
+    PenTool.prototype.onPointerMove = function (e) {
+        if (!this._isDrawing || !this._path) {
+            return;
+        }
+        var _a = this._canvas
+            .getPointer(e)
+            .transform(this._canvas.get('viewportMatrix').clone().invert())
+            .subtract(this._canvas.getDrawingAreaPosition()), x = _a.x, y = _a.y;
+        this._path.getPath().lineTo(x, y);
+        // Call set, just to trigger events to rerender views.
+        this._path.updateBBox().set({});
+    };
+    PenTool.prototype.onPointerEnd = function (e) {
+        if (!this._path) {
+            return;
+        }
+        var curves = this._path.getPath();
+        var bBox = curves.getBBox();
+        var translate = bBox.min.clone().add(bBox.getSize().divideScalar(2));
+        if (bBox.isEmpty()) {
+            this._canvas.remove(this._path);
+            this._isDrawing = false;
+            this._path = null;
+            return;
+        }
+        curves.adjust();
+        this._path.updateBBox().set({
+            left: translate.x,
+            top: translate.y,
+            originX: 0.5,
+            originY: 0.5
+        });
+        this._canvas.trigger('drawn', this._path, this);
+        this._canvas.trigger('drawn:path', this._path, this);
+        this._isDrawing = false;
+        this._path = null;
+    };
+    return PenTool;
+}(_drawing_tool__WEBPACK_IMPORTED_MODULE_0__.DrawingTool));
+
+
+
+/***/ }),
+
+/***/ "./src/drawing-tools/shape-tool.ts":
+/*!*****************************************!*\
+  !*** ./src/drawing-tools/shape-tool.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ShapeTool: () => (/* binding */ ShapeTool)
+/* harmony export */ });
+/* harmony import */ var _drawing_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./drawing-tool */ "./src/drawing-tools/drawing-tool.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ShapeTool = /** @class */ (function (_super) {
+    __extends(ShapeTool, _super);
+    function ShapeTool() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.name = 'shape';
+        return _this;
+    }
+    ShapeTool.prototype.onPointerStart = function (e) {
+        throw new Error('Method not implemented.');
+    };
+    ShapeTool.prototype.onPointerMove = function (e) {
+        throw new Error('Method not implemented.');
+    };
+    ShapeTool.prototype.onPointerEnd = function (e) {
+        throw new Error('Method not implemented.');
+    };
+    return ShapeTool;
+}(_drawing_tool__WEBPACK_IMPORTED_MODULE_0__.DrawingTool));
 
 
 
@@ -2699,7 +2972,7 @@ var SVGImporter = /** @class */ (function (_super) {
         return attributes;
     };
     SVGImporter.prototype._getChildren = function (element) {
-        return Array.from(element.childNodes);
+        return Array.from(element.children);
     };
     return SVGImporter;
 }(_importer__WEBPACK_IMPORTED_MODULE_1__.Importer));
@@ -7106,6 +7379,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/types/class.ts":
+/*!****************************!*\
+  !*** ./src/types/class.ts ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+
+
+
+/***/ }),
+
 /***/ "./src/types/index.ts":
 /*!****************************!*\
   !*** ./src/types/index.ts ***!
@@ -7116,7 +7401,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animation */ "./src/types/animation.ts");
 /* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./math */ "./src/types/math.ts");
 /* harmony import */ var _mixin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mixin */ "./src/types/mixin.ts");
-/* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./object */ "./src/types/object.ts");
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./class */ "./src/types/class.ts");
+/* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./object */ "./src/types/object.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./src/types/utils.ts");
+
+
 
 
 
@@ -7153,6 +7442,18 @@ __webpack_require__.r(__webpack_exports__);
 /*!*****************************!*\
   !*** ./src/types/object.ts ***!
   \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+
+
+
+/***/ }),
+
+/***/ "./src/types/utils.ts":
+/*!****************************!*\
+  !*** ./src/types/utils.ts ***!
+  \****************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -7499,6 +7800,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Animation: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.Animation),
 /* harmony export */   ArcCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.ArcCurve),
 /* harmony export */   BBox: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.BBox),
+/* harmony export */   BezierTool: () => (/* reexport safe */ _drawing_tools__WEBPACK_IMPORTED_MODULE_8__.BezierTool),
 /* harmony export */   Canvas: () => (/* reexport safe */ _canvas__WEBPACK_IMPORTED_MODULE_2__.Canvas),
 /* harmony export */   Circle: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Circle),
 /* harmony export */   ClipPath: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.ClipPath),
@@ -7511,45 +7813,48 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Curve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Curve),
 /* harmony export */   CurvePath: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.CurvePath),
 /* harmony export */   Definition: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.Definition),
+/* harmony export */   DrawingTool: () => (/* reexport safe */ _drawing_tools__WEBPACK_IMPORTED_MODULE_8__.DrawingTool),
 /* harmony export */   Element: () => (/* reexport safe */ _element__WEBPACK_IMPORTED_MODULE_1__.Element),
 /* harmony export */   Ellipse: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Ellipse),
-/* harmony export */   Exporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.Exporter),
+/* harmony export */   Exporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_12__.Exporter),
 /* harmony export */   Gradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.Gradient),
 /* harmony export */   GradientControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.GradientControl),
 /* harmony export */   Group: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Group),
 /* harmony export */   HorizontalLineCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.HorizontalLineCurve),
 /* harmony export */   Image: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Image),
-/* harmony export */   Importer: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_10__.Importer),
-/* harmony export */   JSONImporter: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_10__.JSONImporter),
+/* harmony export */   Importer: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_11__.Importer),
+/* harmony export */   JSONImporter: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_11__.JSONImporter),
 /* harmony export */   Keyframe: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.Keyframe),
 /* harmony export */   LineCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.LineCurve),
 /* harmony export */   LinearGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.LinearGradient),
-/* harmony export */   LottieExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.LottieExporter),
-/* harmony export */   LottieImporter: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_10__.LottieImporter),
+/* harmony export */   LottieExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_12__.LottieExporter),
+/* harmony export */   LottieImporter: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_11__.LottieImporter),
 /* harmony export */   Matrix: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Matrix),
 /* harmony export */   MoveCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.MoveCurve),
 /* harmony export */   Observable: () => (/* reexport safe */ _observable__WEBPACK_IMPORTED_MODULE_0__.Observable),
 /* harmony export */   OriginControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.OriginControlNode),
-/* harmony export */   PIBY180: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.PIBY180),
+/* harmony export */   PIBY180: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.PIBY180),
 /* harmony export */   Path: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Path),
 /* harmony export */   PathControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.PathControl),
 /* harmony export */   Pattern: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.Pattern),
+/* harmony export */   PenTool: () => (/* reexport safe */ _drawing_tools__WEBPACK_IMPORTED_MODULE_8__.PenTool),
 /* harmony export */   Point: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.Point),
 /* harmony export */   Polygon: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Polygon),
 /* harmony export */   Polyline: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Polyline),
 /* harmony export */   QuadraticBezierCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.QuadraticBezierCurve),
 /* harmony export */   RadialGradient: () => (/* reexport safe */ _defs__WEBPACK_IMPORTED_MODULE_4__.RadialGradient),
-/* harmony export */   RasterExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.RasterExporter),
-/* harmony export */   ReactExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.ReactExporter),
+/* harmony export */   RasterExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_12__.RasterExporter),
+/* harmony export */   ReactExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_12__.ReactExporter),
 /* harmony export */   Rect: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Rect),
-/* harmony export */   SVGCSSExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGCSSExporter),
-/* harmony export */   SVGExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGExporter),
-/* harmony export */   SVGImporter: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_10__.SVGImporter),
-/* harmony export */   SVGJSExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.SVGJSExporter),
-/* harmony export */   Sanitizer: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.Sanitizer),
+/* harmony export */   SVGCSSExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_12__.SVGCSSExporter),
+/* harmony export */   SVGExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_12__.SVGExporter),
+/* harmony export */   SVGImporter: () => (/* reexport safe */ _importers__WEBPACK_IMPORTED_MODULE_11__.SVGImporter),
+/* harmony export */   SVGJSExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_12__.SVGJSExporter),
+/* harmony export */   Sanitizer: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.Sanitizer),
 /* harmony export */   ScaleControlNode: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.ScaleControlNode),
 /* harmony export */   Selector: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.Selector),
 /* harmony export */   Shape: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Shape),
+/* harmony export */   ShapeTool: () => (/* reexport safe */ _drawing_tools__WEBPACK_IMPORTED_MODULE_8__.ShapeTool),
 /* harmony export */   SmoothCubicBezierCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.SmoothCubicBezierCurve),
 /* harmony export */   SmoothQuadraticBezierCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.SmoothQuadraticBezierCurve),
 /* harmony export */   Text: () => (/* reexport safe */ _shapes__WEBPACK_IMPORTED_MODULE_3__.Text),
@@ -7559,20 +7864,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Track: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.Track),
 /* harmony export */   TransformControl: () => (/* reexport safe */ _interactive__WEBPACK_IMPORTED_MODULE_5__.TransformControl),
 /* harmony export */   VerticalLineCurve: () => (/* reexport safe */ _maths__WEBPACK_IMPORTED_MODULE_6__.VerticalLineCurve),
-/* harmony export */   VueExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_11__.VueExporter),
-/* harmony export */   camelize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.camelize),
-/* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.clamp),
-/* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.deg2Rad),
+/* harmony export */   VueExporter: () => (/* reexport safe */ _exporters__WEBPACK_IMPORTED_MODULE_12__.VueExporter),
+/* harmony export */   camelize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.camelize),
+/* harmony export */   clamp: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.clamp),
+/* harmony export */   deg2Rad: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.deg2Rad),
 /* harmony export */   easings: () => (/* reexport safe */ _animation__WEBPACK_IMPORTED_MODULE_7__.easings),
-/* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.isEqual),
-/* harmony export */   kebabize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.kebabize),
-/* harmony export */   omitBy: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.omitBy),
-/* harmony export */   parsePath: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.parsePath),
-/* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.rad2Deg),
-/* harmony export */   randInt: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.randInt),
-/* harmony export */   toFixed: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.toFixed),
-/* harmony export */   unique: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.unique),
-/* harmony export */   uniqueId: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_8__.uniqueId)
+/* harmony export */   isEqual: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.isEqual),
+/* harmony export */   kebabize: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.kebabize),
+/* harmony export */   omitBy: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.omitBy),
+/* harmony export */   parsePath: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.parsePath),
+/* harmony export */   rad2Deg: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.rad2Deg),
+/* harmony export */   randInt: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.randInt),
+/* harmony export */   toFixed: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.toFixed),
+/* harmony export */   unique: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.unique),
+/* harmony export */   uniqueId: () => (/* reexport safe */ _utils__WEBPACK_IMPORTED_MODULE_9__.uniqueId)
 /* harmony export */ });
 /* harmony import */ var _observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./observable */ "./src/observable.ts");
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./element */ "./src/element.ts");
@@ -7582,10 +7887,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _interactive__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./interactive */ "./src/interactive/index.ts");
 /* harmony import */ var _maths__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./maths */ "./src/maths/index.ts");
 /* harmony import */ var _animation__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./animation */ "./src/animation/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
-/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./types */ "./src/types/index.ts");
-/* harmony import */ var _importers__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./importers */ "./src/importers/index.ts");
-/* harmony import */ var _exporters__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./exporters */ "./src/exporters/index.ts");
+/* harmony import */ var _drawing_tools__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./drawing-tools */ "./src/drawing-tools/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils */ "./src/utils/index.ts");
+/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./types */ "./src/types/index.ts");
+/* harmony import */ var _importers__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./importers */ "./src/importers/index.ts");
+/* harmony import */ var _exporters__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./exporters */ "./src/exporters/index.ts");
 // Core
 
 
@@ -7599,6 +7905,8 @@ __webpack_require__.r(__webpack_exports__);
 // Maths
 
 // Animation
+
+// Drawing Tools
 
 // Utils
 
