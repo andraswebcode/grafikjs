@@ -1,5 +1,4 @@
 import { Canvas } from './../canvas';
-import { Point } from './../maths';
 
 abstract class Exporter {
 	protected _canvas: Canvas;
@@ -40,10 +39,10 @@ abstract class Exporter {
 
 	protected _getCanvasAttributes() {
 		const zoom = this._canvas.zoom;
-		const pan = this._canvas.pan;
+		const pan = this._canvas.pan.clone();
 
 		// Reset viewport.
-		this._canvas.zoomTo(1, new Point());
+		this._canvas.zoomTo();
 		const attrs = this._canvas.getAttributes();
 
 		// Restore viewport.

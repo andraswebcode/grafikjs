@@ -146,7 +146,9 @@ class Animation extends Collection(AnimationBase) {
 	}
 
 	public setTracks(objects: TrackObject[]) {
-		const tracks = objects.map((obj) => this.addTrack(obj.property, obj.keyframes));
+		const tracks = objects.map(
+			({ property, keyframes }) => new Track(property, this.shape.get(property), keyframes)
+		);
 		this.setChildren(tracks);
 		return this;
 	}
