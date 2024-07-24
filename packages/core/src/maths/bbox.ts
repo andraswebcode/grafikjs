@@ -111,6 +111,17 @@ class BBox {
 		return this;
 	}
 
+	public normalize(): BBox {
+		const minX = Math.min(this.min.x, this.max.x);
+		const minY = Math.min(this.min.y, this.max.y);
+		const maxX = Math.max(this.min.x, this.max.x);
+		const maxY = Math.max(this.min.y, this.max.y);
+
+		this.min.set(minX, minY);
+		this.max.set(maxX, maxY);
+		return this;
+	}
+
 	public reset(): BBox {
 		this.min.set(0, 0);
 		this.max.set(0, 0);
