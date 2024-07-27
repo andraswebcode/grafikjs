@@ -5,7 +5,8 @@ module.exports = [
 	{
 		mode: 'development',
 		entry: {
-			vue: './src/vue.ts'
+			vue: './src/vue.ts',
+			svgimport: './src/svgimport.ts'
 		},
 		output: {
 			filename: `[name].js`,

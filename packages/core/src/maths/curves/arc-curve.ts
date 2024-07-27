@@ -36,20 +36,7 @@ class ArcCurve extends Curve {
 		return new Point();
 	}
 
-	public fromArray(curve: ParsedCurve, index: number, path: ParsedPath) {
-		const prevCurve = path[index - 1] || [];
-		const prevLength = prevCurve.length;
-		const length = curve.length;
-
-		// @ts-ignore
-		this.p0.set(prevCurve[prevLength - 2], prevCurve[prevLength - 1]);
-		this.rx = curve[1];
-		this.ry = curve[2] || 0;
-		this.xAxisRotation = curve[3] || 0;
-		this.largeArcFlag = curve[4] || 0;
-		this.sweepFlag = curve[5] || 0;
-		this.p1.set(curve[6] || 0, curve[7] || 0);
-
+	public fromArray(curve: ParsedCurve, lastPoint: Point) {
 		return this;
 	}
 

@@ -66,6 +66,7 @@ class CurvePath {
 	private _currentCommand = '';
 	private _currentPoint = new Point();
 	private _currentControlPoint = new Point();
+	private _lastCurveEndPoint = new Point();
 	private _bBox = new BBox();
 
 	public constructor(curves?: any | any[]) {
@@ -262,9 +263,32 @@ class CurvePath {
 	public fromString(string: string): CurvePath {
 		const curves = parsePath(string).map((curve, i, array) => {
 			const command = (curve[0] || '').toUpperCase();
+			const isRelative = curve[0] === curve[0].toLowerCase();
 			const Curve = CURVES[command];
-			return new Curve().fromArray(curve, i, array);
+			const lastPoint = this._lastCurveEndPoint.clone();
+			let x: number, y: number;
+			switch (command) {
+				case 'H':
+					x = toFixed(curve[curve.length - 1]);
+					this._lastCurveEndPoint.setX(isRelative ? lastPoint.x + x : x);
+					break;
+				case 'V':
+					y = toFixed(curve[curve.length - 1]);
+					this._lastCurveEndPoint.setY(isRelative ? lastPoint.y + y : y);
+					break;
+				default:
+					x = toFixed(curve[curve.length - 2]);
+					y = toFixed(curve[curve.length - 1]);
+					if (isRelative) {
+						this._lastCurveEndPoint.add(new Point(x, y));
+					} else {
+						this._lastCurveEndPoint.set(x, y);
+					}
+					break;
+			}
+			return new Curve().fromArray(curve, lastPoint);
 		});
+		console.log(parsePath(string), curves);
 
 		return this.set(curves);
 	}

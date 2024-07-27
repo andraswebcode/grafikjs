@@ -33,10 +33,9 @@ class Curve {
 		return this._bBox;
 	}
 
-	public fromArray(curve: ParsedCurve, index: number, path: ParsedPath): Curve {
+	public fromArray(curve: ParsedCurve, lastPoint: Point): Curve {
 		const length = curve.length;
 		const isRelative = curve[0] === curve[0].toLowerCase();
-		const lastPoint = this._getLastCurveEndPoint(path, index);
 		let point, i, p;
 
 		// @ts-ignore
