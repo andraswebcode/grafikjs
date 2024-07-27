@@ -4,7 +4,7 @@ import { SVGImporter } from '@grafikjs/core';
 
 const { context } = useCanvas(null);
 const importer = new SVGImporter(context);
-const svg = document.getElementById('svg2');
+const svg = document.getElementById('svg4');
 
 console.log(importer.load(svg.outerHTML));
 </script>

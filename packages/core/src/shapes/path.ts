@@ -30,7 +30,7 @@ class Path extends Shape {
 
 	protected updateOthersWithKeys(keys) {
 		if (keys.includes('d')) {
-			this.path.fromString(this.d).adjust();
+			this.path.fromString(this.d);
 			this.updateBBox();
 		}
 

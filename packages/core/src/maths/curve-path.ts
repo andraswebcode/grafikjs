@@ -276,6 +276,10 @@ class CurvePath {
 					y = toFixed(curve[curve.length - 1]);
 					this._lastCurveEndPoint.setY(isRelative ? lastPoint.y + y : y);
 					break;
+				case 'Z':
+				case 'z':
+					// Do nothing...
+					break;
 				default:
 					x = toFixed(curve[curve.length - 2]);
 					y = toFixed(curve[curve.length - 1]);
@@ -286,9 +290,8 @@ class CurvePath {
 					}
 					break;
 			}
-			return new Curve().fromArray(curve, lastPoint);
+			return new Curve().fromArray(curve, lastPoint, array[i - 1]);
 		});
-		console.log(parsePath(string), curves);
 
 		return this.set(curves);
 	}

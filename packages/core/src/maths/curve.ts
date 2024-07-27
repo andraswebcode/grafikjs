@@ -33,20 +33,15 @@ class Curve {
 		return this._bBox;
 	}
 
-	public fromArray(curve: ParsedCurve, lastPoint: Point): Curve {
+	public fromArray(curve: ParsedCurve, lastPoint: Point, _prevCurve?: ParsedCurve): Curve {
 		const length = curve.length;
 		const isRelative = curve[0] === curve[0].toLowerCase();
 		let point, i, p;
 
 		// @ts-ignore
 		if (this.p0) {
-			if (this.command === 'M') {
-				// @ts-ignore
-				this.p0.set(curve[1], curve[2]);
-			} else {
-				// @ts-ignore
-				this.p0.copy(lastPoint);
-			}
+			// @ts-ignore
+			this.p0.copy(lastPoint);
 		}
 
 		for (i = 0, p = 1; i < length - 1; i += 2, p++) {

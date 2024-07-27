@@ -17,7 +17,8 @@
 		"webpack-cli": "*",
 		"typescript": "*",
 		"ts-loader": "*",
-		"jest": "*"
+		"jest": "*",
+		"@types/jest": "^29.5.12"
 	},
 	"homepage": "https://grafikjs.andrasweb.com/",
 	"repository": {

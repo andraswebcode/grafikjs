@@ -37,6 +37,21 @@ class ArcCurve extends Curve {
 	}
 
 	public fromArray(curve: ParsedCurve, lastPoint: Point) {
+		const isRelative = curve[0] === curve[0].toLowerCase();
+
+		// @ts-ignore
+		this.p0.copy(lastPoint);
+		this.rx = curve[1];
+		this.ry = curve[2] || 0;
+		this.xAxisRotation = curve[3] || 0;
+		this.largeArcFlag = curve[4] || 0;
+		this.sweepFlag = curve[5] || 0;
+		this.p1.set(curve[6] || 0, curve[7] || 0);
+
+		if (isRelative) {
+			this.p1.add(lastPoint);
+		}
+
 		return this;
 	}
 

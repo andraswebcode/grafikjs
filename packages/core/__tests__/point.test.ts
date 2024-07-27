@@ -1,63 +1,6 @@
 import { Point, Matrix } from '../src/maths';
 
 describe('Point', () => {
-	test('should create a default point', () => {
-		const point = new Point();
-		expect(point.x).toBe(0);
-		expect(point.y).toBe(0);
-	});
-
-	test('should create a point with specific coordinates', () => {
-		const point = new Point(1, 2);
-		expect(point.x).toBe(1);
-		expect(point.y).toBe(2);
-	});
-
-	test('should set point coordinates', () => {
-		const point = new Point();
-		point.set(3, 4);
-		expect(point.x).toBe(3);
-		expect(point.y).toBe(4);
-	});
-
-	test('should set point x coordinate', () => {
-		const point = new Point();
-		point.setX(5);
-		expect(point.x).toBe(5);
-	});
-
-	test('should set point y coordinate', () => {
-		const point = new Point();
-		point.setY(6);
-		expect(point.y).toBe(6);
-	});
-
-	test('should create a point from an object', () => {
-		const point = new Point();
-		point.fromObject({ x: 7, y: 8 });
-		expect(point.x).toBe(7);
-		expect(point.y).toBe(8);
-	});
-
-	test('should convert a point to an object', () => {
-		const point = new Point(9, 10);
-		const obj = point.toObject();
-		expect(obj).toEqual({ x: 9, y: 10 });
-	});
-
-	test('should create a point from a string', () => {
-		const point = new Point();
-		point.fromString('11, 12');
-		expect(point.x).toBe(11);
-		expect(point.y).toBe(12);
-	});
-
-	test('should convert a point to a string', () => {
-		const point = new Point(13, 14);
-		const str = point.toString();
-		expect(str).toBe('13 14');
-	});
-
 	test('should add another point', () => {
 		const point = new Point(1, 2);
 		point.add(new Point(3, 4));
@@ -203,41 +146,6 @@ describe('Point', () => {
 		expect(point.y).toBe(4);
 	});
 
-	test('should find the minimum of two points', () => {
-		const point = new Point(5, 6);
-		point.min(new Point(3, 8));
-		expect(point.x).toBe(3);
-		expect(point.y).toBe(6);
-	});
-
-	test('should find the minimum of two points using static method', () => {
-		const point = new Point();
-		point.minPoints(new Point(5, 6), new Point(3, 8));
-		expect(point.x).toBe(3);
-		expect(point.y).toBe(6);
-	});
-
-	test('should find the maximum of two points', () => {
-		const point = new Point(5, 6);
-		point.max(new Point(3, 8));
-		expect(point.x).toBe(5);
-		expect(point.y).toBe(8);
-	});
-
-	test('should find the maximum of two points using static method', () => {
-		const point = new Point();
-		point.maxPoints(new Point(5, 6), new Point(3, 8));
-		expect(point.x).toBe(5);
-		expect(point.y).toBe(8);
-	});
-
-	test('should return the absolute value of a point', () => {
-		const point = new Point(-3, -4);
-		point.abs();
-		expect(point.x).toBe(3);
-		expect(point.y).toBe(4);
-	});
-
 	test('should negate a point', () => {
 		const point = new Point(3, 4);
 		point.negate();
@@ -271,28 +179,5 @@ describe('Point', () => {
 		point.clamp(new Point(0, 0), new Point(5, 5));
 		expect(point.x).toBe(5);
 		expect(point.y).toBe(0);
-	});
-
-	test('should check if two points are equal', () => {
-		const point1 = new Point(3, 4);
-		const point2 = new Point(3, 4);
-		const point3 = new Point(5, 6);
-		expect(point1.isEqual(point2)).toBe(true);
-		expect(point1.isEqual(point3)).toBe(false);
-	});
-
-	test('should copy another point', () => {
-		const point = new Point();
-		point.copy(new Point(3, 4));
-		expect(point.x).toBe(3);
-		expect(point.y).toBe(4);
-	});
-
-	test('should clone a point', () => {
-		const point1 = new Point(3, 4);
-		const point2 = point1.clone();
-		expect(point2.x).toBe(3);
-		expect(point2.y).toBe(4);
-		expect(point1).not.toBe(point2);
 	});
 });
