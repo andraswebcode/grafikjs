@@ -5,7 +5,8 @@
 	"types": "./src/index.d.ts",
 	"scripts": {
 		"start": "webpack",
-		"build": "webpack --env production"
+		"build": "webpack --env production",
+		"test": "jest"
 	},
 	"author": "Andras Tovishati",
 	"license": "MIT",
@@ -15,7 +16,8 @@
 		"webpack": "*",
 		"webpack-cli": "*",
 		"typescript": "*",
-		"ts-loader": "*"
+		"ts-loader": "*",
+		"jest": "*"
 	},
 	"homepage": "https://grafikjs.andrasweb.com/",
 	"repository": {
