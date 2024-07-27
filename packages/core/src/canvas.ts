@@ -386,6 +386,8 @@ class Canvas extends ElementCollection(Element) {
 		return new Point(clientX - left, clientY - top);
 	}
 
+	_foundedInGroup: any;
+
 	private _onPointerStartInSelectMode(e: MouseOrTouchEvent) {
 		// @ts-ignore
 		const { dataset } = e.target;
@@ -412,6 +414,10 @@ class Canvas extends ElementCollection(Element) {
 						this._selection = true;
 					}
 				}
+			} else {
+				if (founded?.isCollection) {
+					this._foundedInGroup = founded.findLastChildByPointer(pointer);
+				}
 			}
 			this.eachSelectedShape((shape) => {
 				shape.getControl().onPointerStart(e);
@@ -429,6 +435,7 @@ class Canvas extends ElementCollection(Element) {
 				shape.getControl().childByName(this._currentNode)?.onPointerMove(e);
 			});
 		}
+		this._foundedInGroup = null;
 	}
 
 	private _onPointerEndInSelectMode(e: MouseOrTouchEvent) {
@@ -452,6 +459,10 @@ class Canvas extends ElementCollection(Element) {
 				shape.getControl().childByName(this._currentNode)?.onPointerEnd(e);
 			});
 			this._currentNode = '';
+		}
+		if (this._foundedInGroup) {
+			this.setSelectedShapes(this._foundedInGroup);
+			this._foundedInGroup = null;
 		}
 	}
 

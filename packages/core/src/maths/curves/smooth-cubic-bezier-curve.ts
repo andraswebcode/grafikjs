@@ -28,7 +28,7 @@ class SmoothCubicBezierCurve extends CubicBezierCurve {
 		this.p3.set(curve[3] || 0, curve[4] || 0);
 
 		if (isRelative) {
-			for (let i = 0; i < 4; i++) {
+			for (let i = 1; i < 4; i++) {
 				this['p' + i].add(lastPoint);
 			}
 		}

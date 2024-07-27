@@ -10,10 +10,9 @@ class HorizontalLineCurve extends LineCurve {
 		const isRelative = curve[0] === curve[0].toLowerCase();
 
 		this.p0.copy(lastPoint);
-		this.p1.copy(lastPoint).setX(curve[1]);
+		this.p1.set(curve[1], 0);
 
 		if (isRelative) {
-			this.p0.add(lastPoint);
 			this.p1.add(lastPoint);
 		}
 

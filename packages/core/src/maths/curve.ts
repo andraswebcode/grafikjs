@@ -6,7 +6,7 @@ const _point = new Point();
 
 class Curve {
 	protected command = '';
-	private _bBox = new BBox();
+	protected _bBox = new BBox();
 
 	public getPoint(t: number): Point {
 		console.warn('getPoint() must be implemented by subclass.');

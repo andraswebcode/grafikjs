@@ -27,7 +27,7 @@ class SmoothQuadraticBezierCurve extends QuadraticBezierCurve {
 		this.p2.set(curve[1] || 0, curve[2] || 0);
 
 		if (isRelative) {
-			for (let i = 0; i < 3; i++) {
+			for (let i = 1; i < 3; i++) {
 				this['p' + i].add(lastPoint);
 			}
 		}

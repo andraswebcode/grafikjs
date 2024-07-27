@@ -11,6 +11,7 @@ class Path extends Shape {
 	public constructor(params?) {
 		super();
 		this.init(params);
+		this.adjustPath();
 		this.addControl(
 			'path',
 			new PathControl({
@@ -44,6 +45,16 @@ class Path extends Shape {
 
 	public getPath() {
 		return this.path;
+	}
+
+	public adjustPath() {
+		const { x, y } = this.path.getBBox().min.clone().multiply(this.origin);
+		this.path.adjust();
+		this.set({
+			left: this.left + x,
+			top: this.top + y
+		});
+		return this;
 	}
 }
 
